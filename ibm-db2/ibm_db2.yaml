@@ -1,0 +1,80 @@
+version: 0.0.5
+title: IBM Db2
+description: Log parser for IBM Db2
+parameters:
+  path:
+    label: Log Path
+    description: Path to the log file
+    type: string
+  start_at: 
+    label: Start At
+    description: "Start reading file from 'beginning' or 'end'"
+    type: string
+pipeline:
+  - id: ibm_db2_reader
+    type: file_input
+    include:
+      - {{ .path }}
+    # {{ if .start_at }}
+    start_at: {{ .start_at }}
+    # {{ end }}
+    multiline:
+      line_start_pattern: '\d{4}-\d{2}-\d{2}-\d{2}.\d{2}.\d{2}.\d+\s\w{3}\n|\d{4}-\d{2}-\d{2}-\d{2}.\d{2}.\d{2}.\d{6}([-+][\d\w]{3}|[\d\w]{4})\s'
+    output: ibm_db2_router
+
+  - id: ibm_db2_router
+    type: router
+    routes:
+      - output: standard_regex_parser
+        expr: $ matches '\\d{4}-\\d{2}-\\d{2}-\\d{2}.\\d{2}.\\d{2}.\\d{6}([-+][\\d\\w]{3}|[\\d\\w]{4})'
+      - output: other_regex_parser
+        expr: true
+
+  - id: standard_regex_parser
+    type: regex_parser
+    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}-\d{2}.\d{2}.\d{2}.\d{6})([-+][\d\w]{3}|[\d\w]{4}) (?P<record_id>\w+)\s+LEVEL: (?P<db2_severity>[^\n]+)\nPID\s+:\s+(?P<pid>\d+)\s+TID\s+:\s+(?P<tid>\d+)\s+(?P<message>[\s\d\D]+)'
+    timestamp:
+      parse_from: timestamp
+      layout_type: strptime
+      layout: '%Y-%m-%d-%H.%M.%S.%f'
+      preserve: false
+    severity:
+      parse_from: db2_severity
+      preserve: false
+      preset: default
+      mapping:
+        emergency: fatal
+        alert: severe
+        error:
+          - error
+        warning:
+          - 'Warning (OS)'
+        notice: 
+          - config
+          - detail
+        info: 
+          - audit
+          - event
+        debug:
+          - fine
+          - finer
+          - finest
+    output: add_log_name
+
+  - id: other_regex_parser
+    type: regex_parser
+    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}-\d{2}.\d{2}.\d{2}.\d+)\s\w{3}\s(?P<message>[\s\d\D]+)'
+    output: add_log_name
+    timestamp:
+      parse_from: timestamp
+      layout_type: strptime
+      layout: '%Y-%m-%d-%H.%M.%S.%f'
+      preserve: false
+
+  - id: add_log_name
+    type: restructure
+    ops:
+      - add:
+          field: $labels.log_name
+          value: 'ibm_db2'
+    output: {{ .output }}

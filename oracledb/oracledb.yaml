@@ -1,0 +1,188 @@
+version: 0.0.4
+title: OracleDB
+description: Log parser for OracleDB
+parameters:
+  audit_log_path:
+    label: Audit Log Path
+    description: Path to the audit log file
+    type: string
+  truncate_audit_action: 
+    label: Truncate Audit Action
+    description: Whether or not to truncate the audit log action field
+    type: boolean
+  alert_log_path:
+    label: Alert Log Path
+    description: Path to the alert log file
+    type: string
+  listener_log_path:
+    label: Listener Log Path
+    description: Path to the listener log file
+    type: string
+  start_at: 
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: string
+pipeline:
+  # {{ if .audit_log_path }}
+  - id: audit_reader
+    type: file_input
+    include:
+      - {{ .audit_log_path }}
+    # {{ if .start_at }}
+    start_at: {{ .start_at }}
+    # {{ end }}
+    multiline:
+      line_start_pattern: '[a-zA-z]+ [a-zA-Z]+ \d{2} \d{2}:\d{2}:\d{2} \d{4} [-+]\d{2}:\d{2}\n|Audit File '
+    output: audit_router
+  
+  - id: stdout
+    type: stdout
+
+  - id: audit_router
+    type: router
+    routes:
+      - output: audit_regex_parser
+        expr: $ matches '\\w+ \\w+ \\d{2} \\d{2}:\\d{2}:\\d{2} \\d{4} -\\d{2}:\\d{2}'
+      - output: server_start_regex_parser
+        expr: $ startsWith 'Audit file '
+
+  - id: audit_regex_parser
+    type: regex_parser
+    regex: '(?P<timestamp>\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \d{4} -\d{2}:\d{2})\nLENGTH : \D(?P<length>\d*)\D\nACTION :\[\d+\]\s+\D(?P<action>[\d\w[:ascii:]]+)\D\nDATABASE USER:\[\d+\]\s+\D(?P<database_user>[^\s]+)\D\n(PRIVILEGE :\[\d+\]\s+\D(?P<privilege>[^\s]+)\D\n)?(CLIENT USER:\[\d+\]\s+\D(?P<client_user>[^\s]+)\D\n)?(CLIENT TERMINAL:\[\d+\]\s+\D(?P<client_terminal>[^\s]+|)\D\n)?(STATUS:\[\d+\]\s+\D(?P<status>[^\s]+)\D\n)?(DBID:\[\d+\]\s\D(?P<dbid>\d+)\D\n)?(SESSIONID:\[\d+\]\s+\D(?P<sessionid>[^\s]+)\D\n)?(USERHOST:\[\d+\]\s+\D(?P<userhost>[^\s]+)\D\n)?(CLIENT ADDRESS:\[\d+\]\s+\D(?P<client_address>[^\s]+|)\D\n)?(ACTION NUMBER:\[\d+\]\s+\D(?P<action_number>[^\s]+|)\D)?'
+    preserve: true
+    timestamp:
+      parse_from: timestamp
+      layout_type: strptime
+      layout: '%c %j'
+      preserve: false
+    # {{ if .truncate_audit_action }}
+    output: audit_action_restructurer
+    # {{ else }}
+    output: audit_add_log_name
+    # {{ end }}
+
+  - id: server_start_regex_parser
+    type: regex_parser
+    regex: '(?P<message>[\d\w[:ascii:]]+)'
+    output: audit_add_log_name
+
+  - id: audit_action_restructurer
+    type: restructure
+    ops:
+      - add: 
+          field: "action"
+          value_expr: 'len($.action) > 150000 ? $.action[0:150000] + "... Action has " + $.length + " characters which is over the 150000 characters limit, truncating action" : $.action'
+    output: audit_add_log_name
+
+  - id: audit_add_log_name
+    type: restructure
+    ops:
+      - add:
+          field: $labels.log_name
+          value: 'oracledb.audit'
+    output: {{ .output }}
+  # {{ end }}
+
+  # {{ if .alert_log_path }}
+  - id: alert_reader
+    type: file_input
+    include:
+      - {{ .alert_log_path }}
+    # {{ if .start_at }}
+    start_at: {{ .start_at }}
+    # {{ end }}
+    multiline:
+      line_start_pattern: '\d{4}-\d{2}-\d{2}T\d{1,}:\d{2}:\d{2}.\d+[+-]\d+:\d+'
+    output: alert_regex_parser
+
+  - id: alert_regex_parser
+    type: regex_parser
+    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{1,}:\d{2}:\d{2}.\d+[+-]\d+:\d+)\n(?P<message>[\d\w[:ascii:]]+)'
+    timestamp:
+      parse_from: timestamp
+      layout_type: strptime
+      layout: '%Y-%m-%dT%T.%s%j'
+      preserve: false
+    output: alert_restructurer
+
+  - id: alert_restructurer
+    type: restructure
+    ops:
+      - add:
+          field: $labels.log_name
+          value: 'oracledb.alert'
+    output: {{ .output }}
+  # {{ end }}
+
+  # {{ if .listener_log_path }}
+  - id: listener_reader
+    type: file_input
+    include:
+      - {{ .listener_log_path }}
+    # {{ if .start_at }}
+    start_at: {{ .start_at }}
+    # {{ end }}
+    multiline:
+      line_start_pattern: '/[\w\d/]+:|\\[\w\d\\]+:|\d{4}-\d{2}-\d{2}T\d{1}:\d{2}:\d{2}.\d+[+-]\d+:\d+|<msg '
+    output: listener_router
+
+  - id: listener_router
+    type: router
+    routes:
+      - output: linux_listener_regex_parser
+        expr: $ matches '/[\\w\\d/]+:'
+      - output: windows_listener_regex_parser
+        expr: $ matches '\\\\[\\d\\D\\\\]*:'
+      - output: trace_listener_regex_parser
+        expr: $ matches '\\d{4}-\\d{2}-\\d{2}T\\d{1}:\\d{2}:\\d{2}.\\d+[+-]\\d+:\\d+'
+      - output: xml_listener_regex_parser
+        expr: $ matches '<msg '
+
+  - id: linux_listener_regex_parser
+    type: regex_parser
+    regex: '(?P<path>/[\w\d/\\]+:)\s(?P<status>\w+).*\n\nLSNRCTL for (?P<os>[\w\s]+):\sVersion\s(?P<listener_version>[\d\.]+)\s-\s\w+\son\s(?P<timestamp>\d{2}-\w{3}-\d{4}\s\d{2}:\d{2}:\d{2})\n\n(?P<copyright>[\d\w[:ascii:]]+)\n\n(?P<message>[\d\w[:ascii:]]+)'
+    timestamp:
+      parse_from: timestamp
+      layout_type: strptime
+      layout: '%d-%h-%Y %T'
+      preserve: false
+    output: listener_restructurer
+
+  - id: windows_listener_regex_parser
+    type: regex_parser
+    regex: '(?P<path>\\[\d\w\\]+:)\s(?P<status>\w+).*\n\nLSNRCTL for (?P<os>[\w\s]+):\sVersion\s(?P<listener_version>[\d\.]+)\s-\s\w+\son\s(?P<timestamp>\d{2}-\w{3}-\d{4}\s\d{2}:\d{2}:\d{2})\n\n(?P<copyright>[\d\w[:ascii:]]+)\n\n(?P<message>[\d\w[:ascii:]]+)'
+    timestamp:
+      parse_from: timestamp
+      layout_type: strptime
+      layout: '%d-%h-%Y %T'
+      preserve: false
+    output: listener_restructurer
+
+  - id: trace_listener_regex_parser
+    type: regex_parser
+    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{1}:\d{2}:\d{2}.\d+[+-]\d+:\d+)\s+(?P<message>[\d\D\s]+)'
+    timestamp:
+      parse_from: timestamp
+      layout_type: strptime
+      layout: '%Y-%m-%dT%T.%L%j'
+      preserve: false
+    output: listener_restructurer
+
+  - id: xml_listener_regex_parser
+    type: regex_parser
+    regex: '<msg(\s+)?(time=\D(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}[+-]\d{2}:\d{2})\D)?(\s+)?(org_id=\D(?P<org_id>[\w\d]+)\D)?(\s+)?(comp_id=\D(?P<comp_id>[\w\d]+)\D)?(\s+)?(msg_id=\D(?P<msg_id>[\w\d:]+)\D)?(\s+)?(type=\D(?P<type>\w+)\D)?(\s+)?(group=\D(?P<group>\w+)\D)?(\s+)?(level=\D(?P<level>\d+)\D)?(\s+)?(host_id=\D(?P<host_id>[\.\w\d-_]+)\D)?(\s+)?(host_addr=\D(?P<host_addr>[\d\.]+)\D)?(\s+)(module=\D(?P<module>[\w-\s]+)\D)?(\s+)?(pid=\D(?P<pid>\d+)\D)?(\s+)?(\s+)?(version=\D(?P<version>\d+)\D)?(\s+)?>\s+<txt>(?P<txt>[\d\D\s]+)</txt>(\s+)?</msg>'
+    timestamp:
+      parse_from: timestamp
+      layout_type: strptime
+      layout: '%Y-%m-%dT%T.%L%j'
+      preserve: false
+    output: listener_restructurer
+
+  - id: listener_restructurer
+    type: restructure
+    ops:
+      - add:
+          field: $labels.log_name
+          value: 'oracledb.listener'
+    output: {{ .output }}
+  # {{ end }}

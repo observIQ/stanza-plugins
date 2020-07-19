@@ -1,0 +1,141 @@
+version: 0.0.6
+title: MySQL
+description: Log parser for MySQL
+parameters:
+  general_log_path:
+    label: General Log Path
+    description: Path to general log file
+    type: string
+  slow_query_log_path: 
+    label: Slow Query Log Path
+    description: Path to slow query log file
+    type: string
+  error_log_path: 
+    label: Error Log Path
+    description: Path to mysqld log file
+    type: string
+  start_at: 
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: string
+pipeline:
+  # {{ if .slow_query_log_path }}
+  - id: slow_query_reader
+    type: file_input
+    include:
+      - {{ .slow_query_log_path }}
+    # {{ if .start_at }}
+    start_at: {{ .start_at }}
+    # {{ end }}
+    multiline:
+      line_start_pattern: '# Time: \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z\s|/\w+/\w+/mysqld,'
+    output: slow_query_router
+
+  - id: slow_query_router
+    type: router
+    routes:
+      - output: slow_query_regex_parser
+        expr: '$ startsWith "# Time: "'
+      - output: server_start_regex_parser
+        expr: $ matches '/\\w+/\\w+/mysqld'
+
+  - id: slow_query_regex_parser
+    type: regex_parser
+    regex: '[\s\d\D]+(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s#\s\w+@\w+:\s\w+\[\w+\]\s@\s(?P<host>[\w\D]+)\[(?P<ip_address>[\d\.]+|)\][\s\D]+(?P<id>[\d]+)\s+#[\s\D]+(?P<query_time>[\d\.]+)[\s\D]+(?P<lock_time>[\d\.]+)[\s\D]+(?P<rows_sent>[\d]+)[\s\D]+(?P<rows_examined>[\d]+)\s+(?P<command>[\s\d\D]+)SET\s+timestamp=(?P<slow_query_timestamp>\d+);\s+(?P<slow_query>[\s\d\D]+)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+    output: slow_query_log_name
+
+  - id: slow_query_log_name
+    type: restructure
+    ops:
+      - add:
+          field: $labels.log_name
+          value: 'mysql.slow_query'
+    output: {{ .output }}
+  # {{ end }}
+
+  # {{ if .error_log_path }}
+  - id: error_reader
+    type: file_input
+    include:
+      - {{ .error_log_path }}
+    # {{ if .start_at }}
+    start_at: {{ .start_at }}
+    # {{ end }}
+    multiline:
+      line_start_pattern: \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z
+    output: error_regex_parser
+
+  - id: error_regex_parser
+    type: regex_parser
+    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s+(?P<tid>\d+)\s+\[(?P<mysql_severity>[^\]]+)]\s+(?P<message>[\d\D\s]+)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+    severity:
+      parse_from: mysql_severity
+      mapping:
+        notice:
+          - note
+    output: error_log_name
+
+  - id: error_log_name
+    type: restructure
+    ops:
+      - add:
+          field: $labels.log_name
+          value: 'mysql.error'
+    output: {{ .output }}
+  # {{ end }}
+
+  # {{ if .general_log_path }}
+  - id: general_query_reader
+    type: file_input
+    include:
+      - {{ .general_log_path }}
+    # {{ if .start_at }}
+    start_at: {{ .start_at }}
+    # {{ end }}
+    multiline:
+      line_start_pattern: '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z|/\w+/\w+/mysqld,'
+    output: general_router
+
+  - id: general_router
+    type: router
+    routes:
+      - output: general_regex_parser
+        expr: $ matches '\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d+Z'
+      - output: server_start_regex_parser
+        expr: $ matches '/\\w+/\\w+/mysqld'
+
+  - id: general_regex_parser
+    type: regex_parser
+    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s+(?P<tid>\d+)\s+(?P<command>[^\s]+)\s+(?P<message>[\s\d\D]+)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+    output: general_log_name
+
+  - id: general_log_name
+    type: restructure
+    ops:
+      - add:
+          field: $labels.log_name
+          value: 'mysql.general'
+    output: {{ .output }}
+  # {{ end }}
+
+  - id: server_start_regex_parser
+    type: regex_parser
+    regex: '(?P<path>/\w+/\w+/mysqld),\sVersion:\s(?P<version>[\s\d\D]+)\.\s(?P<started_with>[\s\d\D]+)'
+    output: server_start_log_name
+
+  - id: server_start_log_name
+    type: restructure
+    ops:
+      - add:
+          field: $labels.log_name
+          value: 'mysql.server-start'
+    output: {{ .output }}
