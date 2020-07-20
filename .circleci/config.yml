@@ -9,15 +9,15 @@ jobs:
       - checkout
       - run:
           name: Create Plugins Zip
-          command: zip ./artifacts/carbon-plugins.zip ./plugins/*
+          command: zip ./carbon-plugins.zip ./plugins/*
       - run:
           name: Create Plugins Tarball
-          command: tar -zcvf ./artifacts/carbon-plugins.tar.gz ./plugins/*
+          command: tar -zcvf ./carbon-plugins.tar.gz ./plugins/*
       # - run:
       #     name: "Publish Release on GitHub"
       #     command: |
       #       ghr -t ${GHI_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG} ./artifacts/
-      - run: ls -latr ./artifacts/ # TODO
+      - run: ls -latr # TODO
 
 workflows:
   version: 2
