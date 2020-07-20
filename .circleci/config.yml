@@ -13,21 +13,20 @@ jobs:
       - run:
           name: Create Plugins Tarball
           command: tar -zcvf ./carbon-plugins.tar.gz ./plugins/*
-      # - run:
-      #     name: "Publish Release on GitHub"
-      #     command: |
-      #       ghr -t ${GHI_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG} ./artifacts/
-      - run: ls -latr # TODO
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            ghr -t ${GHI_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG} ./artifacts/
 
 workflows:
   version: 2
 
   package_plugins:
     jobs:
-      - publish-github-release
-          # filters:
-          #   branches:
-          #     ignore: /.*/
-          #   tags:
-          #     only: /^v\d+\.\d+\.\d+.*/
+      - publish-github-release:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v\d+\.\d+\.\d+.*/
 
