@@ -1,4 +1,4 @@
-    version: 0.0.4
+    version: 0.0.5
     title: Kubernetes
     description: Log parser for Kubernetes
     parameters:
@@ -26,12 +26,6 @@
         file_path_field: log_name
         write_to: log
         output: container_json_parser
-
-      - id: filter_carbon_container
-        type: router
-        routes:
-          - output: container_json_parser
-            expr: $record.container_name != "carbon"
 
       - id: container_json_parser
         type: json_parser
@@ -147,7 +141,6 @@
         output: {{ .output }}
       # {{ end }}
 
-      
       - id: kubelet_reader
         type: journald_input
         # {{ if .kubelet_journald_log_path }}
@@ -158,8 +151,33 @@
       - id: kubelet_filter_router
         type: router
         routes:
-          - output: add_kublet_metadata
+          - output: kubelet_message_parser_router
             expr: '$record._SYSTEMD_UNIT == "kubelet.service"'
+
+      - id: kubelet_message_parser_router
+        type: router
+        routes:
+          - output: message_regex_parser
+            expr: '$record.MESSAGE matches "^\\w\\d{4}"'
+          - output: add_kublet_metadata
+            expr: true
+
+      - id: message_regex_parser
+        type: regex_parser
+        parse_from: MESSAGE
+        regex: '(?P<severity>\w)(?P<timestamp>\d{4} \d{2}:\d{2}:\d{2}.\d+)\s+(?P<pid>\d+)\s+(?P<source>[^ \]]+)\] (?P<message>.*)'
+        severity:
+          parse_from: severity
+          mapping:
+            debug: d
+            info: i
+            warning: w
+            error: e
+            critical: c
+        timestamp:
+          parse_from: timestamp
+          layout: '%m%d %H:%M:%S.%s'
+        output: add_kublet_metadata
 
       - id: add_kublet_metadata
         type: metadata
