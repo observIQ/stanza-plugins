@@ -1,4 +1,4 @@
-version: 0.0.4
+version: 0.0.5
 title: OracleDB
 description: Log parser for OracleDB
 parameters:
@@ -52,9 +52,7 @@ pipeline:
     preserve: true
     timestamp:
       parse_from: timestamp
-      layout_type: strptime
       layout: '%c %j'
-      preserve: false
     # {{ if .truncate_audit_action }}
     output: audit_action_restructurer
     # {{ else }}
@@ -100,9 +98,7 @@ pipeline:
     regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{1,}:\d{2}:\d{2}.\d+[+-]\d+:\d+)\n(?P<message>[\d\w[:ascii:]]+)'
     timestamp:
       parse_from: timestamp
-      layout_type: strptime
       layout: '%Y-%m-%dT%T.%s%j'
-      preserve: false
     output: alert_restructurer
 
   - id: alert_restructurer
@@ -143,9 +139,7 @@ pipeline:
     regex: '(?P<path>/[\w\d/\\]+:)\s(?P<status>\w+).*\n\nLSNRCTL for (?P<os>[\w\s]+):\sVersion\s(?P<listener_version>[\d\.]+)\s-\s\w+\son\s(?P<timestamp>\d{2}-\w{3}-\d{4}\s\d{2}:\d{2}:\d{2})\n\n(?P<copyright>[\d\w[:ascii:]]+)\n\n(?P<message>[\d\w[:ascii:]]+)'
     timestamp:
       parse_from: timestamp
-      layout_type: strptime
       layout: '%d-%h-%Y %T'
-      preserve: false
     output: listener_restructurer
 
   - id: windows_listener_regex_parser
@@ -153,9 +147,7 @@ pipeline:
     regex: '(?P<path>\\[\d\w\\]+:)\s(?P<status>\w+).*\n\nLSNRCTL for (?P<os>[\w\s]+):\sVersion\s(?P<listener_version>[\d\.]+)\s-\s\w+\son\s(?P<timestamp>\d{2}-\w{3}-\d{4}\s\d{2}:\d{2}:\d{2})\n\n(?P<copyright>[\d\w[:ascii:]]+)\n\n(?P<message>[\d\w[:ascii:]]+)'
     timestamp:
       parse_from: timestamp
-      layout_type: strptime
       layout: '%d-%h-%Y %T'
-      preserve: false
     output: listener_restructurer
 
   - id: trace_listener_regex_parser
@@ -163,9 +155,7 @@ pipeline:
     regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{1}:\d{2}:\d{2}.\d+[+-]\d+:\d+)\s+(?P<message>[\d\D\s]+)'
     timestamp:
       parse_from: timestamp
-      layout_type: strptime
       layout: '%Y-%m-%dT%T.%L%j'
-      preserve: false
     output: listener_restructurer
 
   - id: xml_listener_regex_parser
@@ -173,9 +163,7 @@ pipeline:
     regex: '<msg(\s+)?(time=\D(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}[+-]\d{2}:\d{2})\D)?(\s+)?(org_id=\D(?P<org_id>[\w\d]+)\D)?(\s+)?(comp_id=\D(?P<comp_id>[\w\d]+)\D)?(\s+)?(msg_id=\D(?P<msg_id>[\w\d:]+)\D)?(\s+)?(type=\D(?P<type>\w+)\D)?(\s+)?(group=\D(?P<group>\w+)\D)?(\s+)?(level=\D(?P<level>\d+)\D)?(\s+)?(host_id=\D(?P<host_id>[\.\w\d-_]+)\D)?(\s+)?(host_addr=\D(?P<host_addr>[\d\.]+)\D)?(\s+)(module=\D(?P<module>[\w-\s]+)\D)?(\s+)?(pid=\D(?P<pid>\d+)\D)?(\s+)?(\s+)?(version=\D(?P<version>\d+)\D)?(\s+)?>\s+<txt>(?P<txt>[\d\D\s]+)</txt>(\s+)?</msg>'
     timestamp:
       parse_from: timestamp
-      layout_type: strptime
       layout: '%Y-%m-%dT%T.%L%j'
-      preserve: false
     output: listener_restructurer
 
   - id: listener_restructurer
