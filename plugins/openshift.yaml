@@ -2,7 +2,7 @@ version: 0.0.1
 title: Openshift
 description: Log parser for Openshift
 parameters:
-  journal_directory:
+  journald_log_path:
     label: Containers Log Path
     description: The directory where the journald logs are located. Defaults to '/var/log/journal'.
     type: string
@@ -10,22 +10,22 @@ parameters:
     label: Start At
     description: Start reading file from 'beginning' or 'end'. Defaults to 'end'.
     type: string
-  container_logs:
+  container_log:
     label: Enable Container Logs
     description: Enable collection of container logs
     type: bool
-  docker_logs:
+  docker_log:
     label: Enable Docker Daemon Logs
     description: Enable collection of the Docker Daemon logs
     type: bool
-  openshift_logs:
+  openshift_log:
     label: Enable Openshift logs
     description: Enable collection of Openshift unit logs
     type: bool
 
 pipeline:
   - type: journald_input
-    directory: /var/log/journal
+    directory: {{ or .journald_log_path "/var/log/journal" }}
     start_at: {{ or .start_at "end" }}
 
   - type: router
@@ -35,13 +35,13 @@ pipeline:
         output: drop_output
       # Send all container logs to the container name parser
       - expr: '$record._SYSTEMD_UNIT == "docker.service" and $record.CONTAINER_NAME != nil'
-        output: {{ if .container_logs -}} regex_parser {{- else -}} drop_output {{- end }}
+        output: {{ if .container_log -}} regex_parser {{- else -}} drop_output {{- end }}
       # Send all docker logs to the be labeled
       - expr: '$record._SYSTEMD_UNIT == "docker.service"'
-        output: {{ if .docker_logs -}} docker_decorator {{- else -}} drop_output {{- end }}
+        output: {{ if .docker_log -}} docker_decorator {{- else -}} drop_output {{- end }}
       # Send all openshift logs to be labeled and parsed
       - expr: '$record._SYSTEMD_UNIT == "atomic-openshift-node.service"'
-        output: {{ if .openshift_logs -}} openshift_decorator {{- else -}} drop_output {{- end }}
+        output: {{ if .openshift_log -}} openshift_decorator {{- else -}} drop_output {{- end }}
 
   # Drop unwanted logs
   - type: "drop_output"
