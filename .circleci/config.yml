@@ -15,6 +15,9 @@ jobs:
           name: Create Plugins Tarball
           command: tar -zcvf ./artifacts/carbon-plugins.tar.gz ./plugins/*
       - run:
+          name: Write Version File
+          command: printf '{"version":"%s"}\n' $CIRCLE_TAG > artifacts/version.json
+      - run:
           name: "Publish Release on GitHub"
           command: |
             ghr -t ${GHI_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG} ./artifacts/
