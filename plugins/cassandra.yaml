@@ -1,0 +1,110 @@
+version: 0.0.1
+title: Apache Cassandra
+description: Log parser for Appache Cassandra
+parameters:
+  system_log_path:
+    label: Apache Cassandra System Log Path
+    description: Path to the Apache Cassandra system log file.
+    type: string
+  debug_log_path:
+    label: Apache Cassandra Debug Log Path
+    description: Path to the Apache Cassandra debug log file.
+    type: string
+  gc_log_path:
+    label: Apache Cassandra Garbage Collection Log Path
+    description: Path to the Apache Cassandra garbage collection log file.
+    type: string
+  start_at:
+    label: Start At
+    description: "Start reading file from 'beginning' or 'end'"
+    type: string
+pipeline:
+  # {{ if .system_log_path }}
+  - id: system_log_reader
+    type: file_input
+    include:
+      - {{ .system_log_path }}
+    multiline:
+      line_start_pattern: '[A-Z]+\s+\[[^\]]+\]'
+    start_at: {{ or .start_at "end" }}
+    output: add_system_log_name
+
+  # Add log_name field to identify the log type  
+  - id: add_system_log_name
+    type: restructure
+    ops:
+      - add:
+          field: $labels.log_name
+          value: 'cassandra.system'
+    output: regex_parser
+  #  {{ end }}
+
+  # {{ if .debug_log_path }}
+  - id: debug_log_reader
+    type: file_input
+    include:
+      - {{ .debug_log_path }}
+    multiline:
+      line_start_pattern: '[A-Z]+\s+\[[^\]]+\]'
+    start_at: {{ or .start_at "end" }}
+    output: add_debug_log_name
+
+  # Add log_name field to identify the log type
+  - id: add_debug_log_name
+    type: restructure
+    ops:
+      - add:
+          field: $labels.log_name
+          value: 'cassandra.debug'
+    output: regex_parser
+  #  {{ end }}
+
+  # {{ if .gc_log_path }}
+  - id: gc_log_reader
+    type: file_input
+    include:
+      - {{ .gc_log_path }}
+    multiline:
+      line_start_pattern: '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}[+-]\d{4}'
+    start_at: {{ or .start_at "end" }}
+    output: add_gc_log_name
+
+  # Add log_name field to identify the log type
+  - id: add_gc_log_name
+    type: restructure
+    ops:
+      - add:
+          field: $labels.log_name
+          value: 'cassandra.gc'
+    output: gc_rex_parser
+
+  - id: gc_rex_parser
+    type: regex_parser
+    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}[+-]\d{4}):\s+(?P<message>[\d\D\s]+)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%FT%T.%L%z'
+    output: {{ .output }}
+    #  {{ end }}
+
+  - id: regex_parser
+    type: regex_parser
+    regex: '(?P<cassandra_severity>[A-Z]+)\s+\[(?P<type>[^\]]+)\]\s+(?P<time1>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}),(?P<time2>\d+)\s+(?P<message>[\s\d\D]+)'
+    severity:
+      parse_from: cassandra_severity
+
+  # Due to limitations in golang time we cannot have a comma in our timestamp we split timestamp into two fields 'time1' and 'time2'. 
+  # This will combine and remove 'time1' and 'time2' fields into a timestamp field. 
+  - id: timestamp_restructurer
+    type: restructure
+    ops:
+      - add:
+          field: timestamp
+          value_expr: '$record.time1 + "." + $record.time2'
+      - remove: time1
+      - remove: time2
+
+  - type: time_parser
+    parse_from: timestamp
+    layout: '%F %T.%L'
+    output: {{ .output}}
