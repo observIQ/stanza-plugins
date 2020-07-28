@@ -1,186 +1,191 @@
-    version: 0.0.5
-    title: Kubernetes
-    description: Log parser for Kubernetes
-    parameters:
-      container_log_path:
-        label: Containers Log Path
-        description: Kubernetes Containers Log Path
-        type: string
-      kubelet_journald_log_path:
-        label: Kublet Journald Log Path
-        description: 'Kubernetes Kublet Journald Log path. It will read from /run/journal or /var/log/journal if this parameter is omitted'
-        type: string
-      start_at:
-        label: Start At
-        description: "Start reading file from 'beginning' or 'end'"
-        type: string
-    pipeline:
-      # {{ if .container_log_path }}
-      - id: container_reader
-        type: file_input
-        include:
-          - {{ .container_log_path }}
-        # {{ if .start_at }}
-        start_at: {{ .start_at }}
-        # {{ end }}
-        file_path_field: log_name
-        write_to: log
-        output: container_json_parser
+version: 0.0.5
+title: Kubernetes
+description: Log parser for Kubernetes
+parameters:
+  container_log_path:
+    label: Containers Log Path
+    description: Kubernetes Containers Log Path
+    type: string
+    required: true
+  kubelet_journald_log_path:
+    label: Kublet Journald Log Path
+    description: 'Kubernetes Kublet Journald Log path. It will read from /run/journal or /var/log/journal if this parameter is omitted'
+    type: string
+  start_at:
+    label: Start At
+    description: "Start reading file from 'beginning' or 'end'"
+    type: enum
+    valid_values:
+     - beginning
+     - end
+    default: end
+pipeline:
+  # {{ if .container_log_path }}
+  - id: container_reader
+    type: file_input
+    include:
+      - {{ .container_log_path }}
+    # {{ if .start_at }}
+    start_at: {{ .start_at }}
+    # {{ end }}
+    file_path_field: log_name
+    write_to: log
+    output: container_json_parser
 
-      - id: container_json_parser
-        type: json_parser
-        parse_from: log
-        output: nested_json_router
+  - id: container_json_parser
+    type: json_parser
+    parse_from: log
+    output: nested_json_router
 
-      - id: nested_json_router
-        type: router
-        routes:
-          - output: nested_json_parser
-            expr: $record.log matches '^{.*}$'
-          - output: container_regex_parser
-            expr: true
+  - id: nested_json_router
+    type: router
+    routes:
+      - output: nested_json_parser
+        expr: $record.log matches '^{.*}$'
+      - output: container_regex_parser
+        expr: true
 
-      - id: nested_json_parser
-        type: json_parser
-        parse_from: $.log
-        output: container_regex_parser
+  - id: nested_json_parser
+    type: json_parser
+    parse_from: $.log
+    output: container_regex_parser
 
-      - id: container_regex_parser
-        type: regex_parser
-        parse_from: log_name
-        regex: '\/var\/log\/containers\/(?P<pod_name>[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?P<namespace>[^_]+)_(?P<container_name>.+)-(?P<container_id>[a-z0-9]{64})\.log'
-        severity:
-          parse_from: stream
-          preserve: true
-          mapping:
-            error:
-              - stderr
-            info:
-              - stdout
-        timestamp:
-          parse_from: time
-          layout: '%Y-%m-%dT%H:%M:%S.%sZ'
-        output: log_parse_router
+  - id: container_regex_parser
+    type: regex_parser
+    parse_from: log_name
+    regex: '\/var\/log\/containers\/(?P<pod_name>[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?P<namespace>[^_]+)_(?P<container_name>.+)-(?P<container_id>[a-z0-9]{64})\.log'
+    severity:
+      parse_from: stream
+      preserve: true
+      mapping:
+        error:
+          - stderr
+        info:
+          - stdout
+    timestamp:
+      parse_from: time
+      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+    output: log_parse_router
 
-      - id: log_parse_router
-        type: router
-        routes:
-          - output: standard_regex_parser
-            expr: '$record.log matches "^\\w\\d{4}"'
-          - output: add_kubernetes_metadata
-            expr: true
+  - id: log_parse_router
+    type: router
+    routes:
+      - output: standard_regex_parser
+        expr: '$record.log matches "^\\w\\d{4}"'
+      - output: add_kubernetes_metadata
+        expr: true
 
-      - id: standard_regex_parser
-        type: regex_parser
-        parse_from: log
-        regex: '(?P<severity>\w)(?P<timestamp>\d{4} \d{2}:\d{2}:\d{2}.\d+)\s+(?P<pid>\d+)\s+(?P<source>[^ \]]+)\] (?P<message>.*)'
-        severity:
-          parse_from: severity
-          mapping:
-            debug:
-              - d
-            info:
-              - i
-            warning:
-              - w
-            error:
-              - e
-            critical:
-              - c
-        timestamp:
-          parse_from: timestamp
-          layout: '%m%d %H:%M:%S.%s'
-        output: add_kubernetes_metadata
+  - id: standard_regex_parser
+    type: regex_parser
+    parse_from: log
+    regex: '(?P<severity>\w)(?P<timestamp>\d{4} \d{2}:\d{2}:\d{2}.\d+)\s+(?P<pid>\d+)\s+(?P<source>[^ \]]+)\] (?P<message>.*)'
+    severity:
+      parse_from: severity
+      mapping:
+        debug:
+          - d
+        info:
+          - i
+        warning:
+          - w
+        error:
+          - e
+        critical:
+          - c
+    timestamp:
+      parse_from: timestamp
+      layout: '%m%d %H:%M:%S.%s'
+    output: add_kubernetes_metadata
 
-      - id: add_kubernetes_metadata
-        type: k8s_metadata_decorator
-        output: add_labels_router
+  - id: add_kubernetes_metadata
+    type: k8s_metadata_decorator
+    output: add_labels_router
 
-      - id: add_labels_router
-        type: router
-        routes:
-          - output: add_kube_controller_metadata
-            expr: '$labels["k8s_pod_label/component"] == "kube-controller-manager"'
-          - output: add_kube_scheduler_metadata
-            expr: '$labels["k8s_pod_label/component"]  == "kube-scheduler"'
-          - output: add_kube_apiserver_metadata
-            expr: '$labels["k8s_pod_label/component"] == "kube-apiserver"'
-          - output: add_kube_proxy_metadata
-            expr: '$labels["k8s_pod_label/component"] startsWith "kube-proxy"'
-          - output: add_container_metadata
-            expr: true
+  - id: add_labels_router
+    type: router
+    routes:
+      - output: add_kube_controller_metadata
+        expr: '$labels["k8s_pod_label/component"] == "kube-controller-manager"'
+      - output: add_kube_scheduler_metadata
+        expr: '$labels["k8s_pod_label/component"]  == "kube-scheduler"'
+      - output: add_kube_apiserver_metadata
+        expr: '$labels["k8s_pod_label/component"] == "kube-apiserver"'
+      - output: add_kube_proxy_metadata
+        expr: '$labels["k8s_pod_label/component"] startsWith "kube-proxy"'
+      - output: add_container_metadata
+        expr: true
 
-      - id: add_kube_controller_metadata
-        type: metadata
-        labels:
-          log_name: 'kubernetes.controller'
-        output: {{ .output }}
+  - id: add_kube_controller_metadata
+    type: metadata
+    labels:
+      log_name: 'kubernetes.controller'
+    output: {{ .output }}
 
-      - id: add_kube_scheduler_metadata
-        type: metadata
-        labels:
-          log_name: 'kubernetes.scheduler'
-        output: {{ .output }}
+  - id: add_kube_scheduler_metadata
+    type: metadata
+    labels:
+      log_name: 'kubernetes.scheduler'
+    output: {{ .output }}
 
-      - id: add_kube_apiserver_metadata
-        type: metadata
-        labels:
-          log_name: 'kubernetes.apiserver'
-        output: {{ .output }}
+  - id: add_kube_apiserver_metadata
+    type: metadata
+    labels:
+      log_name: 'kubernetes.apiserver'
+    output: {{ .output }}
 
-      - id: add_kube_proxy_metadata
-        type: metadata
-        labels:
-          log_name: 'kubernetes.proxy'
-        output: {{ .output }}
+  - id: add_kube_proxy_metadata
+    type: metadata
+    labels:
+      log_name: 'kubernetes.proxy'
+    output: {{ .output }}
 
-      - id: add_container_metadata
-        type: metadata
-        labels:
-          log_name: 'kubernetes.container'
-        output: {{ .output }}
-      # {{ end }}
+  - id: add_container_metadata
+    type: metadata
+    labels:
+      log_name: 'kubernetes.container'
+    output: {{ .output }}
+  # {{ end }}
 
-      - id: kubelet_reader
-        type: journald_input
-        # {{ if .kubelet_journald_log_path }}
-        directory: {{ .kubelet_journald_log_path }}
-        # {{ end }}
-        output: kubelet_filter_router
+  - id: kubelet_reader
+    type: journald_input
+    # {{ if .kubelet_journald_log_path }}
+    directory: {{ .kubelet_journald_log_path }}
+    # {{ end }}
+    output: kubelet_filter_router
 
-      - id: kubelet_filter_router
-        type: router
-        routes:
-          - output: kubelet_message_parser_router
-            expr: '$record._SYSTEMD_UNIT == "kubelet.service"'
+  - id: kubelet_filter_router
+    type: router
+    routes:
+      - output: kubelet_message_parser_router
+        expr: '$record._SYSTEMD_UNIT == "kubelet.service"'
 
-      - id: kubelet_message_parser_router
-        type: router
-        routes:
-          - output: message_regex_parser
-            expr: '$record.MESSAGE matches "^\\w\\d{4}"'
-          - output: add_kublet_metadata
-            expr: true
+  - id: kubelet_message_parser_router
+    type: router
+    routes:
+      - output: message_regex_parser
+        expr: '$record.MESSAGE matches "^\\w\\d{4}"'
+      - output: add_kublet_metadata
+        expr: true
 
-      - id: message_regex_parser
-        type: regex_parser
-        parse_from: MESSAGE
-        regex: '(?P<severity>\w)(?P<timestamp>\d{4} \d{2}:\d{2}:\d{2}.\d+)\s+(?P<pid>\d+)\s+(?P<source>[^ \]]+)\] (?P<message>.*)'
-        severity:
-          parse_from: severity
-          mapping:
-            debug: d
-            info: i
-            warning: w
-            error: e
-            critical: c
-        timestamp:
-          parse_from: timestamp
-          layout: '%m%d %H:%M:%S.%s'
-        output: add_kublet_metadata
+  - id: message_regex_parser
+    type: regex_parser
+    parse_from: MESSAGE
+    regex: '(?P<severity>\w)(?P<timestamp>\d{4} \d{2}:\d{2}:\d{2}.\d+)\s+(?P<pid>\d+)\s+(?P<source>[^ \]]+)\] (?P<message>.*)'
+    severity:
+      parse_from: severity
+      mapping:
+        debug: d
+        info: i
+        warning: w
+        error: e
+        critical: c
+    timestamp:
+      parse_from: timestamp
+      layout: '%m%d %H:%M:%S.%s'
+    output: add_kublet_metadata
 
-      - id: add_kublet_metadata
-        type: metadata
-        labels:
-          log_name: 'kubernetes.kubelet'
-        output: {{ .output }}
+  - id: add_kublet_metadata
+    type: metadata
+    labels:
+      log_name: 'kubernetes.kubelet'
+    output: {{ .output }}

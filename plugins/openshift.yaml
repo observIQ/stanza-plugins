@@ -6,10 +6,15 @@ parameters:
     label: Containers Log Path
     description: The directory where the journald logs are located. Defaults to '/var/log/journal'.
     type: string
+    default: /var/log/journal
   start_at:
     label: Start At
     description: Start reading file from 'beginning' or 'end'. Defaults to 'end'.
-    type: string
+    type: enum
+    valid_values:
+     - beginning
+     - end
+    default: end
   container_log:
     label: Enable Container Logs
     description: Enable collection of container logs

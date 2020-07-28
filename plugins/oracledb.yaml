@@ -9,7 +9,7 @@ parameters:
   truncate_audit_action: 
     label: Truncate Audit Action
     description: Whether or not to truncate the audit log action field
-    type: boolean
+    type: bool
   alert_log_path:
     label: Alert Log Path
     description: Path to the alert log file
@@ -21,7 +21,11 @@ parameters:
   start_at: 
     label: Start At
     description: Start reading file from 'beginning' or 'end'
-    type: string
+    type: enum
+    valid_values:
+     - beginning
+     - end
+    default: end
 pipeline:
   # {{ if .audit_log_path }}
   - id: audit_reader
