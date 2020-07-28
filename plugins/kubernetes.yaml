@@ -82,16 +82,11 @@ pipeline:
     severity:
       parse_from: severity
       mapping:
-        debug:
-          - d
-        info:
-          - i
-        warning:
-          - w
-        error:
-          - e
-        critical:
-          - c
+        debug: d
+        info: i
+        warning: w
+        error: e
+        critical: c
     timestamp:
       parse_from: timestamp
       layout: '%m%d %H:%M:%S.%s'
