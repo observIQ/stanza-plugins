@@ -13,7 +13,11 @@ parameters:
   start_at:
     label: Start At
     description: Start reading file from 'beginning' or 'end'
-    type: string
+    type: enum
+    valid_values:
+     - beginning
+     - end
+    default: end
 pipeline:
   #{{ if .access_log_path }}
   - id: tomcat_access_reader
