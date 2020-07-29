@@ -35,11 +35,9 @@ pipeline:
 
   # Add log_name field to identify the log type  
   - id: add_system_log_name
-    type: restructure
-    ops:
-      - add:
-          field: $labels.log_name
-          value: 'cassandra.system'
+    type: metadata
+    labels:
+      log_name: 'cassandra.system'
     output: regex_parser
   #  {{ end }}
 
@@ -53,12 +51,10 @@ pipeline:
     start_at: {{ or .start_at "end" }}
 
   # Add log_name field to identify the log type
-  - id: add_debug_log_name
-    type: restructure
-    ops:
-      - add:
-          field: $labels.log_name
-          value: 'cassandra.debug'
+  - id: add_system_log_name
+    type: metadata
+    labels:
+      log_name: 'cassandra.debug'
     output: regex_parser
   #  {{ end }}
 
@@ -72,13 +68,10 @@ pipeline:
     start_at: {{ or .start_at "end" }}
 
   # Add log_name field to identify the log type
-  - id: add_gc_log_name
-    type: restructure
-    ops:
-      - add:
-          field: $labels.log_name
-          value: 'cassandra.gc'
-    output: gc_rex_parser
+  - id: add_system_log_name
+    type: metadata
+    labels:
+      log_name: 'cassandra.gc'
 
   - id: gc_rex_parser
     type: regex_parser
