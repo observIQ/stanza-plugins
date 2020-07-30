@@ -1,0 +1,30 @@
+version: 0.0.1
+title: Apache Kafka
+description: Log parser for Apache Kafka
+parameters:
+  server_log_path:
+    label: Sever Log Path
+    description: Apache Kafka server log path
+    type: string
+    required: true
+  controller_log_path:
+    label: Controller Log Path
+    description: Apache Kafka controller log path
+    type: string
+  state_change_log_path:
+    label: State Change Log Path
+    description: Apache Kafka state-change log path
+    type: string
+  log_cleaner_log_path:
+    label: Log Cleaner Log Path
+    description: Apache Kafka log-cleaner log path
+    type: string
+  start_at:
+    label: Start At
+    description:  Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+pipeline:
