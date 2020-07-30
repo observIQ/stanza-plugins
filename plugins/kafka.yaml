@@ -3,7 +3,7 @@ title: Apache Kafka
 description: Log parser for Apache Kafka
 parameters:
   server_log_path:
-    label: Sever Log Path
+    label: Server Log Path
     description: Apache Kafka server log path
     type: string
     required: true
@@ -28,3 +28,43 @@ parameters:
       - end
     default: end
 pipeline:
+  # {{ if .server_log_path }}
+  - id: server_log_reader
+    type: file_input
+    include:
+      - {{ .server_log_path }}
+    multiline:
+      line_start_pattern: '\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\]'
+    start_at: {{ or .start_at "end" }}
+
+  - id: server_regex_parser
+    type: regex_parser
+    regex: '^\[(?P<date_time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),(?P<milliseconds>\d{3})\] (?P<severity>[^ ]+) (?P<message>.*)'
+    severity:
+      parse_from: severity
+      mapping:
+        warning: warn
+        critical: fatal
+
+  - id: add_server_log_name
+    type: metadata
+    labels:
+      log_name: 'kafka.server'
+    output: timestamp_restructurer
+  # {{ end }}
+
+  # Due to limitations in golang time we cannot have a comma in our timestamp we split timestamp into two fields 'time1' and 'time2'.
+  # This will combine and remove 'time1' and 'time2' fields into a timestamp field.
+  - id: timestamp_restructurer
+    type: restructure
+    ops:
+      - add:
+          field: timestamp
+          value_expr: '$record.date_time + "." + $record.milliseconds'
+      - remove: date_time
+      - remove: milliseconds
+
+  - type: time_parser
+    parse_from: timestamp
+    layout: '%F %T.%L'
+    output: {{ .output }}
