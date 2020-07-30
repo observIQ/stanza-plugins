@@ -28,10 +28,11 @@ parameters:
       - end
     default: end
 pipeline:
-  - id: server_log_reader
+  # {{ if .server_log_path }}
+  - id: log_reader
     type: file_input
     include:
-{{ if .server_log_path }}      - {{ .server_log_path}}{{ end }}
+      - {{ .server_log_path}}
 {{ if .controller_log_path }}      - {{ .controller_log_path}}{{ end }}
 {{ if .state_change_log_path }}      - {{ .state_change_log_path}}{{ end }}
 {{ if .log_cleaner_log_path }}      - {{ .log_cleaner_log_path}}{{ end }}
@@ -60,7 +61,7 @@ pipeline:
         output: add_controller_log_name
       - expr: '$record.log_file_name != nil and $record.log_file_name matches "^state-change"'
         output: add_state_change_log_name
-      - expr: '$record.log_file_name != nil and $record.log_file_name matches "^log_cleaner"'
+      - expr: '$record.log_file_name != nil and $record.log_file_name matches "^log-cleaner"'
         output: add_log_cleaner_log_name
       - expr: true
         output: default_log_name
@@ -110,3 +111,4 @@ pipeline:
     parse_from: timestamp
     layout: '%F %T.%L'
     output: {{ .output }}
+  # {{ end }}
