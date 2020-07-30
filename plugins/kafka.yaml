@@ -28,11 +28,13 @@ parameters:
       - end
     default: end
 pipeline:
+  # Use file input for all log files as it uses the same regex parser.
   # {{ if .server_log_path }}
   - id: log_reader
     type: file_input
     include:
       - {{ .server_log_path}}
+  # Only use paths if the parameter was defined in the pipeline
 {{ if .controller_log_path }}      - {{ .controller_log_path}}{{ end }}
 {{ if .state_change_log_path }}      - {{ .state_change_log_path}}{{ end }}
 {{ if .log_cleaner_log_path }}      - {{ .log_cleaner_log_path}}{{ end }}
@@ -42,6 +44,7 @@ pipeline:
     write_to: log_entry
     start_at: {{ or .start_at "end" }}
 
+  # Parse log entries.
   - id: server_regex_parser
     type: regex_parser
     parse_from: log_entry
@@ -52,6 +55,7 @@ pipeline:
         warning: warn
         critical: fatal
 
+  # Determine what log type the log entry is and route to appropriate metadata plugin
   - id: filename_router
     type: router
     routes:
@@ -66,6 +70,7 @@ pipeline:
       - expr: true
         output: default_log_name
 
+  # Add log_name label
   - id: add_server_log_name
     type: metadata
     labels:
@@ -90,14 +95,15 @@ pipeline:
       log_name: 'kafka.log_cleaner'
     output: timestamp_restructurer
 
+  # Use this label if unable to tell the type of log from log file name.
   - id: default_log_name
     type: metadata
     labels:
       log_name: 'kafka'
     output: timestamp_restructurer
 
-  # Due to limitations in golang time we cannot have a comma in our timestamp we split timestamp into two fields 'time1' and 'time2'.
-  # This will combine and remove 'time1' and 'time2' fields into a timestamp field.
+  # Due to limitations in golang time we cannot have a comma in our timestamp we split timestamp into two fields 'date_time' and 'milliseconds'.
+  # This will combine and remove 'date_time' and 'milliseconds' fields into a timestamp field.
   - id: timestamp_restructurer
     type: restructure
     ops:
@@ -107,6 +113,7 @@ pipeline:
       - remove: date_time
       - remove: milliseconds
 
+  # Parse timestamp and exit plugin
   - type: time_parser
     parse_from: timestamp
     layout: '%F %T.%L'
