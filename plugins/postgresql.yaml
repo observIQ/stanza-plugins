@@ -19,10 +19,15 @@ parameters:
     label: PostgreSQL Log Path
     description: Path to the PostgreSQL log file
     type: string
+    required: true
   start_at: 
     label: Start At
     description: Start reading file from 'beginning' or 'end'
-    type: string
+    type: enum
+    valid_values:
+     - beginning
+     - end
+    default: end
 pipeline:
   - type: file_input
     include:
