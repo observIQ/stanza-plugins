@@ -28,17 +28,22 @@ parameters:
       - end
     default: end
 pipeline:
-  # {{ if .server_log_path }}
   - id: server_log_reader
     type: file_input
     include:
-      - {{ .server_log_path }}
+{{ if .server_log_path }}      - {{ .server_log_path}}{{ end }}
+{{ if .controller_log_path }}      - {{ .controller_log_path}}{{ end }}
+{{ if .state_change_log_path }}      - {{ .state_change_log_path}}{{ end }}
+{{ if .log_cleaner_log_path }}      - {{ .log_cleaner_log_path}}{{ end }}
     multiline:
       line_start_pattern: '\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\]'
+    file_name_field: log_file_name
+    write_to: log_entry
     start_at: {{ or .start_at "end" }}
 
   - id: server_regex_parser
     type: regex_parser
+    parse_from: log_entry
     regex: '^\[(?P<date_time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),(?P<milliseconds>\d{3})\] (?P<severity>[^ ]+) (?P<message>.*)'
     severity:
       parse_from: severity
@@ -46,12 +51,49 @@ pipeline:
         warning: warn
         critical: fatal
 
+  - id: filename_router
+    type: router
+    routes:
+      - expr: '$record.log_file_name != nil and $record.log_file_name matches "^server"'
+        output: add_server_log_name
+      - expr: '$record.log_file_name != nil and $record.log_file_name matches "^controller"'
+        output: add_controller_log_name
+      - expr: '$record.log_file_name != nil and $record.log_file_name matches "^state-change"'
+        output: add_state_change_log_name
+      - expr: '$record.log_file_name != nil and $record.log_file_name matches "^log_cleaner"'
+        output: add_log_cleaner_log_name
+      - expr: true
+        output: default_log_name
+
   - id: add_server_log_name
     type: metadata
     labels:
       log_name: 'kafka.server'
     output: timestamp_restructurer
-  # {{ end }}
+
+  - id: add_controller_log_name
+    type: metadata
+    labels:
+      log_name: 'kafka.controller'
+    output: timestamp_restructurer
+
+  - id: add_state_change_log_name
+    type: metadata
+    labels:
+      log_name: 'kafka.state_change'
+    output: timestamp_restructurer
+
+  - id: add_log_cleaner_log_name
+    type: metadata
+    labels:
+      log_name: 'kafka.log_cleaner'
+    output: timestamp_restructurer
+
+  - id: default_log_name
+    type: metadata
+    labels:
+      log_name: 'kafka'
+    output: timestamp_restructurer
 
   # Due to limitations in golang time we cannot have a comma in our timestamp we split timestamp into two fields 'time1' and 'time2'.
   # This will combine and remove 'time1' and 'time2' fields into a timestamp field.
