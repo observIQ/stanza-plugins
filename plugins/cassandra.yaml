@@ -1,4 +1,4 @@
-version: 0.0.1
+version: 0.0.2
 title: Apache Cassandra
 description: Log parser for Appache Cassandra
 parameters:
@@ -51,7 +51,7 @@ pipeline:
     start_at: {{ or .start_at "end" }}
 
   # Add log_name field to identify the log type
-  - id: add_system_log_name
+  - id: add_debug_log_name
     type: metadata
     labels:
       log_name: 'cassandra.debug'
@@ -68,7 +68,7 @@ pipeline:
     start_at: {{ or .start_at "end" }}
 
   # Add log_name field to identify the log type
-  - id: add_system_log_name
+  - id: add_gc_log_name
     type: metadata
     labels:
       log_name: 'cassandra.gc'
