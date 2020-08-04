@@ -77,7 +77,7 @@ pipeline:
           from: MESSAGE
           to: $record
       - add:
-          field: $labels.log_name
+          field: $labels.log_type
           value_expr: '$labels.service_name'
 
   # Decorate entries with k8s metadata
@@ -86,18 +86,18 @@ pipeline:
     namespace_field: $labels.namespace
     output: {{ .output }}
 
-  # Add log_name to docker logs
+  # Add log_type to docker logs
   - id: docker_decorator
     type: metadata
     labels:
-      log_name: 'docker'
+      log_type: 'docker'
     output: {{ .output }}
 
-  # Add log_name to openshift logs
+  # Add log_type to openshift logs
   - id: openshift_decorator
     type: metadata
     labels:
-      log_name: 'openshift'
+      log_type: 'openshift'
     output: message_retainer
 
   # For openshift logs, promote hostname to labels and remove all but message

@@ -49,14 +49,12 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%sZ'
-    output: slow_query_log_name
+    output: slow_query_log_type
 
-  - id: slow_query_log_name
-    type: restructure
-    ops:
-      - add:
-          field: $labels.log_name
-          value: 'mysql.slow_query'
+  - id: slow_query_log_type
+    type: metadata
+    labels:
+      log_type: 'mysql.slow_query'
     output: {{ .output }}
   # {{ end }}
 
@@ -83,14 +81,12 @@ pipeline:
       mapping:
         notice:
           - note
-    output: error_log_name
+    output: error_log_type
 
-  - id: error_log_name
-    type: restructure
-    ops:
-      - add:
-          field: $labels.log_name
-          value: 'mysql.error'
+  - id: error_log_type
+    type: metadata
+    labels:
+      log_type: 'mysql.error'
     output: {{ .output }}
   # {{ end }}
 
@@ -120,26 +116,22 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%sZ'
-    output: general_log_name
+    output: general_log_type
 
-  - id: general_log_name
-    type: restructure
-    ops:
-      - add:
-          field: $labels.log_name
-          value: 'mysql.general'
+  - id: general_log_type
+    type: metadata
+    labels:
+      log_type: 'mysql.general'
     output: {{ .output }}
   # {{ end }}
 
   - id: server_start_regex_parser
     type: regex_parser
     regex: '(?P<path>/\w+/\w+/mysqld),\sVersion:\s(?P<version>[\s\d\D]+)\.\s(?P<started_with>[\s\d\D]+)'
-    output: server_start_log_name
+    output: server_start_log_type
 
-  - id: server_start_log_name
-    type: restructure
-    ops:
-      - add:
-          field: $labels.log_name
-          value: 'mysql.server-start'
+  - id: server_start_log_type
+    type: metadata
+    labels:
+      log_type: 'mysql.server-start'
     output: {{ .output }}

@@ -37,11 +37,9 @@ pipeline:
     # {{ end }}
     multiline:
       line_start_pattern: '[a-zA-z]+ [a-zA-Z]+ \d{2} \d{2}:\d{2}:\d{2} \d{4} [-+]\d{2}:\d{2}\n|Audit File '
+    log_type: 'oracledb.audit'
     output: audit_router
   
-  - id: stdout
-    type: stdout
-
   - id: audit_router
     type: router
     routes:
@@ -60,13 +58,13 @@ pipeline:
     # {{ if .truncate_audit_action }}
     output: audit_action_restructurer
     # {{ else }}
-    output: audit_add_log_name
+    output: {{ .output }}
     # {{ end }}
 
   - id: server_start_regex_parser
     type: regex_parser
     regex: '(?P<message>[\d\w[:ascii:]]+)'
-    output: audit_add_log_name
+    output: {{ .output }}
 
   - id: audit_action_restructurer
     type: restructure
@@ -74,14 +72,6 @@ pipeline:
       - add: 
           field: "action"
           value_expr: 'len($.action) > 150000 ? $.action[0:150000] + "... Action has " + $.length + " characters which is over the 150000 characters limit, truncating action" : $.action'
-    output: audit_add_log_name
-
-  - id: audit_add_log_name
-    type: restructure
-    ops:
-      - add:
-          field: $labels.log_name
-          value: 'oracledb.audit'
     output: {{ .output }}
   # {{ end }}
 
@@ -95,6 +85,7 @@ pipeline:
     # {{ end }}
     multiline:
       line_start_pattern: '\d{4}-\d{2}-\d{2}T\d{1,}:\d{2}:\d{2}.\d+[+-]\d+:\d+'
+    log_type: 'oracledb.alert'
     output: alert_regex_parser
 
   - id: alert_regex_parser
@@ -103,14 +94,6 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%T.%s%j'
-    output: alert_restructurer
-
-  - id: alert_restructurer
-    type: restructure
-    ops:
-      - add:
-          field: $labels.log_name
-          value: 'oracledb.alert'
     output: {{ .output }}
   # {{ end }}
 
@@ -124,6 +107,7 @@ pipeline:
     # {{ end }}
     multiline:
       line_start_pattern: '/[\w\d/]+:|\\[\w\d\\]+:|\d{4}-\d{2}-\d{2}T\d{1}:\d{2}:\d{2}.\d+[+-]\d+:\d+|<msg '
+    log_type: 'oracledb.listener'
     output: listener_router
 
   - id: listener_router
@@ -144,7 +128,7 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%d-%h-%Y %T'
-    output: listener_restructurer
+    output: {{ .output }}
 
   - id: windows_listener_regex_parser
     type: regex_parser
@@ -152,7 +136,7 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%d-%h-%Y %T'
-    output: listener_restructurer
+    output: {{ .output }}
 
   - id: trace_listener_regex_parser
     type: regex_parser
@@ -160,7 +144,7 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%T.%L%j'
-    output: listener_restructurer
+    output: {{ .output }}
 
   - id: xml_listener_regex_parser
     type: regex_parser
@@ -168,13 +152,5 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%T.%L%j'
-    output: listener_restructurer
-
-  - id: listener_restructurer
-    type: restructure
-    ops:
-      - add:
-          field: $labels.log_name
-          value: 'oracledb.listener'
     output: {{ .output }}
   # {{ end }}
