@@ -23,6 +23,8 @@ pipeline:
     # {{ if .start_at }}
     start_at: {{ .start_at }}
     # {{ end }}
+    labels:
+      log_type: 'mongodb'
     output: regex_parser
 
   - id: regex_parser
@@ -46,12 +48,4 @@ pipeline:
           - D3
           - D4
           - D5
-    output: add_log_name
-
-  - id: add_log_name
-    type: restructure
-    ops:
-      - add:
-          field: $labels.log_name
-          value: 'mongodb'
     output: {{ .output }}

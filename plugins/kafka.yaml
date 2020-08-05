@@ -60,47 +60,25 @@ pipeline:
     type: router
     routes:
       - expr: '$record.log_file_name != nil and $record.log_file_name matches "^server"'
-        output: add_server_log_name
+        output: timestamp_restructurer
+        labels:
+          log_type: 'kafka.server'
       - expr: '$record.log_file_name != nil and $record.log_file_name matches "^controller"'
-        output: add_controller_log_name
+        output: timestamp_restructurer
+        labels:
+          log_type: 'kafka.controller'
       - expr: '$record.log_file_name != nil and $record.log_file_name matches "^state-change"'
-        output: add_state_change_log_name
+        output: timestamp_restructurer
+        labels:
+          log_type: 'kafka.state_change'
       - expr: '$record.log_file_name != nil and $record.log_file_name matches "^log-cleaner"'
-        output: add_log_cleaner_log_name
+        output: timestamp_restructurer
+        labels:
+          log_type: 'kafka.log_cleaner'
       - expr: true
-        output: default_log_name
-
-  # Add log_name label
-  - id: add_server_log_name
-    type: metadata
-    labels:
-      log_name: 'kafka.server'
-    output: timestamp_restructurer
-
-  - id: add_controller_log_name
-    type: metadata
-    labels:
-      log_name: 'kafka.controller'
-    output: timestamp_restructurer
-
-  - id: add_state_change_log_name
-    type: metadata
-    labels:
-      log_name: 'kafka.state_change'
-    output: timestamp_restructurer
-
-  - id: add_log_cleaner_log_name
-    type: metadata
-    labels:
-      log_name: 'kafka.log_cleaner'
-    output: timestamp_restructurer
-
-  # Use this label if unable to tell the type of log from log file name.
-  - id: default_log_name
-    type: metadata
-    labels:
-      log_name: 'kafka'
-    output: timestamp_restructurer
+        output: timestamp_restructurer
+        labels:
+          log_type: 'kafka'
 
   # Due to limitations in golang time we cannot have a comma in our timestamp we split timestamp into two fields 'date_time' and 'milliseconds'.
   # This will combine and remove 'date_time' and 'milliseconds' fields into a timestamp field.

@@ -25,6 +25,8 @@ pipeline:
     # {{ end }}
     multiline:
       line_start_pattern: '\d{4}-\d{2}-\d{2}-\d{2}.\d{2}.\d{2}.\d+\s\w{3}\n|\d{4}-\d{2}-\d{2}-\d{2}.\d{2}.\d{2}.\d{6}([-+][\d\w]{3}|[\d\w]{4})\s'
+    labels:
+      log_type: ibm_db2
     output: ibm_db2_router
 
   - id: ibm_db2_router
@@ -60,20 +62,12 @@ pipeline:
           - fine
           - finer
           - finest
-    output: add_log_name
+    output: {{ .output }}
 
   - id: other_regex_parser
     type: regex_parser
     regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}-\d{2}.\d{2}.\d{2}.\d+)\s\w{3}\s(?P<message>[\s\d\D]+)'
-    output: add_log_name
+    output: {{ .output }}
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%d-%H.%M.%S.%f'
-
-  - id: add_log_name
-    type: restructure
-    ops:
-      - add:
-          field: $labels.log_name
-          value: 'ibm_db2'
-    output: {{ .output }}

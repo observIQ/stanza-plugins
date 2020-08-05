@@ -26,7 +26,7 @@ pipeline:
     include:
       - {{ .container_log_path }}
     start_at: {{ or .start_at "end" }}
-    file_path_field: log_name
+    file_path_field: log_type
     file_name_field: file_name
     write_to: log
 
@@ -89,10 +89,10 @@ pipeline:
     parse_from: $record.log
     output: container_regex_parser
 
-  # Log field has been parsed if possible and now we can parse log_name field for container information.
+  # Log field has been parsed if possible and now we can parse log_type field for container information.
   - id: container_regex_parser
     type: regex_parser
-    parse_from: log_name
+    parse_from: log_type
     regex: '\/var\/log\/containers\/(?P<pod_name>[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?P<namespace>[^_]+)_(?P<container_name>.+)-(?P<container_id>[a-z0-9]{64})\.log'
     severity:
       parse_from: stream
@@ -150,55 +150,30 @@ pipeline:
     type: k8s_metadata_decorator
     output: add_labels_router
 
-  # Add label log_name
+  # Add label log_type
   - id: add_labels_router
     type: router
     routes:
-      - output: add_kube_controller_metadata
+      - output: {{ .output }}
         expr: '$labels["k8s_pod_label/component"] == "kube-controller-manager"'
-      - output: add_kube_scheduler_metadata
+        labels:
+          log_type: 'kubernetes.controller'
+      - output: {{ .output }}
         expr: '$labels["k8s_pod_label/component"]  == "kube-scheduler"'
-      - output: add_kube_apiserver_metadata
+        labels:
+          log_type: 'kubernetes.scheduler'
+      - output: {{ .output }}
         expr: '$labels["k8s_pod_label/component"] == "kube-apiserver"'
-      - output: add_kube_proxy_metadata
+        labels:
+          log_type: 'kubernetes.apiserver'
+      - output: {{ .output }}
         expr: '$labels["k8s_pod_label/component"] startsWith "kube-proxy"'
-      - output: add_container_metadata
+        labels:
+          log_type: 'kubernetes.proxy'
+      - output: {{ .output }}
         expr: true
-
-  # Set log_name label to kubernetes.controller
-  - id: add_kube_controller_metadata
-    type: metadata
-    labels:
-      log_name: 'kubernetes.controller'
-    output: {{ .output }}
-
-  # Set log_name label to kubernetes.scheduler
-  - id: add_kube_scheduler_metadata
-    type: metadata
-    labels:
-      log_name: 'kubernetes.scheduler'
-    output: {{ .output }}
-
-  # Set log_name label to kubernetes.apiserver
-  - id: add_kube_apiserver_metadata
-    type: metadata
-    labels:
-      log_name: 'kubernetes.apiserver'
-    output: {{ .output }}
-
-  # Set log_name label to kubernetes.proxy
-  - id: add_kube_proxy_metadata
-    type: metadata
-    labels:
-      log_name: 'kubernetes.proxy'
-    output: {{ .output }}
-
-  # Set log_name label to kubernetes.container
-  - id: add_container_metadata
-    type: metadata
-    labels:
-      log_name: 'kubernetes.container'
-    output: {{ .output }}
+        labels:
+          log_type: 'kubernetes.container'
   # {{ end }}
 
   # Use journald to gather kubelet logs. Use provider path for journald if available otherwise use default locations.
@@ -207,6 +182,8 @@ pipeline:
     # {{ if .kubelet_journald_log_path }}
     directory: {{ .kubelet_journald_log_path }}
     # {{ end }}
+    labels:
+      log_type: 'kubernetes.kubelet'
     output: kubelet_filter_router
 
   # Only grab entry if it is the kubelet.server
@@ -222,7 +199,7 @@ pipeline:
     routes:
       - output: message_regex_parser
         expr: '$record.MESSAGE matches "^\\w\\d{4}"'
-      - output: add_kublet_metadata
+      - output: {{ .output }}
         expr: true
 
   # MESSAGE field seems to match expected format.
@@ -241,11 +218,4 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%m%d %H:%M:%S.%s'
-    output: add_kublet_metadata
-
-  # Set log_name label to kubernetes.kubelet
-  - id: add_kublet_metadata
-    type: metadata
-    labels:
-      log_name: 'kubernetes.kubelet'
     output: {{ .output }}

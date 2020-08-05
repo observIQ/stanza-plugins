@@ -43,10 +43,14 @@ pipeline:
         output: {{ if .container_log -}} regex_parser {{- else -}} drop_output {{- end }}
       # Send all docker logs to the be labeled
       - expr: '$record._SYSTEMD_UNIT == "docker.service"'
-        output: {{ if .docker_log -}} docker_decorator {{- else -}} drop_output {{- end }}
+        output: {{ if .docker_log -}} {{ .output }} {{- else -}} drop_output {{- end }}
+        labels:
+          log_type: 'docker'
       # Send all openshift logs to be labeled and parsed
       - expr: '$record._SYSTEMD_UNIT == "atomic-openshift-node.service"'
-        output: {{ if .openshift_log -}} openshift_decorator {{- else -}} drop_output {{- end }}
+        output: {{ if .openshift_log -}} message_retainer {{- else -}} drop_output {{- end }}
+        labels:
+          log_type: 'openshift'
 
   # Drop unwanted logs
   - type: "drop_output"
@@ -77,7 +81,7 @@ pipeline:
           from: MESSAGE
           to: $record
       - add:
-          field: $labels.log_name
+          field: $labels.log_type
           value_expr: '$labels.service_name'
 
   # Decorate entries with k8s metadata
@@ -85,20 +89,6 @@ pipeline:
     pod_name_field: $labels.pod_name
     namespace_field: $labels.namespace
     output: {{ .output }}
-
-  # Add log_name to docker logs
-  - id: docker_decorator
-    type: metadata
-    labels:
-      log_name: 'docker'
-    output: {{ .output }}
-
-  # Add log_name to openshift logs
-  - id: openshift_decorator
-    type: metadata
-    labels:
-      log_name: 'openshift'
-    output: message_retainer
 
   # For openshift logs, promote hostname to labels and remove all but message
   - id: message_retainer
