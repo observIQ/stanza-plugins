@@ -37,7 +37,8 @@ pipeline:
     # {{ end }}
     multiline:
       line_start_pattern: '[a-zA-z]+ [a-zA-Z]+ \d{2} \d{2}:\d{2}:\d{2} \d{4} [-+]\d{2}:\d{2}\n|Audit File '
-    log_type: 'oracledb.audit'
+    labels:
+      log_type: 'oracledb.audit'
     output: audit_router
   
   - id: audit_router
@@ -85,7 +86,8 @@ pipeline:
     # {{ end }}
     multiline:
       line_start_pattern: '\d{4}-\d{2}-\d{2}T\d{1,}:\d{2}:\d{2}.\d+[+-]\d+:\d+'
-    log_type: 'oracledb.alert'
+    labels:
+      log_type: 'oracledb.alert'
     output: alert_regex_parser
 
   - id: alert_regex_parser
@@ -107,7 +109,8 @@ pipeline:
     # {{ end }}
     multiline:
       line_start_pattern: '/[\w\d/]+:|\\[\w\d\\]+:|\d{4}-\d{2}-\d{2}T\d{1}:\d{2}:\d{2}.\d+[+-]\d+:\d+|<msg '
-    log_type: 'oracledb.listener'
+    labels:
+      log_type: 'oracledb.listener'
     output: listener_router
 
   - id: listener_router

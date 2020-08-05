@@ -40,8 +40,12 @@ pipeline:
     routes:
       - output: slow_query_regex_parser
         expr: '$ startsWith "# Time: "'
+        labels:
+          log_type: 'mysql.slow_query'
       - output: server_start_regex_parser
         expr: $ matches '/\\w+/\\w+/mysqld'
+        labels:
+          log_type: 'mysql.server-start'
 
   - id: slow_query_regex_parser
     type: regex_parser
@@ -49,12 +53,6 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%sZ'
-    output: slow_query_log_type
-
-  - id: slow_query_log_type
-    type: metadata
-    labels:
-      log_type: 'mysql.slow_query'
     output: {{ .output }}
   # {{ end }}
 
@@ -68,6 +66,8 @@ pipeline:
     # {{ end }}
     multiline:
       line_start_pattern: \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z
+    labels:
+      log_type: 'mysql.error'
     output: error_regex_parser
 
   - id: error_regex_parser
@@ -81,12 +81,6 @@ pipeline:
       mapping:
         notice:
           - note
-    output: error_log_type
-
-  - id: error_log_type
-    type: metadata
-    labels:
-      log_type: 'mysql.error'
     output: {{ .output }}
   # {{ end }}
 
@@ -107,8 +101,12 @@ pipeline:
     routes:
       - output: general_regex_parser
         expr: $ matches '\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d+Z'
+        labels:
+          log_type: 'mysql.general'
       - output: server_start_regex_parser
         expr: $ matches '/\\w+/\\w+/mysqld'
+        labels:
+          log_type: 'mysql.server-start'
 
   - id: general_regex_parser
     type: regex_parser
@@ -116,22 +114,10 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%sZ'
-    output: general_log_type
-
-  - id: general_log_type
-    type: metadata
-    labels:
-      log_type: 'mysql.general'
     output: {{ .output }}
   # {{ end }}
 
   - id: server_start_regex_parser
     type: regex_parser
     regex: '(?P<path>/\w+/\w+/mysqld),\sVersion:\s(?P<version>[\s\d\D]+)\.\s(?P<started_with>[\s\d\D]+)'
-    output: server_start_log_type
-
-  - id: server_start_log_type
-    type: metadata
-    labels:
-      log_type: 'mysql.server-start'
     output: {{ .output }}

@@ -23,7 +23,8 @@ pipeline:
     # {{ if .start_at }}
     start_at: {{ .start_at }}
     # {{ end }}
-    log_type: 'mongodb'
+    labels:
+      log_type: 'mongodb'
     output: regex_parser
 
   - id: regex_parser

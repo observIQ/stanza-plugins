@@ -36,7 +36,8 @@ pipeline:
       line_start_pattern: 't=\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}'
     write_to: log_entry
     start_at: {{ or .start_at "end" }}
-    log_type: 'postgresql'
+    labels:
+      log_type: 'postgresql'
 
   - type: restructure
     ops:
