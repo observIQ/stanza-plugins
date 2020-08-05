@@ -26,15 +26,14 @@ pipeline:
     include:
       - {{ .container_log_path }}
     start_at: {{ or .start_at "end" }}
-    file_path_field: log_type
-    file_name_field: file_name
+    include_file_path: true
     write_to: log
 
   # Filter carbon logs. Check if file_name field starts with carbon. if it does drop the log entry otherwise continue down pipeline
   - id: filename_router
     type: router
     routes:
-      - expr: '$record.file_name != nil and $record.file_name matches "^carbon"'
+      - expr: '$labels.file_name != nil and $labels.file_name matches "^carbon"'
         output: drop_output
       - expr: true
         output: remove_file_name
@@ -42,11 +41,11 @@ pipeline:
   # Drop unwanted logs
   - type: "drop_output"
 
-  # Remove file_name field. We have filtered carbon logs and no longer need file_name field
+  # Remove file_name label. We have filtered carbon logs and no longer need the file name
   - id: remove_file_name
     type: restructure
     ops:
-      - remove: file_name
+      - remove: $labels.file_name
 
   # Initial log entry should be safe to parse as JSON
   - id: container_json_parser
@@ -67,10 +66,10 @@ pipeline:
       - output: nested_json_parser
         expr: $record.log matches '^{.*}$'
       # If log field doesn't appear to be JSON then, skip nested JSON parsers
-      - output: container_regex_parser 
+      - output: container_regex_parser
         expr: true
 
-  # Remove new line from end of jsonUnable to parse json if it has a newline. 
+  # Remove new line from end of jsonUnable to parse json if it has a newline.
   - id: remove_new_line
     type: regex_parser
     parse_from: $record.log
@@ -92,7 +91,7 @@ pipeline:
   # Log field has been parsed if possible and now we can parse log_type field for container information.
   - id: container_regex_parser
     type: regex_parser
-    parse_from: log_type
+    parse_from: $labels.file_path
     regex: '\/var\/log\/containers\/(?P<pod_name>[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?P<namespace>[^_]+)_(?P<container_name>.+)-(?P<container_id>[a-z0-9]{64})\.log'
     severity:
       parse_from: stream

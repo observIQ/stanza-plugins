@@ -40,7 +40,6 @@ pipeline:
 {{ if .log_cleaner_log_path }}      - {{ .log_cleaner_log_path}}{{ end }}
     multiline:
       line_start_pattern: '\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\]'
-    file_name_field: log_file_name
     write_to: log_entry
     start_at: {{ or .start_at "end" }}
 
@@ -59,19 +58,19 @@ pipeline:
   - id: filename_router
     type: router
     routes:
-      - expr: '$record.log_file_name != nil and $record.log_file_name matches "^server"'
+      - expr: '$labels.file_name != nil and $labels.file_name matches "^server"'
         output: timestamp_restructurer
         labels:
           log_type: 'kafka.server'
-      - expr: '$record.log_file_name != nil and $record.log_file_name matches "^controller"'
+      - expr: '$labels.file_name != nil and $labels.file_name matches "^controller"'
         output: timestamp_restructurer
         labels:
           log_type: 'kafka.controller'
-      - expr: '$record.log_file_name != nil and $record.log_file_name matches "^state-change"'
+      - expr: '$labels.file_name != nil and $labels.file_name matches "^state-change"'
         output: timestamp_restructurer
         labels:
           log_type: 'kafka.state_change'
-      - expr: '$record.log_file_name != nil and $record.log_file_name matches "^log-cleaner"'
+      - expr: '$labels.file_name != nil and $labels.file_name matches "^log-cleaner"'
         output: timestamp_restructurer
         labels:
           log_type: 'kafka.log_cleaner'
