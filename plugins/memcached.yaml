@@ -5,7 +5,7 @@ description: Log parser for Memcached
 parameters:
   file_path:
     label: Memcached Logs Path
-    description: The absolute path to the Memcached logs. Simple globbing can be used to collect multiple log files
+    description: The absolute path to the Memcached logs
     type: string
     default: "/var/log/memcached.log*"
   start_at:
