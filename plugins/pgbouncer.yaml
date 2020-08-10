@@ -1,0 +1,49 @@
+# Plugin Info
+version: 0.0.1
+title: PgBouncer
+description: Log parser for PgBouncer
+parameters:
+  file_path:
+    label: PgBouncer Logs Path
+    description: The absolute path to the PgBouncer logs
+    type: string
+    default: "/var/log/pgbouncer/pgbouncer.log*"
+  start_at:
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+
+# Set Defaults
+{{$file_path := default "/var/log/pgbouncer/pgbouncer.log*" .file_path}}
+{{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+  - id: pgbouncer_input
+    type: file_input
+    include:
+      - {{ $file_path }}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: pgbouncer
+    output: pgbouncer_parser
+
+  - id: pgbouncer_parser
+    type: regex_parser
+    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}.\d{3}\s+[A-Z]+)\s+\[(?P<pid>\d+)\]\s(?P<pgbouncer_severity>\w+)\s(?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%d %H:%M:%S.%L %Z'
+    severity:
+      parse_from: pgbouncer_severity
+      preserve: true
+      mapping:
+        critical: fatal
+        info: log
+        notice: stats
+        debug: noise
+    output: {{.output}}
