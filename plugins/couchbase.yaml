@@ -1,0 +1,262 @@
+# Plugin Info
+version: 0.0.1
+title: Couchbase
+description: Log parser for Couchbase
+parameters:
+  enable_error_log:
+    label: Error Logs
+    description: Enable to collect Couchbase error logs
+    type: bool
+    default: true
+  error_log_path:
+    label: Error Logs Path
+    description: The absolute path to the Couchbase error logs
+    type: string
+    default: "/opt/couchbase/var/lib/couchbase/logs/error.log"
+  enable_debug_log:
+    label: Debug Logs
+    description: Enable to collect Couchbase debug logs
+    type: bool
+    default: false
+  debug_log_path:
+    label: Debug Logs Path
+    description: The absolute path to the Couchbase debug logs
+    type: string
+    default: "/opt/couchbase/var/lib/couchbase/logs/debug.log"
+  enable_info_log:
+    label: Information Logs
+    description: Enable to collect Couchbase info logs
+    type: bool
+    default: false
+  info_log_path:
+    label: Information Logs Path
+    description: The absolute path to the Couchbase information logs
+    type: string
+    default: "/opt/couchbase/var/lib/couchbase/logs/info.log"
+  enable_access_log:
+    label: Access Logs
+    description: Enable to collect Couchbase http access logs
+    type: bool
+    default: true
+  http_access_log_path:
+    label: HTTP Access Logs Path
+    description: The absolute path to the Couchbase http access logs
+    type: string
+    default: "/opt/couchbase/var/lib/couchbase/logs/http_access.log"
+  enable_internal_access_log:
+    label: Internal Access Logs
+    description: Enable to collect Couchbase internal http access logs
+    type: bool
+    default: false
+  http_internal_access_log_path:
+    label: Internal HTTP Access Logs Path
+    description: The absolute path to the Couchbase internal http access logs
+    type: string
+    default: "/opt/couchbase/var/lib/couchbase/logs/http_access_internal.log"
+  enable_babysitter_log:
+    label: Babysitter Logs
+    description: Enable to collect Couchbase babysitter logs
+    type: bool
+    default: true
+  babysitter_log_path:
+    label: Babysitter Logs Path
+    description: The absolute path to the Couchbase babysitter logs
+    type: string
+    default: "/opt/couchbase/var/lib/couchbase/logs/babysitter.log"
+  enable_xdcr_log:
+    label: Cross Datacenter Replication Logs
+    description: Enable to collect Couchbase Cross Datacenter Replication logs
+    type: bool
+    default: false
+  xdcr_log_path:
+    label: Cross Datacenter Replication Logs Path
+    description: The absolute path to the Couchbase cross datacenter replication logs
+    type: string
+    default: "/opt/couchbase/var/lib/couchbase/logs/goxdcr.log"
+  start_at:
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+
+# Set Defaults
+{{$enable_error_log := default true .enable_error_log}}
+{{$error_log_path := default "/opt/couchbase/var/lib/couchbase/logs/error.log" .error_log_path}}
+{{$enable_debug_log := default false .enable_debug_log}}
+{{$debug_log_path := default "/opt/couchbase/var/lib/couchbase/logs/debug.log" .debug_log_path}}
+{{$enable_info_log := default false .enable_info_log}}
+{{$info_log_path := default "/opt/couchbase/var/lib/couchbase/logs/info.log" .info_log_path}}
+{{$enable_access_log := default true .enable_access_log}}
+{{$http_access_log_path := default "/opt/couchbase/var/lib/couchbase/logs/http_access.log" .http_access_log_path}}
+{{$enable_internal_access_log := default false .enable_internal_access_log}}
+{{$http_internal_access_log_path := default "/opt/couchbase/var/lib/couchbase/logs/http_access_internal.log" .http_internal_access_log_path}}
+{{$enable_babysitter_log := default true .enable_babysitter_log}}
+{{$babysitter_log_path := default "/opt/couchbase/var/lib/couchbase/logs/babysitter.log" .babysitter_log_path}}
+{{$enable_xdcr_log := default false .enable_xdcr_log}}
+{{$xdcr_log_path := default "/opt/couchbase/var/lib/couchbase/logs/goxdcr.log" .xdcr_log_path}}
+{{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+{{ if $enable_error_log }}
+  - id: couchbase_error_input
+    type: file_input
+    include:
+      - {{ $error_log_path }}
+    multiline:
+      line_start_pattern: '\[[^:]*:[^,]*,\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2},[^@]*@[^:]*:'
+    start_at: {{ $start_at }}
+    labels:
+      log_type: couchbase.error
+    output: couchbase_error_parser
+
+  - id: couchbase_error_parser
+    type: regex_parser
+    regex: '^\[(?P<type>[^:]*):(?P<couchbase_severity>[^,]*),(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2}),(?P<node>[^@]*)@(?P<host>[^:]*):(?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S.%L%j'
+    severity:
+      parse_from: couchbase_severity
+      preserve: true
+    output: {{.output}}
+{{ end }}
+
+{{ if $enable_debug_log }}
+  - id: couchbase_debug_input
+    type: file_input
+    include:
+      - {{ $debug_log_path }}
+    multiline:
+      line_start_pattern: '\[[^:]*:[^,]*,\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2},[^@]*@[^:]*:'
+    start_at: {{ $start_at }}
+    labels:
+      log_type: couchbase.debug
+    output: couchbase_debug_parser
+
+  - id: couchbase_debug_parser
+    type: regex_parser
+    regex: '^\[(?P<type>[^:]*):(?P<couchbase_severity>[^,]*),(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2}),(?P<node>[^@]*)@(?P<host>[^:]*):(?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S.%L%j'
+    severity:
+      parse_from: couchbase_severity
+      preserve: true
+      mapping:
+        warning: warn
+    output: {{.output}}
+{{ end }}
+
+{{ if $enable_info_log }}
+  - id: couchbase_info_input
+    type: file_input
+    include:
+      - {{ $info_log_path }}
+    multiline:
+      line_start_pattern: '\[[^:]*:[^,]*,\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2},[^@]*@[^:]*:'
+    start_at: {{ $start_at }}
+    labels:
+      log_type: couchbase.info
+    output: couchbase_info_parser
+
+  - id: couchbase_info_parser
+    type: regex_parser
+    regex: '^\[(?P<type>[^:]*):(?P<couchbase_severity>[^,]*),(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2}),(?P<node>[^@]*)@(?P<host>[^:]*):(?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S.%L%j'
+    severity:
+      parse_from: couchbase_severity
+      preserve: true
+      mapping:
+        warning: warn
+    output: {{.output}}
+{{ end }}
+
+{{ if $enable_access_log }}
+  - id: couchbase_http_access_input
+    type: file_input
+    include:
+      - {{ $http_access_log_path }}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: couchbase.http.access
+    output: couchbase_http_access_parser
+
+  - id: couchbase_http_access_parser
+    type: regex_parser
+    regex: '(?P<ip_address>\d+.\d+.\d+.\d+)\s+(?P<user_identifier>.*) \[(?P<timestamp>\d{2}\/\w+\/\d{4}:\d{2}:\d{2}:\d{2} -\d{4})\] \\*"(?P<request_line>[^"]*)\\*" (?P<http_status_code>\d{3}) (?P<size>\d*) *-*(?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%d/%b/%Y:%H:%M:%S %z'
+    output: {{.output}}
+{{ end }}
+
+{{ if $enable_internal_access_log }}
+  - id: couchbase_http_access_internal_input
+    type: file_input
+    include:
+      - {{ $http_internal_access_log_path }}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: couchbase.http.access.internal
+    output: couchbase_http_access_internal_parser
+
+  - id: couchbase_http_access_internal_parser
+    type: regex_parser
+    regex: '(?P<ip_address>\d+.\d+.\d+.\d+)\s+(?P<user_identifier>.*) \[(?P<timestamp>\d{2}\/\w+\/\d{4}:\d{2}:\d{2}:\d{2} -\d{4})\] \\*"(?P<request_line>[^"]*)\\*" (?P<http_status_code>\d{3}) (?P<size>\d*) *-*(?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%d/%b/%Y:%H:%M:%S %z'
+    output: {{.output}}
+{{ end }}
+
+{{ if $enable_babysitter_log }}
+  - id: couchbase_babysitter_input
+    type: file_input
+    include:
+      - {{ $babysitter_log_path }}
+    multiline:
+      line_start_pattern: '\[[a-zA-Z_]+:'
+    start_at: {{ $start_at }}
+    labels:
+      log_type: couchbase.babysitter
+    output: couchbase_babysitter_parser
+
+  - id: couchbase_babysitter_parser
+    type: regex_parser
+    regex: '^\[(?P<type>[^:]*):(?P<couchbase_severity>[^,]*),(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2}),(?P<node>[^@]*)@(?P<host>[^:]*):(?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S.%L%j'
+    severity:
+      parse_from: couchbase_severity
+      preserve: true
+    output: {{.output}}
+{{ end }}
+
+{{ if $enable_xdcr_log }}
+  - id: couchbase_xdcr_input
+    type: file_input
+    include:
+      - {{ $xdcr_log_path }}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: couchbase.xdcr
+    output: couchbase_xdcr_parser
+
+  - id: couchbase_xdcr_parser
+    type: regex_parser
+    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d*-\d{2}:\d{2}) (?P<couchbase_severity>[^ ]*) (?P<type>[^:]*):* (?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S.%L%j'
+    severity:
+      parse_from: couchbase_severity
+      preserve: true
+    output: {{.output}}
+{{ end }}
