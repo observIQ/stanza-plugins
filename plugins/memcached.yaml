@@ -1,0 +1,33 @@
+# Plugin Info
+version: 0.0.1
+title: Memcached
+description: Log parser for Memcached
+parameters:
+  file_path:
+    label: Memcached Logs Path
+    description: The absolute path to the Memcached logs. Simple globbing can be used to collect multiple log files
+    type: string
+    default: "/var/log/memcached.log*"
+  start_at:
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+
+# Set Defaults
+{{$file_path := default "/var/log/memcached.log*" .file_path}}
+{{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+  - id: memcached_input
+    type: file_input
+    include:
+      - {{ $file_path }}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: memcached
+    output: {{.output}}
