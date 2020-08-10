@@ -1,0 +1,49 @@
+# Plugin Info
+version: 0.0.1
+title: JBoss
+description: Log parser for JBoss
+parameters:
+  file_path:
+    label: JBoss Logs Path
+    description: The absolute path to the JBoss logs
+    type: string
+    default: "/usr/local/JBoss/EAP-*/*/log/server.log"
+  start_at:
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+
+# Set Defaults
+{{$file_path := default "/usr/local/JBoss/EAP-*/*/log/server.log" .file_path}}
+{{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+  - id: jboss_input
+    type: file_input
+    include:
+      - {{ $file_path }}
+    multiline:
+      line_start_pattern: '\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}.\d{3}\s\w+\s'
+    start_at: {{ $start_at }}
+    labels:
+      log_type: jboss
+    output: jboss_parser
+
+  - id: jboss_parser
+    type: regex_parser
+    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}).\d{3}\s(?P<jboss_severity>\w+)\s(?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%d %H:%M:%S'
+    severity:
+      parse_from: jboss_severity
+      preserve: true
+      mapping:
+        emergency: fatal
+        warning: warn
+    output: {{.output}}
