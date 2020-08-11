@@ -1,0 +1,135 @@
+# Plugin Info
+version: 0.0.1
+title: Apache HBase
+description: Log parser for Apache HBase
+parameters:
+  enable_master_log:
+    label: Master Logs
+    description: Enable to collect HBase master logs
+    type: bool
+    default: true
+  master_log_path:
+    label: Master Logs Path
+    description: The absolute path to the HBase master logs
+    type: string
+    default: "usr/local/hbase*/logs/hbase*-master-*.log"
+  enable_region_log:
+    label: Region Logs
+    description: Enable to collect HBase region logs
+    type: bool
+    default: true
+  region_log_path:
+    label: Region Logs Path
+    description: The absolute path to the HBase region logs
+    type: string
+    default: "usr/local/hbase*/logs/hbase*-regionserver-*.log"
+  enable_zookeeper_log:
+    label: Zookeeper Logs
+    description: Enable to collect HBase zookeeper logs
+    type: bool
+    default: false
+  zookeeper_log_path:
+    label: Zookeeper Logs Path
+    description: The absolute path to the HBase zookeeper logs
+    type: string
+    default: "usr/local/hbase*/logs/hbase*-zookeeper-*.log"
+  start_at:
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+
+# Set Defaults
+{{$enable_master_log := default true .enable_master_log}}
+{{$master_log_path := default "usr/local/hbase*/logs/hbase*-master-*.log" .master_log_path}}
+{{$enable_region_log := default true .enable_region_log}}
+{{$region_log_path := default "usr/local/hbase*/logs/hbase*-regionserver-*.log" .region_log_path}}
+{{$enable_zookeeper_log := default false .enable_zookeeper_log}}
+{{$zookeeper_log_path := default "usr/local/hbase*/logs/hbase*-zookeeper-*.log" .zookeeper_log_path}}
+{{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+{{ if $enable_master_log }}
+  - id: hbase_master_input
+    type: file_input
+    include:
+      - {{ $master_log_path }}
+    multiline:
+      line_start_pattern: '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\s+'
+    start_at: {{ $start_at }}
+    labels:
+      log_type: hbase.master
+    output: hbase_master_parser
+
+  - id: hbase_master_parser
+    type: regex_parser
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d{3}\s+(?P<hbase_severity>[A-Z]*)\s?(?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%d %H:%M:%S'
+    severity:
+      parse_from: hbase_severity
+      preserve: true
+      mapping:
+        warning: warn
+        emergency: fatal
+    output: {{.output}}
+{{ end }}
+
+{{ if $enable_region_log }}
+  - id: hbase_region_input
+    type: file_input
+    include:
+      - {{ $region_log_path}}
+    multiline:
+      line_start_pattern: '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\s+'
+    start_at: {{ $start_at }}
+    labels:
+      log_type: hbase.region
+    output: hbase_region_parser
+
+  - id: hbase_region_parser
+    type: regex_parser
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d{3}\s+(?P<hbase_severity>[A-Z]*)\s?(?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%d %H:%M:%S'
+    severity:
+      parse_from: hbase_severity
+      preserve: true
+      mapping:
+        warning: warn
+        emergency: fatal
+    output: {{.output}}
+{{ end }}
+
+{{ if $enable_zookeeper_log }}
+  - id: hbase_zookeeper_input
+    type: file_input
+    include:
+      - {{ $zookeeper_log_path}}
+    multiline:
+      line_start_pattern: '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\s+'
+    start_at: {{ $start_at }}
+    labels:
+      log_type: hbase.zookeeper
+    output: hbase_zookeeper_parser
+
+  - id: hbase_zookeeper_parser
+    type: regex_parser
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d{3}\s+(?P<hbase_severity>[A-Z]*)\s?(?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%d %H:%M:%S'
+    severity:
+      parse_from: hbase_severity
+      preserve: true
+      mapping:
+        warning: warn
+        emergency: fatal
+    output: {{.output}}
+{{ end }}
