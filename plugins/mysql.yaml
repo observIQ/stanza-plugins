@@ -49,7 +49,7 @@ pipeline:
 
   - id: slow_query_regex_parser
     type: regex_parser
-    regex: '[\s\d\D]+(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s#\s\w+@\w+:\s\w+\[\w+\]\s@\s(?P<host>[\w\D]+)\[(?P<ip_address>[\d\.]+|)\][\s\D]+(?P<id>[\d]+)\s+#[\s\D]+(?P<query_time>[\d\.]+)[\s\D]+(?P<lock_time>[\d\.]+)[\s\D]+(?P<rows_sent>[\d]+)[\s\D]+(?P<rows_examined>[\d]+)\s+(?P<command>[\s\d\D]+)SET\s+timestamp=(?P<slow_query_timestamp>\d+);\s+(?P<slow_query>[\s\d\D]+)'
+    regex: '# Time: (?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s# User@Host:\s+(?P<dbuser>\w+)\[(?P<dbname>\w+)\]\s+@\s+\[(?P<ip_address>[\d\.]+)\]\s+Id:\s+(?P<id>\d+)\s+#\s+Query_time:\s+(?P<query_time>[\d\.]+)\s+Lock_time:\s+(?P<lock_time>[\d\.]+)\s+Rows_sent:\s+(?P<rows_sent>\d+)\s+Rows_examined:\s(?P<rows_examined>\d+)\s+(?P<query>(?s).*[^\s])'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%sZ'
@@ -110,7 +110,7 @@ pipeline:
 
   - id: general_regex_parser
     type: regex_parser
-    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s+(?P<tid>\d+)\s+(?P<command>[^\s]+)\s+(?P<message>[\s\d\D]+)'
+    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s+(?P<tid>\d+)\s+(?P<command>\w+)\s+(?P<message>(?s).+\S)'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%sZ'
