@@ -1,0 +1,30 @@
+# Plugin Info
+version: 0.0.1
+title: VMware vCenter
+description: Log parser for VMware vCenter
+parameters:
+  listen_address:
+    label: Listen Address
+    description: A syslog address of the form `<ip>:<port>`
+    type: string
+    default: ":5140"
+
+# Set Defaults
+{{$listen_address := default ":5140" .listen_address}}
+
+# Pipeline Template
+pipeline:
+  - id: vcenter_input
+    type: tcp_input
+    listen_address: {{ $listen_address }}
+    labels:
+      log_type: vmware_vcenter 
+    output: vcenter_parser
+
+  - id: vcenter_parser
+    type: regex_parser
+    regex: '^[<\d+>]*\s*(?P<timestamp>[^ ]+) (?P<hostname>[^ ]+) (?P<service>[^ ]+) (?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%b %d %H:%M:%S'
+    output: {{.output}}
