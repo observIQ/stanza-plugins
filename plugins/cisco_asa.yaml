@@ -1,0 +1,30 @@
+# Plugin Info
+version: 0.0.1
+title: Cisco ASA
+description: Log parser for Cisco ASA
+parameters:
+  listen_address:
+    label: Listen Address
+    description: A syslog address of the form `<ip>:<port>`
+    type: string
+    default: ":5140"
+
+# Set Defaults
+{{$listen_address := default ":5140" .listen_address}}
+
+# Pipeline Template
+pipeline:
+  - id: cisco_input
+    type: tcp_input
+    listen_address: {{ $listen_address }}
+    labels:
+      log_type: cisco_asa 
+    output: cisco_parser
+
+  - id: cisco_parser
+    type: regex_parser
+    regex: '^(?P<timestamp>[\d\w\s:\-]+?)(?: asa )?: %(?P<message_id>[\w\d-]+):\s(?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%b %d %Y %H:%M:%S'
+    output: {{.output}}
