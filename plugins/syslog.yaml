@@ -36,6 +36,8 @@ pipeline:
   - id: syslog_input
     type: udp_input
     listen_address: {{ $listen_address }}
+    labels:
+      log_type: syslog
     output: syslog_parser
 {{ end }}
 
@@ -43,6 +45,8 @@ pipeline:
   - id: syslog_input
     type: tcp_input
     listen_address: {{ $listen_address }}
+    labels:
+      log_type: syslog
     output: syslog_parser
 {{ end }}
 
