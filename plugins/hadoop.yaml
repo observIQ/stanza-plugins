@@ -1,0 +1,228 @@
+# Plugin Info
+version: 0.0.1
+title: Apache Hadoop
+description: Log parser for Apache Hadoop
+parameters:
+  enable_datanode_logs:
+    label: DataNode Logs
+    description: Enable collection of Hadoop data node logs
+    type: bool
+    default: true
+  datanode_general_log_path:
+    label: DataNode General Log Path
+    description: The absolute path to the data node general logs. Simple globbing can be used to collect multiple log files
+    type: string
+    default: "/usr/local/hadoop/logs/hadoop-*-datanode-*.log"
+  datanode_yarn_log_path:
+    label: DataNode Yarn Log Path
+    description: The absolute path to the data node general logs. Simple globbing can be used to collect multiple log files
+    type: string
+    default: "/usr/local/hadoop/logs/yarn-*-datanode-*.log"
+  enable_resourcemgr_logs:
+    label: ResourceManager Logs
+    description: Enable the collection of ResourceManager logs
+    type: bool
+    default: true
+  resourcemgr_general_log_path:
+    label: ResourceManager General Log Path
+    description: The absolute path to the DataNode general logs. Simple globbing can be used to collect multiple log files
+    type: string
+    default: "/usr/local/hadoop/logs/hadoop-*-resourcemgr-*.log"
+  resourcemgr_yarn_log_path:
+    label: ResourceManager Yarn Log Path
+    description: The absolute path to the ResourceManager general logs. Simple globbing can be used to collect multiple log files
+    type: string
+    default: "/usr/local/hadoop/logs/yarn-*-resourcemgr-*.log"
+  enable_namenode_logs:
+    label: NameNode Logs
+    description: Enable collection of Hadoop NameNode logs
+    type: bool
+    default: true
+  namenode_general_log_path:
+    label: NameNode General Log Path
+    description: The absolute path to the NameNode general logs. Simple globbing can be used to collect multiple log files
+    type: string
+    default: "/usr/local/hadoop/logs/hadoop-*-namenode-*.log"
+  namenode_yarn_log_path:
+    label: NameNode Yarn Log Path
+    description: The absolute path to the NameNode general logs. Simple globbing can be used to collect multiple log files
+    type: string
+    default: "/usr/local/hadoop/logs/yarn-*-namenode-*.log"
+  start_at:
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+
+# Set Defaults
+{{$enable_datanode_logs := default true .enable_datanode_logs}}
+{{$datanode_general_log_path := default "/usr/local/hadoop/logs/hadoop-*-datanode-*.log" .datanode_general_log_path}}
+{{$datanode_yarn_log_path := default "/usr/local/hadoop/logs/yarn-*-datanode-*.log" .datanode_yarn_log_path}}
+{{$enable_resourcemgr_logs := default true .enable_resourcemgr_logs}}
+{{$resourcemgr_general_log_path := default "/usr/local/hadoop/logs/hadoop-*-resourcemgr-*.log" .resourcemgr_general_log_path}}
+{{$resourcemgr_yarn_log_path := default "/usr/local/hadoop/logs/yarn-*-resourcemgr-*.log" .resourcemgr_yarn_log_path}}
+{{$enable_namenode_logs := default true .enable_namenode_logs}}
+{{$namenode_general_log_path := default "/usr/local/hadoop/logs/hadoop-*-namenode-*.log" .namenode_general_log_path}}
+{{$namenode_yarn_log_path := default "/usr/local/hadoop/logs/yarn-*-namenode-*.log" .namenode_yarn_log_path}}
+{{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+{{ if $enable_datanode_logs }}
+  - id: hadoop_datanode_general_input
+    type: file_input
+    include:
+      - {{ $datanode_general_log_path }}
+    multiline:
+      line_start_pattern: '\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+ \s'
+    start_at: {{ $start_at }}
+    labels:
+      log_type: hadoop.datanode.general
+    output: hadoop_datanode_general_parser
+
+  - id: hadoop_datanode_general_parser
+    type: regex_parser
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>[^\s].*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%d %H:%M:%S'
+    severity:
+      parse_from: hadoop_severity
+      preserve: true
+      mapping:
+        warning: warn
+        critical: fatal
+    output: {{.output}}
+
+  - id: hadoop_datanode_yarn_input
+    type: file_input
+    include:
+      - {{ $datanode_yarn_log_path }}
+    multiline:
+      line_start_pattern: '\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+ \s'
+    start_at: {{ $start_at }}
+    labels:
+      log_type: hadoop.datanode.yarn
+    output: hadoop_datanode_yarn_parser
+
+  - id: hadoop_datanode_yarn_parser
+    type: regex_parser
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>[^\s].*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%d %H:%M:%S'
+    severity:
+      parse_from: hadoop_severity
+      preserve: true
+      mapping:
+        warning: warn
+        critical: fatal
+    output: {{.output}}
+{{ end }}
+
+{{ if $enable_resourcemgr_logs }}
+  - id: hadoop_resourcemgr_general_input
+    type: file_input
+    include:
+      - {{ $resourcemgr_general_log_path }}
+    multiline:
+      line_start_pattern: '\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+ \s'
+    start_at: {{ $start_at }}
+    labels:
+      log_type: hadoop.resourcemgr.general
+    output: hadoop_resourcemgr_general_parser
+
+  - id: hadoop_resourcemgr_general_parser
+    type: regex_parser
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>[^\s].*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%d %H:%M:%S'
+    severity:
+      parse_from: hadoop_severity
+      preserve: true
+      mapping:
+        warning: warn
+        critical: fatal
+    output: {{.output}}
+
+  - id: hadoop_resourcemgr_yarn_input
+    type: file_input
+    include:
+      - {{ $resourcemgr_yarn_log_path }}
+    multiline:
+      line_start_pattern: '\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+ \s'
+    start_at: {{ $start_at }}
+    labels:
+      log_type: hadoop.resourcemgr.yarn
+    output: hadoop_resourcemgr_yarn_parser
+
+  - id: hadoop_resourcemgr_yarn_parser
+    type: regex_parser
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>[^\s].*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%d %H:%M:%S'
+    severity:
+      parse_from: hadoop_severity
+      preserve: true
+      mapping:
+        warning: warn
+        critical: fatal
+    output: {{.output}}
+{{ end }}
+
+{{ if $enable_namenode_logs }}
+  - id: hadoop_namenode_general_input
+    type: file_input
+    include:
+      - {{ $namenode_general_log_path }}
+    multiline:
+      line_start_pattern: '\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+ \s'
+    start_at: {{ $start_at }}
+    labels:
+      log_type: hadoop.namenode.general
+    output: hadoop_namenode_general_parser
+
+  - id: hadoop_namenode_general_parser
+    type: regex_parser
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>[^\s].*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%d %H:%M:%S'
+    severity:
+      parse_from: hadoop_severity
+      preserve: true
+      mapping:
+        warning: warn
+        critical: fatal
+    output: {{.output}}
+
+  - id: hadoop_namenode_yarn_input
+    type: file_input
+    include:
+      - {{ $namenode_yarn_log_path }}
+    multiline:
+      line_start_pattern: '\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+ \s'
+    start_at: {{ $start_at }}
+    labels:
+      log_type: hadoop.namenode.yarn
+    output: hadoop_namenode_yarn_parser
+
+  - id: hadoop_namenode_yarn_parser
+    type: regex_parser
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>[^\s].*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%d %H:%M:%S'
+    severity:
+      parse_from: hadoop_severity
+      preserve: true
+      mapping:
+        warning: warn
+        critical: fatal
+    output: {{.output}}
+{{ end }}
