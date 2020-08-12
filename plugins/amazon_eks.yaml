@@ -1,0 +1,207 @@
+# Plugin Info
+version: 0.0.1
+title: Amazon EKS
+description: Log parser for Amazon EKS
+parameters:
+  enable_container_logs:
+    label: Container Logs
+    description: Collect logs for the containers running in Kubernetes
+    type: bool
+    default: true
+  container_logs_path:
+    label: Container Filter
+    description: Filter the container logs running in Kubernetes
+    type: string
+    default: "/var/log/containers/*.log"
+  enable_proxy_logs:
+    label: Kubernetes Proxy Logs
+    description: Collect logs for the Kubernetes proxy
+    type: bool
+    default: true
+  enable_kubelet_logs:
+    label: Kubelet Logs
+    description: Collect logs for the Kubernetes Kubelet
+    type: bool
+    default: true
+  enable_controller_manager_logs:
+    label: Kubernetes Controller Manager Logs
+    description: Collect logs for the Kubernetes controller manager
+    type: bool
+    default: true
+  enable_scheduler_logs:
+    label: Kubernetes Scheduler Logs
+    description: Collect logs for the Kubernetes schedule
+    type: bool
+    default: true
+  enable_apiserver_logs:
+    label: Kubernetes API Server Logs
+    description: Collect logs for the Kubernetes API Server
+    type: bool
+    default: true
+
+# Set Defaults
+{{$enable_container_logs := default true .enable_container_logs}}
+{{$container_logs_path := default "/var/log/containers/*.log" .container_logs_path}}
+{{$enable_proxy_logs := default true .enable_proxy_logs}}
+{{$enable_kubelet_logs := default true .enable_kubelet_logs}}
+{{$enable_controller_manager_logs := default true .enable_controller_manager_logs}}
+{{$enable_scheduler_logs := default true .enable_scheduler_logs}}
+{{$enable_apiserver_logs := default true .enable_apiserver_logs}}
+
+# Pipeline Template
+pipeline:
+{{ if $enable_container_logs }}
+  - id: container_input
+    type: file_input
+    include:
+      - {{ $container_logs_path }}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: eks.container
+    include_file_path: true
+    output: container_router
+
+  - id: container_router
+    type: router
+    routes:
+      - expr: '$labels.file_name != nil and not ($labels.file_name matches "^carbon")'
+        output: container_json_parser
+
+  - id: container_json_parser
+    type: json_parser
+    timestamp:
+      parse_from: time
+      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+    severity:
+      parse_from: stream
+      preserve: true
+      mapping:
+        error: stderr
+        info: stdout
+    output: container_regex_parser
+
+  - id: container_regex_parser
+    type: regex_parser
+    parse_from: $labels.file_path
+    regex: '\/var\/log\/containers\/(?P<pod_name>[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?P<namespace>[^_]+)_(?P<container_name>.+)-(?P<container_id>[a-z0-9]{64})\.log'
+    output: container_metadata
+
+  - id: container_metadata
+    type: k8s_metadata_decorator
+    output: {{ .output }}
+{{ end }}
+
+{{ if $enable_proxy_logs }}
+  - id: eks_proxy_input
+    type: file_input
+    include:
+      - /var/log/kube-proxy.log
+    multiline:
+      line_start_pattern: ^\w\d{4}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: eks.proxy
+    output: eks_proxy_parser
+
+  - id: eks_proxy_parser
+    type: regex_parser
+    regex: '^(?P<severity>\w)(?P<timestamp>\d{4} [^\s]*)\s+(?P<pid>\d+)\s+(?P<source>[^ \]]+)\] (?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%m%d %H:%M:%S.%s'
+    severity:
+      parse_from: severity
+    output: {{.output}}
+{{ end }}
+
+{{ if $enable_kubelet_logs }}
+  - id: eks_kubelet_input
+    type: file_input
+    include:
+      - /var/log/kubelet.log
+    multiline:
+      line_start_pattern: ^\w\d{4}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: eks.kubelet
+    output: eks_kubelet_parser
+
+  - id: eks_kubelet_parser
+    type: regex_parser
+    regex: '^(?P<severity>\w)(?P<timestamp>\d{4} [^\s]*)\s+(?P<pid>\d+)\s+(?P<source>[^ \]]+)\] (?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%m%d %H:%M:%S.%s'
+    severity:
+      parse_from: severity
+    output: {{.output}}
+{{ end }}
+
+{{ if $enable_controller_manager_logs }}
+  - id: eks_controller_manager_input
+    type: file_input
+    include:
+      - /var/log/kube-controller-manager.log
+    multiline:
+      line_start_pattern: ^\w\d{4}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: eks.controller_manager
+    output: eks_controller_manager_parser
+
+  - id: eks_controller_manager_parser
+    type: regex_parser
+    regex: '^(?P<severity>\w)(?P<timestamp>\d{4} [^\s]*)\s+(?P<pid>\d+)\s+(?P<source>[^ \]]+)\] (?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%m%d %H:%M:%S.%s'
+    severity:
+      parse_from: severity
+    output: {{.output}}
+{{ end }}
+
+{{ if $enable_scheduler_logs }}
+  - id: eks_scheduler_input
+    type: file_input
+    include:
+      - /var/log/kube-scheduler.log
+    multiline:
+      line_start_pattern: ^\w\d{4}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: eks.scheduler
+    output: eks_scheduler_parser
+
+  - id: eks_scheduler_parser
+    type: regex_parser
+    regex: '^(?P<severity>\w)(?P<time>\d{4} [^\s]*)\s+(?P<pid>\d+)\s+(?P<source>[^ \]]+)\] (?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%m%d %H:%M:%S.%s'
+    severity:
+      parse_from: severity
+    output: {{.output}}
+{{ end }}
+
+{{ if $enable_apiserver_logs }}
+  - id: eks_apiserver_input
+    type: file_input
+    include:
+      - /var/log/kube-apiserver.log
+    multiline:
+      line_start_pattern: ^\w\d{4}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: eks.apiserver
+    output: eks_apiserver_parser
+
+  - id: eks_apiserver_parser
+    type: regex_parser
+    regex: '^(?P<severity>\w)(?P<time>\d{4} [^\s]*)\s+(?P<pid>\d+)\s+(?P<source>[^ \]]+)\] (?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%m%d %H:%M:%S.%s'
+    severity:
+      parse_from: severity
+    output: {{.output}}
+{{ end }}
