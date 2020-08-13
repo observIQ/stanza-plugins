@@ -8,8 +8,8 @@ parameters:
     type: string
     required: true
   kubelet_journald_log_path:
-    label: Kublet Journald Log Path
-    description: 'Kubernetes Kublet Journald Log path. It will read from /run/journal or /var/log/journal if this parameter is omitted'
+    label: Kubelet Journald Log Path
+    description: 'Kubernetes Kubelet Journald Log path. It will read from /run/journal or /var/log/journal if this parameter is omitted'
     type: string
   start_at:
     label: Start At
