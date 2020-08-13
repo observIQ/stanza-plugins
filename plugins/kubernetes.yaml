@@ -156,23 +156,23 @@ pipeline:
       - output: {{ .output }}
         expr: '$labels["k8s_pod_label/component"] == "kube-controller-manager"'
         labels:
-          log_type: 'kubernetes.controller'
+          log_type: 'k8s.controller'
       - output: {{ .output }}
         expr: '$labels["k8s_pod_label/component"]  == "kube-scheduler"'
         labels:
-          log_type: 'kubernetes.scheduler'
+          log_type: 'k8s.scheduler'
       - output: {{ .output }}
         expr: '$labels["k8s_pod_label/component"] == "kube-apiserver"'
         labels:
-          log_type: 'kubernetes.apiserver'
+          log_type: 'k8s.apiserver'
       - output: {{ .output }}
         expr: '$labels["k8s_pod_label/component"] startsWith "kube-proxy"'
         labels:
-          log_type: 'kubernetes.proxy'
+          log_type: 'k8s.proxy'
       - output: {{ .output }}
         expr: true
         labels:
-          log_type: 'kubernetes.container'
+          log_type: 'k8s.container'
   # {{ end }}
 
   # Use journald to gather kubelet logs. Use provider path for journald if available otherwise use default locations.
@@ -182,7 +182,7 @@ pipeline:
     directory: {{ .kubelet_journald_log_path }}
     # {{ end }}
     labels:
-      log_type: 'kubernetes.kubelet'
+      log_type: 'k8s.kubelet'
     output: kubelet_filter_router
 
   # Only grab entry if it is the kubelet.server
