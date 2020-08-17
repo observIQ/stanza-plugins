@@ -1,0 +1,104 @@
+# Plugin Info
+version: 0.0.1
+title: Microsoft Active Directory
+description: Log parser for Microsoft Active Directory
+parameters:
+  enable_dns_server:
+    label: Enable DNS Server Events
+    description: Toggle collection of DNS Server events
+    type: bool
+    default: true
+  enable_dfs_replication:
+    label: Enable DFS Replication Events
+    description: Toggle collection of DFS Replication events
+    type: bool
+    default: true
+  enable_file_replication:
+    label: Enable File Replication Events
+    description: Toggle collection of File Replication events
+    type: bool
+    default: false
+  poll_interval:
+    label: Poll Interval
+    description: The interval at which a channel is checked for new log entries
+    type: string
+    default: 1s
+  max_reads:
+    label: Max Reads
+    description: The maximum number of events read into memory at one time
+    type: int
+    default: 1000
+  start_at:
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+
+# Set Defaults
+{{$enable_dns_server := default true .enable_dns_server}}
+{{$enable_dfs_replication := default true .enable_dfs_replication}}
+{{$enable_file_replication := default false .enable_file_replication}}
+{{$poll_interval := default "1s" .poll_interval}}
+{{$max_reads := default 1000 .max_reads}}
+{{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+  - id: general_input
+    type: windows_eventlog_input
+    channel: Directory Service
+    labels:
+      log_type: windows_active_directory.general
+    poll_interval: {{ $poll_interval }}
+    max_reads: {{ $max_reads }}
+    start_at: {{ $start_at }}
+    output: {{ .output }}
+
+  - id: web_services_input
+    type: windows_eventlog_input
+    channel: Active Directory Web Services
+    labels:
+      log_type: windows_active_directory.web_services
+    poll_interval: {{ $poll_interval }}
+    max_reads: {{ $max_reads }}
+    start_at: {{ $start_at }}
+    output: {{ .output }}
+
+{{ if $enable_dns_server }}
+  - id: dns_server_input
+    type: windows_eventlog_input
+    channel: DNS Server
+    labels:
+      log_type: windows_active_directory.dns_server
+    poll_interval: {{ $poll_interval }}
+    max_reads: {{ $max_reads }}
+    start_at: {{ $start_at }}
+    output: {{ .output }}
+{{ end }}
+
+{{ if $enable_dfs_replication }}
+  - id: dfs_replication_input
+    type: windows_eventlog_input
+    channel: DFS Replication
+    labels:
+      log_type: windows_active_directory.dfs_replication
+    poll_interval: {{ $poll_interval }}
+    max_reads: {{ $max_reads }}
+    start_at: {{ $start_at }}
+    output: {{ .output }}
+{{ end }}
+
+{{ if $enable_file_replication }}
+  - id: file_replication_input
+    type: windows_eventlog_input
+    channel: File Replication Service
+    labels:
+      log_type: windows_active_directory.file_replication
+    poll_interval: {{ $poll_interval }}
+    max_reads: {{ $max_reads }}
+    start_at: {{ $start_at }}
+    output: {{ .output }}
+{{ end }}
