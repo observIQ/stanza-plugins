@@ -1,0 +1,222 @@
+# Plugin Info
+version: 0.0.1
+title: Amazon EKS
+description: Log parser for Amazon EKS
+parameters:
+  container_log_path:
+    label: Containers Log Path
+    description: EKS Containers Log Path
+    type: string
+    required: true
+  kubelet_journald_log_path:
+    label: Kubelet Journald Log Path
+    description: 'Kubernetes Kubelet Journald Log path. It will read from /run/journal or /var/log/journal if this parameter is omitted'
+    type: string
+  start_at:
+    label: Start At
+    description: "Start reading file from 'beginning' or 'end'"
+    type: enum
+    valid_values:
+     - beginning
+     - end
+    default: end
+pipeline:
+  # {{ if .container_log_path }}
+  - id: container_reader
+    type: file_input
+    include:
+      - {{ .container_log_path }}
+    start_at: {{ or .start_at "end" }}
+    include_file_path: true
+    write_to: log
+
+  # Filter carbon logs. Check if file_name field starts with carbon. if it does drop the log entry otherwise continue down pipeline
+  - id: filename_router
+    type: router
+    routes:
+      - expr: '$labels.file_name != nil and $labels.file_name matches "^carbon"'
+        output: drop_output
+      - expr: true
+        output: remove_file_name
+
+  # Drop unwanted logs
+  - type: "drop_output"
+
+  # Remove file_name label. We have filtered carbon logs and no longer need the file name
+  - id: remove_file_name
+    type: restructure
+    ops:
+      - remove: $labels.file_name
+
+  # Initial log entry should be safe to parse as JSON
+  - id: container_json_parser
+    type: json_parser
+    parse_from: log
+
+  # Attempt to parse nested JSON in log field if it exists and if JSON is detected
+  - id: log_json_router
+    type: router
+    routes:
+      # If there is no log field under record bypass json parser
+      - output: container_regex_parser
+        expr: '$record.log == nil'
+      # If log field is JSON with trailing newline route to regex_parser to remove newline before parsing.
+      - output: remove_new_line
+        expr: $record.log matches '^{.*}\\n$'
+      # It appears to be JSON so send it to be parsed as JSON.
+      - output: nested_json_parser
+        expr: $record.log matches '^{.*}$'
+      # If log field doesn't appear to be JSON then, skip nested JSON parsers
+      - output: container_regex_parser
+        expr: true
+
+  # Remove new line from end of jsonUnable to parse json if it has a newline.
+  - id: remove_new_line
+    type: regex_parser
+    parse_from: $record.log
+    regex: '(?P<log_tmp>{.*})\s+'
+    output: nested_tmp_json_parser
+
+  # We now have removed newline and saved log field to log_tmp
+  - id: nested_tmp_json_parser
+    type: json_parser
+    parse_from: $record.log_tmp
+    output: container_regex_parser
+
+  # Use this JSON parser since there was no trailing newline in log field.
+  - id: nested_json_parser
+    type: json_parser
+    parse_from: $record.log
+    output: container_regex_parser
+
+  # Log field has been parsed if possible and now we can parse log_type field for container information.
+  - id: container_regex_parser
+    type: regex_parser
+    parse_from: $labels.file_path
+    regex: '\/var\/log\/containers\/(?P<pod_name>[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?P<namespace>[^_]+)_(?P<container_name>.+)-(?P<container_id>[a-z0-9]{64})\.log'
+    severity:
+      parse_from: stream
+      preserve: true
+      mapping:
+        error: stderr
+        info: stdout
+    timestamp:
+      parse_from: time
+      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+
+  # Check if there is a timestamp field in record and if it is in expected format. If so parse it otherwise continue down pipeline.
+  - id: timestamp_parser_router
+    type: router
+    routes:
+      - output: timestamp_parser
+        expr: '$record.timestamp != nil and $record.timestamp matches "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d+Z"'
+      - output: standard_regex_parser_router
+        expr: true
+
+  # Parse timestamp field in record.
+  - id: timestamp_parser
+    type: time_parser
+    parse_from: timestamp
+    layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+
+  # Check if log field exists and if it matches format. If so parse it otherwise continue down the pipeline
+  - id: standard_regex_parser_router
+    type: router
+    routes:
+      - output: standard_regex_parser
+        expr: '$record.log != nil and $record.log matches "^\\w\\d{4}"'
+      - output: add_kubernetes_metadata
+        expr: true
+
+  # Log field exists and matches expected format.
+  - id: standard_regex_parser
+    type: regex_parser
+    parse_from: log
+    regex: '(?P<severity>\w)(?P<timestamp>\d{4} \d{2}:\d{2}:\d{2}.\d+)\s+(?P<pid>\d+)\s+(?P<source>[^ \]]+)\] (?P<message>.*)'
+    severity:
+      parse_from: severity
+      mapping:
+        debug: d
+        info: i
+        warning: w
+        error: e
+        critical: c
+    timestamp:
+      parse_from: timestamp
+      layout: '%m%d %H:%M:%S.%s'
+
+  # Add kubernetes metadata
+  - id: add_kubernetes_metadata
+    type: k8s_metadata_decorator
+    output: add_labels_router
+
+  # Add label log_type
+  - id: add_labels_router
+    type: router
+    routes:
+      - output: {{ .output }}
+        expr: '$labels["k8s_pod_label/component"] == "kube-controller-manager"'
+        labels:
+          log_type: 'eks.controller'
+      - output: {{ .output }}
+        expr: '$labels["k8s_pod_label/component"]  == "kube-scheduler"'
+        labels:
+          log_type: 'eks.scheduler'
+      - output: {{ .output }}
+        expr: '$labels["k8s_pod_label/component"] == "kube-apiserver"'
+        labels:
+          log_type: 'eks.apiserver'
+      - output: {{ .output }}
+        expr: '$labels["k8s_pod_label/component"] startsWith "kube-proxy"'
+        labels:
+          log_type: 'eks.proxy'
+      - output: {{ .output }}
+        expr: true
+        labels:
+          log_type: 'eks.container'
+  # {{ end }}
+
+  # Use journald to gather kubelet logs. Use provider path for journald if available otherwise use default locations.
+  - id: kubelet_reader
+    type: journald_input
+    # {{ if .kubelet_journald_log_path }}
+    directory: {{ .kubelet_journald_log_path }}
+    # {{ end }}
+    labels:
+      log_type: 'eks.kubelet'
+    output: kubelet_filter_router
+
+  # Only grab entry if it is the kubelet.server
+  - id: kubelet_filter_router
+    type: router
+    routes:
+      - output: kubelet_message_parser_router
+        expr: '$record._SYSTEMD_UNIT == "kubelet.service"'
+
+  # If MESSAGE field matches format then, parse it otherwise send down the pipeline.
+  - id: kubelet_message_parser_router
+    type: router
+    routes:
+      - output: message_regex_parser
+        expr: '$record.MESSAGE matches "^\\w\\d{4}"'
+      - output: {{ .output }}
+        expr: true
+
+  # MESSAGE field seems to match expected format.
+  - id: message_regex_parser
+    type: regex_parser
+    parse_from: MESSAGE
+    regex: '(?P<severity>\w)(?P<timestamp>\d{4} \d{2}:\d{2}:\d{2}.\d+)\s+(?P<pid>\d+)\s+(?P<source>[^ \]]+)\] (?P<message>.*)'
+    severity:
+      parse_from: severity
+      mapping:
+        debug: d
+        info: i
+        warning: w
+        error: e
+        critical: c
+    timestamp:
+      parse_from: timestamp
+      layout: '%m%d %H:%M:%S.%s'
+    output: {{ .output }}
+  
