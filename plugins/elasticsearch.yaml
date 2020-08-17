@@ -60,7 +60,7 @@ pipeline:
       - {{ $general_log_path }}
     start_at: {{ $start_at }}
     labels:
-      log_type: elasticsearch
+      log_type: elasticsearch.general
     output: elasticsearch_parser
 
   - id: elasticsearch_parser
