@@ -1,0 +1,50 @@
+# Plugin Info
+version: 0.0.1
+title: CouchDB
+description: Log parser for CouchDB
+parameters:
+  file_path:
+    label: CouchDB Logs Path
+    description: The absolute path to the CouchDB logs
+    type: string
+    default: "/var/log/couchdb/couchdb.log"
+  start_at:
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+
+# Set Defaults
+{{$file_path := default "/var/log/couchdb/couchdb.log" .file_path}}
+{{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+  - id: couchdb_input
+    type: file_input
+    include:
+      - {{ $file_path }}
+    multiline:
+      line_start_pattern: \[\w*\] [\d\-\.:TZ]+.*
+    start_at: {{ $start_at }}
+    labels:
+      log_type: couchdb
+    output: couchdb_parser
+
+  - id: couchdb_parser
+    type: regex_parser
+    regex: '^\[(?P<couchdb_severity>\w*)\] (?P<timestamp>[\d\-\.:TZ]+) (?P<message>[^\s].*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+    severity:
+      parse_from: couchdb_severity
+      preserve: true
+      mapping:
+        warning: warn
+        error: err
+        emergency: emerg
+    output: {{.output}}
