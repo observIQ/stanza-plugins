@@ -1,0 +1,30 @@
+# Plugin Info
+version: 0.0.1
+title: Cisco Meraki
+description: Log parser for Cisco Meraki
+parameters:
+  listen_address:
+    label: Listen Address
+    description: A syslog address of the form `<ip>:<port>`
+    type: string
+    default: ":5140"
+
+# Set Defaults
+{{$listen_address := default ":5140" .listen_address}}
+
+# Pipeline Template
+pipeline:
+  - id: meraki_input
+    type: udp_input
+    listen_address: {{ $listen_address }}
+    labels:
+      log_type: cisco_meraki
+    output: meraki_parser
+
+  - id: meraki_parser
+    type: regex_parser
+    regex: '^(?P<timestamp>[a-zA-z]+ \d{2} \d{2}:\d{2}:\d{2}) (?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%b %d %H:%M:%S'
+    output: {{.output}}
