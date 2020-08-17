@@ -1,0 +1,46 @@
+# Plugin Info
+version: 0.0.1
+title: Apache Zookeeper
+description: Log parser for Apache Zookeeper
+parameters:
+  file_path:
+    label: Zookeeper logs path
+    description: The absolute path to the Zookeeper logs
+    type: string
+    default: "/home/kafka/kafka/logs/zookeeper.log"
+  start_at:
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+
+# Set Defaults
+{{$file_path := default "/home/kafka/kafka/logs/zookeeper.log" .file_path}}
+{{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+  - id: zookeeper_input
+    type: file_input
+    include:
+      - {{ $file_path }}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: zookeeper
+    output: zookeeper_parser
+
+  - id: zookeeper_parser
+    type: regex_parser
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d{3} \[myid:(?P<myid>[^\]]*)\] - (?P<zookeeper_severity>[A-Z]+)\s+\[(?P<source>[^\]]+)\] - (?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%d %H:%M:%S'
+    severity:
+      parse_from: zookeeper_severity
+      mapping:
+        warning: warn
+        critical: fatal
+    output: {{.output}}
