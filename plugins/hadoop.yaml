@@ -10,12 +10,12 @@ parameters:
     default: true
   datanode_general_log_path:
     label: DataNode General Log Path
-    description: The absolute path to the data node general logs. Simple globbing can be used to collect multiple log files
+    description: The absolute path to the data node general logs
     type: string
     default: "/usr/local/hadoop/logs/hadoop-*-datanode-*.log"
   datanode_yarn_log_path:
     label: DataNode Yarn Log Path
-    description: The absolute path to the data node general logs. Simple globbing can be used to collect multiple log files
+    description: The absolute path to the data node general logs
     type: string
     default: "/usr/local/hadoop/logs/yarn-*-datanode-*.log"
   enable_resourcemgr_logs:
@@ -25,12 +25,12 @@ parameters:
     default: true
   resourcemgr_general_log_path:
     label: ResourceManager General Log Path
-    description: The absolute path to the DataNode general logs. Simple globbing can be used to collect multiple log files
+    description: The absolute path to the DataNode general logs
     type: string
     default: "/usr/local/hadoop/logs/hadoop-*-resourcemgr-*.log"
   resourcemgr_yarn_log_path:
     label: ResourceManager Yarn Log Path
-    description: The absolute path to the ResourceManager general logs. Simple globbing can be used to collect multiple log files
+    description: The absolute path to the ResourceManager general logs
     type: string
     default: "/usr/local/hadoop/logs/yarn-*-resourcemgr-*.log"
   enable_namenode_logs:
@@ -40,12 +40,12 @@ parameters:
     default: true
   namenode_general_log_path:
     label: NameNode General Log Path
-    description: The absolute path to the NameNode general logs. Simple globbing can be used to collect multiple log files
+    description: The absolute path to the NameNode general logs
     type: string
     default: "/usr/local/hadoop/logs/hadoop-*-namenode-*.log"
   namenode_yarn_log_path:
     label: NameNode Yarn Log Path
-    description: The absolute path to the NameNode general logs. Simple globbing can be used to collect multiple log files
+    description: The absolute path to the NameNode general logs
     type: string
     default: "/usr/local/hadoop/logs/yarn-*-namenode-*.log"
   start_at:
