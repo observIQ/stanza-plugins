@@ -1,0 +1,56 @@
+# Plugin Info
+version: 0.0.1
+title: Syslog
+description: Log parser for Syslog
+parameters:
+  listen_address:
+    label: Listen Address
+    description: A syslog address of the form `<ip>:<port>`
+    type: string
+    default: ":514"
+  connection_type:
+    label: Connection Type
+    description: The type of syslog connection (`udp` or `tcp`)
+    type: enum
+    valid_values:
+      - udp
+      - tcp
+    default: udp
+  protocol:
+    label: Protocol
+    description: The protocol of received syslog messages (`rfc3164` or `rfc5424`)
+    type: enum
+    valid_values:
+      - rfc3164
+      - rfc5424
+    default: rfc5424
+
+# Set Defaults
+{{$listen_address := default ":514" .listen_address}}
+{{$connection_type := default "udp" .connection_type}}
+{{$protocol := default "rfc5424" .protocol}}
+
+# Pipeline Template
+pipeline:
+{{ if eq $connection_type "udp" }}
+  - id: syslog_input
+    type: udp_input
+    listen_address: {{ $listen_address }}
+    labels:
+      log_type: syslog
+    output: syslog_parser
+{{ end }}
+
+{{ if eq $connection_type "tcp" }}
+  - id: syslog_input
+    type: tcp_input
+    listen_address: {{ $listen_address }}
+    labels:
+      log_type: syslog
+    output: syslog_parser
+{{ end }}
+
+  - id: syslog_parser
+    type: syslog_parser
+    protocol: {{ $protocol }}
+    output: {{ .output }}
