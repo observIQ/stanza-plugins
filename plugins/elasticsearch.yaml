@@ -1,0 +1,123 @@
+# Plugin Info
+version: 0.0.1
+title: Elasticsearch
+description: Log parser for Elasticsearch
+parameters:
+  enable_general_logs:
+    label: General Logs
+    description: Enable to collect Elasticsearch general logs
+    type: bool
+    default: true
+  general_log_path:
+    label: General Logs Path
+    description: The absolute path to the Elasticsearch general logs
+    type: string
+    default: "/var/log/elasticsearch/elasticsearch.log*"
+  enable_deprecation_logs:
+    label: Deprecation Logs
+    description: Enable to collect Elasticsearch deprecation logs
+    type: bool
+    default: true
+  deprecation_log_path:
+    label: Deprecation Logs Path
+    description: The absolute path to the Elasticsearch deprecation logs
+    type: string
+    default: "/var/log/elasticsearch/elasticsearch_deprecation.log*"
+  enable_gc_logs:
+    label: Garbage Collection Logs
+    description: Enable to collect Elasticsearch garbage collection logs
+    type: bool
+    default: false
+  gc_log_path:
+    label: Garbage Collection Logs Path
+    description: The absolute path to the Elasticsearch garbage collection logs
+    type: string
+    default: "/var/log/elasticsearch/gc.log*"
+  start_at:
+    label: Start At
+    description: Start reading files from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+
+# Set Defaults
+{{$enable_general_logs := default true .enable_general_logs}}
+{{$general_log_path := default "/var/log/elasticsearch/elasticsearch.log*" .general_log_path}}
+{{$enable_deprecation_logs := default true .enable_deprecation_logs}}
+{{$deprecation_log_path := default "/var/log/elasticsearch/elasticsearch_deprecation.log*" .deprecation_log_path}}
+{{$enable_gc_logs := default false .enable_gc_logs}}
+{{$gc_log_path := default "/var/log/elasticsearch/gc.log*" .gc_log_path}}
+{{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+{{ if $enable_general_logs }}
+  - id: elasticsearch_input
+    type: file_input
+    include:
+      - {{ $general_log_path }}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: elasticsearch.general
+    output: elasticsearch_parser
+
+  - id: elasticsearch_parser
+    type: regex_parser
+    regex: '^\[(?P<timestamp>[\d\-:T]+),\d+\]\[(?P<elasticsearch_severity>[A-Z]*)\s?\](?P<message>[^\s].*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S'
+    severity:
+      parse_from: elasticsearch_severity
+      preserve: true
+      mapping:
+        warning: warn
+    output: {{.output}}
+{{ end }}
+
+{{ if $enable_deprecation_logs }}
+  - id: elasticsearch_deprecation_input
+    type: file_input
+    include:
+      - {{ $deprecation_log_path }}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: elasticsearch.deprecation
+    output: elasticsearch_deprecation_parser
+
+  - id: elasticsearch_deprecation_parser
+    type: regex_parser
+    regex: '^\[(?P<timestamp>[\d\-:T]+),\d+\]\[(?P<elasticsearch_severity>[A-Z]*)\s?\](?P<message>[^\s].*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S'
+    severity:
+      parse_from: elasticsearch_severity
+      preserve: true
+      mapping:
+        warning: warn
+    output: {{.output}}
+{{ end }}
+
+{{ if $enable_gc_logs }}
+  - id: elasticsearch_gc_input
+    type: file_input
+    include:
+      - {{ $gc_log_path }}
+    multiline:
+      line_start_pattern: '[\d\-:T\.]+:\s'
+    start_at: {{ $start_at }}
+    labels:
+      log_type: elasticsearch.gc
+    output: elasticsearch_gc_parser
+
+  - id: elasticsearch_gc_parser
+    type: regex_parser
+    regex: '^(?P<timestamp>[\d\-:T\.]+):\s(?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S.%s%z'
+    output: {{.output}}
+{{ end }}
