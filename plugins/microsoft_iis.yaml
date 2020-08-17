@@ -1,0 +1,43 @@
+# Plugin Info
+version: 0.0.1
+title: Microsoft IIS
+description: Log parser for Microsoft IIS
+parameters:
+  file_path:
+    label: Log Path
+    description: The absolute path to the Microsoft IIS logs
+    type: string
+    default: "C:/inetpub/logs/LogFiles/W3SVC*/**/*.log"
+  start_at:
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+
+# Set Defaults
+{{$file_path := default "C:/inetpub/logs/LogFiles/W3SVC*/**/*.log" .file_path}}
+{{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+  - id: microsoft_iis_input
+    type: file_input
+    include:
+      - {{ $file_path }}
+    multiline:
+      line_start_pattern: \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} [\d+.]+
+    start_at: {{ $start_at }}
+    labels:
+      log_type: microsoft_iis
+    output: microsoft_iis_parser
+
+  - id: microsoft_iis_parser
+    type: regex_parser
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) (?P<server_ip>[\d+.]+) (?P<request_method>[A-Z]+) (?P<uri_stem>[^ ]+) (?P<uri_query>[^ ]+) (?P<server_port>\d+) (?P<username>[^ ]+) (?P<client_ip>[\d+.]+) (?P<user_agent>[^ ]+) (?P<referer>[^ ]+) (?P<http_status>\d+) (?P<http_sub_status>\d+) (?P<win32_status>\d+) (?P<time_taken>\d+)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%d %H:%M:%S'
+    output: {{.output}}
