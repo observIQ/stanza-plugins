@@ -1,0 +1,87 @@
+# Plugin Info
+version: 0.0.1
+title: Docker Swarm
+description: Log parser for Docker Swarm
+parameters:
+  message_log_path:
+    label: Message Logs Path
+    description: The absolute path to the Docker Swarm message logs
+    type: string
+    default: "/var/log/messages/*.log"
+  start_at:
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+
+# Set Defaults
+{{$message_log_path := default "/var/log/messages/*.log" .message_log_path}}
+{{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+  - id: docker_swarm_input
+    type: file_input
+    include:
+      - {{ $message_log_path }}
+    start_at: {{ $start_at }}
+    output: docker_swarm_parser
+
+  - id: docker_swarm_parser
+    type: regex_parser
+    regex: '^(?P<timestamp>[A-Za-z]*\s+\d+ \d+:\d+:\d+) (?P<host>[^ ]*) (?P<type>[^:]*): (?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%b %d %H:%M:%S'
+    output: docker_swarm_router
+
+  - id: docker_swarm_router
+    type: router
+    routes:
+      - output: dockerd_parser
+        expr: '$.type matches "dockerd"'
+        labels:
+          log_type: docker_swarm.dockerd
+      - output: containerd_parser
+        expr: '$.type matches "containerd"'
+        labels:
+          log_type: docker_swarm.containerd
+      - output: {{ .output }}
+        expr: '$.type matches "kernel"'
+        labels:
+          log_type: docker_swarm.kernel
+      - output: {{ .output }}
+        expr: '$.type matches "NetworkManager"'
+        labels:
+          log_type: docker_swarm.network_manager
+
+  - id: dockerd_parser
+    type: regex_parser
+    parse_from: message
+    regex: '^time="(?P<timestamp>[^"]*)" level=(?P<dockerd_severity>[^ ]*) msg=(?P<message>.*)'
+    severity:
+      parse_from: dockerd_severity
+      preserve: true
+      mapping:
+        warning: warn
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S.%s%j'
+    output: {{ .output }}
+
+  - id: containerd_parser
+    type: regex_parser
+    parse_from: message
+    regex: '^time="(?P<timestamp>[^"]*)" level=(?P<dockerd_severity>[^ ]*) msg=(?P<message>.*)'
+    severity:
+      parse_from: dockerd_severity
+      preserve: true
+      mapping:
+        warning: warn
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S.%s%j'
+    output: {{ .output }}
