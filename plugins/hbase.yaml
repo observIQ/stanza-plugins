@@ -12,7 +12,7 @@ parameters:
     label: Master Logs Path
     description: The absolute path to the HBase master logs
     type: string
-    default: "usr/local/hbase*/logs/hbase*-master-*.log"
+    default: "/usr/local/hbase*/logs/hbase*-master-*.log"
   enable_region_log:
     label: Region Logs
     description: Enable to collect HBase region logs
@@ -22,7 +22,7 @@ parameters:
     label: Region Logs Path
     description: The absolute path to the HBase region logs
     type: string
-    default: "usr/local/hbase*/logs/hbase*-regionserver-*.log"
+    default: "/usr/local/hbase*/logs/hbase*-regionserver-*.log"
   enable_zookeeper_log:
     label: Zookeeper Logs
     description: Enable to collect HBase zookeeper logs
@@ -32,7 +32,7 @@ parameters:
     label: Zookeeper Logs Path
     description: The absolute path to the HBase zookeeper logs
     type: string
-    default: "usr/local/hbase*/logs/hbase*-zookeeper-*.log"
+    default: "/usr/local/hbase*/logs/hbase*-zookeeper-*.log"
   start_at:
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -44,11 +44,11 @@ parameters:
 
 # Set Defaults
 {{$enable_master_log := default true .enable_master_log}}
-{{$master_log_path := default "usr/local/hbase*/logs/hbase*-master-*.log" .master_log_path}}
+{{$master_log_path := default "/usr/local/hbase*/logs/hbase*-master-*.log" .master_log_path}}
 {{$enable_region_log := default true .enable_region_log}}
-{{$region_log_path := default "usr/local/hbase*/logs/hbase*-regionserver-*.log" .region_log_path}}
+{{$region_log_path := default "/usr/local/hbase*/logs/hbase*-regionserver-*.log" .region_log_path}}
 {{$enable_zookeeper_log := default false .enable_zookeeper_log}}
-{{$zookeeper_log_path := default "usr/local/hbase*/logs/hbase*-zookeeper-*.log" .zookeeper_log_path}}
+{{$zookeeper_log_path := default "/usr/local/hbase*/logs/hbase*-zookeeper-*.log" .zookeeper_log_path}}
 {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
