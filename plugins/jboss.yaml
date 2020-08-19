@@ -32,6 +32,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: jboss
+      plugin_id: {{ .id }}
     output: jboss_parser
 
   - id: jboss_parser

@@ -85,6 +85,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: gitlab.rails.application
+      plugin_id: {{ .id }}
     output: gitlab_rails_application_parser
 
   - id: gitlab_rails_application_parser
@@ -104,6 +105,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: gitlab.rails.production
+      plugin_id: {{ .id }}
     output: gitlab_rails_production_parser
 
   - id: gitlab_rails_production_parser
@@ -122,6 +124,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: gitlab.rails.api_request
+      plugin_id: {{ .id }}
     output: gitlab_rails_api_request_parser
 
   - id: gitlab_rails_api_request_parser
@@ -148,6 +151,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: gitlab.rails.sidekiq
+      plugin_id: {{ .id }}
     output: gitlab_rails_sidekiq_parser
 
   - id: gitlab_rails_sidekiq_parser
@@ -174,6 +178,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: gitlab.shell
+      plugin_id: {{ .id }}
     output: gitlab_shell_parser
 
   - id: gitlab_shell_parser

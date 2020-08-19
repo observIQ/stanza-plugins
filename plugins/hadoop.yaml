@@ -81,6 +81,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: hadoop.datanode.general
+      plugin_id: {{ .id }}
     output: hadoop_datanode_general_parser
 
   - id: hadoop_datanode_general_parser
@@ -106,6 +107,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: hadoop.datanode.yarn
+      plugin_id: {{ .id }}
     output: hadoop_datanode_yarn_parser
 
   - id: hadoop_datanode_yarn_parser
@@ -133,6 +135,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: hadoop.resourcemgr.general
+      plugin_id: {{ .id }}
     output: hadoop_resourcemgr_general_parser
 
   - id: hadoop_resourcemgr_general_parser
@@ -158,6 +161,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: hadoop.resourcemgr.yarn
+      plugin_id: {{ .id }}
     output: hadoop_resourcemgr_yarn_parser
 
   - id: hadoop_resourcemgr_yarn_parser
@@ -185,6 +189,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: hadoop.namenode.general
+      plugin_id: {{ .id }}
     output: hadoop_namenode_general_parser
 
   - id: hadoop_namenode_general_parser
@@ -210,6 +215,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: hadoop.namenode.yarn
+      plugin_id: {{ .id }}
     output: hadoop_namenode_yarn_parser
 
   - id: hadoop_namenode_yarn_parser

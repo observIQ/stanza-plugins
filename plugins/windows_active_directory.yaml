@@ -52,6 +52,7 @@ pipeline:
     channel: Directory Service
     labels:
       log_type: windows_active_directory.general
+      plugin_id: {{ .id }}
     poll_interval: {{ $poll_interval }}
     max_reads: {{ $max_reads }}
     start_at: {{ $start_at }}
@@ -62,6 +63,7 @@ pipeline:
     channel: Active Directory Web Services
     labels:
       log_type: windows_active_directory.web_services
+      plugin_id: {{ .id }}
     poll_interval: {{ $poll_interval }}
     max_reads: {{ $max_reads }}
     start_at: {{ $start_at }}
@@ -73,6 +75,7 @@ pipeline:
     channel: DNS Server
     labels:
       log_type: windows_active_directory.dns_server
+      plugin_id: {{ .id }}
     poll_interval: {{ $poll_interval }}
     max_reads: {{ $max_reads }}
     start_at: {{ $start_at }}
@@ -85,6 +88,7 @@ pipeline:
     channel: DFS Replication
     labels:
       log_type: windows_active_directory.dfs_replication
+      plugin_id: {{ .id }}
     poll_interval: {{ $poll_interval }}
     max_reads: {{ $max_reads }}
     start_at: {{ $start_at }}
@@ -97,6 +101,7 @@ pipeline:
     channel: File Replication Service
     labels:
       log_type: windows_active_directory.file_replication
+      plugin_id: {{ .id }}
     poll_interval: {{ $poll_interval }}
     max_reads: {{ $max_reads }}
     start_at: {{ $start_at }}

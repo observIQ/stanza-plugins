@@ -111,6 +111,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: couchbase.error
+      plugin_id: {{ .id }}
     output: couchbase_error_parser
 
   - id: couchbase_error_parser
@@ -135,6 +136,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: couchbase.debug
+      plugin_id: {{ .id }}
     output: couchbase_debug_parser
 
   - id: couchbase_debug_parser
@@ -161,6 +163,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: couchbase.info
+      plugin_id: {{ .id }}
     output: couchbase_info_parser
 
   - id: couchbase_info_parser
@@ -185,6 +188,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: couchbase.http.access
+      plugin_id: {{ .id }}
     output: couchbase_http_access_parser
 
   - id: couchbase_http_access_parser
@@ -204,6 +208,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: couchbase.http.access.internal
+      plugin_id: {{ .id }}
     output: couchbase_http_access_internal_parser
 
   - id: couchbase_http_access_internal_parser
@@ -225,6 +230,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: couchbase.babysitter
+      plugin_id: {{ .id }}
     output: couchbase_babysitter_parser
 
   - id: couchbase_babysitter_parser
@@ -247,6 +253,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: couchbase.xdcr
+      plugin_id: {{ .id }}
     output: couchbase_xdcr_parser
 
   - id: couchbase_xdcr_parser

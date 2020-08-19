@@ -28,6 +28,7 @@ pipeline:
     start_at: {{ or .start_at "end" }}
     labels:
       log_type: 'nginx.access'
+      plugin_id: {{ .id }}
 
   - id: access_regex_parser
     type: regex_parser
@@ -48,6 +49,7 @@ pipeline:
       line_start_pattern: '\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} \[\w+\] (?P<pid>\d+).(?P<tid>\d+): '
     labels:
       log_type: 'nginx.error'
+      plugin_id: {{ .id }}
 
   - id: error_regex_parser
     type: regex_parser
