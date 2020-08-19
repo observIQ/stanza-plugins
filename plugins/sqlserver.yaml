@@ -35,6 +35,8 @@ pipeline:
     poll_interval: {{ $poll_interval }}
     max_reads: {{ $max_reads }}
     start_at: {{ $start_at }}
+    labels:
+      plugin_id: {{ .id }}
     output: sqlserver_router
 
   - id: sqlserver_router

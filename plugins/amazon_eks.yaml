@@ -20,6 +20,8 @@ parameters:
      - beginning
      - end
     default: end
+
+# Pipeline Template
 pipeline:
   # {{ if .container_log_path }}
   - id: container_reader
@@ -27,6 +29,8 @@ pipeline:
     include:
       - {{ .container_log_path }}
     start_at: {{ or .start_at "end" }}
+    labels:
+      plugin_id: {{ .id }}
     include_file_path: true
     write_to: log
 
@@ -184,6 +188,7 @@ pipeline:
     # {{ end }}
     labels:
       log_type: 'eks.kubelet'
+      plugin_id: {{ .id }}
     output: kubelet_filter_router
 
   # Only grab entry if it is the kubelet.server

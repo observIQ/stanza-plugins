@@ -34,6 +34,7 @@ pipeline:
     start_at: {{ or .start_at "end" }}
     labels:
       log_type: 'cassandra.system'
+      plugin_id: {{ .id }}
     output: regex_parser
   #  {{ end }}
 
@@ -47,6 +48,7 @@ pipeline:
     start_at: {{ or .start_at "end" }}
     labels:
       log_type: 'cassandra.debug'
+      plugin_id: {{ .id }}
     output: regex_parser
   #  {{ end }}
 
@@ -60,6 +62,7 @@ pipeline:
     start_at: {{ or .start_at "end" }}
     labels:
       log_type: 'cassandra.gc'
+      plugin_id: {{ .id }}
 
   - id: gc_rex_parser
     type: regex_parser

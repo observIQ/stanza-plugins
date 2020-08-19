@@ -32,6 +32,8 @@ pipeline:
   - type: journald_input
     directory: {{ or .journald_log_path "/var/log/journal" }}
     start_at: {{ or .start_at "end" }}
+    labels:
+      plugin_id: {{ .id }}
 
   - type: router
     routes:

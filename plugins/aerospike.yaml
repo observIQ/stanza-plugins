@@ -49,6 +49,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: aerospike.general
+      plugin_id: {{ .id }}
     output: aerospike_general_parser
 
   - id: aerospike_general_parser
@@ -75,6 +76,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: aerospike.telemetry
+      plugin_id: {{ .id }}
     output: aerospike_telemetry_parser
 
   - id: aerospike_telemetry_parser

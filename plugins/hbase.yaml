@@ -63,6 +63,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: hbase.master
+      plugin_id: {{ .id }}
     output: hbase_master_parser
 
   - id: hbase_master_parser
@@ -90,6 +91,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: hbase.region
+      plugin_id: {{ .id }}
     output: hbase_region_parser
 
   - id: hbase_region_parser
@@ -117,6 +119,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: hbase.zookeeper
+      plugin_id: {{ .id }}
     output: hbase_zookeeper_parser
 
   - id: hbase_zookeeper_parser

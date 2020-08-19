@@ -25,6 +25,7 @@ pipeline:
     # {{ end }}
     labels:
       log_type: 'mongodb'
+      plugin_id: {{ .id }}
     output: regex_parser
 
   - id: regex_parser

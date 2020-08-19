@@ -38,6 +38,7 @@ pipeline:
     start_at: {{ or .start_at "end" }}
     labels:
       log_type: 'postgresql'
+      plugin_id: {{ .id }}
 
   - type: restructure
     ops:

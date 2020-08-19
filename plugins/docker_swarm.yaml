@@ -28,6 +28,8 @@ pipeline:
     include:
       - {{ $message_log_path }}
     start_at: {{ $start_at }}
+    labels:
+      plugin_id: {{ .id }}
     output: docker_swarm_parser
 
   - id: docker_swarm_parser

@@ -27,6 +27,8 @@ parameters:
       - beginning
       - end
     default: end
+
+# Pipeline Template
 pipeline:
   # Use file input for all log files as it uses the same regex parser.
   # {{ if .server_log_path }}
@@ -42,6 +44,8 @@ pipeline:
       line_start_pattern: '\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\]'
     write_to: log_entry
     start_at: {{ or .start_at "end" }}
+    labels:
+      plugin_id: {{ .id }}
 
   # Parse log entries.
   - id: server_regex_parser

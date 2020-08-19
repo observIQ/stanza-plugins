@@ -38,6 +38,7 @@ pipeline:
     listen_address: {{ $listen_address }}
     labels:
       log_type: syslog
+      plugin_id: {{ .id }}
     output: syslog_parser
 {{ end }}
 
@@ -47,6 +48,7 @@ pipeline:
     listen_address: {{ $listen_address }}
     labels:
       log_type: syslog
+      plugin_id: {{ .id }}
     output: syslog_parser
 {{ end }}
 

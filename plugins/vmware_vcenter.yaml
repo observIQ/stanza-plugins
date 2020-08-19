@@ -18,7 +18,8 @@ pipeline:
     type: tcp_input
     listen_address: {{ $listen_address }}
     labels:
-      log_type: vmware_vcenter 
+      log_type: vmware_vcenter
+      plugin_id: {{ .id }}
     output: vcenter_parser
 
   - id: vcenter_parser

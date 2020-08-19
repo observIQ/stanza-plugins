@@ -30,6 +30,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: pgbouncer
+      plugin_id: {{ .id }}
     output: pgbouncer_parser
 
   - id: pgbouncer_parser
