@@ -31,12 +31,13 @@ parameters:
      - end
     default: end
 
-  # Set Defaults
-  #{{$enable_error_log := default true .enable_error_log}}
-  #{{$error_log_path := default "/var/log/apache2/error.log" .error_log_path}}
-  #{{$enable_access_log := default true .enable_access_log}}
-  #{{$access_log_path := default "/var/log/apache2/access.log" .access_log_path}}
-  #{{$start_at := default "end" .start_at}}
+# Set Defaults
+#{{$enable_error_log := default true .enable_error_log}}
+#{{$error_log_path := default "/var/log/apache2/error.log" .error_log_path}}
+#{{$enable_access_log := default true .enable_access_log}}
+#{{$access_log_path := default "/var/log/apache2/access.log" .access_log_path}}
+#{{$start_at := default "end" .start_at}}
+
 pipeline:
   #{{ if $enable_error_log }}
   - id: htaccess_access_reader
@@ -46,6 +47,7 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       log_type: 'apache_http.access'
+      plugin_id: {{ .id }}
 
   - id: access_regex_parser
     type: regex_parser
@@ -66,6 +68,7 @@ pipeline:
       line_start_pattern: '\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} \[\w+\] (?P<pid>\d+).(?P<tid>\d+): '
     labels:
       log_type: 'apache_http.error'
+      plugin_id: {{ .id }}
 
   - id: error_regex_parser
     type: regex_parser
