@@ -34,11 +34,11 @@ pipeline:
     include_file_path: true
     write_to: log
 
-  # Filter carbon logs. Check if file_name field starts with carbon. if it does drop the log entry otherwise continue down pipeline
+  # Filter stanza logs. Check if file_name field starts with stanza. if it does drop the log entry otherwise continue down pipeline
   - id: filename_router
     type: router
     routes:
-      - expr: '$labels.file_name != nil and $labels.file_name matches "^carbon"'
+      - expr: '$labels.file_name != nil and $labels.file_name matches "^stanza"'
         output: drop_output
       - expr: true
         output: remove_file_name
@@ -46,7 +46,7 @@ pipeline:
   # Drop unwanted logs
   - type: "drop_output"
 
-  # Remove file_name label. We have filtered carbon logs and no longer need the file name
+  # Remove file_name label. We have filtered stanza logs and no longer need the file name
   - id: remove_file_name
     type: restructure
     ops:

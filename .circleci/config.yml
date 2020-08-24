@@ -10,10 +10,10 @@ jobs:
       - run: mkdir ./artifacts
       - run:
           name: Create Plugins Zip
-          command: zip ./artifacts/carbon-plugins.zip ./plugins/*
+          command: zip ./artifacts/stanza-plugins.zip ./plugins/*
       - run:
           name: Create Plugins Tarball
-          command: tar -zcvf ./artifacts/carbon-plugins.tar.gz ./plugins/*
+          command: tar -zcvf ./artifacts/stanza-plugins.tar.gz ./plugins/*
       - run:
           name: Write Version File
           command: printf '{"version":"%s"}\n' $CIRCLE_TAG > artifacts/version.json

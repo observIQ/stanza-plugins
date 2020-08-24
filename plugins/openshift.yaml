@@ -37,8 +37,8 @@ pipeline:
 
   - type: router
     routes:
-      # Ignore logs written by Carbon to avoid circular parsing
-      - expr: '$record._SYSTEMD_UNIT == "docker.service" and $record.CONTAINER_NAME != nil and $record.CONTAINER_NAME matches "carbon"'
+      # Ignore logs written by Stanza to avoid circular parsing
+      - expr: '$record._SYSTEMD_UNIT == "docker.service" and $record.CONTAINER_NAME != nil and $record.CONTAINER_NAME matches "stanza"'
         output: drop_output
       # Send all container logs to the container name parser
       - expr: '$record._SYSTEMD_UNIT == "docker.service" and $record.CONTAINER_NAME != nil'

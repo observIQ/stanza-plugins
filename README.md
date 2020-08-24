@@ -1,6 +1,6 @@
-# carbon-plugins
+# stanza-plugins
 
-carbon-plugins contains plugins for the [Carbon Log Agent](https://github.com/observIQ/carbon)
+stanza-plugins contains plugins for the [Stanza Log Agent](https://github.com/observIQ/stanza)
 
 ## Release Process
 
