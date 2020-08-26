@@ -1,0 +1,75 @@
+# Plugin Info
+version: 0.0.1
+title: Kubernetes Events
+description: Kubernetes Events Parser
+parameters:
+  namespaces:
+    label: Namespaces
+    description: An array of namespaces. Defaults to use all namespaces.
+    type: strings
+    default: []
+
+# Set Defaults
+# {{$namespaces := default [] .namespaces}}
+
+# Pipeline Template
+pipeline:
+  - type: k8s_event_input
+  - type: severity_parser
+    preset: none
+    parse_from: "$labels.event_type"
+    namespaces: {{ $namespaces }}
+    mapping:
+      info:
+        - ADDED
+        - MODIFIED
+        - DELETED
+        - BOOKMARK
+        - FailedPodSandBoxStatus
+        - SandboxChanged
+        - NodeAllocatableEnforced
+        - SuccessfulMountVolume
+        - SuccessfulAttachVolume
+        - FileSystemResizeSuccessful
+        - VolumeResizeSuccessful
+        - Starting
+        - NodeReady
+        - Pulling
+        - Pulled
+      notice:
+        - Rebooted
+        - NodeNotReady
+        - ImageGCFailed
+        - ContainerGCFailed
+        - NodeNotSchedulable
+        - NodeSchedulable
+      warning:
+        - AlreadyMountedVolume
+        - ErrImageNeverPull
+        - Evicted
+        - FailedCreatePodSandBox
+        - FailedNodeAllocatableEnforcement
+        - FailedPodSandBoxStatus
+        - FailedPostStartHook
+        - FailedPreStopHook
+        - FailedSync
+        - FailedValidation
+        - HostPortConflict
+        - InspectFailed
+        - InvalidDiskCapacity
+        - NetworkNotReady
+        - ProbeWarning
+        - Unhealthy
+      error:
+        - ERROR
+        - Failed
+        - FailedAttachVolume
+        - FailedMountOnFilesystemMismatch
+        - FailedMount
+        - FailedScheduling
+        - FreeDiskSpaceFailed
+        - FailedMapVolume
+        - FileSystemResizeFailed
+        - KubeletSetupFailed
+        - VolumeResizeFailed
+    output: {{ .output }}
