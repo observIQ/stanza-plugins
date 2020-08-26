@@ -23,6 +23,7 @@ pipeline:
       info:
         - ADDED
         - MODIFIED
+        - Created
         - DELETED
         - BOOKMARK
         - FailedPodSandBoxStatus
@@ -36,6 +37,10 @@ pipeline:
         - NodeReady
         - Pulling
         - Pulled
+        - Started
+        - Killing
+        - Preempting
+        - ExceededGracePeriod
       notice:
         - Rebooted
         - NodeNotReady
@@ -45,6 +50,7 @@ pipeline:
         - NodeSchedulable
       warning:
         - AlreadyMountedVolume
+        - BackOff
         - ErrImageNeverPull
         - Evicted
         - FailedCreatePodSandBox
@@ -54,6 +60,7 @@ pipeline:
         - FailedPreStopHook
         - FailedSync
         - FailedValidation
+        - FailedKillPod
         - HostPortConflict
         - InspectFailed
         - InvalidDiskCapacity
@@ -64,12 +71,13 @@ pipeline:
         - ERROR
         - Failed
         - FailedAttachVolume
+        - FailedCreatePodContainer
+        - FailedMapVolume
         - FailedMountOnFilesystemMismatch
         - FailedMount
         - FailedScheduling
-        - FreeDiskSpaceFailed
-        - FailedMapVolume
         - FileSystemResizeFailed
+        - FreeDiskSpaceFailed
         - KubeletSetupFailed
         - VolumeResizeFailed
     output: {{ .output }}
