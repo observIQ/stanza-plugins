@@ -15,17 +15,16 @@ parameters:
 # Pipeline Template
 pipeline:
   - type: k8s_event_input
+    labels:
+      plugin_id: {{ .id }}
+      log_type: "k8s.events"
   - type: severity_parser
     preset: none
     parse_from: "$labels.event_type"
     namespaces: {{ $namespaces }}
     mapping:
       info:
-        - ADDED
-        - MODIFIED
         - Created
-        - DELETED
-        - BOOKMARK
         - SandboxChanged
         - NodeAllocatableEnforced
         - SuccessfulMountVolume
@@ -62,7 +61,6 @@ pipeline:
         - Rebooted
       error:
         - BackOff
-        - ERROR
         - FailedCreatePodContainer
         - FailedMountOnFilesystemMismatch
         - FailedPodSandBoxStatus
