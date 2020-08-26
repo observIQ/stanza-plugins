@@ -26,7 +26,6 @@ pipeline:
         - Created
         - DELETED
         - BOOKMARK
-        - FailedPodSandBoxStatus
         - SandboxChanged
         - NodeAllocatableEnforced
         - SuccessfulMountVolume
@@ -39,45 +38,47 @@ pipeline:
         - Pulled
         - Started
         - Killing
-        - Preempting
-        - ExceededGracePeriod
       notice:
-        - Rebooted
-        - NodeNotReady
-        - ImageGCFailed
-        - ContainerGCFailed
-        - NodeNotSchedulable
         - NodeSchedulable
       warning:
         - AlreadyMountedVolume
-        - BackOff
-        - ErrImageNeverPull
+        - ContainerGCFailed
+        - ExceededGracePeriod
         - Evicted
         - FailedCreatePodSandBox
         - FailedNodeAllocatableEnforcement
-        - FailedPodSandBoxStatus
         - FailedPostStartHook
         - FailedPreStopHook
         - FailedSync
         - FailedValidation
         - FailedKillPod
         - HostPortConflict
+        - ImageGCFailed
         - InspectFailed
         - InvalidDiskCapacity
         - NetworkNotReady
+        - Preempting
         - ProbeWarning
-        - Unhealthy
+        - Rebooted
       error:
+        - BackOff
         - ERROR
-        - Failed
-        - FailedAttachVolume
         - FailedCreatePodContainer
-        - FailedMapVolume
         - FailedMountOnFilesystemMismatch
-        - FailedMount
+        - FailedPodSandBoxStatus
         - FailedScheduling
         - FileSystemResizeFailed
         - FreeDiskSpaceFailed
         - KubeletSetupFailed
+        - Unhealthy
         - VolumeResizeFailed
+      critical:
+        - ErrImagePull
+        - ErrImageNeverPull
+        - Failed
+        - FailedAttachVolume
+        - FailedMapVolume
+        - FailedMount
+        - NodeNotReady
+        - NodeNotSchedulable
     output: {{ .output }}
