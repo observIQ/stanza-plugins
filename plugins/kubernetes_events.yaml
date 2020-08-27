@@ -20,7 +20,7 @@ pipeline:
       log_type: "k8s.events"
   - type: severity_parser
     preset: none
-    parse_from: "$labels.event_type"
+    parse_from: $record.reason
     namespaces: {{ $namespaces }}
     mapping:
       info:
@@ -37,7 +37,6 @@ pipeline:
         - Pulled
         - Started
         - Killing
-      notice:
         - NodeSchedulable
       warning:
         - AlreadyMountedVolume
