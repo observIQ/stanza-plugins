@@ -57,13 +57,13 @@ pipeline:
       - output: container_regex_parser
         expr: true
 
-  # Use this JSON parser since there was no trailing newline in log field.
+  # Attempt to parse nested JSON since the log appears to be JSON
   - id: nested_json_parser
     type: json_parser
     parse_from: $record.log
     output: container_regex_parser
 
-  # Log field has been parsed if possible and now we can parse log_type field for container information.
+  # Log field has been parsed if possible and now we can parse the file name field for container information.
   - id: container_regex_parser
     type: regex_parser
     parse_from: $labels.file_name
@@ -124,7 +124,7 @@ pipeline:
         labels:
           log_type: 'k8s.container'
 
-  # Use journald to gather kubelet logs. Use provider path for journald if available otherwise use default locations.
+  # Use journald to gather kubelet logs. Use provided path for journald if available otherwise use default locations.
   - id: kubelet_reader
     type: journald_input
     # {{ if .kubelet_journald_log_path }}
