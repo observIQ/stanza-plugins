@@ -140,19 +140,33 @@ pipeline:
     type: filter
     expr: '$record._SYSTEMD_UNIT != "kubelet.service"'
 
-  # If MESSAGE field matches format then, parse it otherwise send down the pipeline.
+  # Move hostname to k8s node resource
+  - id: kubelet_resource
+    type: restructure
+    ops:
+      - move:
+          from: "$record._HOSTNAME"
+          to: "$resource['host.name']"
+      - move:
+          from: "MESSAGE"
+          to: "message"
+      - add:
+          field: "$resource['k8s.cluster.name']"
+          value: ""
+
+  # If message field matches format then, parse it otherwise send down the pipeline.
   - id: kubelet_message_parser_router
     type: router
     routes:
       - output: message_regex_parser
-        expr: '$record.MESSAGE matches "^\\w\\d{4}"'
+        expr: '$record.message matches "^\\w\\d{4}"'
       - output: {{ .output }}
         expr: true
 
-  # MESSAGE field seems to match expected format.
+  # message field seems to match expected format.
   - id: message_regex_parser
     type: regex_parser
-    parse_from: MESSAGE
+    parse_from: message
     regex: '(?P<severity>\w)(?P<timestamp>\d{4} \d{2}:\d{2}:\d{2}.\d+)\s+(?P<pid>\d+)\s+(?P<source>[^ \]]+)\] (?P<message>.*)'
     severity:
       parse_from: severity
