@@ -1,4 +1,4 @@
-version: 0.0.2
+version: 0.0.3
 title: Apache Cassandra
 description: Log parser for Appache Cassandra
 parameters:
@@ -6,15 +6,17 @@ parameters:
     label: Apache Cassandra System Log Path
     description: Path to the Apache Cassandra system log file.
     type: string
-    required: true
+    default: "/var/log/cassandra/cassandra.log"
   debug_log_path:
     label: Apache Cassandra Debug Log Path
     description: Path to the Apache Cassandra debug log file.
     type: string
+    default: "/var/log/cassandra/debug.log"
   gc_log_path:
     label: Apache Cassandra Garbage Collection Log Path
     description: Path to the Apache Cassandra garbage collection log file.
     type: string
+    default: "/var/log/cassandra/gc.log"
   start_at:
     label: Start At
     description: "Start reading file from 'beginning' or 'end'"
@@ -23,15 +25,22 @@ parameters:
      - beginning
      - end
     default: end
+
+# Set Defaults
+# {{$system_log_path := default "/var/log/cassandra/cassandra.log" .system_log_path}}
+# {{$debug_log_path := default "/var/log/cassandra/debug.log" .debug_log_path}}
+# {{$gc_log_path := default "/var/log/cassandra/gc.log" .gc_log_path}}
+# {{$start_at := default "end" .start_at}}
+
 pipeline:
   # {{ if .system_log_path }}
   - id: system_log_reader
     type: file_input
     include:
-      - {{ .system_log_path }}
+      - {{ $system_log_path }}
     multiline:
       line_start_pattern: '[A-Z]+\s+\[[^\]]+\]'
-    start_at: {{ or .start_at "end" }}
+    start_at: {{ $start_at }}
     labels:
       log_type: 'cassandra.system'
       plugin_id: {{ .id }}
@@ -42,10 +51,10 @@ pipeline:
   - id: debug_log_reader
     type: file_input
     include:
-      - {{ .debug_log_path }}
+      - {{ $debug_log_path }}
     multiline:
       line_start_pattern: '[A-Z]+\s+\[[^\]]+\]'
-    start_at: {{ or .start_at "end" }}
+    start_at: {{ $start_at }}
     labels:
       log_type: 'cassandra.debug'
       plugin_id: {{ .id }}
@@ -56,10 +65,10 @@ pipeline:
   - id: gc_log_reader
     type: file_input
     include:
-      - {{ .gc_log_path }}
+      - {{ $gc_log_path }}
     multiline:
       line_start_pattern: '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}[+-]\d{4}'
-    start_at: {{ or .start_at "end" }}
+    start_at: {{ $start_at }}
     labels:
       log_type: 'cassandra.gc'
       plugin_id: {{ .id }}
