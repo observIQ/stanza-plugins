@@ -53,13 +53,13 @@ parameters:
 
 # Set Defaults
 # {{$enable_server_log := default true .enable_server_log}}
-# {{$server_log_path := default "/var/log/cassandra/cassandra.log" .server_log_path}}
+# {{$server_log_path := default "/home/kafka/kafka/logs/server.log*" .server_log_path}}
 # {{$enable_controller_log := default true .enable_controller_log}}
-# {{$controller_log_path := default "/var/log/cassandra/debug.log" .controller_log_path}}
+# {{$controller_log_path := default "/home/kafka/kafka/logs/controller.log*" .controller_log_path}}
 # {{$enable_state_change_log := default true .enable_state_change_log}}
-# {{$state_change_log_path := default "/var/log/cassandra/gc.log" .state_change_log_path}}
+# {{$state_change_log_path := default "/home/kafka/kafka/logs/state-change.log*" .state_change_log_path}}
 # {{$enable_log_cleaner_log := default true .enable_log_cleaner_log}}
-# {{$log_cleaner_log_path := default "/var/log/cassandra/gc.log" .log_cleaner_log_path}}
+# {{$log_cleaner_log_path := default "/home/kafka/kafka/logs/log-cleaner.log*" .log_cleaner_log_path}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
