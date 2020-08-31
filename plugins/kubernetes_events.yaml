@@ -9,20 +9,20 @@ parameters:
     type: strings
     default: []
 
-# Set Defaults
-# {{$namespaces := default [] .namespaces}}
-
 # Pipeline Template
 pipeline:
   - type: k8s_event_input
+    namespaces:
+{{ range $i, $ns := .namespaces  }}
+      - {{ $ns }}
+{{ end }}
     labels:
       plugin_id: {{ .id }}
       log_type: "k8s.events"
   - type: severity_parser
     preset: none
     parse_from: $record.reason
-    namespaces: {{ $namespaces }}
-    perserve: true
+    preserve: true
     mapping:
       info:
         - Created
