@@ -22,6 +22,7 @@ pipeline:
     preset: none
     parse_from: $record.reason
     namespaces: {{ $namespaces }}
+    perserve: true
     mapping:
       info:
         - Created
@@ -40,6 +41,7 @@ pipeline:
         - NodeSchedulable
       warning:
         - AlreadyMountedVolume
+        - BackOff
         - ContainerGCFailed
         - ExceededGracePeriod
         - Evicted
@@ -59,7 +61,6 @@ pipeline:
         - ProbeWarning
         - Rebooted
       error:
-        - BackOff
         - FailedCreatePodContainer
         - FailedMountOnFilesystemMismatch
         - FailedPodSandBoxStatus
