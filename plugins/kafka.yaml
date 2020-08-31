@@ -2,23 +2,46 @@ version: 0.0.1
 title: Apache Kafka
 description: Log parser for Apache Kafka
 parameters:
+  enable_server_log:
+    label: Server Logs
+    description: Enable to collect Apache Kafka server logs
+    type: bool
+    default: true
   server_log_path:
     label: Server Log Path
     description: Apache Kafka server log path
     type: string
-    required: true
+    default: "/home/kafka/kafka/logs/server.log*"
+  enable_controller_log:
+    label: Server Logs
+    description: Enable to collect Apache Kafka controller logs
+    type: bool
+    default: true
   controller_log_path:
     label: Controller Log Path
     description: Apache Kafka controller log path
     type: string
+    default: "/home/kafka/kafka/logs/controller.log*"
+  enable_state_change_log:
+    label: State Change Logs
+    description: Enable to collect Apache Kafka state change logs
+    type: bool
+    default: true
   state_change_log_path:
     label: State Change Log Path
     description: Apache Kafka state-change log path
     type: string
+    default: "/home/kafka/kafka/logs/state-change.log*"
+  enable_log_cleaner_log:
+    label: Server Logs
+    description: Enable to collect Apache Kafka log cleaner logs
+    type: bool
+    default: true
   log_cleaner_log_path:
     label: Log Cleaner Log Path
     description: Apache Kafka log-cleaner log path
     type: string
+    default: "/home/kafka/kafka/logs/log-cleaner.log*"
   start_at:
     label: Start At
     description:  Start reading file from 'beginning' or 'end'
@@ -28,27 +51,81 @@ parameters:
       - end
     default: end
 
+# Set Defaults
+# {{$enable_server_log := default true .enable_server_log}}
+# {{$server_log_path := default "/var/log/cassandra/cassandra.log" .server_log_path}}
+# {{$enable_controller_log := default true .enable_controller_log}}
+# {{$controller_log_path := default "/var/log/cassandra/debug.log" .controller_log_path}}
+# {{$enable_state_change_log := default true .enable_state_change_log}}
+# {{$state_change_log_path := default "/var/log/cassandra/gc.log" .state_change_log_path}}
+# {{$enable_log_cleaner_log := default true .enable_log_cleaner_log}}
+# {{$log_cleaner_log_path := default "/var/log/cassandra/gc.log" .log_cleaner_log_path}}
+# {{$start_at := default "end" .start_at}}
+
 # Pipeline Template
 pipeline:
-  # Use file input for all log files as it uses the same regex parser.
-  # {{ if .server_log_path }}
-  - id: log_reader
+# {{ if $enable_server_log }}
+  - id: server_log_reader
     type: file_input
     include:
-      - {{ .server_log_path}}
-  # Only use paths if the parameter was defined in the pipeline
-{{ if .controller_log_path }}      - {{ .controller_log_path}}{{ end }}
-{{ if .state_change_log_path }}      - {{ .state_change_log_path}}{{ end }}
-{{ if .log_cleaner_log_path }}      - {{ .log_cleaner_log_path}}{{ end }}
+      - {{ $server_log_path }}
     multiline:
       line_start_pattern: '\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\]'
     write_to: log_entry
-    start_at: {{ or .start_at "end" }}
+    start_at: {{ $start_at }}
     labels:
       plugin_id: {{ .id }}
+      log_type: 'kafka.server'
+    output: regex_parser
+# {{ end }}
+
+# {{ if $enable_controller_log }}
+  - id: controller_log_reader
+    type: file_input
+    include:
+      - {{ $controller_log_path }}
+    multiline:
+      line_start_pattern: '\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\]'
+    write_to: log_entry
+    start_at: {{ $start_at }}
+    labels:
+      plugin_id: {{ .id }}
+      log_type: 'kafka.controller'
+    output: regex_parser
+# {{ end }}
+
+# {{ if $enable_state_change_log }}
+  - id: state_change_log_reader
+    type: file_input
+    include:
+      - {{ $state_change_log_path }}
+    multiline:
+      line_start_pattern: '\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\]'
+    write_to: log_entry
+    start_at: {{ $start_at }}
+    labels:
+      plugin_id: {{ .id }}
+      log_type: 'kafka.state_change'
+    output: regex_parser
+# {{ end }}
+
+# {{ if $enable_log_cleaner_log }}
+  - id: log_cleaner_log_reader
+    type: file_input
+    include:
+      - {{ $log_cleaner_log_path }}
+    multiline:
+      line_start_pattern: '\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\]'
+    write_to: log_entry
+    start_at: {{ $start_at }}
+    labels:
+      plugin_id: {{ .id }}
+      log_type: 'kafka.log_cleaner'
+    output: regex_parser
+# {{ end }}
 
   # Parse log entries.
-  - id: server_regex_parser
+  - id: regex_parser
     type: regex_parser
     parse_from: log_entry
     regex: '^\[(?P<date_time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),(?P<milliseconds>\d{3})\] (?P<severity>[^ ]+) (?P<message>.*)'
@@ -57,31 +134,6 @@ pipeline:
       mapping:
         warning: warn
         critical: fatal
-
-  # Determine what log type the log entry is and route to appropriate metadata plugin
-  - id: filename_router
-    type: router
-    routes:
-      - expr: '$labels.file_name != nil and $labels.file_name matches "^server"'
-        output: timestamp_restructurer
-        labels:
-          log_type: 'kafka.server'
-      - expr: '$labels.file_name != nil and $labels.file_name matches "^controller"'
-        output: timestamp_restructurer
-        labels:
-          log_type: 'kafka.controller'
-      - expr: '$labels.file_name != nil and $labels.file_name matches "^state-change"'
-        output: timestamp_restructurer
-        labels:
-          log_type: 'kafka.state_change'
-      - expr: '$labels.file_name != nil and $labels.file_name matches "^log-cleaner"'
-        output: timestamp_restructurer
-        labels:
-          log_type: 'kafka.log_cleaner'
-      - expr: true
-        output: timestamp_restructurer
-        labels:
-          log_type: 'kafka'
 
   # Due to limitations in golang time we cannot have a comma in our timestamp we split timestamp into two fields 'date_time' and 'milliseconds'.
   # This will combine and remove 'date_time' and 'milliseconds' fields into a timestamp field.
@@ -99,4 +151,3 @@ pipeline:
     parse_from: timestamp
     layout: '%F %T.%L'
     output: {{ .output }}
-  # {{ end }}
