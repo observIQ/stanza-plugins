@@ -1,12 +1,12 @@
-version: 0.0.4
+version: 0.0.5
 title: MongoDB
 description: Log parser for MongoDB
 parameters:
-  path: 
+  log_path: 
     label: Path
     description: The path of the log file
     type: string
-    required: true
+    default: "/var/log/mongodb/mongodb.log"
   start_at:
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -15,14 +15,18 @@ parameters:
      - beginning
      - end
     default: end
+
+# Set Defaults
+# {{$log_path := default "/var/log/mongodb/mongodb.log" .log_path}}
+# {{$start_at := default "end" .start_at}}
+
+# Pipeline Template
 pipeline:
   - id: file_input
     type: file_input
     include:
-      - {{ .path }}
-    # {{ if .start_at }}
-    start_at: {{ .start_at }}
-    # {{ end }}
+      - {{ $log_path }}
+    start_at: {{ $start_at }}
     labels:
       log_type: 'mongodb'
       plugin_id: {{ .id }}

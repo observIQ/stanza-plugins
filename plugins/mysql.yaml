@@ -1,19 +1,37 @@
-version: 0.0.6
+version: 0.0.7
 title: MySQL
 description: Log parser for MySQL
 parameters:
+  enable_general_log:
+    label: General Logs
+    description: Enable to collect MySQL general logs
+    type: bool
+    default: true
   general_log_path:
     label: General Log Path
     description: Path to general log file
     type: string
+    default: "/var/log/mysql/general.log"
+  enable_slow_log:
+    label: Slow Query Logs
+    description: Enable to collect MySQL slow query logs
+    type: bool
+    default: true
   slow_query_log_path: 
     label: Slow Query Log Path
     description: Path to slow query log file
     type: string
+    default: "/var/log/mysql/slow.log"
+  enable_error_log:
+    label: Error Logs
+    description: Enable to collect MySQL error logs
+    type: bool
+    default: true
   error_log_path: 
     label: Error Log Path
     description: Path to mysqld log file
     type: string
+    default: "/var/log/mysql/mysqld.log"
   start_at: 
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -22,15 +40,24 @@ parameters:
      - beginning
      - end
     default: end
+
+# Set Defaults
+# {{$enable_general_log := default true .enable_general_log}}
+# {{$general_log_path := default "/var/log/mysql/general.log" .general_log_path}}
+# {{$enable_slow_log := default true .enable_slow_log}}
+# {{$slow_query_log_path := default "/var/log/mysql/slow.log" .slow_query_log_path}}
+# {{$enable_error_log := default true .enable_error_log}}
+# {{$error_log_path := default "/var/log/mysql/mysqld.log" .error_log_path}}
+# {{$start_at := default "end" .start_at}}
+
+# Pipeline Template
 pipeline:
-  # {{ if .slow_query_log_path }}
+  # {{ if $enable_slow_log }}
   - id: slow_query_reader
     type: file_input
     include:
-      - {{ .slow_query_log_path }}
-    # {{ if .start_at }}
-    start_at: {{ .start_at }}
-    # {{ end }}
+      - {{ $slow_query_log_path }}
+    start_at: {{ $start_at }}
     multiline:
       line_start_pattern: '# Time: \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z\s|/\w+/\w+/mysqld,'
     labels:
@@ -58,14 +85,12 @@ pipeline:
     output: {{ .output }}
   # {{ end }}
 
-  # {{ if .error_log_path }}
+  # {{ if $enable_error_log }}
   - id: error_reader
     type: file_input
     include:
-      - {{ .error_log_path }}
-    # {{ if .start_at }}
-    start_at: {{ .start_at }}
-    # {{ end }}
+      - {{ $error_log_path }}
+    start_at: {{ $start_at }}
     multiline:
       line_start_pattern: \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z
     labels:
@@ -87,14 +112,12 @@ pipeline:
     output: {{ .output }}
   # {{ end }}
 
-  # {{ if .general_log_path }}
+  # {{ if $enable_general_log }}
   - id: general_query_reader
     type: file_input
     include:
-      - {{ .general_log_path }}
-    # {{ if .start_at }}
-    start_at: {{ .start_at }}
-    # {{ end }}
+      - {{ $general_log_path }}
+    start_at: {{ $start_at }}
     multiline:
       line_start_pattern: '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z|/\w+/\w+/mysqld,'
     labels:

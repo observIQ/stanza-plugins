@@ -1,4 +1,4 @@
-version: 0.0.6
+version: 0.0.7
 title: IBM Db2
 description: Log parser for IBM Db2
 parameters:
@@ -6,7 +6,7 @@ parameters:
     label: Log Path
     description: Path to the log file
     type: string
-    required: true
+    default: "/home/db2inst1/sqllib/db2dump/db2diag.log"
   start_at: 
     label: Start At
     description: "Start reading file from 'beginning' or 'end'"
@@ -15,14 +15,17 @@ parameters:
      - beginning
      - end
     default: end
+
+# Set Defaults
+# {{$path := default "/home/db2inst1/sqllib/db2dump/db2diag.log" .path}}
+# {{$start_at := default "end" .start_at}}
+
 pipeline:
   - id: ibm_db2_reader
     type: file_input
     include:
-      - {{ .path }}
-    # {{ if .start_at }}
-    start_at: {{ .start_at }}
-    # {{ end }}
+      - {{ $path }}
+    start_at: {{ $start_at }}
     multiline:
       line_start_pattern: '\d{4}-\d{2}-\d{2}-\d{2}.\d{2}.\d{2}.\d+\s\w{3}\n|\d{4}-\d{2}-\d{2}-\d{2}.\d{2}.\d{2}.\d{6}([-+][\d\w]{3}|[\d\w]{4})\s'
     labels:

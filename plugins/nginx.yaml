@@ -1,16 +1,27 @@
-version: 0.0.1
+version: 0.0.2
 title: Nginx
 description: Log parser for Nginx
 parameters:
+  enable_access_log:
+    label: Access Logs
+    description: Enable to collect Nginx access slogs
+    type: bool
+    default: true
   access_log_path:
     label: Access Log Path
     description: Path to access log file
     type: string
-    required: true
+    default: "/var/log/nginx/access.log*"
+  enable_error_log:
+    label: Error Logs
+    description: Enable to collect Nginx error logs
+    type: bool
+    default: true
   error_log_path:
     label: Error Log Path
     description: Path to error log file
     type: string
+    default: "/var/log/nginx/error.log*"
   start_at:
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -19,13 +30,22 @@ parameters:
      - beginning
      - end
     default: end
+
+# Set Defaults
+# {{$enable_access_log := default true .enable_access_log}}
+# {{$access_log_path := default "/var/log/nginx/access.log*" .access_log_path}}
+# {{$enable_error_log := default true .enable_error_log}}
+# {{$error_log_path := default "/var/log/nginx/error.log*" .error_log_path}}
+# {{$start_at := default "end" .start_at}}
+
+# Pipeline Template
 pipeline:
-  #{{ if .access_log_path }}
+  #{{ if $enable_access_log }}
   - id: nginx_access_reader
     type: file_input
     include:
-      - {{ .access_log_path }}
-    start_at: {{ or .start_at "end" }}
+      - {{ $access_log_path }}
+    start_at: {{ $start_at }}
     labels:
       log_type: 'nginx.access'
       plugin_id: {{ .id }}
@@ -39,12 +59,12 @@ pipeline:
     output: {{ .output }}
   #{{ end }}
 
-  #{{ if .error_log_path }}
+  #{{ if $enable_error_log }}
   - id: nginx_error_reader
     type: file_input
     include:
-      - {{ .error_log_path }}
-    start_at: {{ or .start_at "end" }}
+      - {{ $error_log_path }}
+    start_at: {{ $start_at }}
     multiline:
       line_start_pattern: '\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} \[\w+\] (?P<pid>\d+).(?P<tid>\d+): '
     labels:
