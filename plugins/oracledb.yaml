@@ -1,23 +1,41 @@
-version: 0.0.5
+version: 0.0.6
 title: OracleDB
 description: Log parser for OracleDB
 parameters:
+  enable_audit_log:
+    label: Audit Logs
+    description: Enable to collect OracleDB audit logs
+    type: bool
+    default: true
   audit_log_path:
     label: Audit Log Path
     description: Path to the audit log file
     type: string
-  truncate_audit_action: 
+    default: "/u01/app/oracle/product/*/dbhome_1/admin/*/adump/*.aud"
+  enable_truncate_audit_action: 
     label: Truncate Audit Action
     description: Whether or not to truncate the audit log action field
     type: bool
+  enable_alert_log:
+    label: Alert Logs
+    description: Enable to collect OracleDB alert logs
+    type: bool
+    default: true
   alert_log_path:
     label: Alert Log Path
     description: Path to the alert log file
     type: string
+    default: "/u01/app/oracle/product/*/dbhome_1/diag/rdbms/*/*/trace/alert_*.log"
+  enable_listener_log:
+    label: Listener Logs
+    description: Enable to collect OracleDB listener logs
+    type: bool
+    default: true
   listener_log_path:
     label: Listener Log Path
     description: Path to the listener log file
     type: string
+    default: "/u01/app/oracle/product/*/dbhome_1/diag/rdbms/*/*/alert/log.xml"
   start_at: 
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -26,15 +44,25 @@ parameters:
      - beginning
      - end
     default: end
+
+# Set Defaults
+# {{$enable_audit_log := default true .enable_audit_log}}
+# {{$audit_log_path := default "/u01/app/oracle/product/*/dbhome_1/admin/*/adump/*.aud" .audit_log_path}}
+# {{$enable_truncate_audit_action := default true .enable_truncate_audit_action}}
+# {{$enable_alert_log := default true .enable_alert_log}}
+# {{$alert_log_path := default "/u01/app/oracle/product/*/dbhome_1/diag/rdbms/*/*/trace/alert_*.log" .alert_log_path}}
+# {{$enable_listener_log := default true .enable_listener_log}}
+# {{$listener_log_path := default "/u01/app/oracle/product/*/dbhome_1/diag/rdbms/*/*/alert/log.xml" .listener_log_path}}
+# {{$start_at := default "end" .start_at}}
+
+# Pipeline Template
 pipeline:
-  # {{ if .audit_log_path }}
+  # {{ if $enable_audit_log }}
   - id: audit_reader
     type: file_input
     include:
-      - {{ .audit_log_path }}
-    # {{ if .start_at }}
-    start_at: {{ .start_at }}
-    # {{ end }}
+      - {{ $audit_log_path }}
+    start_at: {{ $start_at }}
     multiline:
       line_start_pattern: '[a-zA-z]+ [a-zA-Z]+ \d{2} \d{2}:\d{2}:\d{2} \d{4} [-+]\d{2}:\d{2}\n|Audit File '
     labels:
@@ -53,11 +81,10 @@ pipeline:
   - id: audit_regex_parser
     type: regex_parser
     regex: '(?P<timestamp>\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \d{4} -\d{2}:\d{2})\nLENGTH : \D(?P<length>\d*)\D\nACTION :\[\d+\]\s+\D(?P<action>[\d\w[:ascii:]]+)\D\nDATABASE USER:\[\d+\]\s+\D(?P<database_user>[^\s]+)\D\n(PRIVILEGE :\[\d+\]\s+\D(?P<privilege>[^\s]+)\D\n)?(CLIENT USER:\[\d+\]\s+\D(?P<client_user>[^\s]+)\D\n)?(CLIENT TERMINAL:\[\d+\]\s+\D(?P<client_terminal>[^\s]+|)\D\n)?(STATUS:\[\d+\]\s+\D(?P<status>[^\s]+)\D\n)?(DBID:\[\d+\]\s\D(?P<dbid>\d+)\D\n)?(SESSIONID:\[\d+\]\s+\D(?P<sessionid>[^\s]+)\D\n)?(USERHOST:\[\d+\]\s+\D(?P<userhost>[^\s]+)\D\n)?(CLIENT ADDRESS:\[\d+\]\s+\D(?P<client_address>[^\s]+|)\D\n)?(ACTION NUMBER:\[\d+\]\s+\D(?P<action_number>[^\s]+|)\D)?'
-    preserve: true
     timestamp:
       parse_from: timestamp
       layout: '%c %j'
-    # {{ if .truncate_audit_action }}
+    # {{ if $enable_truncate_audit_action }}
     output: audit_action_restructurer
     # {{ else }}
     output: {{ .output }}
@@ -77,14 +104,12 @@ pipeline:
     output: {{ .output }}
   # {{ end }}
 
-  # {{ if .alert_log_path }}
+  # {{ if $enable_alert_log }}
   - id: alert_reader
     type: file_input
     include:
-      - {{ .alert_log_path }}
-    # {{ if .start_at }}
-    start_at: {{ .start_at }}
-    # {{ end }}
+      - {{ $alert_log_path }}
+    start_at: {{ $start_at }}
     multiline:
       line_start_pattern: '\d{4}-\d{2}-\d{2}T\d{1,}:\d{2}:\d{2}.\d+[+-]\d+:\d+'
     labels:
@@ -101,14 +126,12 @@ pipeline:
     output: {{ .output }}
   # {{ end }}
 
-  # {{ if .listener_log_path }}
+  # {{ if $enable_listener_log }}
   - id: listener_reader
     type: file_input
     include:
-      - {{ .listener_log_path }}
-    # {{ if .start_at }}
-    start_at: {{ .start_at }}
-    # {{ end }}
+      - {{ $listener_log_path }}
+    start_at: {{ $start_at }}
     multiline:
       line_start_pattern: '/[\w\d/]+:|\\[\w\d\\]+:|\d{4}-\d{2}-\d{2}T\d{1}:\d{2}:\d{2}.\d+[+-]\d+:\d+|<msg '
     labels:
