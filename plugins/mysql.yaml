@@ -3,8 +3,8 @@ title: MySQL
 description: Log parser for MySQL
 parameters:
   enable_general_log:
-    label: Server Logs
-    description: Enable to collect Apache Kafka server logs
+    label: General Logs
+    description: Enable to collect MySQL general logs
     type: bool
     default: true
   general_log_path:
@@ -13,8 +13,8 @@ parameters:
     type: string
     default: "/var/log/mysql/general.log"
   enable_slow_log:
-    label: Server Logs
-    description: Enable to collect Apache Kafka server logs
+    label: Slow Query Logs
+    description: Enable to collect MySQL slow query logs
     type: bool
     default: true
   slow_query_log_path: 
@@ -23,8 +23,8 @@ parameters:
     type: string
     default: "/var/log/mysql/slow.log"
   enable_error_log:
-    label: Server Logs
-    description: Enable to collect Apache Kafka server logs
+    label: Error Logs
+    description: Enable to collect MySQL error logs
     type: bool
     default: true
   error_log_path: 
