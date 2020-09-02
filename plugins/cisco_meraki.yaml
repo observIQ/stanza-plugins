@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 0.0.2
 title: Cisco Meraki
 description: Log parser for Cisco Meraki
 parameters:
@@ -7,10 +7,10 @@ parameters:
     label: Listen Address
     description: A syslog address of the form `<ip>:<port>`
     type: string
-    default: ":5140"
+    default: "0.0.0.0:5140"
 
 # Set Defaults
-# {{$listen_address := default ":5140" .listen_address}}
+# {{$listen_address := default "0.0.0.0:5140" .listen_address}}
 
 # Pipeline Template
 pipeline:
