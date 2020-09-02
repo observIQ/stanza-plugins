@@ -63,17 +63,17 @@ parameters:
     default: end
 
 # Set Defaults
-{{$enable_rails_application_log := default true .enable_rails_application_log}}
-{{$rails_application_log_path := default "/var/log/gitlab/gitlab-rails/application.log" .rails_application_log_path}}
-{{$enable_rails_production_log := default true .enable_rails_production_log}}
-{{$rails_production_log_path := default "/var/log/gitlab/gitlab-rails/production_json.log" .rails_production_log_path}}
-{{$enable_rails_api_request_log := default true .enable_rails_api_request_log}}
-{{$rails_api_request_log_path := default "/var/log/gitlab/gitlab-rails/api_json.log" .rails_api_request_log_path}}
-{{$enable_rails_sidekiq_log := default true .enable_rails_sidekiq_log}}
-{{$rails_sidekiq_log_path := default "/var/log/gitlab/gitlab-rails/sidekiq.log" .rails_sidekiq_log_path}}
-{{$enable_shell_log := default true .enable_shell_log}}
-{{$rails_shell_path := default "/var/log/gitlab/gitlab-shell/gitlab-shell.log" .rails_shell_path}}
-{{$start_at := default "end" .start_at}}
+# {{$enable_rails_application_log := default true .enable_rails_application_log}}
+# {{$rails_application_log_path := default "/var/log/gitlab/gitlab-rails/application.log" .rails_application_log_path}}
+# {{$enable_rails_production_log := default true .enable_rails_production_log}}
+# {{$rails_production_log_path := default "/var/log/gitlab/gitlab-rails/production_json.log" .rails_production_log_path}}
+# {{$enable_rails_api_request_log := default true .enable_rails_api_request_log}}
+# {{$rails_api_request_log_path := default "/var/log/gitlab/gitlab-rails/api_json.log" .rails_api_request_log_path}}
+# {{$enable_rails_sidekiq_log := default true .enable_rails_sidekiq_log}}
+# {{$rails_sidekiq_log_path := default "/var/log/gitlab/gitlab-rails/sidekiq.log" .rails_sidekiq_log_path}}
+# {{$enable_shell_log := default true .enable_shell_log}}
+# {{$rails_shell_path := default "/var/log/gitlab/gitlab-shell/gitlab-shell.log" .rails_shell_path}}
+# {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
 pipeline:

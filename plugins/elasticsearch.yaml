@@ -43,13 +43,13 @@ parameters:
     default: end
 
 # Set Defaults
-{{$enable_general_logs := default true .enable_general_logs}}
-{{$general_log_path := default "/var/log/elasticsearch/elasticsearch.log*" .general_log_path}}
-{{$enable_deprecation_logs := default true .enable_deprecation_logs}}
-{{$deprecation_log_path := default "/var/log/elasticsearch/elasticsearch_deprecation.log*" .deprecation_log_path}}
-{{$enable_gc_logs := default false .enable_gc_logs}}
-{{$gc_log_path := default "/var/log/elasticsearch/gc.log*" .gc_log_path}}
-{{$start_at := default "end" .start_at}}
+# {{$enable_general_logs := default true .enable_general_logs}}
+# {{$general_log_path := default "/var/log/elasticsearch/elasticsearch.log*" .general_log_path}}
+# {{$enable_deprecation_logs := default true .enable_deprecation_logs}}
+# {{$deprecation_log_path := default "/var/log/elasticsearch/elasticsearch_deprecation.log*" .deprecation_log_path}}
+# {{$enable_gc_logs := default false .enable_gc_logs}}
+# {{$gc_log_path := default "/var/log/elasticsearch/gc.log*" .gc_log_path}}
+# {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
 pipeline:
