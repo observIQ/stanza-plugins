@@ -38,12 +38,12 @@ parameters:
     default: end
 
 # Set Defaults
-{{$enable_dns_server := default true .enable_dns_server}}
-{{$enable_dfs_replication := default true .enable_dfs_replication}}
-{{$enable_file_replication := default false .enable_file_replication}}
-{{$poll_interval := default "1s" .poll_interval}}
-{{$max_reads := default 1000 .max_reads}}
-{{$start_at := default "end" .start_at}}
+# {{$enable_dns_server := default true .enable_dns_server}}
+# {{$enable_dfs_replication := default true .enable_dfs_replication}}
+# {{$enable_file_replication := default false .enable_file_replication}}
+# {{$poll_interval := default "1s" .poll_interval}}
+# {{$max_reads := default 1000 .max_reads}}
+# {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
 pipeline:

@@ -26,9 +26,9 @@ parameters:
     default: rfc5424
 
 # Set Defaults
-{{$listen_address := default ":514" .listen_address}}
-{{$connection_type := default "udp" .connection_type}}
-{{$protocol := default "rfc5424" .protocol}}
+# {{$listen_address := default ":514" .listen_address}}
+# {{$connection_type := default "udp" .connection_type}}
+# {{$protocol := default "rfc5424" .protocol}}
 
 # Pipeline Template
 pipeline:

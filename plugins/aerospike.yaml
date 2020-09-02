@@ -33,11 +33,11 @@ parameters:
     default: end
 
 # Set Defaults
-{{$enable_general_log := default true .enable_general_log}}
-{{$general_log_path := default "/var/log/aerospike/aerospike.log" .general_log_path}}
-{{$enable_telemetry_log := default true .enable_telemetry_log}}
-{{$telemetry_log_path := default "/var/log/aerospike/telemetry.log" .telemetry_log_path}}
-{{$start_at := default "end" .start_at}}
+# {{$enable_general_log := default true .enable_general_log}}
+# {{$general_log_path := default "/var/log/aerospike/aerospike.log" .general_log_path}}
+# {{$enable_telemetry_log := default true .enable_telemetry_log}}
+# {{$telemetry_log_path := default "/var/log/aerospike/telemetry.log" .telemetry_log_path}}
+# {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
 pipeline:

@@ -16,6 +16,7 @@ parameters:
     label: Truncate Audit Action
     description: Whether or not to truncate the audit log action field
     type: bool
+    default: true
   enable_alert_log:
     label: Alert Logs
     description: Enable to collect OracleDB alert logs
