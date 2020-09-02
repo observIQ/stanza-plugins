@@ -83,21 +83,21 @@ parameters:
     default: end
 
 # Set Defaults
-{{$enable_error_log := default true .enable_error_log}}
-{{$error_log_path := default "/opt/couchbase/var/lib/couchbase/logs/error.log" .error_log_path}}
-{{$enable_debug_log := default false .enable_debug_log}}
-{{$debug_log_path := default "/opt/couchbase/var/lib/couchbase/logs/debug.log" .debug_log_path}}
-{{$enable_info_log := default false .enable_info_log}}
-{{$info_log_path := default "/opt/couchbase/var/lib/couchbase/logs/info.log" .info_log_path}}
-{{$enable_access_log := default true .enable_access_log}}
-{{$http_access_log_path := default "/opt/couchbase/var/lib/couchbase/logs/http_access.log" .http_access_log_path}}
-{{$enable_internal_access_log := default false .enable_internal_access_log}}
-{{$http_internal_access_log_path := default "/opt/couchbase/var/lib/couchbase/logs/http_access_internal.log" .http_internal_access_log_path}}
-{{$enable_babysitter_log := default true .enable_babysitter_log}}
-{{$babysitter_log_path := default "/opt/couchbase/var/lib/couchbase/logs/babysitter.log" .babysitter_log_path}}
-{{$enable_xdcr_log := default false .enable_xdcr_log}}
-{{$xdcr_log_path := default "/opt/couchbase/var/lib/couchbase/logs/goxdcr.log" .xdcr_log_path}}
-{{$start_at := default "end" .start_at}}
+# {{$enable_error_log := default true .enable_error_log}}
+# {{$error_log_path := default "/opt/couchbase/var/lib/couchbase/logs/error.log" .error_log_path}}
+# {{$enable_debug_log := default false .enable_debug_log}}
+# {{$debug_log_path := default "/opt/couchbase/var/lib/couchbase/logs/debug.log" .debug_log_path}}
+# {{$enable_info_log := default false .enable_info_log}}
+# {{$info_log_path := default "/opt/couchbase/var/lib/couchbase/logs/info.log" .info_log_path}}
+# {{$enable_access_log := default true .enable_access_log}}
+# {{$http_access_log_path := default "/opt/couchbase/var/lib/couchbase/logs/http_access.log" .http_access_log_path}}
+# {{$enable_internal_access_log := default false .enable_internal_access_log}}
+# {{$http_internal_access_log_path := default "/opt/couchbase/var/lib/couchbase/logs/http_access_internal.log" .http_internal_access_log_path}}
+# {{$enable_babysitter_log := default true .enable_babysitter_log}}
+# {{$babysitter_log_path := default "/opt/couchbase/var/lib/couchbase/logs/babysitter.log" .babysitter_log_path}}
+# {{$enable_xdcr_log := default false .enable_xdcr_log}}
+# {{$xdcr_log_path := default "/opt/couchbase/var/lib/couchbase/logs/goxdcr.log" .xdcr_log_path}}
+# {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
 pipeline:

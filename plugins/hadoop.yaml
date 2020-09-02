@@ -58,16 +58,16 @@ parameters:
     default: end
 
 # Set Defaults
-{{$enable_datanode_logs := default true .enable_datanode_logs}}
-{{$datanode_general_log_path := default "/usr/local/hadoop/logs/hadoop-*-datanode-*.log" .datanode_general_log_path}}
-{{$datanode_yarn_log_path := default "/usr/local/hadoop/logs/yarn-*-datanode-*.log" .datanode_yarn_log_path}}
-{{$enable_resourcemgr_logs := default true .enable_resourcemgr_logs}}
-{{$resourcemgr_general_log_path := default "/usr/local/hadoop/logs/hadoop-*-resourcemgr-*.log" .resourcemgr_general_log_path}}
-{{$resourcemgr_yarn_log_path := default "/usr/local/hadoop/logs/yarn-*-resourcemgr-*.log" .resourcemgr_yarn_log_path}}
-{{$enable_namenode_logs := default true .enable_namenode_logs}}
-{{$namenode_general_log_path := default "/usr/local/hadoop/logs/hadoop-*-namenode-*.log" .namenode_general_log_path}}
-{{$namenode_yarn_log_path := default "/usr/local/hadoop/logs/yarn-*-namenode-*.log" .namenode_yarn_log_path}}
-{{$start_at := default "end" .start_at}}
+# {{$enable_datanode_logs := default true .enable_datanode_logs}}
+# {{$datanode_general_log_path := default "/usr/local/hadoop/logs/hadoop-*-datanode-*.log" .datanode_general_log_path}}
+# {{$datanode_yarn_log_path := default "/usr/local/hadoop/logs/yarn-*-datanode-*.log" .datanode_yarn_log_path}}
+# {{$enable_resourcemgr_logs := default true .enable_resourcemgr_logs}}
+# {{$resourcemgr_general_log_path := default "/usr/local/hadoop/logs/hadoop-*-resourcemgr-*.log" .resourcemgr_general_log_path}}
+# {{$resourcemgr_yarn_log_path := default "/usr/local/hadoop/logs/yarn-*-resourcemgr-*.log" .resourcemgr_yarn_log_path}}
+# {{$enable_namenode_logs := default true .enable_namenode_logs}}
+# {{$namenode_general_log_path := default "/usr/local/hadoop/logs/hadoop-*-namenode-*.log" .namenode_general_log_path}}
+# {{$namenode_yarn_log_path := default "/usr/local/hadoop/logs/yarn-*-namenode-*.log" .namenode_yarn_log_path}}
+# {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
 pipeline:

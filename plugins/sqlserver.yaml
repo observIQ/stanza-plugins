@@ -23,9 +23,9 @@ parameters:
     default: end
 
 # Set Defaults
-{{$poll_interval := default "1s" .poll_interval}}
-{{$max_reads := default 1000 .max_reads}}
-{{$start_at := default "end" .start_at}}
+# {{$poll_interval := default "1s" .poll_interval}}
+# {{$max_reads := default 1000 .max_reads}}
+# {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
 pipeline:

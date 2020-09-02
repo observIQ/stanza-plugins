@@ -18,8 +18,8 @@ parameters:
     default: end
 
 # Set Defaults
-{{$message_log_path := default "/var/log/messages/*.log" .message_log_path}}
-{{$start_at := default "end" .start_at}}
+# {{$message_log_path := default "/var/log/messages/*.log" .message_log_path}}
+# {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
 pipeline:

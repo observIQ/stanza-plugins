@@ -43,13 +43,13 @@ parameters:
     default: end
 
 # Set Defaults
-{{$enable_master_log := default true .enable_master_log}}
-{{$master_log_path := default "/usr/local/hbase*/logs/hbase*-master-*.log" .master_log_path}}
-{{$enable_region_log := default true .enable_region_log}}
-{{$region_log_path := default "/usr/local/hbase*/logs/hbase*-regionserver-*.log" .region_log_path}}
-{{$enable_zookeeper_log := default false .enable_zookeeper_log}}
-{{$zookeeper_log_path := default "/usr/local/hbase*/logs/hbase*-zookeeper-*.log" .zookeeper_log_path}}
-{{$start_at := default "end" .start_at}}
+# {{$enable_master_log := default true .enable_master_log}}
+# {{$master_log_path := default "/usr/local/hbase*/logs/hbase*-master-*.log" .master_log_path}}
+# {{$enable_region_log := default true .enable_region_log}}
+# {{$region_log_path := default "/usr/local/hbase*/logs/hbase*-regionserver-*.log" .region_log_path}}
+# {{$enable_zookeeper_log := default false .enable_zookeeper_log}}
+# {{$zookeeper_log_path := default "/usr/local/hbase*/logs/hbase*-zookeeper-*.log" .zookeeper_log_path}}
+# {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
 pipeline:

@@ -8,6 +8,7 @@ parameters:
     description: AKS Containers Log Path
     type: string
     required: true
+    default: "/var/log/containers/*"
   kubelet_journald_log_path:
     label: Kubelet Journald Log Path
     description: 'Kubernetes Kubelet Journald Log path. It will read from /run/journal or /var/log/journal if this parameter is omitted'
@@ -21,14 +22,18 @@ parameters:
      - end
     default: end
 
+# Set Defaults
+# {{ $container_log_path := default "/var/log/containers/*" .container_log_path }}
+# {{ $start_at := default "end" .start_at }}
+
 # Pipeline Template
 pipeline:
   # {{ if .container_log_path }}
   - id: container_reader
     type: file_input
     include:
-      - {{ .container_log_path }}
-    start_at: {{ or .start_at "end" }}
+      - {{ $container_log_path }}
+    start_at: {{ $start_at }}
     labels:
       plugin_id: {{ .id }}
     include_file_path: true

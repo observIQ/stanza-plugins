@@ -18,8 +18,8 @@ parameters:
     default: end
 
 # Set Defaults
-{{$file_path := default "/var/log/couchdb/couchdb.log" .file_path}}
-{{$start_at := default "end" .start_at}}
+# {{$file_path := default "/var/log/couchdb/couchdb.log" .file_path}}
+# {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
 pipeline:

@@ -10,7 +10,7 @@ parameters:
     default: ":5140"
 
 # Set Defaults
-{{$listen_address := default ":5140" .listen_address}}
+# {{$listen_address := default ":5140" .listen_address}}
 
 # Pipeline Template
 pipeline:
