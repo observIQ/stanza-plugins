@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 0.0.2
 title: Windows DHCP
 description: Log parser for Windows DHCP
 parameters:
@@ -7,7 +7,7 @@ parameters:
     label: Log Path
     description: The absolute path to the DHCP logs
     type: string
-    default: "C:/Windows/System32/dhcp/DhcpSrvLog-*.log"
+    default: 'C:\Windows\System32\dhcp\DhcpSrvLog-*.log'
   start_at:
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -18,8 +18,8 @@ parameters:
     default: end
 
 # Set Defaults
-{{$file_path := default "C:/Windows/System32/dhcp/DhcpSrvLog-*.log" .file_path}}
-{{$start_at := default "end" .start_at}}
+# {{$file_path := default "C:\Windows\System32\dhcp\DhcpSrvLog-*.log" .file_path}}
+# {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
 pipeline:

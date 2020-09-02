@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 0.0.2
 title: Syslog
 description: Log parser for Syslog
 parameters:
@@ -26,13 +26,13 @@ parameters:
     default: rfc5424
 
 # Set Defaults
-{{$listen_address := default ":514" .listen_address}}
-{{$connection_type := default "udp" .connection_type}}
-{{$protocol := default "rfc5424" .protocol}}
+# {{$listen_address := default "0.0.0.0:514" .listen_address}}
+# {{$connection_type := default "udp" .connection_type}}
+# {{$protocol := default "rfc5424" .protocol}}
 
 # Pipeline Template
 pipeline:
-{{ if eq $connection_type "udp" }}
+# {{ if eq $connection_type "udp" }}
   - id: syslog_input
     type: udp_input
     listen_address: {{ $listen_address }}
@@ -40,9 +40,9 @@ pipeline:
       log_type: syslog
       plugin_id: {{ .id }}
     output: syslog_parser
-{{ end }}
+# {{ end }}
 
-{{ if eq $connection_type "tcp" }}
+# {{ if eq $connection_type "tcp" }}
   - id: syslog_input
     type: tcp_input
     listen_address: {{ $listen_address }}
@@ -50,7 +50,7 @@ pipeline:
       log_type: syslog
       plugin_id: {{ .id }}
     output: syslog_parser
-{{ end }}
+# {{ end }}
 
   - id: syslog_parser
     type: syslog_parser
