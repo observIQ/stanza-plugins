@@ -7,7 +7,6 @@ parameters:
     label: File Log Path
     description: An array of file log path glob patterns. 
     type: strings
-    default: []
     required: true
   exclude_file_log_path:
     label: Exclude File Log Path
@@ -64,6 +63,11 @@ parameters:
       - beginning
       - end
     default: end
+  log_type:
+    label: Log Type
+    description: Adds label log_type to idently tail source.
+    type: string
+    default: tail
   parse_format:
     label: Format
     description: The log format to parse.
@@ -80,6 +84,7 @@ parameters:
 # {{$include_file_name := default true .include_file_name}}
 # {{$include_file_path := default true .include_file_path}}
 # {{$max_log_size := default 1048576 .max_log_size}}
+# {{$log_type := default "tail" .log_type}}
 # {{$encoding := default "nop" .encoding}}
 # {{$start_at := default "end" .start_at}}
 # {{$parse_format := default "none" .parse_format}}
@@ -115,7 +120,7 @@ pipeline:
     max_log_size: {{ $max_log_size }}
     labels:
       plugin_id: {{ .id }}
-      log_type: "file"
+      log_type: {{ $log_type }}
 # {{ if (eq $parse_format "none")}}
     output: {{ .output }}
 # {{ end }}
