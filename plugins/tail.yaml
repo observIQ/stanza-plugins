@@ -111,12 +111,8 @@ pipeline:
 # {{ if $encoding }}
     encoding: {{ $encoding }}
 # {{ end }}
-# {{ if $include_file_name }}
     include_file_name: {{ $include_file_name }}
-# {{ end }}
-# {{ if $include_file_path }}
     include_file_path: {{ $include_file_path }}
-# {{ end }}
     max_log_size: {{ $max_log_size }}
     labels:
       plugin_id: {{ .id }}
