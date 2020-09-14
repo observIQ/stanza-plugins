@@ -8,6 +8,7 @@ parameters:
     description: An array of file log path glob patterns. 
     type: strings
     default: []
+    required: true
   exclude_file_log_path:
     label: Exclude File Log Path
     description: An array of file log path glob patterns to be excluded. 
