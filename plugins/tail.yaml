@@ -106,7 +106,7 @@ pipeline:
     poll_interval: {{ $poll_interval }}
 # {{ if $enable_multiline }}
     multiline:
-      line_start_pattern: {{ $multiline_line_start_pattern }}
+      line_start_pattern: '{{ $multiline_line_start_pattern }}'
 # {{ end }}
 # {{ if $encoding }}
     encoding: {{ $encoding }}
