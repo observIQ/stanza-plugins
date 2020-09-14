@@ -73,8 +73,6 @@ parameters:
     default: none
 
 # Set Defaults
-# {{$file_log_path := default "./file/path/*.log" .file_log_path}}
-# {{$exclude_file_log_path := default "./file/path/*.log" .exclude_file_log_path}}
 # {{$poll_interval := default "200ms" .poll_interval}}
 # {{$enable_multiline := default false .enable_multiline}}
 # {{$multiline_line_start_pattern := default "Start of line Regex Pattern" .multiline_line_start_pattern}}
@@ -93,7 +91,7 @@ pipeline:
 # {{ range $i, $fp := .file_log_path  }}
       - {{ $fp }}
 # {{ end }}
-# {{ if $exclude_file_log_path }}
+# {{ if .exclude_file_log_path }}
     exclude:
   # {{ range $i, $efp := .exclude_file_log_path  }}
       - {{ $efp }}
