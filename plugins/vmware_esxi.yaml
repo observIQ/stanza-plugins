@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.2
+version: 0.0.3
 title: VMware ESXi
 description: Log parser for VMware ESXi
 parameters:
