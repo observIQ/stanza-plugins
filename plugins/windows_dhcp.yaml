@@ -18,7 +18,7 @@ parameters:
     default: end
 
 # Set Defaults
-# {{$file_path := default "C:\Windows\System32\dhcp\DhcpSrvLog-*.log" .file_path}}
+# {{$file_path := default "C:\\Windows\\System32\\dhcp\\DhcpSrvLog-*.log" .file_path}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
