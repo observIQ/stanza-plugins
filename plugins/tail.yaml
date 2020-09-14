@@ -1,6 +1,6 @@
 # Plugin Info
 version: 0.0.1
-title: File Input
+title: Tail
 description: File Input Parser
 parameters:
   file_log_path:
