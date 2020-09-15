@@ -1,0 +1,127 @@
+# Plugin Info
+version: 0.0.1
+title: Tail
+description: File Input Parser
+parameters:
+  file_log_path:
+    label: File Log Path
+    description: An array of file log path glob patterns. 
+    type: strings
+    required: true
+  exclude_file_log_path:
+    label: Exclude File Log Path
+    description: An array of file log path glob patterns to be excluded. 
+    type: strings
+    default: []
+  poll_interval:
+    label: Poll poll_interval
+    description: The duration between filesystem polls.
+    type: string
+    default: 200ms
+  enable_multiline:
+    label: Enable Multiline
+    description: Enable to parse Multiline Log Files
+    type: bool
+    default: false
+  multiline_line_start_pattern:
+    label: Multiline Start patterns
+    description: A Regex pattern to match with start of a line.
+    type: string
+    default: "Start of line Regex Pattern"
+  encoding:
+    label: Encoding
+    description: The encoding of the log file.
+    type: enum
+    valid_values:
+      - nop
+      - utf-8
+      - utf-16le
+      - utf-16be
+      - ascii
+      - big5
+    default: nop
+  include_file_name:
+    label: Include File Name
+    description: Include the log file name.
+    type: bool
+    default: true
+  include_file_path:
+    label: Include File Path
+    description: Include the log file path.
+    type: bool
+    default: true
+  max_log_size:
+    label: Max Log Size
+    description: The maximum size of a log entry to read before failing. Protects against reading large amounts of data into memory.
+    type: int
+    default: 1048576
+  start_at:
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+  log_type:
+    label: Log Type
+    description: Adds label log_type to idently tail source.
+    type: string
+    default: tail
+  parse_format:
+    label: Format
+    description: The log format to parse.
+    type: enum
+    valid_values:
+      - none
+      - JSON
+    default: none
+
+# Set Defaults
+# {{$poll_interval := default "200ms" .poll_interval}}
+# {{$enable_multiline := default false .enable_multiline}}
+# {{$multiline_line_start_pattern := default "Start of line Regex Pattern" .multiline_line_start_pattern}}
+# {{$include_file_name := default true .include_file_name}}
+# {{$include_file_path := default true .include_file_path}}
+# {{$max_log_size := default 1048576 .max_log_size}}
+# {{$log_type := default "tail" .log_type}}
+# {{$encoding := default "nop" .encoding}}
+# {{$start_at := default "end" .start_at}}
+# {{$parse_format := default "none" .parse_format}}
+
+# Pipeline Template
+pipeline:
+  - type: file_input
+    start_at: '{{ $start_at }}'
+    include:
+# {{ range $i, $fp := .file_log_path  }}
+      - '{{ $fp }}'
+# {{ end }}
+# {{ if .exclude_file_log_path }}
+    exclude:
+  # {{ range $i, $efp := .exclude_file_log_path  }}
+      - '{{ $efp }}'
+  # {{ end }}
+# {{ end }}
+    poll_interval: {{ $poll_interval }}
+# {{ if $enable_multiline }}
+    multiline:
+      line_start_pattern: '{{ $multiline_line_start_pattern }}'
+# {{ end }}
+# {{ if $encoding }}
+    encoding: '{{ $encoding }}'
+# {{ end }}
+    include_file_name: {{ $include_file_name }}
+    include_file_path: {{ $include_file_path }}
+    max_log_size: {{ $max_log_size }}
+    labels:
+      plugin_id: {{ .id }}
+      log_type: '{{ $log_type }}'
+# {{ if (eq $parse_format "none")}}
+    output: {{ .output }}
+# {{ end }}
+
+# {{ if (eq $parse_format "JSON")}}
+  - type: json_parser
+    output: {{ .output }}
+#{{ end }}

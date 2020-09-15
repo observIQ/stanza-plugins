@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.2
+version: 0.0.3
 title: VMware ESXi
 description: Log parser for VMware ESXi
 parameters:
@@ -10,7 +10,7 @@ parameters:
     default: "0.0.0.0:5140"
 
 # Set Defaults
-# {{$listen_address := default "0.0.0.0:5140" .listen_address}
+# {{$listen_address := default "0.0.0.0:5140" .listen_address}}
 
 # Pipeline Template
 pipeline:
