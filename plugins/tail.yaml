@@ -92,15 +92,15 @@ parameters:
 # Pipeline Template
 pipeline:
   - type: file_input
-    start_at: {{ $start_at }}
+    start_at: '{{ $start_at }}'
     include:
 # {{ range $i, $fp := .file_log_path  }}
-      - {{ $fp }}
+      - '{{ $fp }}'
 # {{ end }}
 # {{ if .exclude_file_log_path }}
     exclude:
   # {{ range $i, $efp := .exclude_file_log_path  }}
-      - {{ $efp }}
+      - '{{ $efp }}'
   # {{ end }}
 # {{ end }}
     poll_interval: {{ $poll_interval }}
@@ -109,14 +109,14 @@ pipeline:
       line_start_pattern: '{{ $multiline_line_start_pattern }}'
 # {{ end }}
 # {{ if $encoding }}
-    encoding: {{ $encoding }}
+    encoding: '{{ $encoding }}'
 # {{ end }}
     include_file_name: {{ $include_file_name }}
     include_file_path: {{ $include_file_path }}
     max_log_size: {{ $max_log_size }}
     labels:
       plugin_id: {{ .id }}
-      log_type: {{ $log_type }}
+      log_type: '{{ $log_type }}'
 # {{ if (eq $parse_format "none")}}
     output: {{ .output }}
 # {{ end }}
