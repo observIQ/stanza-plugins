@@ -14,7 +14,7 @@ parameters:
     type: strings
     default: []
   poll_interval:
-    label: Poll poll_interval
+    label: Poll Interval
     description: The duration between filesystem polls.
     type: string
     default: 200ms
@@ -125,3 +125,4 @@ pipeline:
   - type: json_parser
     output: {{ .output }}
 #{{ end }}
+
