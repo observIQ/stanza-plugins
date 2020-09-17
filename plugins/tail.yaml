@@ -65,7 +65,7 @@ parameters:
     default: end
   log_type:
     label: Log Type
-    description: Adds label log_type to idently tail source.
+    description: Adds label log_type to identify tail source.
     type: string
     default: tail
   parse_format:
