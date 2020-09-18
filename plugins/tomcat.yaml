@@ -13,7 +13,7 @@ parameters:
     type: string
     default: "/usr/local/tomcat/logs/localhost_access_log.*.txt"
   enable_catalina_log:
-    label: Access Logs
+    label: Catalina Logs
     description: Enable to collect Apache Tomcat catalina logs
     type: bool
     default: true
@@ -90,3 +90,4 @@ pipeline:
           - finest
     output: {{ .output }}
   #{{ end }}
+

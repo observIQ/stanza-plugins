@@ -13,7 +13,7 @@ parameters:
     type: string
     default: "/home/kafka/kafka/logs/server.log*"
   enable_controller_log:
-    label: Server Logs
+    label: Controller Logs
     description: Enable to collect Apache Kafka controller logs
     type: bool
     default: true
@@ -33,7 +33,7 @@ parameters:
     type: string
     default: "/home/kafka/kafka/logs/state-change.log*"
   enable_log_cleaner_log:
-    label: Server Logs
+    label: Log Cleaner Logs
     description: Enable to collect Apache Kafka log cleaner logs
     type: bool
     default: true
@@ -151,3 +151,4 @@ pipeline:
     parse_from: timestamp
     layout: '%F %T.%L'
     output: {{ .output }}
+
