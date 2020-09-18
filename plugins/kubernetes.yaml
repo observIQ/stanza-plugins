@@ -53,9 +53,18 @@ pipeline:
       # It appears to be JSON so send it to be parsed as JSON.
       - output: nested_json_parser
         expr: '$record.log != nil and $record.log matches "^{.*}\\s*$"'
-      # If log field doesn't appear to be JSON then, skip nested JSON parsers
-      - output: container_regex_parser
+      # If log field doesn't appear to be nested JSON then, move from log to message.
+      - output: promote_log_field
         expr: true
+
+  # Move log field to message field
+  - id: promote_log_field
+    type: restructure
+    ops:
+      - move:
+          from: "log"
+          to: "message"
+    output: container_regex_parser
 
   # Attempt to parse nested JSON since the log appears to be JSON
   - id: nested_json_parser
