@@ -1,13 +1,23 @@
 # Plugin Info
-version: 0.0.1
+version: 0.0.2
 title: Windows Event Log
 description: Windows Event Log Parser
 parameters:
-  channel:
-    label: Channel
-    description: The windows event log channel to monitor
-    type: string
-    default: system
+  enable_system_events:
+    label: System Events
+    description: Enable to collect system event logs
+    type: bool
+    default: true
+  enable_application_events:
+    label: Application Events
+    description: Enable to collect application event logs
+    type: bool
+    default: true
+  enable_security_events:
+    label: Security Events
+    description: Enable to collect security event logs
+    type: bool
+    default: true
   max_reads:
     label: Max Reads
     description: The maximum number of records read into memory, before beginning a new batch
@@ -28,18 +38,50 @@ parameters:
     default: end
 
 # Set Defaults
-# {{$channel := default "system" .channel}}
+# {{$enable_system_events := default true .enable_system_events}}
+# {{$enable_application_events := default true .enable_application_events}}
+# {{$enable_security_events := default true .enable_security_events}}
 # {{$max_reads := default 100 .max_reads}}
 # {{$poll_interval := default 1 .poll_interval}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
 pipeline:
-- type: windows_eventlog_input
-  channel: {{ $channel }}
-  max_reads: {{ $max_reads }}
-  poll_interval: {{ $poll_interval }}
-  labels: 
-    log_type: "windows_event_log.{{$channel}}"
-    plugin_id: {{ .id }}
-  output: {{ .output }}
+# {{ if $enable_system_events }}
+  - id: system_event_input
+    type: windows_eventlog_input
+    channel: system
+    max_reads: {{ $max_reads }}
+    poll_interval: {{ $poll_interval }}
+    labels:
+      log_type: "windows_event_log.system"
+      plugin_id: {{ .id }}
+    start_at: {{ $start_at }}
+    output: {{ .output }}
+# {{ end }}
+
+# {{ if $enable_application_events }}
+  - id: application_event_input
+    type: windows_eventlog_input
+    channel: application
+    max_reads: {{ $max_reads }}
+    poll_interval: {{ $poll_interval }}
+    labels:
+      log_type: "windows_event_log.application"
+      plugin_id: {{ .id }}
+    start_at: {{ $start_at }}
+    output: {{ .output }}
+# {{ end }}
+
+# {{ if $enable_security_events }}
+  - id: security_event_input
+    type: windows_eventlog_input
+    channel: security
+    max_reads: {{ $max_reads }}
+    poll_interval: {{ $poll_interval }}
+    labels:
+      log_type: "windows_event_log.security"
+      plugin_id: {{ .id }}
+    start_at: {{ $start_at }}
+    output: {{ .output }}
+# {{ end }}
