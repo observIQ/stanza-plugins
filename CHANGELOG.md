@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.11] - 2020-09-25
+## [0.0.12] - 2020-09-25
 ### Changed
 - Update Tail Plugin and Changelog ([PR64](https://github.com/observIQ/stanza-plugins/pull/64))
 - Apache Http plugin ([PR63](https://github.com/observIQ/stanza-plugins/pull/63))
@@ -13,6 +13,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `kafka`
   - `tail`
   - `tomcat`
+
+## [0.0.11] - 2020-09-15
+### Added
+- Tail Plugin ([PR55](https://github.com/observIQ/stanza-plugins/pull/55))
+
+### Changed
+- Update Other Kubernetes Plugins ([PR56](https://github.com/observIQ/stanza-plugins/pull/56))
+  - `azure_aks`
+  - `amazon_eks`
+- Update Nginx Plugin ([PR58](https://github.com/observIQ/stanza-plugins/pull/58))
 
 ## [0.0.10] - 2020-09-09
 ### Change
