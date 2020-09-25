@@ -24,7 +24,7 @@ parameters:
     type: bool
     default: false
   multiline_line_start_pattern:
-    label: Multiline Start patterns
+    label: Multiline Start Pattern
     description: A Regex pattern to match with start of a line.
     type: string
     default: "Start of line Regex Pattern"
