@@ -4,6 +4,76 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.11] - 2020-09-25
+### Changed
+- Update Tail Plugin and Changelog ([PR64](https://github.com/observIQ/stanza-plugins/pull/64))
+- Apache Http plugin ([PR63](https://github.com/observIQ/stanza-plugins/pull/63))
+- Windows Event plugin ([PR62](https://github.com/observIQ/stanza-plugins/pull/62))
+- Update Plugins ([PR60](https://github.com/observIQ/stanza-plugins/pull/60))
+  - `kafka`
+  - `tail`
+  - `tomcat`
+
+## [0.0.10] - 2020-09-09
+### Change
+- Add Defaults to plugins ([PR54](https://github.com/observIQ/stanza-plugins/pull/54))
+  - `aerospike`
+  - `amazon_eks`
+  - `azure_aks`
+  - `cisco_asa`
+  - `cisco_meraki`
+  - `couchbase`
+  - `couchdb`
+  - `dcoker_swarm`
+  - `elasticsearch`
+  - `gitlab`
+  - `hadoop`
+  - `hbase`
+  - `jboss`
+  - `memchached`
+  - `microsoft_iis`
+  - `openshift`
+  - `oracledb`
+  - `pgbouncer`
+  - `redis`
+  - `sap_hana`
+  - `sqlserver`
+  - `syslog`
+  - `vmware_esxi`
+  - `vmware_vcenter`
+  - `windows_active_directory`
+  - `windows_dhcp`
+  - `zookeeper`
+- Add Defaults to plugins ([PR52](https://github.com/observIQ/stanza-plugins/pull/52))
+  - `cassandra`
+  - `ibm_db2`
+  - `kafka`
+  - `mongodb`
+  - `mysql`
+  - `nginx`
+  - `oracledb`
+  - `postgresql`
+  - `tomcat`
+- Update Defaults ([PR53](https://github.com/observIQ/stanza-plugins/pull/53))
+  - `cisco_asa`
+  - `cisco_meraki`
+  - `syslog`
+  - `vmware_esxi`
+  - `vmware_vcenter`
+
+## [0.0.9] - 2020-09-01
+### Changed
+- Kubernetes plugin ([PR51](https://github.com/observIQ/stanza-plugins/pull/51))
+
+## [0.0.8] - 2020-09-01
+### Changed
+- Kubernetes plugin ([PR50](https://github.com/observIQ/stanza-plugins/pull/50))
+- Kubernetes plugin ([PR49](https://github.com/observIQ/stanza-plugins/pull/49))
+
+### Added
+- Windows Event plugin ([PR48](https://github.com/observIQ/stanza-plugins/pull/48))
+- Kubernetes Event plugin ([PR47](https://github.com/observIQ/stanza-plugins/pull/47))
+
 ## [0.0.7] - 2020-08-24
 ### Changed
 - Project name changed to `stanza-plugins`
