@@ -25,6 +25,7 @@ parameters:
     default: end
 
 # Set Defaults
+# {{ $cluster_name := default "" .cluster_name }}
 # {{ $container_log_path := default "/var/log/containers/*" .container_log_path }}
 # {{ $start_at := default "end" .start_at }}
 
@@ -108,7 +109,7 @@ pipeline:
     ops:
       - add:
           field: "$resource['k8s.cluster.name']"
-          value: "{{ .cluster_name }}"
+          value: "{{ $cluster_name }}"
     output: add_labels_router
 
   # Add label log_type
@@ -164,7 +165,7 @@ pipeline:
           to: "message"
       - add:
           field: "$resource['k8s.cluster.name']"
-          value: '{{ .cluster_name }}'
+          value: '{{ $cluster_name }}'
 
   # If message field matches format then, parse it otherwise send down the pipeline.
   - id: kubelet_message_parser_router
