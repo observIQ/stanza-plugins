@@ -39,6 +39,7 @@ pipeline:
         - Started
         - Killing
         - NodeSchedulable
+        - RegisteredNode
       warning:
         - AlreadyMountedVolume
         - BackOff
