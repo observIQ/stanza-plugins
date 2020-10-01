@@ -1,6 +1,6 @@
 ---
 # Plugin Info
-version: 0.0.2
+version: 0.0.3
 title: Microsoft Azure AKS
 description: Log parser for Microsoft Azure AKS
 parameters:
@@ -13,6 +13,10 @@ parameters:
     label: Kubelet Journald Log Path
     description: 'Kubernetes Kubelet Journald Log path. It will read from /run/journal or /var/log/journal if this parameter is omitted'
     type: string
+  cluster_name:
+    label: Cluster Name
+    description: 'Cluster Name to be added to a resource label'
+    type: string
   start_at:
     label: Start At
     description: "Start reading file from 'beginning' or 'end'"
@@ -23,6 +27,7 @@ parameters:
     default: end
 
 # Set Defaults
+# {{ $cluster_name := default "" .cluster_name }}
 # {{ $container_log_path := default "/var/log/containers/*" .container_log_path }}
 # {{ $start_at := default "end" .start_at }}
 
@@ -98,6 +103,15 @@ pipeline:
   # Add kubernetes metadata
   - id: add_kubernetes_metadata
     type: k8s_metadata_decorator
+    output: cluster_name_restructurer
+
+  # Add kubernetes cluster name after adding metadata so it doesn't get overwritten
+  - id: cluster_name_restructurer
+    type: restructure
+    ops:
+      - add:
+          field: "$resource['k8s.cluster.name']"
+          value: "{{ $cluster_name }}"
     output: add_labels_router
 
   # Add label log_type
@@ -153,7 +167,7 @@ pipeline:
           to: "message"
       - add:
           field: "$resource['k8s.cluster.name']"
-          value: ""
+          value: "{{ $cluster_name }}"
 
   # If message field matches format then, parse it otherwise send down the pipeline.
   - id: kubelet_message_parser_router

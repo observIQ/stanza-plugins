@@ -1,5 +1,5 @@
 ---
-version: 0.0.2
+version: 0.0.3
 title: Openshift
 description: Log parser for Openshift
 parameters:
@@ -16,6 +16,10 @@ parameters:
       - beginning
       - end
     default: end
+  cluster_name:
+    label: Cluster Name
+    description: 'Cluster Name to be added to a resource label'
+    type: string
   enable_container_logs:
     label: Enable Container Logs
     description: Enable collection of container logs
@@ -37,6 +41,7 @@ parameters:
 # {{ $enable_container_logs := default true .enable_container_logs }}
 # {{ $enable_docker_logs := default true .enable_docker_logs }}
 # {{ $enable_openshift_logs := default true .enable_openshift_logs }}
+# {{ $cluster_name := default "" .cluster_name }}
 # {{ $start_at := default "end" .start_at }}
 
 pipeline:
@@ -96,6 +101,15 @@ pipeline:
 
   # Decorate entries with k8s metadata
   - type: k8s_metadata_decorator
+    output: cluster_name_restructurer
+
+  # Add kubernetes cluster name after adding metadata so it doesn't get overwritten
+  - id: cluster_name_restructurer
+    type: restructure
+    ops:
+      - add:
+          field: "$resource['k8s.cluster.name']"
+          value: "{{ $cluster_name }}"
     output: {{ .output }}
 
   # For openshift logs, promote hostname to labels and remove all but message
