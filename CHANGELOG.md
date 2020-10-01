@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.13] - 2020-10-01
+### Changed
+- Update Changelog ([PR67](https://github.com/observIQ/stanza-plugins/pull/67))
+- Update Kubernetes Plugins ([PR66](https://github.com/observIQ/stanza-plugins/pull/66))
+  - `kubernetes`
+  - `amazon_eks`
+  - `azure_aks`
+  - `openshift`
+  - `kubernetes_events`
+
 ## [0.0.12] - 2020-09-25
 ### Changed
 - Update Tail Plugin and Changelog ([PR64](https://github.com/observIQ/stanza-plugins/pull/64))
