@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.14] - 2020-10-07
+### Changed
+- Update `apache_http` Plugin ([PR68](https://github.com/observIQ/stanza-plugins/pull/68))
+  - Add parsing of agent field to Access Log
+  - Add severity parsing from code field to Access Log
+
 ## [0.0.13] - 2020-10-01
 ### Changed
 - Update Changelog ([PR67](https://github.com/observIQ/stanza-plugins/pull/67))
