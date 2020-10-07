@@ -1,4 +1,4 @@
-version: 0.0.2
+version: 0.0.3
 title: Apache HTTP Server
 description: Log parser for Apache HTTP Server
 parameters:
@@ -55,6 +55,23 @@ pipeline:
     timestamp:
       parse_from: time
       layout: '%d/%b/%Y:%H:%M:%S %z'
+    output: access_agent_router
+
+  # Router to determine if agent field can be parsed.
+  - id: access_agent_router
+    type: router
+    routes:
+      - expr: '$record.agent != nil and $record.agent matches "^(?P<client>[^/]*)/(?P<client_version>[^ ]*) (\\((?P<system>[^;]*);([^\\)]*)\\))?(.*)?"'
+        output: access_agent_parser
+      - expr: true
+        output: {{ .output }}
+
+  # Parse agent field
+  - id: access_agent_parser
+    type: regex_parser
+    regex: '^(?P<client>[^/]*)/(?P<client_version>[^ ]*) (\((?P<system>[^;]*);([^\)]*)\))?(.*)?'
+    parse_from: $record.agent
+    preserve: true
     output: {{ .output }}
   #{{ end }}
 
