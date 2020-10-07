@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Added `k8s.node.name` to kubernetes plugins ([PR70](https://github.com/observIQ/stanza-plugins/pull/70))
 - Added metadata to `kubernetes_event` plugin ([PR70](https://github.com/observIQ/stanza-plugins/pull/70))
+- Update `apache_http` Plugin ([PR68](https://github.com/observIQ/stanza-plugins/pull/68))
+  - Add parsing of agent field to Access Log
+  - Add severity parsing from code field to Access Log
 
 ## [0.0.13] - 2020-10-01
 ### Changed
