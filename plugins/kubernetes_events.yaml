@@ -19,6 +19,19 @@ pipeline:
     labels:
       plugin_id: {{ .id }}
       log_type: "k8s.events"
+    resource:
+      k8s.node.name: "EXPR(env('NODE_NAME'))"
+
+  # Add metadata like annotations and daemonset name if there is a pod name
+  - type: router
+    routes:
+      - expr: '$resource["k8s.pod.name"] != ""'
+        output: k8s_metadata_decorator
+      - expr: "true"
+        output: severity_parser
+
+  - type: k8s_metadata_decorator
+
   - type: severity_parser
     preset: none
     parse_from: $record.reason
@@ -42,7 +55,6 @@ pipeline:
         - RegisteredNode
       warning:
         - AlreadyMountedVolume
-        - BackOff
         - ContainerGCFailed
         - ExceededGracePeriod
         - Evicted
@@ -61,7 +73,9 @@ pipeline:
         - Preempting
         - ProbeWarning
         - Rebooted
+        - Unhealthy
       error:
+        - BackOff
         - FailedCreatePodContainer
         - FailedMountOnFilesystemMismatch
         - FailedPodSandBoxStatus
@@ -69,7 +83,6 @@ pipeline:
         - FileSystemResizeFailed
         - FreeDiskSpaceFailed
         - KubeletSetupFailed
-        - Unhealthy
         - VolumeResizeFailed
       critical:
         - ErrImagePull
