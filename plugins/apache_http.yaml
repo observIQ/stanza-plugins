@@ -56,6 +56,15 @@ pipeline:
       parse_from: time
       layout: '%d/%b/%Y:%H:%M:%S %z'
     output: access_agent_router
+    severity:
+      parse_from: code
+      preset: none
+      preserve: true
+      mapping:
+        info: 2xx
+        notice: 3xx
+        warning: 4xx
+        error: 5xx
 
   # Router to determine if agent field can be parsed.
   - id: access_agent_router
