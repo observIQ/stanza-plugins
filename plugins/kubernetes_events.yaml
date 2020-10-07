@@ -19,6 +19,8 @@ pipeline:
     labels:
       plugin_id: {{ .id }}
       log_type: "k8s.events"
+    resource:
+      k8s.node.name: "EXPR(env('NODE_NAME'))"
 
   # Add metadata like annotations and daemonset name if there is a pod name
   - type: router

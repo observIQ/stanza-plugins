@@ -38,6 +38,8 @@ pipeline:
     start_at: '{{ $start_at }}'
     labels:
       plugin_id: '{{ .id }}'
+    resource:
+      k8s.node.name: "EXPR(env('NODE_NAME'))"
     write_to: log
 
   # Filter out agent logs. Check if file_name field starts with stanza or bindplane-agent.
