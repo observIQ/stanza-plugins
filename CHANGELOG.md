@@ -4,9 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.14] - 2020-10-07
+### Changed
+- Added `k8s.node.name` to kubernetes plugins ([PR70](https://github.com/observIQ/stanza-plugins/pull/70))
+- Added metadata to `kubernetes_event` plugin ([PR70](https://github.com/observIQ/stanza-plugins/pull/70))
+
 ## [0.0.13] - 2020-10-01
 ### Changed
-- Update Changelog ([PR67](https://github.com/observIQ/stanza-plugins/pull/67))
 - Update Kubernetes Plugins ([PR66](https://github.com/observIQ/stanza-plugins/pull/66))
   - `kubernetes`
   - `amazon_eks`
@@ -16,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.12] - 2020-09-25
 ### Changed
-- Update Tail Plugin and Changelog ([PR64](https://github.com/observIQ/stanza-plugins/pull/64))
+- Update Tail Plugin ([PR64](https://github.com/observIQ/stanza-plugins/pull/64))
 - Apache Http plugin ([PR63](https://github.com/observIQ/stanza-plugins/pull/63))
 - Windows Event plugin ([PR62](https://github.com/observIQ/stanza-plugins/pull/62))
 - Update Plugins ([PR60](https://github.com/observIQ/stanza-plugins/pull/60))
