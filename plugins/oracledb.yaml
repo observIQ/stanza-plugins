@@ -1,4 +1,4 @@
-version: 0.0.6
+version: 0.0.7
 title: OracleDB
 description: Log parser for OracleDB
 parameters:
@@ -75,13 +75,13 @@ pipeline:
     type: router
     routes:
       - output: audit_regex_parser
-        expr: $ matches '\\w+ \\w+ \\d{2} \\d{2}:\\d{2}:\\d{2} \\d{4} -\\d{2}:\\d{2}'
+        expr: $ matches '\\w+ \\w+ \\d{2} \\d{2}:\\d{2}:\\d{2} \\d{4} [-+]\\d{2}:\\d{2}'
       - output: server_start_regex_parser
         expr: $ startsWith 'Audit file '
 
   - id: audit_regex_parser
     type: regex_parser
-    regex: '(?P<timestamp>\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \d{4} -\d{2}:\d{2})\nLENGTH : \D(?P<length>\d*)\D\nACTION :\[\d+\]\s+\D(?P<action>[\d\w[:ascii:]]+)\D\nDATABASE USER:\[\d+\]\s+\D(?P<database_user>[^\s]+)\D\n(PRIVILEGE :\[\d+\]\s+\D(?P<privilege>[^\s]+)\D\n)?(CLIENT USER:\[\d+\]\s+\D(?P<client_user>[^\s]+)\D\n)?(CLIENT TERMINAL:\[\d+\]\s+\D(?P<client_terminal>[^\s]+|)\D\n)?(STATUS:\[\d+\]\s+\D(?P<status>[^\s]+)\D\n)?(DBID:\[\d+\]\s\D(?P<dbid>\d+)\D\n)?(SESSIONID:\[\d+\]\s+\D(?P<sessionid>[^\s]+)\D\n)?(USERHOST:\[\d+\]\s+\D(?P<userhost>[^\s]+)\D\n)?(CLIENT ADDRESS:\[\d+\]\s+\D(?P<client_address>[^\s]+|)\D\n)?(ACTION NUMBER:\[\d+\]\s+\D(?P<action_number>[^\s]+|)\D)?'
+    regex: '(?P<timestamp>\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \d{4} [-+]\d{2}:\d{2})\nLENGTH : \D(?P<length>\d*)\D\nACTION :\[\d+\]\s+\D(?P<action>[\d\w[:ascii:]]+)\D\nDATABASE USER:\[\d+\]\s+\D(?P<database_user>[^\s]+)\D\n(PRIVILEGE :\[\d+\]\s+\D(?P<privilege>[^\s]+)\D\n)?(CLIENT USER:\[\d+\]\s+\D(?P<client_user>[^\s]+|)\D\n)?(CLIENT TERMINAL:\[\d+\]\s+\D(?P<client_terminal>[^\s]+|)\D\n)?(STATUS:\[\d+\]\s+\D(?P<status>[^\s]+|)\D\n)?(DBID:\[\d+\]\s\D(?P<dbid>\d+)\D\n)?(SESSIONID:\[\d+\]\s+\D(?P<sessionid>[^\s]+|)\D\n)?(USERHOST:\[\d+\]\s+\D(?P<userhost>[^\s]+|)\D\n)?(CLIENT ADDRESS:\[\d+\]\s+\D(?P<client_address>[^\s]+|)\D\n)?(ACTION NUMBER:\[\d+\]\s+\D(?P<action_number>[^\s]+|)\D)?'
     timestamp:
       parse_from: timestamp
       layout: '%c %j'
