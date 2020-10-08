@@ -112,13 +112,31 @@ pipeline:
       - {{ $alert_log_path }}
     start_at: {{ $start_at }}
     multiline:
-      line_start_pattern: '\d{4}-\d{2}-\d{2}T\d{1,}:\d{2}:\d{2}.\d+[+-]\d+:\d+'
+      line_start_pattern: '\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \d{4}|\d{4}-\d{2}-\d{2}T\d{1,}:\d{2}:\d{2}.\d+[+-]\d+:\d+'
     labels:
       log_type: 'oracledb.alert'
       plugin_id: {{ .id }}
-    output: alert_regex_parser
+    output: alert_router
 
-  - id: alert_regex_parser
+  - id: alert_router
+    type: router
+    routes:
+      - output: alert121_regex_parser
+        expr: $ matches '\\w+ \\w+ \\d{2} \\d{2}:\\d{2}:\\d{2} \\d{4}'
+      - output: alert122_regex_parser
+        expr: $ matches '\\d{4}-\\d{2}-\\d{2}T\\d{1,}:\\d{2}:\\d{2}.\\d+[+-]\\d+:\\d+'
+
+  # Alert log parser for 12.1 timestamp
+  - id: alert121_regex_parser
+    type: regex_parser
+    regex: '(?P<timestamp>\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \d{4})\n(?P<message>[\d\w[:ascii:]]+)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%c'
+    output: {{ .output }}
+
+  # Alert log parser for 12.2 timestamp
+  - id: alert122_regex_parser
     type: regex_parser
     regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{1,}:\d{2}:\d{2}.\d+[+-]\d+:\d+)\n(?P<message>[\d\w[:ascii:]]+)'
     timestamp:
