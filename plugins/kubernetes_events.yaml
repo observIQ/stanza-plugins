@@ -8,8 +8,14 @@ parameters:
     description: An array of namespaces. Defaults to use all namespaces.
     type: strings
     default: []
+  cluster_name:
+    label: Cluster Name
+    description: 'Cluster Name to be added to a resource label'
+    type: string
 
 # Pipeline Template
+# {{ $cluster_name := default "" .cluster_name }}
+#
 pipeline:
   - type: k8s_event_input
     namespaces:
@@ -17,7 +23,7 @@ pipeline:
       - {{ $ns }}
 {{ end }}
     labels:
-      plugin_id: {{ .id }}
+      plugin_id: '{{ .id }}'
       log_type: "k8s.events"
     resource:
       k8s.node.name: "EXPR(env('NODE_NAME'))"
@@ -28,9 +34,15 @@ pipeline:
       - expr: '$resource["k8s.pod.name"] != ""'
         output: k8s_metadata_decorator
       - expr: "true"
-        output: severity_parser
+        output: restructure
 
   - type: k8s_metadata_decorator
+
+  - type: restructure
+    ops:
+      - add:
+          field: '$resource["k8s.cluster.name"]'
+          value: '{{ $cluster_name }}'
 
   - type: severity_parser
     preset: none
