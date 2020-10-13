@@ -4,8 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.16] - 2020-10-13
+### Changed
+
+- Update `apache_http` plugin ([PR74](https://github.com/observIQ/stanza-plugins/pull/74))
+  - Add warn severity mapping.
+  - Add trace1-8 severity mapping.
+  - Fix trace level log parsing.
+- Update `oracledb` plugin ([PR74](https://github.com/observIQ/stanza-plugins/pull/73))
+  - Add support for 12.1 alert log timestamp format.
+  - Fix parse error with audit log.
+
+## [0.0.15] - 2020-10-08
+### Changed
+
+- Added `k8s.cluster.name` to `kubernetes_events` plugin ([PR71](https://github.com/observIQ/stanza-plugins/pull/71))
+
 ## [0.0.14] - 2020-10-07
 ### Changed
+
 - Added `k8s.node.name` to kubernetes plugins ([PR70](https://github.com/observIQ/stanza-plugins/pull/70))
 - Added metadata to `kubernetes_event` plugin ([PR70](https://github.com/observIQ/stanza-plugins/pull/70))
 - Update `apache_http` Plugin ([PR68](https://github.com/observIQ/stanza-plugins/pull/68))
@@ -14,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.13] - 2020-10-01
 ### Changed
+
 - Update Kubernetes Plugins ([PR66](https://github.com/observIQ/stanza-plugins/pull/66))
   - `kubernetes`
   - `amazon_eks`
@@ -23,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.12] - 2020-09-25
 ### Changed
+
 - Update Tail Plugin ([PR64](https://github.com/observIQ/stanza-plugins/pull/64))
 - Apache Http plugin ([PR63](https://github.com/observIQ/stanza-plugins/pull/63))
 - Windows Event plugin ([PR62](https://github.com/observIQ/stanza-plugins/pull/62))
@@ -33,9 +52,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.11] - 2020-09-15
 ### Added
+
 - Tail Plugin ([PR55](https://github.com/observIQ/stanza-plugins/pull/55))
 
 ### Changed
+
 - Update Other Kubernetes Plugins ([PR56](https://github.com/observIQ/stanza-plugins/pull/56))
   - `azure_aks`
   - `amazon_eks`
@@ -43,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.10] - 2020-09-09
 ### Change
+
 - Add Defaults to plugins ([PR54](https://github.com/observIQ/stanza-plugins/pull/54))
   - `aerospike`
   - `amazon_eks`
@@ -90,28 +112,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.9] - 2020-09-01
 ### Changed
+
 - Kubernetes plugin ([PR51](https://github.com/observIQ/stanza-plugins/pull/51))
 
 ## [0.0.8] - 2020-09-01
 ### Changed
+
 - Kubernetes plugin ([PR50](https://github.com/observIQ/stanza-plugins/pull/50))
 - Kubernetes plugin ([PR49](https://github.com/observIQ/stanza-plugins/pull/49))
 
 ### Added
+
 - Windows Event plugin ([PR48](https://github.com/observIQ/stanza-plugins/pull/48))
 - Kubernetes Event plugin ([PR47](https://github.com/observIQ/stanza-plugins/pull/47))
 
 ## [0.0.7] - 2020-08-24
 ### Changed
+
 - Project name changed to `stanza-plugins`
 
 ## [0.0.6] - 2020-08-19
 ### Added
+
 - Apache HTTP plugin
 - `plugin_id` label added to all input operators
 
 ## [0.0.5] - 2020-08-17
 ### Added
+
 - Elasticsearch plugin ([PR16](https://github.com/observIQ/stanza-plugins/pull/16))
 - Jboss plugin ([PR17](https://github.com/observIQ/stanza-plugins/pull/17))
 - Gitlab plugin ([PR18](https://github.com/observIQ/stanza-plugins/pull/18))
@@ -140,25 +168,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Azure AKS plugin ([PR42](https://github.com/observIQ/stanza-plugins/pull/42))
 
 ### Changed
+
 - MySQL plugin ([PR26](https://github.com/observIQ/stanza-plugins/pull/26))
 
 ## [0.0.3] - 2020-08-03
 ### Added
+
 - Apache Kafka plugin ([PR12](https://github.com/observIQ/stanza-plugins/pull/12))
 - NGINX plugin ([PR10](https://github.com/observIQ/stanza-plugins/pull/10))
 - Apache Cassandra plugin ([PR8](https://github.com/observIQ/stanza-plugins/pull/8))
 
 ### Changed
+
 - Kubernetes plugin ([PR11](https://github.com/observIQ/stanza-plugins/pull/11))
 
 ## [0.0.2] - 2020-07-28
 ### Added
+
 - OpenShift plugin ([PR4](https://github.com/observIQ/stanza-plugins/pull/4))
 - PostgreSQL plugin ([PR5](https://github.com/observIQ/stanza-plugins/pull/5))
 
 ### Changed
+
 - Enhanced parameter metadata ([PR9](https://github.com/observIQ/stanza-plugins/pull/9))
 
 ## [0.0.1] - 2020-07-21
 ### Added
+
 - Kubelet message parsing to kubernetes.yaml ([PR3](https://github.com/observIQ/stanza-plugins/pull/3))
