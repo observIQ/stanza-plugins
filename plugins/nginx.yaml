@@ -71,10 +71,11 @@ pipeline:
 
   - id: null_output
     type: drop_output
-  # {{ end }}
+  # {{ end }} .kubernetes
+
+  # {{ if not .kubernetes }}
 
   # {{ if $enable_access_log }}
-  # {{ if not .kubernetes }}
   - id: nginx_access_reader
     type: file_input
     include:
@@ -83,19 +84,10 @@ pipeline:
     labels:
       log_type: 'nginx.access'
       plugin_id: '{{ .id }}'
-  # {{ end }}
-
-  - id: access_regex_parser
-    type: regex_parser
-    regex: '^(?P<remote>[^ ]*) (?P<host>[^ ]*) (?P<user>[^ ]*) \[(?P<time>[^\]]*)\] "(?P<method>\S+)(?: +(?P<path>[^\"]*?)(?: +\S*)?)?" (?P<code>[^ ]*) (?P<size>[^ ]*)(?: "(?P<referrer>[^\"]*)" "(?P<agent>[^\"]*)"(?:\s+(?P<http_x_forwarded_for>[^ ]+))?)?$'
-    timestamp:
-      parse_from: time
-      layout: '%d/%b/%Y:%H:%M:%S %z'
-    output: {{ .output }}
-  # {{ end }}
+    output: access_regex_parser
+  # {{ end }} $enable_access_log 
 
   # {{ if $enable_error_log }}
-  # {{ if not .kubernetes }}
   - id: nginx_error_reader
     type: file_input
     include:
@@ -106,7 +98,18 @@ pipeline:
     labels:
       log_type: 'nginx.error'
       plugin_id: '{{ .id }}'
-  # {{ end }}
+    output: error_regex_parser
+  # {{ end }} $enable_error_log
+
+  # {{ end }} not .kubernetes
+
+  - id: access_regex_parser
+    type: regex_parser
+    regex: '^(?P<remote>[^ ]*) (?P<host>[^ ]*) (?P<user>[^ ]*) \[(?P<time>[^\]]*)\] "(?P<method>\S+)(?: +(?P<path>[^\"]*?)(?: +\S*)?)?" (?P<code>[^ ]*) (?P<size>[^ ]*)(?: "(?P<referrer>[^\"]*)" "(?P<agent>[^\"]*)"(?:\s+(?P<http_x_forwarded_for>[^ ]+))?)?$'
+    timestamp:
+      parse_from: time
+      layout: '%d/%b/%Y:%H:%M:%S %z'
+    output: {{ .output }}
 
   - id: error_regex_parser
     type: regex_parser
@@ -120,4 +123,3 @@ pipeline:
         critical: crit
         emergency: emerg
     output: {{ .output }}
-  #{{ end }}
