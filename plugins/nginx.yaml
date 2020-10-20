@@ -2,6 +2,18 @@ version: 0.0.2
 title: Nginx
 description: Log parser for Nginx
 parameters:
+  kubernetes:
+    label: Kubernetes
+    description: Enable if running on Kubernetes
+    type: bool
+    default: false
+  kubernetes_service_name:
+    label: Kubernetes Service Name
+    description: The service name of the Nginx service on Kubernetes
+    type: string
+    required: true
+    relevant_if:
+      - kubernetes: true
   enable_access_log:
     label: Access Logs
     description: Enable to collect Nginx access slogs
@@ -12,6 +24,8 @@ parameters:
     description: Path to access log file
     type: string
     default: "/var/log/nginx/access.log*"
+    relevant_if:
+      - kubernetes: false
   enable_error_log:
     label: Error Logs
     description: Enable to collect Nginx error logs
@@ -22,13 +36,15 @@ parameters:
     description: Path to error log file
     type: string
     default: "/var/log/nginx/error.log*"
+    relevant_if:
+      - kubernetes: false
   start_at:
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum
     valid_values:
-     - beginning
-     - end
+      - beginning
+      - end
     default: end
 
 # Set Defaults
@@ -40,15 +56,34 @@ parameters:
 
 # Pipeline Template
 pipeline:
-  #{{ if $enable_access_log }}
+  # {{ if .kubernetes }}
+  - id: kubernetes_input
+    container_log_path: "/var/log/containers/{{ .service_name }}*"
+    start_at: '{{ $start_at }}'
+
+  - id: k8s_router
+    type: router
+    routes:
+      - expr: "$record.stream == 'stderr'"
+        output: "{{ if $enable_error_log }} error_regex_parser {{ else }} null_output {{ end }}"
+      - expr: "$record.stream == 'stdout'"
+        output: "{{ if $enable_access_log }} access_regex_parser {{ else }} null_output {{ end }}"
+
+  - id: null_output
+    type: drop_output
+  # {{ end }}
+
+  # {{ if $enable_access_log }}
+  # {{ if not .kubernetes }}
   - id: nginx_access_reader
     type: file_input
     include:
-      - {{ $access_log_path }}
-    start_at: {{ $start_at }}
+      - '{{ $access_log_path }}'
+    start_at: '{{ $start_at }}'
     labels:
       log_type: 'nginx.access'
-      plugin_id: {{ .id }}
+      plugin_id: '{{ .id }}'
+  # {{ end }}
 
   - id: access_regex_parser
     type: regex_parser
@@ -57,19 +92,21 @@ pipeline:
       parse_from: time
       layout: '%d/%b/%Y:%H:%M:%S %z'
     output: {{ .output }}
-  #{{ end }}
+  # {{ end }}
 
-  #{{ if $enable_error_log }}
+  # {{ if $enable_error_log }}
+  # {{ if not .kubernetes }}
   - id: nginx_error_reader
     type: file_input
     include:
-      - {{ $error_log_path }}
-    start_at: {{ $start_at }}
+      - '{{ $error_log_path }}'
+    start_at: '{{ $start_at }}'
     multiline:
       line_start_pattern: '\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} \[\w+\] (?P<pid>\d+).(?P<tid>\d+): '
     labels:
       log_type: 'nginx.error'
-      plugin_id: {{ .id }}
+      plugin_id: '{{ .id }}'
+  # {{ end }}
 
   - id: error_regex_parser
     type: regex_parser
