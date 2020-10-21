@@ -7,9 +7,16 @@ parameters:
     description: Enable if running on Kubernetes
     type: bool
     default: false
-  kubernetes_service_name:
-    label: Kubernetes Service Name
-    description: The service name of the Nginx service on Kubernetes
+  pod_name_prefix:
+    label: Pod Name Prefix
+    description: The beginning portion of the pod name
+    type: string
+    required: true
+    relevant_if:
+      - kubernetes: true
+  container_name:
+    label: Container Name
+    description: The container name of the Nginx container
     type: string
     required: true
     relevant_if:
@@ -60,21 +67,15 @@ pipeline:
   - id: kubernetes_input
     container_log_path: "/var/log/containers/{{ .service_name }}*"
     start_at: '{{ $start_at }}'
-
-  - id: k8s_router
-    type: router
-    routes:
-      - expr: "$record.stream == 'stderr'"
-        output: "{{ if $enable_error_log }} error_regex_parser {{ else }} null_output {{ end }}"
-      - expr: "$record.stream == 'stdout'"
-        output: "{{ if $enable_access_log }} access_regex_parser {{ else }} null_output {{ end }}"
-
-  - id: null_output
-    type: drop_output
+    # {{ if $enable_access_log }}
+    stdout_output: access_log_parser
+    # {{ end }}
+    # {{ if $enable_error_log }}
+    stderr_output: error_log_parser
+    # {{ end }}
   # {{ end }}
 
-  # {{ if $enable_access_log }}
-  # {{ if not .kubernetes }}
+  # {{ if and not .kubernetes $enable_access_log }}
   - id: nginx_access_reader
     type: file_input
     include:
@@ -85,17 +86,7 @@ pipeline:
       plugin_id: '{{ .id }}'
   # {{ end }}
 
-  - id: access_regex_parser
-    type: regex_parser
-    regex: '^(?P<remote>[^ ]*) (?P<host>[^ ]*) (?P<user>[^ ]*) \[(?P<time>[^\]]*)\] "(?P<method>\S+)(?: +(?P<path>[^\"]*?)(?: +\S*)?)?" (?P<code>[^ ]*) (?P<size>[^ ]*)(?: "(?P<referrer>[^\"]*)" "(?P<agent>[^\"]*)"(?:\s+(?P<http_x_forwarded_for>[^ ]+))?)?$'
-    timestamp:
-      parse_from: time
-      layout: '%d/%b/%Y:%H:%M:%S %z'
-    output: {{ .output }}
-  # {{ end }}
-
-  # {{ if $enable_error_log }}
-  # {{ if not .kubernetes }}
+  # {{ if and not .kubernetes $enable_error_log }}
   - id: nginx_error_reader
     type: file_input
     include:
@@ -107,6 +98,14 @@ pipeline:
       log_type: 'nginx.error'
       plugin_id: '{{ .id }}'
   # {{ end }}
+
+  - id: access_regex_parser
+    type: regex_parser
+    regex: '^(?P<remote>[^ ]*) (?P<host>[^ ]*) (?P<user>[^ ]*) \[(?P<time>[^\]]*)\] "(?P<method>\S+)(?: +(?P<path>[^\"]*?)(?: +\S*)?)?" (?P<code>[^ ]*) (?P<size>[^ ]*)(?: "(?P<referrer>[^\"]*)" "(?P<agent>[^\"]*)"(?:\s+(?P<http_x_forwarded_for>[^ ]+))?)?$'
+    timestamp:
+      parse_from: time
+      layout: '%d/%b/%Y:%H:%M:%S %z'
+    output: {{ .output }}
 
   - id: error_regex_parser
     type: regex_parser
@@ -120,4 +119,3 @@ pipeline:
         critical: crit
         emergency: emerg
     output: {{ .output }}
-  #{{ end }}
