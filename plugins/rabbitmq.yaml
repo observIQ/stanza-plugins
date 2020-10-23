@@ -1,4 +1,5 @@
 # Plugin Info
+id: rabbitmq
 version: 0.0.1
 title: RabbitMQ
 description: Log parser for RabbitMQ

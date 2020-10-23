@@ -1,4 +1,5 @@
 # Plugin Info
+id: zookeeper
 version: 0.0.1
 title: Apache Zookeeper
 description: Log parser for Apache Zookeeper

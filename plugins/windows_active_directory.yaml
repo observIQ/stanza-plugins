@@ -1,4 +1,5 @@
 # Plugin Info
+id: windows_active_directory
 version: 0.0.1
 title: Microsoft Active Directory
 description: Log parser for Microsoft Active Directory

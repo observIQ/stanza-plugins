@@ -1,4 +1,5 @@
 # Plugin Info
+id: hbase
 version: 0.0.1
 title: Apache HBase
 description: Log parser for Apache HBase

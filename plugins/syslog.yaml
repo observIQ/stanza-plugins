@@ -1,4 +1,5 @@
 # Plugin Info
+id: syslog
 version: 0.0.2
 title: Syslog
 description: Log parser for Syslog

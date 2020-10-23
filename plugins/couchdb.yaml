@@ -1,4 +1,5 @@
 # Plugin Info
+id: couchdb
 version: 0.0.1
 title: CouchDB
 description: Log parser for CouchDB

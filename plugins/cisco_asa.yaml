@@ -1,4 +1,5 @@
 # Plugin Info
+id: cisco_asa
 version: 0.0.2
 title: Cisco ASA
 description: Log parser for Cisco ASA
@@ -18,7 +19,7 @@ pipeline:
     type: tcp_input
     listen_address: {{ $listen_address }}
     labels:
-      log_type: cisco_asa 
+      log_type: cisco_asa
       plugin_id: {{ .id }}
     output: cisco_parser
 

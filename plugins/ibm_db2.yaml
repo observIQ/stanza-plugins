@@ -1,3 +1,4 @@
+id: ibm_db2
 version: 0.0.7
 title: IBM Db2
 description: Log parser for IBM Db2
@@ -7,7 +8,7 @@ parameters:
     description: Path to the log file
     type: string
     default: "/home/db2inst1/sqllib/db2dump/db2diag.log"
-  start_at: 
+  start_at:
     label: Start At
     description: "Start reading file from 'beginning' or 'end'"
     type: enum
@@ -56,10 +57,10 @@ pipeline:
           - error
         warning:
           - 'Warning (OS)'
-        notice: 
+        notice:
           - config
           - detail
-        info: 
+        info:
           - audit
           - event
         debug:

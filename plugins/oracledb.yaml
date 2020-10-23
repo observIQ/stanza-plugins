@@ -1,3 +1,4 @@
+id: oracledb
 version: 0.0.7
 title: OracleDB
 description: Log parser for OracleDB
@@ -12,7 +13,7 @@ parameters:
     description: Path to the audit log file
     type: string
     default: "/u01/app/oracle/product/*/dbhome_1/admin/*/adump/*.aud"
-  enable_truncate_audit_action: 
+  enable_truncate_audit_action:
     label: Truncate Audit Action
     description: Whether or not to truncate the audit log action field
     type: bool
@@ -37,7 +38,7 @@ parameters:
     description: Path to the listener log file
     type: string
     default: "/u01/app/oracle/product/*/dbhome_1/diag/rdbms/*/*/alert/log.xml"
-  start_at: 
+  start_at:
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum
@@ -70,7 +71,7 @@ pipeline:
       log_type: 'oracledb.audit'
       plugin_id: {{ .id }}
     output: audit_router
-  
+
   - id: audit_router
     type: router
     routes:
@@ -99,7 +100,7 @@ pipeline:
   - id: audit_action_restructurer
     type: restructure
     ops:
-      - add: 
+      - add:
           field: "action"
           value_expr: 'len($.action) > 150000 ? $.action[0:150000] + "... Action has " + $.length + " characters which is over the 150000 characters limit, truncating action" : $.action'
     output: {{ .output }}

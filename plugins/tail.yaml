@@ -1,16 +1,17 @@
 # Plugin Info
+id: tail
 version: 0.0.1
 title: Tail
 description: File Input Parser
 parameters:
   file_log_path:
     label: File Log Path
-    description: An array of file log path glob patterns. 
+    description: An array of file log path glob patterns.
     type: strings
     required: true
   exclude_file_log_path:
     label: Exclude File Log Path
-    description: An array of file log path glob patterns to be excluded. 
+    description: An array of file log path glob patterns to be excluded.
     type: strings
     default: []
   poll_interval:
@@ -125,4 +126,3 @@ pipeline:
   - type: json_parser
     output: {{ .output }}
 #{{ end }}
-

@@ -1,3 +1,4 @@
+id: nginx
 version: 0.0.2
 title: Nginx
 description: Log parser for Nginx
@@ -16,14 +17,16 @@ parameters:
     type: string
     required: true
     relevant_if:
-      - log_source: kubernetes
+      log_source:
+        equals: kubernetes
   container_name:
     label: Container Name
     description: The container name of the Nginx container
     type: string
     required: true
     relevant_if:
-      - log_source: kubernetes
+      log_source:
+        equals: kubernetes
   enable_access_log:
     label: Access Logs
     description: Enable to collect Nginx access slogs
@@ -35,7 +38,8 @@ parameters:
     type: string
     default: "/var/log/nginx/access.log*"
     relevant_if:
-      - log_source: file
+      log_source:
+        equals: file
   enable_error_log:
     label: Error Logs
     description: Enable to collect Nginx error logs
@@ -47,7 +51,8 @@ parameters:
     type: string
     default: "/var/log/nginx/error.log*"
     relevant_if:
-      - log_source: file
+      log_source:
+        equals: file
   start_at:
     label: Start At
     description: Start reading file from 'beginning' or 'end'

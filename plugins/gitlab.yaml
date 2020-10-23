@@ -1,4 +1,5 @@
 # Plugin Info
+id: gitlab
 version: 0.0.1
 title: GitLab
 description: Log parser for GitLab

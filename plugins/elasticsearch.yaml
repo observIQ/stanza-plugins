@@ -1,4 +1,5 @@
 # Plugin Info
+id: elasticsearch
 version: 0.0.1
 title: Elasticsearch
 description: Log parser for Elasticsearch

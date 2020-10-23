@@ -1,3 +1,4 @@
+id: apache_http
 version: 0.0.3
 title: Apache HTTP Server
 description: Log parser for Apache HTTP Server

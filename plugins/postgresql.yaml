@@ -1,10 +1,11 @@
+id: postgresql
 version: 0.0.3
 title: PostgreSQL
 description: |2
   Log parser for PostgreSQL. This plugin expects the following settings in postgresql.conf:
   log_destination = 'stderr'
   logging_collector = on
-  log_directory = 'pg_log'        
+  log_directory = 'pg_log'
   log_filename = 'postgresql-%Y-%m-%d_%H%M%S.log'
   log_truncate_on_rotation = off
   log_rotation_age = 1d
@@ -20,7 +21,7 @@ parameters:
     description: Path to the PostgreSQL log file
     type: string
     default: "/var/lib/pgsql/*/data/pg_log/postgresql-*.log"
-  start_at: 
+  start_at:
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum
@@ -61,4 +62,4 @@ pipeline:
     severity:
       parse_from: severity
     output: {{ .output }}
-    
+

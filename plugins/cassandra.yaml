@@ -1,3 +1,4 @@
+id: cassandra
 version: 0.0.3
 title: Apache Cassandra
 description: Log parser for Appache Cassandra
@@ -88,8 +89,8 @@ pipeline:
     severity:
       parse_from: cassandra_severity
 
-  # Due to limitations in golang time we cannot have a comma in our timestamp we split timestamp into two fields 'time1' and 'time2'. 
-  # This will combine and remove 'time1' and 'time2' fields into a timestamp field. 
+  # Due to limitations in golang time we cannot have a comma in our timestamp we split timestamp into two fields 'time1' and 'time2'.
+  # This will combine and remove 'time1' and 'time2' fields into a timestamp field.
   - id: timestamp_restructurer
     type: restructure
     ops:

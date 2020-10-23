@@ -1,3 +1,4 @@
+id: kafka
 version: 0.0.2
 title: Apache Kafka
 description: Log parser for Apache Kafka
@@ -151,4 +152,3 @@ pipeline:
     parse_from: timestamp
     layout: '%F %T.%L'
     output: {{ .output }}
-

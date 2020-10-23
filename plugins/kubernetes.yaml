@@ -1,6 +1,9 @@
+id: kubernetes
 version: 0.0.7
 title: Kubernetes
+id: kubernetes
 description: Log parser for Kubernetes
+min_stanza_version: 0.9.8
 parameters:
   cluster_name:
     label: Cluster Name

@@ -1,4 +1,5 @@
 # Plugin Info
+id: sqlserver
 version: 0.0.1
 title: Microsoft SQL Server
 description: Log parser for Microsoft SQL Server

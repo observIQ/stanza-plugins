@@ -1,3 +1,4 @@
+id: mysql
 version: 0.0.7
 title: MySQL
 description: Log parser for MySQL
@@ -17,7 +18,7 @@ parameters:
     description: Enable to collect MySQL slow query logs
     type: bool
     default: true
-  slow_query_log_path: 
+  slow_query_log_path:
     label: Slow Query Log Path
     description: Path to slow query log file
     type: string
@@ -27,12 +28,12 @@ parameters:
     description: Enable to collect MySQL error logs
     type: bool
     default: true
-  error_log_path: 
+  error_log_path:
     label: Error Log Path
     description: Path to mysqld log file
     type: string
     default: "/var/log/mysql/mysqld.log"
-  start_at: 
+  start_at:
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum

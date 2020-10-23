@@ -1,8 +1,9 @@
+id: mongodb
 version: 0.0.5
 title: MongoDB
 description: Log parser for MongoDB
 parameters:
-  log_path: 
+  log_path:
     label: Path
     description: The path of the log file
     type: string

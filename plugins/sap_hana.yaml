@@ -1,4 +1,5 @@
 # Plugin Info
+id: sap_hana
 version: 0.0.1
 title: SAP HANA
 description: Log parser for SAP HANA

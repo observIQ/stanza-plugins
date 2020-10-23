@@ -1,4 +1,5 @@
 ---
+id: openshift
 version: 0.0.3
 title: Openshift
 description: Log parser for Openshift

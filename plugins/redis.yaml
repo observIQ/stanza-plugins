@@ -1,4 +1,5 @@
 # Plugin Info
+id: redis
 version: 0.0.1
 title: Redis
 description: Log parser for Redis

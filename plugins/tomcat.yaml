@@ -1,3 +1,4 @@
+id: tomcat
 version: 0.0.6
 title: Apache Tomcat
 description: Log parser for Apache Tomcat
@@ -90,4 +91,3 @@ pipeline:
           - finest
     output: {{ .output }}
   #{{ end }}
-
