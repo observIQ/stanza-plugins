@@ -1,5 +1,7 @@
 ---
 version: 2.1
+orbs:
+  jq: circleci/jq@2.2.0
 
 jobs:
   publish-github-release:
@@ -27,6 +29,7 @@ jobs:
       - image: cimg/base:2020.01
     steps:
       - checkout
+      - jq/install
       - run:
           name: "Publish sources to the Stanza Source Service"
           command: |
