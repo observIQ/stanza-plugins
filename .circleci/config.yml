@@ -2,9 +2,7 @@
 version: 2.1
 
 jobs:
-
-
-  publish-sources:
+  publish_sources:
     docker:
       - image: cimg/base:2020.01
     steps:
@@ -26,12 +24,13 @@ jobs:
             done
             wait
 
-
-  test_build_release:
-    jobs:
-      - publish-sources:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v\d+\.\d+\.\d+.*/
+workflows:
+  version: 2
+  release:
+    - publish_sources:
+        filters:
+          tags: 
+            only: /^v\d+\.\d+\.\d+$/
+          branches:
+            ignore: /.*/
+        
