@@ -1,5 +1,7 @@
 ---
 version: 2.1
+orbs:
+  jq: circleci/jq@2.2.0
 
 jobs:
   publish-github-release:
@@ -22,15 +24,44 @@ jobs:
           command: |
             ghr -t ${GHI_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG} ./artifacts/
 
+  publish_sources:
+    docker:
+      - image: cimg/base:2020.01
+    steps:
+      - checkout
+      - jq/install
+      - run:
+          name: "Publish sources to the Stanza Source Service"
+          command: |
+            last_release=$(git describe --abbrev=0 --tags --match 'v*[0-9].*[0-9].*[0-9]' HEAD~1)
+            changed_plugins=$(git diff --name-only $last_release ./plugins)
+            for i in $changed_plugins ; do 
+              id=$(basename $i | cut -d '.' -f 1)
+              payload="$(jq -Rs "{contents: ., id: \"${id}\"}" $i)"
+              curl \
+                -H "Authorization: Bearer $GCLOUD_IDENTITY_TOKEN" \
+                -X POST \
+                -d "$payload" \
+                https://stanza-source-service-enle4clm4a-ue.a.run.app/plugins &
+            done
+            wait
+
 workflows:
   version: 2
-
-  package_plugins:
-    jobs:
-      - publish-github-release:
+  release:
+    jobs: 
+      - publish_sources:
           filters:
             branches:
               ignore: /.*/
             tags:
               only: /^v\d+\.\d+\.\d+.*/
 
+      - publish-github-release:
+          requires:
+            - publish_sources
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v\d+\.\d+\.\d+.*/
