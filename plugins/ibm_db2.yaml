@@ -1,4 +1,3 @@
-id: ibm_db2
 version: 0.0.7
 title: IBM Db2
 description: Log parser for IBM Db2

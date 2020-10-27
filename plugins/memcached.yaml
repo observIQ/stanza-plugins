@@ -1,5 +1,4 @@
 # Plugin Info
-id: memcached
 version: 0.0.1
 title: Memcached
 description: Log parser for Memcached

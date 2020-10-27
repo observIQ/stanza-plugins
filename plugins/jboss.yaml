@@ -1,5 +1,4 @@
 # Plugin Info
-id: jboss
 version: 0.0.1
 title: JBoss
 description: Log parser for JBoss

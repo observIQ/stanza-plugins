@@ -1,5 +1,4 @@
 # Plugin Info
-id: microsoft_iis
 version: 0.0.1
 title: Microsoft IIS
 description: Log parser for Microsoft IIS

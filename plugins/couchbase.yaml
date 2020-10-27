@@ -1,5 +1,4 @@
 # Plugin Info
-id: couchbase
 version: 0.0.1
 title: Couchbase
 description: Log parser for Couchbase

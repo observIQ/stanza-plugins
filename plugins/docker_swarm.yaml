@@ -1,5 +1,4 @@
 # Plugin Info
-id: docker_swarm
 version: 0.0.1
 title: Docker Swarm
 description: Log parser for Docker Swarm

@@ -1,5 +1,4 @@
 # Plugin Info
-id: windows_event
 version: 0.0.2
 title: Windows Event Log
 description: Windows Event Log Parser

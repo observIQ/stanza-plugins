@@ -1,4 +1,3 @@
-id: cassandra
 version: 0.0.3
 title: Apache Cassandra
 description: Log parser for Appache Cassandra

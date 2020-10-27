@@ -1,6 +1,5 @@
 ---
 # Plugin Info
-id: amazon_eks
 version: 0.0.3
 title: Amazon EKS
 description: Log parser for Amazon EKS

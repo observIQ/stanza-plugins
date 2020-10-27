@@ -1,5 +1,4 @@
 # Plugin Info
-id: pgbouncer
 version: 0.0.1
 title: PgBouncer
 description: Log parser for PgBouncer

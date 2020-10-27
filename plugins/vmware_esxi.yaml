@@ -1,5 +1,4 @@
 # Plugin Info
-id: vmware_esxi
 version: 0.0.3
 title: VMware ESXi
 description: Log parser for VMware ESXi

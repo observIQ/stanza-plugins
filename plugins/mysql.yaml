@@ -1,4 +1,3 @@
-id: mysql
 version: 0.0.7
 title: MySQL
 description: Log parser for MySQL

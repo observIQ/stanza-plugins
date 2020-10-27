@@ -1,4 +1,3 @@
-id: nginx
 version: 0.0.2
 title: Nginx
 description: Log parser for Nginx

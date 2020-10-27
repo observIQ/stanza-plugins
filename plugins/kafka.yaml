@@ -1,4 +1,3 @@
-id: kafka
 version: 0.0.2
 title: Apache Kafka
 description: Log parser for Apache Kafka
