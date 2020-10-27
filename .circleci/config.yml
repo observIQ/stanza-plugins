@@ -27,10 +27,10 @@ jobs:
 workflows:
   version: 2
   release:
-    - publish_sources:
-        filters:
-          tags: 
-            only: /^v\d+\.\d+\.\d+$/
-          branches:
-            ignore: /.*/
-        
+    publish_sources:
+      filters:
+        tags: 
+          only: /^v\d+\.\d+\.\d+$/
+        branches:
+          ignore: /.*/
+      
