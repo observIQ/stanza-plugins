@@ -33,7 +33,6 @@ jobs:
       - run:
           name: "Publish sources to the Stanza Source Service"
           command: |
-            apt-get install jq
             last_release=$(git describe --abbrev=0 --tags --match 'v*[0-9].*[0-9].*[0-9]' HEAD~1)
             changed_plugins=$(git diff --name-only $last_release ./plugins)
             for i in $changed_plugins ; do 
