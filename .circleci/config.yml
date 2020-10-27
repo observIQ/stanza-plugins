@@ -2,35 +2,36 @@
 version: 2.1
 
 jobs:
-  publish-github-release:
+
+
+  publish-sources:
     docker:
-      - image: cibuilds/github:0.10
+      - image: cimg/base:2020.01
     steps:
       - checkout
-      - run: mkdir ./artifacts
       - run:
-          name: Create Plugins Zip
-          command: zip ./artifacts/stanza-plugins.zip ./plugins/*
-      - run:
-          name: Create Plugins Tarball
-          command: tar -zcvf ./artifacts/stanza-plugins.tar.gz ./plugins/*
-      - run:
-          name: Write Version File
-          command: printf '{"version":"%s"}\n' $CIRCLE_TAG > artifacts/version.json
-      - run:
-          name: "Publish Release on GitHub"
+          name: "Publish sources to the Stanza Source Service"
           command: |
-            ghr -t ${GHI_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG} ./artifacts/
+            apt-get install jq
+            last_release=$(git describe --abbrev=0 --tags --match 'v*[0-9].*[0-9].*[0-9]' HEAD~1)
+            changed_plugins=$(git diff --name-only $last_release ./plugins)
+            for i in $changed_plugins ; do 
+              id=${$(basename $i)%.yaml}
+              payload="$(jq -Rs "{contents: ., id: \"${id}\"}" $i)"
+              curl \
+                -H "Authorization: Bearer $GCLOUD_IDENTITY_TOKEN" \
+                -X POST \
+                -d "$payload" \
+                https://stanza-source-service-enle4clm4a-ue.a.run.app/plugins &
+            done
+            wait
 
-workflows:
-  version: 2
 
-  package_plugins:
+  test_build_release:
     jobs:
-      - publish-github-release:
+      - publish-sources:
           filters:
             branches:
               ignore: /.*/
             tags:
               only: /^v\d+\.\d+\.\d+.*/
-
