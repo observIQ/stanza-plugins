@@ -36,7 +36,7 @@ jobs:
             last_release=$(git describe --abbrev=0 --tags --match 'v*[0-9].*[0-9].*[0-9]' HEAD~1)
             changed_plugins=$(git diff --name-only $last_release ./plugins)
             for i in $changed_plugins ; do 
-              id=${$(basename $i)%.yaml}
+              id=$(basename $i | cut -d '.' -f 1)
               payload="$(jq -Rs "{contents: ., id: \"${id}\"}" $i)"
               curl \
                 -H "Authorization: Bearer $GCLOUD_IDENTITY_TOKEN" \
