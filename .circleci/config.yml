@@ -2,6 +2,26 @@
 version: 2.1
 
 jobs:
+  publish-github-release:
+    docker:
+      - image: cibuilds/github:0.10
+    steps:
+      - checkout
+      - run: mkdir ./artifacts
+      - run:
+          name: Create Plugins Zip
+          command: zip ./artifacts/stanza-plugins.zip ./plugins/*
+      - run:
+          name: Create Plugins Tarball
+          command: tar -zcvf ./artifacts/stanza-plugins.tar.gz ./plugins/*
+      - run:
+          name: Write Version File
+          command: printf '{"version":"%s"}\n' $CIRCLE_TAG > artifacts/version.json
+      - run:
+          name: "Publish Release on GitHub"
+          command: |
+            ghr -t ${GHI_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} ${CIRCLE_TAG} ./artifacts/
+
   publish_sources:
     docker:
       - image: cimg/base:2020.01
@@ -30,8 +50,16 @@ workflows:
     jobs: 
       - publish_sources:
           filters:
-            tags: 
-              only: /^v\d+\.\d+\.\d+$/
             branches:
               ignore: /.*/
-      
+            tags:
+              only: /^v\d+\.\d+\.\d+.*/
+
+      - publish-github-release:
+          requires:
+            - publish_sources
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v\d+\.\d+\.\d+.*/
