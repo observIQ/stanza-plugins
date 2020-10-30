@@ -18,6 +18,11 @@ parameters:
     description: "The name of the container to collect logs from"
     type: string
     required: true
+  exclude:
+    label: Exclude files
+    description: A pattern of files to exclude
+    type: strings
+    required: false
   start_at:
     label: Start At
     description: "Start reading file from 'beginning' or 'end'"
@@ -38,6 +43,8 @@ parameters:
 
 # Set Defaults
 # {{ $cluster_name := default "" .cluster_name }}
+# {{ $pod_name := default "*" .pod_name }}
+# {{ $container_name := default "*" .container_name }}
 # {{ $start_at := default "end" .start_at }}
 # {{ $stderr_output := call .addNamespace .stderr_output | default .output }}
 # {{ $stdout_output := call .addNamespace .stdout_output | default .output }}
@@ -47,7 +54,12 @@ pipeline:
   - id: container_reader
     type: file_input
     include:
-      - '/var/log/containers/{{ .pod_name }}-*_{{ .container_name }}-*.log'
+      - '/var/log/containers/{{ $pod_name }}-*_{{ $container_name }}-*.log'
+    exclude:
+    {{ range $index, $element .exclude }}
+      - $element
+    {{ end }}
+
     start_at: '{{ $start_at }}'
     labels:
       plugin_id: '{{ .id }}'

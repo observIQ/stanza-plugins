@@ -2,7 +2,7 @@ version: 0.0.2
 title: Nginx
 description: Log parser for Nginx
 parameters:
-  log_source:
+  input:
     label: Log source
     description: Where the logs are coming from
     type: enum
@@ -16,7 +16,7 @@ parameters:
     type: string
     required: true
     relevant_if:
-      log_source:
+      input:
         equals: kubernetes
   container_name:
     label: Container Name
@@ -24,7 +24,7 @@ parameters:
     type: string
     required: true
     relevant_if:
-      log_source:
+      input:
         equals: kubernetes
   enable_access_log:
     label: Access Logs
@@ -37,7 +37,7 @@ parameters:
     type: string
     default: "/var/log/nginx/access.log*"
     relevant_if:
-      log_source:
+      input:
         equals: file
   enable_error_log:
     label: Error Logs
@@ -50,7 +50,7 @@ parameters:
     type: string
     default: "/var/log/nginx/error.log*"
     relevant_if:
-      log_source:
+      input:
         equals: file
   start_at:
     label: Start At
@@ -70,7 +70,7 @@ parameters:
 
 # Pipeline Template
 pipeline:
-  # {{ if eq .log_source "kubernetes" }}
+  # {{ if eq .input "kubernetes" }}
   - id: kubernetes_input
     container_log_path: "/var/log/containers/{{ .pod_name_prefix }}-*{{ .container_name }}-*.log"
     start_at: '{{ $start_at }}'
@@ -82,7 +82,7 @@ pipeline:
     # {{ end }}
   # {{ end }}
 
-  # {{ if and $enable_access_log eq .log_source "file" }}
+  # {{ if and $enable_access_log eq .input "file" }}
   - id: nginx_access_reader
     type: file_input
     include:
@@ -93,7 +93,7 @@ pipeline:
       plugin_id: '{{ .id }}'
   # {{ end }}
 
-  # {{ if and $enable_error_log eq .log_source "file" }}
+  # {{ if and $enable_error_log eq .input "file" }}
   - id: nginx_error_reader
     type: file_input
     include:
