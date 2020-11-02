@@ -2,47 +2,47 @@ version: 0.0.2
 title: Apache Kafka
 description: Log parser for Apache Kafka
 parameters:
-  enable_server_log:
+  - name: enable_server_log
     label: Server Logs
     description: Enable to collect Apache Kafka server logs
     type: bool
     default: true
-  server_log_path:
+  - name: server_log_path
     label: Server Log Path
     description: Apache Kafka server log path
     type: string
     default: "/home/kafka/kafka/logs/server.log*"
-  enable_controller_log:
+  - name: enable_controller_log
     label: Controller Logs
     description: Enable to collect Apache Kafka controller logs
     type: bool
     default: true
-  controller_log_path:
+  - name: controller_log_path
     label: Controller Log Path
     description: Apache Kafka controller log path
     type: string
     default: "/home/kafka/kafka/logs/controller.log*"
-  enable_state_change_log:
+  - name: enable_state_change_log
     label: State Change Logs
     description: Enable to collect Apache Kafka state change logs
     type: bool
     default: true
-  state_change_log_path:
+  - name: state_change_log_path
     label: State Change Log Path
     description: Apache Kafka state-change log path
     type: string
     default: "/home/kafka/kafka/logs/state-change.log*"
-  enable_log_cleaner_log:
+  - name: enable_log_cleaner_log
     label: Log Cleaner Logs
     description: Enable to collect Apache Kafka log cleaner logs
     type: bool
     default: true
-  log_cleaner_log_path:
+  - name: log_cleaner_log_path
     label: Log Cleaner Log Path
     description: Apache Kafka log-cleaner log path
     type: string
     default: "/home/kafka/kafka/logs/log-cleaner.log*"
-  start_at:
+  - name: start_at
     label: Start At
     description:  Start reading file from 'beginning' or 'end'
     type: enum

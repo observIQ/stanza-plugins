@@ -3,37 +3,37 @@ version: 0.0.1
 title: Elasticsearch
 description: Log parser for Elasticsearch
 parameters:
-  enable_general_logs:
+  - name: enable_general_logs
     label: General Logs
     description: Enable to collect Elasticsearch general logs
     type: bool
     default: true
-  general_log_path:
+  - name: general_log_path
     label: General Logs Path
     description: The absolute path to the Elasticsearch general logs
     type: string
     default: "/var/log/elasticsearch/elasticsearch.log*"
-  enable_deprecation_logs:
+  - name: enable_deprecation_logs
     label: Deprecation Logs
     description: Enable to collect Elasticsearch deprecation logs
     type: bool
     default: true
-  deprecation_log_path:
+  - name: deprecation_log_path
     label: Deprecation Logs Path
     description: The absolute path to the Elasticsearch deprecation logs
     type: string
     default: "/var/log/elasticsearch/elasticsearch_deprecation.log*"
-  enable_gc_logs:
+  - name: enable_gc_logs
     label: Garbage Collection Logs
     description: Enable to collect Elasticsearch garbage collection logs
     type: bool
     default: false
-  gc_log_path:
+  - name: gc_log_path
     label: Garbage Collection Logs Path
     description: The absolute path to the Elasticsearch garbage collection logs
     type: string
     default: "/var/log/elasticsearch/gc.log*"
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading files from 'beginning' or 'end'
     type: enum

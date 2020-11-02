@@ -3,32 +3,32 @@ version: 0.0.2
 title: Windows Event Log
 description: Windows Event Log Parser
 parameters:
-  enable_system_events:
+  - name: enable_system_events
     label: System Events
     description: Enable to collect system event logs
     type: bool
     default: true
-  enable_application_events:
+  - name: enable_application_events
     label: Application Events
     description: Enable to collect application event logs
     type: bool
     default: true
-  enable_security_events:
+  - name: enable_security_events
     label: Security Events
     description: Enable to collect security event logs
     type: bool
     default: true
-  max_reads:
+  - name: max_reads
     label: Max Reads
     description: The maximum number of records read into memory, before beginning a new batch
     type: int
     default: 100
-  poll_interval:
+  - name: poll_interval
     label: Poll Interval
     description: The interval, in seconds, at which the channel is checked for new log entries. This check begins again after all new records have been read
     type: int
     default: 1
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum

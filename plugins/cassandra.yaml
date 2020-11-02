@@ -2,22 +2,22 @@ version: 0.0.3
 title: Apache Cassandra
 description: Log parser for Appache Cassandra
 parameters:
-  system_log_path:
+  - name: system_log_path
     label: Apache Cassandra System Log Path
     description: Path to the Apache Cassandra system log file.
     type: string
     default: "/var/log/cassandra/cassandra.log"
-  debug_log_path:
+  - name: debug_log_path
     label: Apache Cassandra Debug Log Path
     description: Path to the Apache Cassandra debug log file.
     type: string
     default: "/var/log/cassandra/debug.log"
-  gc_log_path:
+  - name: gc_log_path
     label: Apache Cassandra Garbage Collection Log Path
     description: Path to the Apache Cassandra garbage collection log file.
     type: string
     default: "/var/log/cassandra/gc.log"
-  start_at:
+  - name: start_at
     label: Start At
     description: "Start reading file from 'beginning' or 'end'"
     type: enum

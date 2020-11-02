@@ -2,27 +2,27 @@ version: 0.0.3
 title: Apache HTTP Server
 description: Log parser for Apache HTTP Server
 parameters:
-  enable_error_log:
+  - name: enable_error_log
     label: Error Logs
     description: Enable to collect Apache HTTP Server error logs
     type: bool
     default: true
-  error_log_path:
+  - name: error_log_path
     label: Error Log Path
     description: Path to error log file
     type: string
     default: "/var/log/apache2/error.log"
-  enable_access_log:
+  - name: enable_access_log
     label: Access Logs
     description: Enable to collect Apache HTTP Server access logs
     type: bool
     default: true
-  access_log_path:
+  - name: access_log_path
     label: Access Log Path
     description: Path to access log file
     type: string
     default: "/var/log/apache2/access.log"
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum

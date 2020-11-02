@@ -3,7 +3,7 @@ version: 0.0.2
 title: VMware vCenter
 description: Log parser for VMware vCenter
 parameters:
-  listen_address:
+  - name: listen_address
     label: Listen Address
     description: A syslog address of the form `<ip>:<port>`
     type: string

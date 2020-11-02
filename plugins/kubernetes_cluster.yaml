@@ -2,20 +2,20 @@ version: 0.0.7
 title: Kubernetes
 description: Log parser for Kubernetes
 parameters:
-  container_log_path:
+  - name: container_log_path
     label: Containers Log Path
     description: Kubernetes Containers Log Path
     type: string
     default: "/var/log/containers/*"
-  kubelet_journald_log_path:
+  - name: kubelet_journald_log_path
     label: Kubelet Journald Log Path
     description: 'Kubernetes Kubelet Journald Log path. It will read from /run/journal or /var/log/journal if this parameter is omitted'
     type: string
-  cluster_name:
+  - name: cluster_name
     label: Cluster Name
     description: 'Cluster Name to be added to a resource label'
     type: string
-  start_at:
+  - name: start_at
     label: Start At
     description: "Start reading file from 'beginning' or 'end'"
     type: enum

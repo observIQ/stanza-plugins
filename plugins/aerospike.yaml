@@ -3,27 +3,27 @@ version: 0.0.1
 title: Aerospike
 description: Log parser for Aerospike
 parameters:
-  enable_general_log:
+  - name: enable_general_log
     label: General Logs
     description: Enable to collect general Aerospike logs
     type: bool
     default: true
-  general_log_path:
+  - name: general_log_path
     label: General Logs Path
     description: The absolute path to the general Aerospike logs
     type: string
     default: "/var/log/aerospike/aerospike.log"
-  enable_telemetry_log:
+  - name: enable_telemetry_log
     label: Aerospike Telemetry Logs
     description: Enable to collect Aerospike telemetry logs
     type: bool
     default: true
-  telemetry_log_path:
+  - name: telemetry_log_path
     label: Telemetry Logs Path
     description: The absolute path to the Aerospike telemetry logs
     type: string
     default: "/var/log/aerospike/telemetry.log"
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum

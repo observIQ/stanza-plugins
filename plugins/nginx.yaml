@@ -2,7 +2,7 @@ version: 0.0.2
 title: Nginx
 description: Log parser for Nginx
 parameters:
-  input:
+  - name: input
     label: Log source
     description: Where the logs are coming from
     type: enum
@@ -10,7 +10,7 @@ parameters:
       - file
       - kubernetes
     default: file
-  pod_name_prefix:
+  - name: pod_name_prefix
     label: Pod Name Prefix
     description: The beginning portion of the pod name
     type: string
@@ -18,7 +18,7 @@ parameters:
     relevant_if:
       input:
         equals: kubernetes
-  container_name:
+  - name: container_name
     label: Container Name
     description: The container name of the Nginx container
     type: string
@@ -26,12 +26,12 @@ parameters:
     relevant_if:
       input:
         equals: kubernetes
-  enable_access_log:
+  - name: enable_access_log
     label: Access Logs
     description: Enable to collect Nginx access slogs
     type: bool
     default: true
-  access_log_path:
+  - name: access_log_path
     label: Access Log Path
     description: Path to access log file
     type: string
@@ -39,12 +39,12 @@ parameters:
     relevant_if:
       input:
         equals: file
-  enable_error_log:
+  - name: enable_error_log
     label: Error Logs
     description: Enable to collect Nginx error logs
     type: bool
     default: true
-  error_log_path:
+  - name: error_log_path
     label: Error Log Path
     description: Path to error log file
     type: string
@@ -52,7 +52,7 @@ parameters:
     relevant_if:
       input:
         equals: file
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum

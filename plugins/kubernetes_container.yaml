@@ -4,26 +4,26 @@ id: kubernetes
 description: Log parser for Kubernetes
 min_stanza_version: 0.9.8
 parameters:
-  cluster_name:
+  - name: cluster_name
     label: Cluster Name
     description: 'Cluster Name to be added to a resource label'
     type: string
-  pod_name:
+  - name: pod_name
     label: Pod Name
     description: "The name of the pod to collect logs from"
     type: string
     required: true
-  container_name:
+  - name: container_name
     label: Container Name
     description: "The name of the container to collect logs from"
     type: string
     required: true
-  exclude:
+  - name: exclude
     label: Exclude files
     description: A pattern of files to exclude
     type: strings
     required: false
-  start_at:
+  - name: start_at
     label: Start At
     description: "Start reading file from 'beginning' or 'end'"
     type: enum
@@ -31,11 +31,11 @@ parameters:
       - beginning
       - end
     default: end
-  stdout_output:
+  - name: stdout_output
     label: Stdout Output
     description: ID of operator to send stdout logs to
     type: string
-  stderr_output:
+  - name: stderr_output
     label: Stderr Output
     description: ID of operator to send stderr logs to
     type: string
@@ -56,7 +56,7 @@ pipeline:
     include:
       - '/var/log/containers/{{ $pod_name }}-*_{{ $container_name }}-*.log'
     exclude:
-    {{ range $index, $element .exclude }}
+    {{ range $index, $element := .exclude }}
       - $element
     {{ end }}
 

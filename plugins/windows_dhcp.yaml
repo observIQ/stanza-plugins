@@ -3,12 +3,12 @@ version: 0.0.3
 title: Windows DHCP
 description: Log parser for Windows DHCP
 parameters:
-  file_path:
+  - name: file_path
     label: Log Path
     description: The absolute path to the DHCP logs
     type: string
     default: 'C:\Windows\System32\dhcp\DhcpSrvLog-*.log'
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum

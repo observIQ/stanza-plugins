@@ -3,77 +3,77 @@ version: 0.0.1
 title: Couchbase
 description: Log parser for Couchbase
 parameters:
-  enable_error_log:
+  - name: enable_error_log
     label: Error Logs
     description: Enable to collect Couchbase error logs
     type: bool
     default: true
-  error_log_path:
+  - name: error_log_path
     label: Error Logs Path
     description: The absolute path to the Couchbase error logs
     type: string
     default: "/opt/couchbase/var/lib/couchbase/logs/error.log"
-  enable_debug_log:
+  - name: enable_debug_log
     label: Debug Logs
     description: Enable to collect Couchbase debug logs
     type: bool
     default: false
-  debug_log_path:
+  - name: debug_log_path
     label: Debug Logs Path
     description: The absolute path to the Couchbase debug logs
     type: string
     default: "/opt/couchbase/var/lib/couchbase/logs/debug.log"
-  enable_info_log:
+  - name: enable_info_log
     label: Information Logs
     description: Enable to collect Couchbase info logs
     type: bool
     default: false
-  info_log_path:
+  - name: info_log_path
     label: Information Logs Path
     description: The absolute path to the Couchbase information logs
     type: string
     default: "/opt/couchbase/var/lib/couchbase/logs/info.log"
-  enable_access_log:
+  - name: enable_access_log
     label: Access Logs
     description: Enable to collect Couchbase http access logs
     type: bool
     default: true
-  http_access_log_path:
+  - name: http_access_log_path
     label: HTTP Access Logs Path
     description: The absolute path to the Couchbase http access logs
     type: string
     default: "/opt/couchbase/var/lib/couchbase/logs/http_access.log"
-  enable_internal_access_log:
+  - name: enable_internal_access_log
     label: Internal Access Logs
     description: Enable to collect Couchbase internal http access logs
     type: bool
     default: false
-  http_internal_access_log_path:
+  - name: http_internal_access_log_path
     label: Internal HTTP Access Logs Path
     description: The absolute path to the Couchbase internal http access logs
     type: string
     default: "/opt/couchbase/var/lib/couchbase/logs/http_access_internal.log"
-  enable_babysitter_log:
+  - name: enable_babysitter_log
     label: Babysitter Logs
     description: Enable to collect Couchbase babysitter logs
     type: bool
     default: true
-  babysitter_log_path:
+  - name: babysitter_log_path
     label: Babysitter Logs Path
     description: The absolute path to the Couchbase babysitter logs
     type: string
     default: "/opt/couchbase/var/lib/couchbase/logs/babysitter.log"
-  enable_xdcr_log:
+  - name: enable_xdcr_log
     label: Cross Datacenter Replication Logs
     description: Enable to collect Couchbase Cross Datacenter Replication logs
     type: bool
     default: false
-  xdcr_log_path:
+  - name: xdcr_log_path
     label: Cross Datacenter Replication Logs Path
     description: The absolute path to the Couchbase cross datacenter replication logs
     type: string
     default: "/opt/couchbase/var/lib/couchbase/logs/goxdcr.log"
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum

@@ -3,57 +3,57 @@ version: 0.0.1
 title: GitLab
 description: Log parser for GitLab
 parameters:
-  enable_rails_application_log:
+  - name: enable_rails_application_log
     label: Rails Application Logs
     description: Enable to collect GitLab rails application logs
     type: bool
     default: true
-  rails_application_log_path:
+  - name: rails_application_log_path
     label: Rails Application Logs Path
     description: The absolute path to the GitLab rails application logs
     type: string
     default: "/var/log/gitlab/gitlab-rails/application.log"
-  enable_rails_production_log:
+  - name: enable_rails_production_log
     label: Rails Production Logs
     description: Enable to collect GitLab rails production logs
     type: bool
     default: true
-  rails_production_log_path:
+  - name: rails_production_log_path
     label: Rails Production Logs Path
     description: The absolute path to the GitLab rails production logs
     type: string
     default: "/var/log/gitlab/gitlab-rails/production_json.log"
-  enable_rails_api_request_log:
+  - name: enable_rails_api_request_log
     label: Rails API Request Logs
     description: Enable to collect GitLab rails API request logs
     type: bool
     default: true
-  rails_api_request_log_path:
+  - name: rails_api_request_log_path
     label: Rails API Request Logs Path
     description: The absolute path to the GitLab rails API Request logs
     type: string
     default: "/var/log/gitlab/gitlab-rails/api_json.log"
-  enable_rails_sidekiq_log:
+  - name: enable_rails_sidekiq_log
     label: Rails Sidekiq Logs
     description: Enable to collect GitLab rails Sidekiq logs
     type: bool
     default: true
-  rails_sidekiq_log_path:
+  - name: rails_sidekiq_log_path
     label: Rails Sidekiq Logs Path
     description: The absolute path to the GitLab rails Sidekiq logs
     type: string
     default: "/var/log/gitlab/gitlab-rails/sidekiq.log"
-  enable_shell_log:
+  - name: enable_shell_log
     label: Shell Logs
     description: Enable to collect GitLab shell logs
     type: bool
     default: true
-  rails_shell_path:
+  - name: rails_shell_path
     label: Shell Logs Path
     description: The absolute path to the GitLab shell logs
     type: string
     default: "/var/log/gitlab/gitlab-shell/gitlab-shell.log"
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum

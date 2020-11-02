@@ -3,32 +3,32 @@ version: 0.0.1
 title: Tail
 description: File Input Parser
 parameters:
-  file_log_path:
+  - name: file_log_path
     label: File Log Path
     description: An array of file log path glob patterns.
     type: strings
     required: true
-  exclude_file_log_path:
+  - name: exclude_file_log_path
     label: Exclude File Log Path
     description: An array of file log path glob patterns to be excluded.
     type: strings
     default: []
-  poll_interval:
+  - name: poll_interval
     label: Poll Interval
     description: The duration between filesystem polls.
     type: string
     default: 200ms
-  enable_multiline:
+  - name: enable_multiline
     label: Enable Multiline
     description: Enable to parse Multiline Log Files
     type: bool
     default: false
-  multiline_line_start_pattern:
+  - name: multiline_line_start_pattern
     label: Multiline Start Pattern
     description: A Regex pattern to match with start of a line.
     type: string
     default: "Start of line Regex Pattern"
-  encoding:
+  - name: encoding
     label: Encoding
     description: The encoding of the log file.
     type: enum
@@ -40,22 +40,22 @@ parameters:
       - ascii
       - big5
     default: nop
-  include_file_name:
+  - name: include_file_name
     label: Include File Name
     description: Include the log file name.
     type: bool
     default: true
-  include_file_path:
+  - name: include_file_path
     label: Include File Path
     description: Include the log file path.
     type: bool
     default: true
-  max_log_size:
+  - name: max_log_size
     label: Max Log Size
     description: The maximum size of a log entry to read before failing. Protects against reading large amounts of data into memory.
     type: int
     default: 1048576
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum
@@ -63,12 +63,12 @@ parameters:
       - beginning
       - end
     default: end
-  log_type:
+  - name: log_type
     label: Log Type
     description: Adds label log_type to identify tail source.
     type: string
     default: tail
-  parse_format:
+  - name: parse_format
     label: Format
     description: The log format to parse.
     type: enum

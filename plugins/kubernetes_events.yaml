@@ -3,12 +3,12 @@ version: 0.0.2
 title: Kubernetes Events
 description: Kubernetes Events Parser
 parameters:
-  namespaces:
+  - name: namespaces
     label: Namespaces
     description: An array of namespaces. Defaults to use all namespaces.
     type: strings
     default: []
-  cluster_name:
+  - name: cluster_name
     label: Cluster Name
     description: 'Cluster Name to be added to a resource label'
     type: string

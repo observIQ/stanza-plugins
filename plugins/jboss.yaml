@@ -3,12 +3,12 @@ version: 0.0.1
 title: JBoss
 description: Log parser for JBoss
 parameters:
-  file_path:
+  - name: file_path
     label: JBoss Logs Path
     description: The absolute path to the JBoss logs
     type: string
     default: "/usr/local/JBoss/EAP-*/*/log/server.log"
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum
@@ -48,4 +48,3 @@ pipeline:
         emergency: fatal
         warning: warn
     output: {{.output}}
-
