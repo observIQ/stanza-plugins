@@ -2,42 +2,51 @@ version: 0.0.7
 title: OracleDB
 description: Log parser for OracleDB
 parameters:
-  enable_audit_log:
+  - name: enable_audit_log
     label: Audit Logs
     description: Enable to collect OracleDB audit logs
     type: bool
     default: true
-  audit_log_path:
+  - name: audit_log_path
     label: Audit Log Path
     description: Path to the audit log file
     type: string
     default: "/u01/app/oracle/product/*/dbhome_1/admin/*/adump/*.aud"
-  enable_truncate_audit_action: 
+    relevant_if:
+      enable_audit_log:
+        equals: true
+  - name: enable_truncate_audit_action
     label: Truncate Audit Action
     description: Whether or not to truncate the audit log action field
     type: bool
     default: true
-  enable_alert_log:
+  - name: enable_alert_log
     label: Alert Logs
     description: Enable to collect OracleDB alert logs
     type: bool
     default: true
-  alert_log_path:
+  - name: alert_log_path
     label: Alert Log Path
     description: Path to the alert log file
     type: string
     default: "/u01/app/oracle/product/*/dbhome_1/diag/rdbms/*/*/trace/alert_*.log"
-  enable_listener_log:
+    relevant_if:
+      enable_alert_log:
+        equals: true
+  - name: enable_listener_log
     label: Listener Logs
     description: Enable to collect OracleDB listener logs
     type: bool
     default: true
-  listener_log_path:
+  - name: listener_log_path
     label: Listener Log Path
     description: Path to the listener log file
     type: string
     default: "/u01/app/oracle/product/*/dbhome_1/diag/rdbms/*/*/alert/log.xml"
-  start_at: 
+    relevant_if:
+      enable_listener_log:
+        equals: true
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum
@@ -70,7 +79,7 @@ pipeline:
       log_type: 'oracledb.audit'
       plugin_id: {{ .id }}
     output: audit_router
-  
+
   - id: audit_router
     type: router
     routes:
@@ -99,7 +108,7 @@ pipeline:
   - id: audit_action_restructurer
     type: restructure
     ops:
-      - add: 
+      - add:
           field: "action"
           value_expr: 'len($.action) > 150000 ? $.action[0:150000] + "... Action has " + $.length + " characters which is over the 150000 characters limit, truncating action" : $.action'
     output: {{ .output }}

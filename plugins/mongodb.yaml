@@ -2,12 +2,12 @@ version: 0.0.5
 title: MongoDB
 description: Log parser for MongoDB
 parameters:
-  log_path: 
+  - name: log_path
     label: Path
     description: The path of the log file
     type: string
     default: "/var/log/mongodb/mongodb.log"
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum

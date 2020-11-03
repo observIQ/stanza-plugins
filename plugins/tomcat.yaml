@@ -2,27 +2,33 @@ version: 0.0.6
 title: Apache Tomcat
 description: Log parser for Apache Tomcat
 parameters:
-  enable_access_log:
+  - name: enable_access_log
     label: Access Logs
     description: Enable to collect Apache Tomcat access logs
     type: bool
     default: true
-  access_log_path:
+  - name: access_log_path
     label: Access Log Path
     description: Path to access log file
     type: string
     default: "/usr/local/tomcat/logs/localhost_access_log.*.txt"
-  enable_catalina_log:
+    relevant_if:
+      enable_access_log:
+        equals: true
+  - name: enable_catalina_log
     label: Catalina Logs
     description: Enable to collect Apache Tomcat catalina logs
     type: bool
     default: true
-  catalina_log_path:
+  - name: catalina_log_path
     label: Catalina Log Path
     description: Path to catalina log file
     type: string
     default: "/usr/local/tomcat/logs/catalina.out"
-  start_at:
+    relevant_if:
+      enable_catalina_log:
+        equals: true
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum
@@ -90,4 +96,3 @@ pipeline:
           - finest
     output: {{ .output }}
   #{{ end }}
-

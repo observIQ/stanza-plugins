@@ -3,12 +3,12 @@ version: 0.0.3
 title: Openshift
 description: Log parser for Openshift
 parameters:
-  journald_log_path:
+  - name: journald_log_path
     label: Containers Log Path
     description: The directory where the journald logs are located. Defaults to '/var/log/journal'.
     type: string
     default: "/var/log/journal"
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'. Defaults to 'end'.
     type: enum
@@ -16,21 +16,21 @@ parameters:
       - beginning
       - end
     default: end
-  cluster_name:
+  - name: cluster_name
     label: Cluster Name
     description: 'Cluster Name to be added to a resource label'
     type: string
-  enable_container_logs:
+  - name: enable_container_logs
     label: Enable Container Logs
     description: Enable collection of container logs
     type: bool
     default: true
-  enable_docker_logs:
+  - name: enable_docker_logs
     label: Enable Docker Daemon Logs
     description: Enable collection of the Docker Daemon logs
     type: bool
     default: true
-  enable_openshift_logs:
+  - name: enable_openshift_logs
     label: Enable Openshift logs
     description: Enable collection of Openshift unit logs
     type: bool
