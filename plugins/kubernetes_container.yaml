@@ -12,12 +12,12 @@ parameters:
     label: Pod Name
     description: "The name of the pod to collect logs from"
     type: string
-    required: true
+    default: "*"
   - name: container_name
     label: Container Name
     description: "The name of the container to collect logs from"
     type: string
-    required: true
+    default: "*"
   - name: exclude
     label: Exclude files
     description: A pattern of files to exclude
@@ -31,23 +31,12 @@ parameters:
       - beginning
       - end
     default: end
-  - name: stdout_output
-    label: Stdout Output
-    description: ID of operator to send stdout logs to
-    type: string
-  - name: stderr_output
-    label: Stderr Output
-    description: ID of operator to send stderr logs to
-    type: string
-
 
 # Set Defaults
 # {{ $cluster_name := default "" .cluster_name }}
 # {{ $pod_name := default "*" .pod_name }}
 # {{ $container_name := default "*" .container_name }}
 # {{ $start_at := default "end" .start_at }}
-# {{ $stderr_output := call .addNamespace .stderr_output | default .output }}
-# {{ $stdout_output := call .addNamespace .stdout_output | default .output }}
 
 # Pipeline Template
 pipeline:
@@ -102,9 +91,11 @@ pipeline:
     type: k8s_metadata_decorator
 
   # Route stdout and stderr to their final destinations
-  - type: router
-    routes:
-      - expr: "$record.stream == 'stdout'"
-        output: {{ $stdout_output }}
-      - expr: "$record.stream == 'stderr'"
-        output: {{ $stderr_output }}
+  - type: restructure
+    ops:
+      - move: 
+          from: stream
+          to: "$labels.stream"
+      - move:
+          from: log
+          to: "$record"
