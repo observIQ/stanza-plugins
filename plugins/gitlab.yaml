@@ -13,6 +13,9 @@ parameters:
     description: The absolute path to the GitLab rails application logs
     type: string
     default: "/var/log/gitlab/gitlab-rails/application.log"
+    relevant_if:
+      enable_rails_application_log:
+        equals: true
   - name: enable_rails_production_log
     label: Rails Production Logs
     description: Enable to collect GitLab rails production logs
@@ -23,6 +26,9 @@ parameters:
     description: The absolute path to the GitLab rails production logs
     type: string
     default: "/var/log/gitlab/gitlab-rails/production_json.log"
+    relevant_if:
+      enable_rails_production_log:
+        equals: true
   - name: enable_rails_api_request_log
     label: Rails API Request Logs
     description: Enable to collect GitLab rails API request logs
@@ -33,6 +39,9 @@ parameters:
     description: The absolute path to the GitLab rails API Request logs
     type: string
     default: "/var/log/gitlab/gitlab-rails/api_json.log"
+    relevant_if:
+      enable_rails_api_request_log:
+        equals: true
   - name: enable_rails_sidekiq_log
     label: Rails Sidekiq Logs
     description: Enable to collect GitLab rails Sidekiq logs
@@ -43,6 +52,9 @@ parameters:
     description: The absolute path to the GitLab rails Sidekiq logs
     type: string
     default: "/var/log/gitlab/gitlab-rails/sidekiq.log"
+    relevant_if:
+      enable_rails_sidekiq_log:
+        equals: true
   - name: enable_shell_log
     label: Shell Logs
     description: Enable to collect GitLab shell logs
@@ -53,6 +65,9 @@ parameters:
     description: The absolute path to the GitLab shell logs
     type: string
     default: "/var/log/gitlab/gitlab-shell/gitlab-shell.log"
+    relevant_if:
+      enable_shell_log:
+        equals: true
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'

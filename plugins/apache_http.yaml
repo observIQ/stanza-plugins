@@ -12,6 +12,9 @@ parameters:
     description: Path to error log file
     type: string
     default: "/var/log/apache2/error.log"
+    relevant_if:
+      enable_error_log:
+        equals: true
   - name: enable_access_log
     label: Access Logs
     description: Enable to collect Apache HTTP Server access logs
@@ -22,6 +25,9 @@ parameters:
     description: Path to access log file
     type: string
     default: "/var/log/apache2/access.log"
+    relevant_if:
+      enable_access_log:
+        equals: true
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'

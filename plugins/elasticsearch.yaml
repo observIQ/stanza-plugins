@@ -13,6 +13,9 @@ parameters:
     description: The absolute path to the Elasticsearch general logs
     type: string
     default: "/var/log/elasticsearch/elasticsearch.log*"
+    relevant_if:
+      enable_general_logs:
+        equals: true
   - name: enable_deprecation_logs
     label: Deprecation Logs
     description: Enable to collect Elasticsearch deprecation logs
@@ -23,6 +26,9 @@ parameters:
     description: The absolute path to the Elasticsearch deprecation logs
     type: string
     default: "/var/log/elasticsearch/elasticsearch_deprecation.log*"
+    relevant_if:
+      enable_deprecation_logs:
+        equals: true
   - name: enable_gc_logs
     label: Garbage Collection Logs
     description: Enable to collect Elasticsearch garbage collection logs
@@ -33,6 +39,9 @@ parameters:
     description: The absolute path to the Elasticsearch garbage collection logs
     type: string
     default: "/var/log/elasticsearch/gc.log*"
+    relevant_if:
+      enable_gc_logs:
+        equals: true
   - name: start_at
     label: Start At
     description: Start reading files from 'beginning' or 'end'

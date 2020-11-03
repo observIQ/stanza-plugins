@@ -12,6 +12,9 @@ parameters:
     description: Path to general log file
     type: string
     default: "/var/log/mysql/general.log"
+    relevant_if:
+      enable_general_log:
+        equals: true
   - name: enable_slow_log
     label: Slow Query Logs
     description: Enable to collect MySQL slow query logs
@@ -22,6 +25,9 @@ parameters:
     description: Path to slow query log file
     type: string
     default: "/var/log/mysql/slow.log"
+    relevant_if:
+      enable_slow_log:
+        equals: true
   - name: enable_error_log
     label: Error Logs
     description: Enable to collect MySQL error logs
@@ -32,6 +38,9 @@ parameters:
     description: Path to mysqld log file
     type: string
     default: "/var/log/mysql/mysqld.log"
+    relevant_if:
+      enable_error_log:
+        equals: true
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'

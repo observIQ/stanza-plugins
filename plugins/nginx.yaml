@@ -39,6 +39,8 @@ parameters:
     relevant_if:
       input:
         equals: file
+      enable_access_log:
+        equals: true
   - name: enable_error_log
     label: Error Logs
     description: Enable to collect Nginx error logs
@@ -52,6 +54,8 @@ parameters:
     relevant_if:
       input:
         equals: file
+      enable_error_log:
+        equals: true
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'

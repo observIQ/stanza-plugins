@@ -13,11 +13,17 @@ parameters:
     description: The absolute path to the data node general logs
     type: string
     default: "/usr/local/hadoop/logs/hadoop-*-datanode-*.log"
+    relevant_if:
+      enable_datanode_logs:
+        equals: true
   - name: datanode_yarn_log_path
     label: DataNode Yarn Log Path
     description: The absolute path to the data node general logs
     type: string
     default: "/usr/local/hadoop/logs/yarn-*-datanode-*.log"
+    relevant_if:
+      enable_datanode_logs:
+        equals: true
   - name: enable_resourcemgr_logs
     label: ResourceManager Logs
     description: Enable the collection of ResourceManager logs
@@ -28,11 +34,17 @@ parameters:
     description: The absolute path to the DataNode general logs
     type: string
     default: "/usr/local/hadoop/logs/hadoop-*-resourcemgr-*.log"
+    relevant_if:
+      enable_resourcemgr_logs:
+        equals: true
   - name: resourcemgr_yarn_log_path
     label: ResourceManager Yarn Log Path
     description: The absolute path to the ResourceManager general logs
     type: string
     default: "/usr/local/hadoop/logs/yarn-*-resourcemgr-*.log"
+    relevant_if:
+      enable_resourcemgr_logs:
+        equals: true
   - name: enable_namenode_logs
     label: NameNode Logs
     description: Enable collection of Hadoop NameNode logs
@@ -43,11 +55,17 @@ parameters:
     description: The absolute path to the NameNode general logs
     type: string
     default: "/usr/local/hadoop/logs/hadoop-*-namenode-*.log"
+    relevant_if:
+      enable_namenode_logs:
+        equals: true
   - name: namenode_yarn_log_path
     label: NameNode Yarn Log Path
     description: The absolute path to the NameNode general logs
     type: string
     default: "/usr/local/hadoop/logs/yarn-*-namenode-*.log"
+    relevant_if:
+      enable_namenode_logs:
+        equals: true
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'

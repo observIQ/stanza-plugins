@@ -12,6 +12,9 @@ parameters:
     description: Path to access log file
     type: string
     default: "/usr/local/tomcat/logs/localhost_access_log.*.txt"
+    relevant_if:
+      enable_access_log:
+        equals: true
   - name: enable_catalina_log
     label: Catalina Logs
     description: Enable to collect Apache Tomcat catalina logs
@@ -22,6 +25,9 @@ parameters:
     description: Path to catalina log file
     type: string
     default: "/usr/local/tomcat/logs/catalina.out"
+    relevant_if:
+      enable_catalina_log:
+        equals: true
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'

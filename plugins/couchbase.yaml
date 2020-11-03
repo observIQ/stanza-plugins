@@ -13,6 +13,9 @@ parameters:
     description: The absolute path to the Couchbase error logs
     type: string
     default: "/opt/couchbase/var/lib/couchbase/logs/error.log"
+    relevant_if:
+      enable_error_log:
+        equals: true
   - name: enable_debug_log
     label: Debug Logs
     description: Enable to collect Couchbase debug logs
@@ -23,6 +26,9 @@ parameters:
     description: The absolute path to the Couchbase debug logs
     type: string
     default: "/opt/couchbase/var/lib/couchbase/logs/debug.log"
+    relevant_if:
+      enable_debug_log:
+        equals: true
   - name: enable_info_log
     label: Information Logs
     description: Enable to collect Couchbase info logs
@@ -33,6 +39,9 @@ parameters:
     description: The absolute path to the Couchbase information logs
     type: string
     default: "/opt/couchbase/var/lib/couchbase/logs/info.log"
+    relevant_if:
+      enable_info_log:
+        equals: true
   - name: enable_access_log
     label: Access Logs
     description: Enable to collect Couchbase http access logs
@@ -43,6 +52,9 @@ parameters:
     description: The absolute path to the Couchbase http access logs
     type: string
     default: "/opt/couchbase/var/lib/couchbase/logs/http_access.log"
+    relevant_if:
+      enable_access_log:
+        equals: true
   - name: enable_internal_access_log
     label: Internal Access Logs
     description: Enable to collect Couchbase internal http access logs
@@ -53,6 +65,9 @@ parameters:
     description: The absolute path to the Couchbase internal http access logs
     type: string
     default: "/opt/couchbase/var/lib/couchbase/logs/http_access_internal.log"
+    relevant_if:
+      enable_internal_log:
+        equals: true
   - name: enable_babysitter_log
     label: Babysitter Logs
     description: Enable to collect Couchbase babysitter logs
@@ -63,6 +78,9 @@ parameters:
     description: The absolute path to the Couchbase babysitter logs
     type: string
     default: "/opt/couchbase/var/lib/couchbase/logs/babysitter.log"
+    relevant_if:
+      enable_babysitter_log:
+        equals: true
   - name: enable_xdcr_log
     label: Cross Datacenter Replication Logs
     description: Enable to collect Couchbase Cross Datacenter Replication logs
@@ -73,6 +91,9 @@ parameters:
     description: The absolute path to the Couchbase cross datacenter replication logs
     type: string
     default: "/opt/couchbase/var/lib/couchbase/logs/goxdcr.log"
+    relevant_if:
+      enable_xdcr_log:
+        equals: true
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'

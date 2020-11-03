@@ -12,6 +12,9 @@ parameters:
     description: Path to the audit log file
     type: string
     default: "/u01/app/oracle/product/*/dbhome_1/admin/*/adump/*.aud"
+    relevant_if:
+      enable_audit_log:
+        equals: true
   - name: enable_truncate_audit_action
     label: Truncate Audit Action
     description: Whether or not to truncate the audit log action field
@@ -27,6 +30,9 @@ parameters:
     description: Path to the alert log file
     type: string
     default: "/u01/app/oracle/product/*/dbhome_1/diag/rdbms/*/*/trace/alert_*.log"
+    relevant_if:
+      enable_alert_log:
+        equals: true
   - name: enable_listener_log
     label: Listener Logs
     description: Enable to collect OracleDB listener logs
@@ -37,6 +43,9 @@ parameters:
     description: Path to the listener log file
     type: string
     default: "/u01/app/oracle/product/*/dbhome_1/diag/rdbms/*/*/alert/log.xml"
+    relevant_if:
+      enable_listener_log:
+        equals: true
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'

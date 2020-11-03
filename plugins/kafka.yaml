@@ -12,6 +12,9 @@ parameters:
     description: Apache Kafka server log path
     type: string
     default: "/home/kafka/kafka/logs/server.log*"
+    relevant_if:
+      enable_server_log:
+        equals: true
   - name: enable_controller_log
     label: Controller Logs
     description: Enable to collect Apache Kafka controller logs
@@ -22,6 +25,9 @@ parameters:
     description: Apache Kafka controller log path
     type: string
     default: "/home/kafka/kafka/logs/controller.log*"
+    relevant_if:
+      enable_controller_log:
+        equals: true
   - name: enable_state_change_log
     label: State Change Logs
     description: Enable to collect Apache Kafka state change logs
@@ -32,6 +38,9 @@ parameters:
     description: Apache Kafka state-change log path
     type: string
     default: "/home/kafka/kafka/logs/state-change.log*"
+    relevant_if:
+      enable_state_change_log:
+        equals: true
   - name: enable_log_cleaner_log
     label: Log Cleaner Logs
     description: Enable to collect Apache Kafka log cleaner logs
@@ -42,6 +51,9 @@ parameters:
     description: Apache Kafka log-cleaner log path
     type: string
     default: "/home/kafka/kafka/logs/log-cleaner.log*"
+    relevant_if:
+      enable_log_cleaner_log:
+        equals: true
   - name: start_at
     label: Start At
     description:  Start reading file from 'beginning' or 'end'
