@@ -134,7 +134,7 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%LZ'
     severity:
       parse_from: severity
-      preserve: true
+      preserve_to: severity
       mapping:
         emergency: emerg
         error: err
@@ -161,7 +161,7 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%sZ'
     severity:
       parse_from: severity
-      preserve: true
+      preserve_to: severity
       mapping:
         emergency: emerg
         error: err
@@ -188,7 +188,7 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S%j'
     severity:
       parse_from: level
-      preserve: true
+      preserve_to: level
       mapping:
         error: err
         warning: warn

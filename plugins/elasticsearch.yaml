@@ -72,7 +72,7 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S'
     severity:
       parse_from: elasticsearch_severity
-      preserve: true
+      preserve_to: elasticsearch_severity
       mapping:
         warning: warn
     output: {{.output}}
@@ -97,7 +97,7 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S'
     severity:
       parse_from: elasticsearch_severity
-      preserve: true
+      preserve_to: elasticsearch_severity
       mapping:
         warning: warn
     output: {{.output}}

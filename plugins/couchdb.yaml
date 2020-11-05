@@ -43,7 +43,7 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%sZ'
     severity:
       parse_from: couchdb_severity
-      preserve: true
+      preserve_to: couchdb_severity
       mapping:
         warning: warn
         error: err

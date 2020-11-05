@@ -59,7 +59,7 @@ pipeline:
     severity:
       parse_from: code
       preset: none
-      preserve: true
+      preserve_to: code
       mapping:
         info: 2xx
         notice: 3xx
@@ -79,8 +79,8 @@ pipeline:
   - id: access_agent_parser
     type: regex_parser
     regex: '^(?P<client>[^/]*)/(?P<client_version>[^ ]*) (\((?P<system>[^;]*);([^\)]*)\))?(.*)?'
-    parse_from: $record.agent
-    preserve: true
+    parse_from: agent
+    preserve_to: agent
     output: {{ .output }}
   #{{ end }}
 

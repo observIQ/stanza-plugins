@@ -76,7 +76,7 @@ pipeline:
     regex: '^(?P<pod_name>[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?P<namespace>[^_]+)_(?P<container_name>.+)-(?P<container_id>[a-z0-9]{64})\.log$'
     severity:
       parse_from: stream
-      preserve: true
+      preserve_to: stream
       mapping:
         error: stderr
         info: stdout

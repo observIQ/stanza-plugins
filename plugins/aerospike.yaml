@@ -60,7 +60,7 @@ pipeline:
       layout: '%b %d %Y %H:%M:%S %Z'
     severity:
       parse_from: aerospike_severity
-      preserve: true
+      preserve_to: aerospike_severity
       mapping:
         info: detail
     output: {{.output}}
@@ -87,7 +87,7 @@ pipeline:
       layout: '%m-%d %H:%M:%S'
     severity:
       parse_from: aerospike_severity
-      preserve: true
+      preserve_to: aerospike_severity
       mapping:
         info: detail
     output: {{.output}}

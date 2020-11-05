@@ -43,7 +43,7 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: jboss_severity
-      preserve: true
+      preserve_to: jboss_severity
       mapping:
         emergency: fatal
         warning: warn

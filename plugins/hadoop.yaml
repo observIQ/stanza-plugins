@@ -92,7 +92,7 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hadoop_severity
-      preserve: true
+      preserve_to: hadoop_severity
       mapping:
         warning: warn
         critical: fatal
@@ -118,7 +118,7 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hadoop_severity
-      preserve: true
+      preserve_to: hadoop_severity
       mapping:
         warning: warn
         critical: fatal
@@ -146,7 +146,7 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hadoop_severity
-      preserve: true
+      preserve_to: hadoop_severity
       mapping:
         warning: warn
         critical: fatal
@@ -172,7 +172,7 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hadoop_severity
-      preserve: true
+      preserve_to: hadoop_severity
       mapping:
         warning: warn
         critical: fatal
@@ -200,7 +200,7 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hadoop_severity
-      preserve: true
+      preserve_to: hadoop_severity
       mapping:
         warning: warn
         critical: fatal
@@ -226,7 +226,7 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hadoop_severity
-      preserve: true
+      preserve_to: hadoop_severity
       mapping:
         warning: warn
         critical: fatal
