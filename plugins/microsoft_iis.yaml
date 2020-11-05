@@ -37,7 +37,7 @@ pipeline:
 
   - id: microsoft_iis_parser
     type: regex_parser
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) (?P<server_ip>[\d+.:]+) (?P<request_method>[A-Z]+) (?P<uri_stem>[^ ]+) (?P<uri_query>[^ ]+) (?P<server_port>\d+) (?P<username>[^ ]+) (?P<client_ip>[\d+.:]+) (?P<user_agent>[^ ]+) (?P<referer>[^ ]+) (?P<http_status>\d+) (?P<http_sub_status>\d+) (?P<win32_status>\d+) (?P<time_taken>\d+)'
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) (?P<server_ip>[\d\w\.:]+) (?P<request_method>[A-Z]+) (?P<uri_stem>[^ ]+) (?P<uri_query>[^ ]+) (?P<server_port>\d+) (?P<username>[^ ]+) (?P<client_ip>[\d\w\.:]+) (?P<user_agent>[^ ]+) (?P<referer>[^ ]+) (?P<http_status>\d+) (?P<http_sub_status>\d+) (?P<win32_status>\d+) (?P<time_taken>\d+)'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%d %H:%M:%S'
