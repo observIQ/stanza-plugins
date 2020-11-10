@@ -73,7 +73,7 @@ pipeline:
 
   - id: config_filter
     type: filter
-    expr: '$record.source_file == "cfg.c" && $record.source_location == "4058"'
+    expr: '$record.context == "config"'
 
   - id: namespace_router
     type: router
