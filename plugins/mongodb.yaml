@@ -1,4 +1,4 @@
-version: 0.0.5
+version: 0.0.6
 title: MongoDB
 description: Log parser for MongoDB
 parameters:
@@ -7,6 +7,11 @@ parameters:
     description: The path of the log file
     type: string
     default: "/var/log/mongodb/mongodb.log"
+  - name: mongodb_json_log_format
+    label: "MongoDB 4.4+ Log Format"
+    description: Enable to parse MongoDB 4.4+ JSON log format parsing.
+    type: bool
+    default: false
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -18,6 +23,7 @@ parameters:
 
 # Set Defaults
 # {{$log_path := default "/var/log/mongodb/mongodb.log" .log_path}}
+# {{$mongodb_json_log_format := default false .mongodb_json_log_format}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
@@ -30,7 +36,10 @@ pipeline:
     labels:
       log_type: 'mongodb'
       plugin_id: {{ .id }}
-    output: regex_parser
+    # {{ if $mongodb_json_log_format }}
+    write_to: log
+    output: json_parser
+    # {{ end }}
 
   - id: regex_parser
     type: regex_parser
@@ -53,4 +62,42 @@ pipeline:
           - D3
           - D4
           - D5
+    output: {{ .output }}
+
+  - id: json_parser
+    type: json_parser
+    parse_from: $record.log
+    timestamp:
+      parse_from: $record.t.$date
+      #2020-11-03T14:24:07.436-05:00
+      layout: '%Y-%m-%dT%H:%M:%S.%f%j'
+    severity:
+      parse_from: s
+      mapping:
+        critical: F
+        error: E
+        warning: W
+        info: I
+        debug:
+          - D
+          - D1
+          - D2
+          - D3
+          - D4
+          - D5
+    output: restructure_log_entry
+
+  - id: restructure_log_entry
+    type: restructure
+    ops:
+      - remove: $record.t
+      - move:
+          from: '$record.c'
+          to: '$record.component'
+      - move:
+          from: '$record.ctx'
+          to: '$record.context'
+      - move:
+          from: '$record.msg'
+          to: '$record.message'
     output: {{ .output }}
