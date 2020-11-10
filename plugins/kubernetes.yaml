@@ -1,0 +1,198 @@
+version: 0.0.7
+title: Kubernetes
+description: Log parser for Kubernetes
+parameters:
+  - name: container_log_path
+    label: Containers Log Path
+    description: Kubernetes Containers Log Path
+    type: string
+    default: "/var/log/containers/*"
+  - name: kubelet_journald_log_path
+    label: Kubelet Journald Log Path
+    description: 'Kubernetes Kubelet Journald Log path. It will read from /run/journal or /var/log/journal if this parameter is omitted'
+    type: string
+  - name: cluster_name
+    label: Cluster Name
+    description: 'Cluster Name to be added to a resource label'
+    type: string
+  - name: start_at
+    label: Start At
+    description: "Start reading file from 'beginning' or 'end'"
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+
+# Set Defaults
+# {{ $cluster_name := default "" .cluster_name }}
+# {{ $container_log_path := default "/var/log/containers/*" .container_log_path }}
+# {{ $start_at := default "end" .start_at }}
+
+# Pipeline Template
+pipeline:
+  - id: container_reader
+    type: file_input
+    include:
+      - '{{ $container_log_path }}'
+    start_at: '{{ $start_at }}'
+    labels:
+      plugin_id: '{{ .id }}'
+    resource:
+      k8s.node.name: "EXPR(env('NODE_NAME'))"
+    write_to: log
+
+  # Filter out agent logs. Check if file_name field starts with stanza or bindplane-agent.
+  - id: filename_filter
+    type: filter
+    expr: '$labels.file_name != nil and ($labels.file_name contains "stanza" or $labels.file_name contains "bindplane-agent")'
+
+  # Initial log entry should be safe to parse as JSON
+  - id: container_json_parser
+    type: json_parser
+    parse_from: log
+
+  # Attempt to parse nested JSON in log field if it exists and if JSON is detected
+  - id: log_json_router
+    type: router
+    routes:
+      # It appears to be JSON so send it to be parsed as JSON.
+      - output: nested_json_parser
+        expr: '$record.log != nil and $record.log matches "^{.*}\\s*$"'
+      # If log field doesn't appear to be JSON then, skip nested JSON parsers
+      - output: container_regex_parser
+        expr: true
+
+  # Attempt to parse nested JSON since the log appears to be JSON
+  - id: nested_json_parser
+    type: json_parser
+    parse_from: $record.log
+    output: container_regex_parser
+
+  # Log field has been parsed if possible and now we can parse the file name field for container information.
+  - id: container_regex_parser
+    type: regex_parser
+    parse_from: $labels.file_name
+    regex: '^(?P<pod_name>[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?P<namespace>[^_]+)_(?P<container_name>.+)-(?P<container_id>[a-z0-9]{64})\.log$'
+    severity:
+      parse_from: stream
+      preserve: true
+      mapping:
+        error: stderr
+        info: stdout
+    timestamp:
+      parse_from: time
+      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+
+  - id: resource_restructurer
+    type: restructure
+    ops:
+      - move:
+          from: '$record.pod_name'
+          to: '$resource["k8s.pod.name"]'
+      - move:
+          from: '$record.namespace'
+          to: '$resource["k8s.namespace.name"]'
+      - move:
+          from: '$record.container_name'
+          to: '$resource["container.name"]'
+      - move:
+          from: '$record.container_id'
+          to: '$resource["container.id"]'
+
+  # Add kubernetes metadata
+  - id: add_kubernetes_metadata
+    type: k8s_metadata_decorator
+    output: cluster_name_restructurer
+
+  # Add kubernetes cluster name after adding metadata so it doesn't get overwritten
+  - id: cluster_name_restructurer
+    type: restructure
+    ops:
+      - add:
+          field: "$resource['k8s.cluster.name']"
+          value: "{{ $cluster_name }}"
+    output: add_labels_router
+
+  # Add label log_type
+  - id: add_labels_router
+    type: router
+    routes:
+      - output: {{ .output }}
+        expr: '$labels["k8s_pod_label/component"] == "kube-controller-manager"'
+        labels:
+          log_type: 'k8s.controller'
+      - output: {{ .output }}
+        expr: '$labels["k8s_pod_label/component"]  == "kube-scheduler"'
+        labels:
+          log_type: 'k8s.scheduler'
+      - output: {{ .output }}
+        expr: '$labels["k8s_pod_label/component"] == "kube-apiserver"'
+        labels:
+          log_type: 'k8s.apiserver'
+      - output: {{ .output }}
+        expr: '$labels["k8s_pod_label/component"] startsWith "kube-proxy"'
+        labels:
+          log_type: 'k8s.proxy'
+      - output: {{ .output }}
+        expr: true
+        labels:
+          log_type: 'k8s.container'
+
+  # Use journald to gather kubelet logs. Use provided path for journald if available otherwise use default locations.
+  - id: kubelet_reader
+    type: journald_input
+    # {{ if .kubelet_journald_log_path }}
+    directory: '{{ .kubelet_journald_log_path }}'
+    # {{ end }}
+    labels:
+      log_type: 'k8s.kubelet'
+      plugin_id: '{{ .id }}'
+    output: kubelet_filter
+
+  # Only grab entry if it is the kubelet.service
+  - id: kubelet_filter
+    type: filter
+    expr: '$record._SYSTEMD_UNIT != "kubelet.service"'
+
+  # Move hostname to k8s node resource
+  - id: kubelet_resource
+    type: restructure
+    ops:
+      - move:
+          from: "$record._HOSTNAME"
+          to: "$resource['host.name']"
+      - move:
+          from: "MESSAGE"
+          to: "message"
+      - add:
+          field: "$resource['k8s.cluster.name']"
+          value: '{{ $cluster_name }}'
+
+  # If message field matches format then, parse it otherwise send down the pipeline.
+  - id: kubelet_message_parser_router
+    type: router
+    routes:
+      - output: message_regex_parser
+        expr: '$record.message matches "^\\w\\d{4}"'
+      - output: {{ .output }}
+        expr: true
+
+  # message field seems to match expected format.
+  - id: message_regex_parser
+    type: regex_parser
+    parse_from: message
+    regex: '(?P<severity>\w)(?P<timestamp>\d{4} \d{2}:\d{2}:\d{2}.\d+)\s+(?P<pid>\d+)\s+(?P<source>[^ \]]+)\] (?P<message>.*)'
+    severity:
+      parse_from: severity
+      mapping:
+        debug: d
+        info: i
+        warning: w
+        error: e
+        critical: c
+    timestamp:
+      parse_from: timestamp
+      layout: '%m%d %H:%M:%S.%s'
+    output: {{ .output }}
+
