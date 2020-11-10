@@ -3,12 +3,12 @@ version: 0.0.1
 title: Apache Zookeeper
 description: Log parser for Apache Zookeeper
 parameters:
-  file_path:
+  - name: file_path
     label: Zookeeper logs path
     description: The absolute path to the Zookeeper logs
     type: string
     default: "/home/kafka/kafka/logs/zookeeper.log"
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum

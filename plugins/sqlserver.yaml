@@ -3,17 +3,17 @@ version: 0.0.1
 title: Microsoft SQL Server
 description: Log parser for Microsoft SQL Server
 parameters:
-  poll_interval:
+  - name: poll_interval
     label: Poll Interval
     description: The interval at which a channel is checked for new log entries
     type: string
     default: 1s
-  max_reads:
+  - name: max_reads
     label: Max Reads
     description: The maximum number of events read into memory at one time
     type: int
     default: 1000
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum

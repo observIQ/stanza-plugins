@@ -2,37 +2,46 @@ version: 0.0.7
 title: MySQL
 description: Log parser for MySQL
 parameters:
-  enable_general_log:
+  - name: enable_general_log
     label: General Logs
     description: Enable to collect MySQL general logs
     type: bool
     default: true
-  general_log_path:
+  - name: general_log_path
     label: General Log Path
     description: Path to general log file
     type: string
     default: "/var/log/mysql/general.log"
-  enable_slow_log:
+    relevant_if:
+      enable_general_log:
+        equals: true
+  - name: enable_slow_log
     label: Slow Query Logs
     description: Enable to collect MySQL slow query logs
     type: bool
     default: true
-  slow_query_log_path: 
+  - name: slow_query_log_path
     label: Slow Query Log Path
     description: Path to slow query log file
     type: string
     default: "/var/log/mysql/slow.log"
-  enable_error_log:
+    relevant_if:
+      enable_slow_log:
+        equals: true
+  - name: enable_error_log
     label: Error Logs
     description: Enable to collect MySQL error logs
     type: bool
     default: true
-  error_log_path: 
+  - name: error_log_path
     label: Error Log Path
     description: Path to mysqld log file
     type: string
     default: "/var/log/mysql/mysqld.log"
-  start_at: 
+    relevant_if:
+      enable_error_log:
+        equals: true
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum

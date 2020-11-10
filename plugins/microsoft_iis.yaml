@@ -3,12 +3,12 @@ version: 0.0.1
 title: Microsoft IIS
 description: Log parser for Microsoft IIS
 parameters:
-  file_path:
+  - name: file_path
     label: Log Path
     description: The absolute path to the Microsoft IIS logs
     type: string
     default: "C:/inetpub/logs/LogFiles/W3SVC*/**/*.log"
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum

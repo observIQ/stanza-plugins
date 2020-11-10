@@ -3,12 +3,12 @@ version: 0.0.1
 title: PgBouncer
 description: Log parser for PgBouncer
 parameters:
-  file_path:
+  - name: file_path
     label: PgBouncer Logs Path
     description: The absolute path to the PgBouncer logs
     type: string
     default: "/var/log/pgbouncer/pgbouncer.log*"
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum

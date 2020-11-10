@@ -3,32 +3,32 @@ version: 0.0.1
 title: Microsoft Active Directory
 description: Log parser for Microsoft Active Directory
 parameters:
-  enable_dns_server:
+  - name: enable_dns_server
     label: Enable DNS Server Events
     description: Toggle collection of DNS Server events
     type: bool
     default: true
-  enable_dfs_replication:
+  - name: enable_dfs_replication
     label: Enable DFS Replication Events
     description: Toggle collection of DFS Replication events
     type: bool
     default: true
-  enable_file_replication:
+  - name: enable_file_replication
     label: Enable File Replication Events
     description: Toggle collection of File Replication events
     type: bool
     default: false
-  poll_interval:
+  - name: poll_interval
     label: Poll Interval
     description: The interval at which a channel is checked for new log entries
     type: string
     default: 1s
-  max_reads:
+  - name: max_reads
     label: Max Reads
     description: The maximum number of events read into memory at one time
     type: int
     default: 1000
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum

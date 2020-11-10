@@ -3,12 +3,12 @@ version: 0.0.1
 title: Docker Swarm
 description: Log parser for Docker Swarm
 parameters:
-  message_log_path:
+  - name: message_log_path
     label: Message Logs Path
     description: The absolute path to the Docker Swarm message logs
     type: string
     default: "/var/log/messages/*.log"
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum

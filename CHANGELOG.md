@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased 
+### Changed
+- Plugin parameters are now specified as an ordered array
+- Added relevant_if to parameters
+- Split `kubernetes` plugin into `kubernete_cluster` and `kubernetes_container`
+
 ## [0.0.16] - 2020-10-13
 ### Changed
 

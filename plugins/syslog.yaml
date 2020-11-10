@@ -3,12 +3,12 @@ version: 0.0.2
 title: Syslog
 description: Log parser for Syslog
 parameters:
-  listen_address:
+  - name: listen_address
     label: Listen Address
     description: A syslog address of the form `<ip>:<port>`
     type: string
     default: ":514"
-  connection_type:
+  - name: connection_type
     label: Connection Type
     description: The type of syslog connection (`udp` or `tcp`)
     type: enum
@@ -16,7 +16,7 @@ parameters:
       - udp
       - tcp
     default: udp
-  protocol:
+  - name: protocol
     label: Protocol
     description: The protocol of received syslog messages (`rfc3164` or `rfc5424`)
     type: enum

@@ -3,52 +3,70 @@ version: 0.0.1
 title: Apache Hadoop
 description: Log parser for Apache Hadoop
 parameters:
-  enable_datanode_logs:
+  - name: enable_datanode_logs
     label: DataNode Logs
     description: Enable collection of Hadoop data node logs
     type: bool
     default: true
-  datanode_general_log_path:
+  - name: datanode_general_log_path
     label: DataNode General Log Path
     description: The absolute path to the data node general logs
     type: string
     default: "/usr/local/hadoop/logs/hadoop-*-datanode-*.log"
-  datanode_yarn_log_path:
+    relevant_if:
+      enable_datanode_logs:
+        equals: true
+  - name: datanode_yarn_log_path
     label: DataNode Yarn Log Path
     description: The absolute path to the data node general logs
     type: string
     default: "/usr/local/hadoop/logs/yarn-*-datanode-*.log"
-  enable_resourcemgr_logs:
+    relevant_if:
+      enable_datanode_logs:
+        equals: true
+  - name: enable_resourcemgr_logs
     label: ResourceManager Logs
     description: Enable the collection of ResourceManager logs
     type: bool
     default: true
-  resourcemgr_general_log_path:
+  - name: resourcemgr_general_log_path
     label: ResourceManager General Log Path
     description: The absolute path to the DataNode general logs
     type: string
     default: "/usr/local/hadoop/logs/hadoop-*-resourcemgr-*.log"
-  resourcemgr_yarn_log_path:
+    relevant_if:
+      enable_resourcemgr_logs:
+        equals: true
+  - name: resourcemgr_yarn_log_path
     label: ResourceManager Yarn Log Path
     description: The absolute path to the ResourceManager general logs
     type: string
     default: "/usr/local/hadoop/logs/yarn-*-resourcemgr-*.log"
-  enable_namenode_logs:
+    relevant_if:
+      enable_resourcemgr_logs:
+        equals: true
+  - name: enable_namenode_logs
     label: NameNode Logs
     description: Enable collection of Hadoop NameNode logs
     type: bool
     default: true
-  namenode_general_log_path:
+  - name: namenode_general_log_path
     label: NameNode General Log Path
     description: The absolute path to the NameNode general logs
     type: string
     default: "/usr/local/hadoop/logs/hadoop-*-namenode-*.log"
-  namenode_yarn_log_path:
+    relevant_if:
+      enable_namenode_logs:
+        equals: true
+  - name: namenode_yarn_log_path
     label: NameNode Yarn Log Path
     description: The absolute path to the NameNode general logs
     type: string
     default: "/usr/local/hadoop/logs/yarn-*-namenode-*.log"
-  start_at:
+    relevant_if:
+      enable_namenode_logs:
+        equals: true
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum

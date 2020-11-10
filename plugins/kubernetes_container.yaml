@@ -1,0 +1,101 @@
+version: 0.0.7
+title: Kubernetes
+id: kubernetes
+description: Log parser for Kubernetes
+min_stanza_version: 0.9.8
+parameters:
+  - name: cluster_name
+    label: Cluster Name
+    description: 'Cluster Name to be added to a resource label'
+    type: string
+  - name: pod_name
+    label: Pod Name
+    description: "The name of the pod to collect logs from"
+    type: string
+    default: "*"
+  - name: container_name
+    label: Container Name
+    description: "The name of the container to collect logs from"
+    type: string
+    default: "*"
+  - name: exclude
+    label: Exclude files
+    description: A pattern of files to exclude
+    type: strings
+    required: false
+  - name: start_at
+    label: Start At
+    description: "Start reading file from 'beginning' or 'end'"
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+
+# Set Defaults
+# {{ $cluster_name := default "" .cluster_name }}
+# {{ $pod_name := default "*" .pod_name }}
+# {{ $container_name := default "*" .container_name }}
+# {{ $start_at := default "end" .start_at }}
+
+# Pipeline Template
+pipeline:
+  - id: container_reader
+    type: file_input
+    include:
+      - '/var/log/containers/{{ $pod_name }}-*_{{ $container_name }}-*.log'
+    exclude:
+    {{ range $index, $element := .exclude }}
+      - $element
+    {{ end }}
+
+    start_at: '{{ $start_at }}'
+    labels:
+      plugin_id: '{{ .id }}'
+    resource:
+      k8s.node.name: "EXPR(env('NODE_NAME'))"
+      k8s.cluster.name: "{{ $cluster_name }}"
+
+  # Initial log entry should be safe to parse as JSON
+  - id: container_json_parser
+    type: json_parser
+
+  - type: time_parser
+    parse_from: time
+    layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+
+  # Log field has been parsed if possible and now we can parse the file name field for container information.
+  - id: container_regex_parser
+    type: regex_parser
+    parse_from: $labels.file_name
+    regex: '^(?P<pod_name>[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?P<namespace>[^_]+)_(?P<container_name>.+)-(?P<container_id>[a-z0-9]{64})\.log$'
+
+  - id: resource_restructurer
+    type: restructure
+    ops:
+      - move:
+          from: '$record.pod_name'
+          to: '$resource["k8s.pod.name"]'
+      - move:
+          from: '$record.namespace'
+          to: '$resource["k8s.namespace.name"]'
+      - move:
+          from: '$record.container_name'
+          to: '$resource["container.name"]'
+      - move:
+          from: '$record.container_id'
+          to: '$resource["container.id"]'
+
+  # Add kubernetes metadata
+  - id: add_kubernetes_metadata
+    type: k8s_metadata_decorator
+
+  # Route stdout and stderr to their final destinations
+  - type: restructure
+    ops:
+      - move: 
+          from: stream
+          to: "$labels.stream"
+      - move:
+          from: log
+          to: "$record"

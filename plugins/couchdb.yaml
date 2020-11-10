@@ -3,12 +3,12 @@ version: 0.0.1
 title: CouchDB
 description: Log parser for CouchDB
 parameters:
-  file_path:
+  - name: file_path
     label: CouchDB Logs Path
     description: The absolute path to the CouchDB logs
     type: string
     default: "/var/log/couchdb/couchdb.log"
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum

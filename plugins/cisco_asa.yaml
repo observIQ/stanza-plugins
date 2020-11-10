@@ -3,7 +3,7 @@ version: 0.0.2
 title: Cisco ASA
 description: Log parser for Cisco ASA
 parameters:
-  listen_address:
+  - name: listen_address
     label: Listen Address
     description: A syslog address of the form `<ip>:<port>`
     type: string
@@ -18,7 +18,7 @@ pipeline:
     type: tcp_input
     listen_address: {{ $listen_address }}
     labels:
-      log_type: cisco_asa 
+      log_type: cisco_asa
       plugin_id: {{ .id }}
     output: cisco_parser
 

@@ -3,12 +3,12 @@ version: 0.0.1
 title: SAP HANA
 description: Log parser for SAP HANA
 parameters:
-  file_path:
+  - name: file_path
     label: SAP HANA Database Trace Logs
     description: The absolute path to the SAP HANA logs
     type: string
     default: "/usr/sap/*/HDB*/*/trace/*.trc"
-  start_at:
+  - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
     type: enum
