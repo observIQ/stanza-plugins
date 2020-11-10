@@ -41,7 +41,7 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S.%L %Z'
     severity:
       parse_from: pgbouncer_severity
-      preserve: true
+      preserve_to: pgbouncer_severity
       mapping:
         critical: fatal
         info: log

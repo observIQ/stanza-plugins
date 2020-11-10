@@ -46,8 +46,8 @@ pipeline:
 
   - type: severity_parser
     preset: none
-    parse_from: $record.reason
-    preserve: true
+    parse_from: reason
+    preserve_to: reason
     mapping:
       info:
         - Created

@@ -43,7 +43,7 @@ pipeline:
       layout: '%d %b %H:%M:%S.%s'
     severity:
       parse_from: redis_severity
-      preserve: true
+      preserve_to: redis_severity
       mapping:
         warning: ' # '
         info: ' - '

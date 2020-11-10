@@ -43,7 +43,7 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S.%s'
     severity:
       parse_from: sap_severity
-      preserve: true
+      preserve_to: sap_severity
       mapping:
         debug: d
         info: i

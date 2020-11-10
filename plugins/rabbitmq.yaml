@@ -43,5 +43,5 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S.%s'
     severity:
       parse_from: rabbitmq_severity
-      preserve: true
+      preserve_to: rabbitmq_severity
     output: {{.output}}

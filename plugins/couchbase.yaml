@@ -143,7 +143,7 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
-      preserve: true
+      preserve_to: couchbase_severity
     output: {{.output}}
 {{ end }}
 
@@ -168,7 +168,7 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
-      preserve: true
+      preserve_to: couchbase_severity
       mapping:
         warning: warn
     output: {{.output}}
@@ -195,7 +195,7 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
-      preserve: true
+      preserve_to: couchbase_severity
       mapping:
         warning: warn
     output: {{.output}}
@@ -262,7 +262,7 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
-      preserve: true
+      preserve_to: couchbase_severity
     output: {{.output}}
 {{ end }}
 
@@ -285,6 +285,6 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
-      preserve: true
+      preserve_to: couchbase_severity
     output: {{.output}}
 {{ end }}

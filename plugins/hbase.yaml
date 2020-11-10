@@ -83,7 +83,7 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hbase_severity
-      preserve: true
+      preserve_to: hbase_severity
       mapping:
         warning: warn
         emergency: fatal
@@ -111,7 +111,7 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hbase_severity
-      preserve: true
+      preserve_to: hbase_severity
       mapping:
         warning: warn
         emergency: fatal
@@ -139,7 +139,7 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hbase_severity
-      preserve: true
+      preserve_to: hbase_severity
       mapping:
         warning: warn
         emergency: fatal
