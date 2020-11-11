@@ -121,7 +121,7 @@ pipeline:
       - {{ $alert_log_path }}
     start_at: {{ $start_at }}
     multiline:
-      line_start_pattern: '\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \d{4}|\d{4}-\d{2}-\d{2}T\d{1,}:\d{2}:\d{2}.\d+[+-]\d+:\d+'
+      line_start_pattern: '\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \d{4}|\d{4}-\d{2}-\d{2}T\d{1,}:\d{2}:\d{2}.\d+[+-]\d+:\d+|<msg time=\D\d{4}-\d{2}-\d{2}T\d{1,}:\d{2}:\d{2}.\d+[+-]\d+:\d+'
     labels:
       log_type: 'oracledb.alert'
       plugin_id: {{ .id }}
@@ -130,10 +130,20 @@ pipeline:
   - id: alert_router
     type: router
     routes:
+      - output: xml_alert_regex_parser
+        expr: $ matches '<msg time=\\D\\d{4}-\\d{2}-\\d{2}T\\d{1,}:\\d{2}:\\d{2}.\\d+[+-]\\d+:\\d+'
       - output: alert121_regex_parser
         expr: $ matches '\\w+ \\w+ \\d{2} \\d{2}:\\d{2}:\\d{2} \\d{4}'
       - output: alert122_regex_parser
         expr: $ matches '\\d{4}-\\d{2}-\\d{2}T\\d{1,}:\\d{2}:\\d{2}.\\d+[+-]\\d+:\\d+'
+
+  - id: xml_alert_regex_parser
+    type: regex_parser
+    regex: '^<msg\s+time=\D(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}[+-]\d{2}:\d{2})\D(\s+)?(org_id=\D(?P<org_id>[\w\d]+)\D)?(\s+)?(comp_id=\D(?P<comp_id>[\w\d]+)\D)?(\s+)?(msg_id=\D(?P<msg_id>[\w\d:]+)\D)?(\s+)?(type=\D(?P<type>\w+)\D)?(\s+)?(group=\D(?P<group>[\w ]+)\D)?(\s+)?(level=\D(?P<level>\d+)\D)?(\s+)?(host_id=\D(?P<host_id>[\.\w\d-_]+)\D)?(\s+)?(host_addr=\D(?P<host_addr>[\d\.]+)\D)?(\s+)?(module=\D(?P<module>[\w-\s@()]+)\D)?(\s+)?(pid=\D(?P<pid>\d+)\D)?(\s+)?(\s+)?(version=\D(?P<version>\d+)\D)?(\s+)?>\s+<txt>(?P<txt>[\d\D\s]+)</txt>(\s+)?</msg>'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%T.%L%j'
+    output: {{ .output }}
 
   # Alert log parser for 12.1 timestamp
   - id: alert121_regex_parser
@@ -161,7 +171,7 @@ pipeline:
       - {{ $listener_log_path }}
     start_at: {{ $start_at }}
     multiline:
-      line_start_pattern: '/[\w\d/]+:|\\[\w\d\\]+:|\d{4}-\d{2}-\d{2}T\d{1}:\d{2}:\d{2}.\d+[+-]\d+:\d+|<msg '
+      line_start_pattern: '/[\w\d/]+:|\\[\w\d\\]+:|\d{4}-\d{2}-\d{2}T\d{1}:\d{2}:\d{2}.\d+[+-]\d+:\d+|<msg time=\D\d{4}-\d{2}-\d{2}T\d{1,}:\d{2}:\d{2}.\d+[+-]\d+:\d+'
     labels:
       log_type: 'oracledb.listener'
       plugin_id: {{ .id }}
@@ -170,14 +180,14 @@ pipeline:
   - id: listener_router
     type: router
     routes:
+      - output: xml_listener_regex_parser
+        expr: $ matches '<msg time=\\D\\d{4}-\\d{2}-\\d{2}T\\d{1,}:\\d{2}:\\d{2}.\\d+[+-]\\d+:\\d+'
       - output: linux_listener_regex_parser
         expr: $ matches '/[\\w\\d/]+:'
       - output: windows_listener_regex_parser
         expr: $ matches '\\\\[\\d\\D\\\\]*:'
       - output: trace_listener_regex_parser
         expr: $ matches '\\d{4}-\\d{2}-\\d{2}T\\d{1}:\\d{2}:\\d{2}.\\d+[+-]\\d+:\\d+'
-      - output: xml_listener_regex_parser
-        expr: $ matches '<msg '
 
   - id: linux_listener_regex_parser
     type: regex_parser
@@ -205,7 +215,7 @@ pipeline:
 
   - id: xml_listener_regex_parser
     type: regex_parser
-    regex: '<msg(\s+)?(time=\D(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}[+-]\d{2}:\d{2})\D)?(\s+)?(org_id=\D(?P<org_id>[\w\d]+)\D)?(\s+)?(comp_id=\D(?P<comp_id>[\w\d]+)\D)?(\s+)?(msg_id=\D(?P<msg_id>[\w\d:]+)\D)?(\s+)?(type=\D(?P<type>\w+)\D)?(\s+)?(group=\D(?P<group>\w+)\D)?(\s+)?(level=\D(?P<level>\d+)\D)?(\s+)?(host_id=\D(?P<host_id>[\.\w\d-_]+)\D)?(\s+)?(host_addr=\D(?P<host_addr>[\d\.]+)\D)?(\s+)(module=\D(?P<module>[\w-\s]+)\D)?(\s+)?(pid=\D(?P<pid>\d+)\D)?(\s+)?(\s+)?(version=\D(?P<version>\d+)\D)?(\s+)?>\s+<txt>(?P<txt>[\d\D\s]+)</txt>(\s+)?</msg>'
+    regex: '^<msg\s+time=\D(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}[+-]\d{2}:\d{2})\D(\s+)?(org_id=\D(?P<org_id>[\w\d]+)\D)?(\s+)?(comp_id=\D(?P<comp_id>[\w\d]+)\D)?(\s+)?(msg_id=\D(?P<msg_id>[\w\d:]+)\D)?(\s+)?(type=\D(?P<type>\w+)\D)?(\s+)?(group=\D(?P<group>[\w ]+)\D)?(\s+)?(level=\D(?P<level>\d+)\D)?(\s+)?(host_id=\D(?P<host_id>[\.\w\d-_]+)\D)?(\s+)?(host_addr=\D(?P<host_addr>[\d\.]+)\D)?(\s+)?(module=\D(?P<module>[\w-\s@()]+)\D)?(\s+)?(pid=\D(?P<pid>\d+)\D)?(\s+)?(\s+)?(version=\D(?P<version>\d+)\D)?(\s+)?>\s+<txt>(?P<txt>[\d\D\s]+)</txt>(\s+)?</msg>'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%T.%L%j'
