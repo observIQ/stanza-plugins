@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.2
+version: 0.0.3
 title: VMware vCenter
 description: Log parser for VMware vCenter
 parameters:
@@ -27,5 +27,5 @@ pipeline:
     regex: '^[<\d+>]*\s*(?P<timestamp>[^ ]+) (?P<hostname>[^ ]+) (?P<service>[^ ]+) (?P<message>.*)'
     timestamp:
       parse_from: timestamp
-      layout: '%b %d %H:%M:%S'
+      layout: '%FT%T.%s%j'
     output: {{.output}}
