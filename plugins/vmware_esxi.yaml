@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.3
+version: 0.0.4
 title: VMware ESXi
 description: Log parser for VMware ESXi
 parameters:
@@ -25,7 +25,26 @@ pipeline:
   - id: esxi_parser
     type: regex_parser
     regex: '^(?P<timestamp>[a-zA-z]+ \d{2} \d{2}:\d{2}:\d{2}) (?P<hostname>[^ ]+) (?P<service>[^ ]+) (?P<message>.*)'
-    timestamp:
-      parse_from: timestamp
-      layout: '%b %d %H:%M:%S'
-    output: {{.output}}
+    output: timestamp_router
+
+  - id: timestamp_router
+    type: router
+    routes:
+      - output: time_parser
+        expr: '$record.timestamp matches "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d+[+-]\\d{2}:\\d{2}"'
+      - output: time_parser_without_milliseconds_timezone
+        expr: '$record.timestamp matches "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z"'
+      - output: {{ .output }}
+        expr: 'true'
+
+  - id: time_parser
+    type: time_parser
+    parse_from: $record.timestamp
+    layout: '%FT%T.%s%j'
+    output: {{ .output }}
+
+  - id: time_parser_without_milliseconds_timezone
+    type: time_parser
+    parse_from: $record.timestamp
+    layout: '%FT%TZ'
+    output: {{ .output }}
