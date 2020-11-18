@@ -39,7 +39,7 @@ jobs:
               id=$(basename $i | cut -d '.' -f 1)
               payload="$(jq -Rs "{contents: ., id: \"${id}\"}" $i)"
               curl \
-                -H "Authorization: Bearer $GCLOUD_IDENTITY_TOKEN" \
+                -H "x-selectstar-secret: $X_SELECTSTAR_SECRET" \
                 -X POST \
                 -d "$payload" \
                 https://stanza-source-service-enle4clm4a-ue.a.run.app/plugins &
