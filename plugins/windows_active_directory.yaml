@@ -1,7 +1,9 @@
 # Plugin Info
-version: 0.0.1
+version: 0.0.2
 title: Microsoft Active Directory
 description: Log parser for Microsoft Active Directory
+supported_platforms: 
+  - windows
 parameters:
   - name: enable_dns_server
     label: Enable DNS Server Events
