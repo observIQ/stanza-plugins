@@ -2,7 +2,7 @@ version: 0.0.1
 title: BindPlane / observIQ Universal Agent
 description: Agent logs for the BindPlane / observIQ Universal Agent
 parameters:
-  start_at:
+  - name: start_at
     label: Start At
     description:  Start reading file from 'beginning' or 'end'
     type: enum
