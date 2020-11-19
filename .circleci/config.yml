@@ -38,12 +38,18 @@ jobs:
             for i in $changed_plugins ; do 
               id=$(basename $i | cut -d '.' -f 1)
               payload="$(jq -Rs "{contents: ., type: \"${id}\"}" $i)"
-              curl \
-                --fail \
+              status=$(curl \
                 -H "x-selectstar-secret: $X_SELECTSTAR_SECRET" \
                 -X POST \
                 -d "$payload" \
-                https://stanza-source-service-enle4clm4a-ue.a.run.app/plugins 
+                -o /tmp/output.json \
+                -w  "%{http_code}" \
+                https://stanza-source-service-enle4clm4a-ue.a.run.app/plugins )
+              if [ "$status" != "200" ] ; then 
+                echo "Plugin $id failed with status $status" 
+                cat /tmp/output.json
+                exit 1
+              fi
             done
 
 workflows:
