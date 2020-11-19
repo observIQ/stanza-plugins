@@ -37,14 +37,13 @@ jobs:
             changed_plugins=$(git diff --name-only $last_release ./plugins)
             for i in $changed_plugins ; do 
               id=$(basename $i | cut -d '.' -f 1)
-              payload="$(jq -Rs "{contents: ., id: \"${id}\"}" $i)"
+              payload="$(jq -Rs "{contents: ., type: \"${id}\"}" $i)"
               curl \
                 -H "x-selectstar-secret: $X_SELECTSTAR_SECRET" \
                 -X POST \
                 -d "$payload" \
-                https://stanza-source-service-enle4clm4a-ue.a.run.app/plugins &
+                https://stanza-source-service-enle4clm4a-ue.a.run.app/plugins 
             done
-            wait
 
 workflows:
   version: 2
