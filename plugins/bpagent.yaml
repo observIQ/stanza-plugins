@@ -1,0 +1,44 @@
+version: 0.0.1
+title: BindPlane / observIQ Universal Agent
+description: Agent logs for the BindPlane / observIQ Universal Agent
+parameters:
+  start_at:
+    label: Start At
+    description:  Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+pipeline:
+
+  - id: log_reader
+    type: file_input
+    include:
+      - log/manager.log
+      - log/launcher.log
+    start_at: {{ or .start_at "end" }}
+    labels:
+      plugin_id: {{ .id }}
+
+  - id: log_json_parser
+    type: json_parser
+    severity:
+      parse_from: level
+    timestamp:
+      parse_from: ts
+      preserve: false
+      layout_type: gotime
+      layout: '2006-01-02T15:04:05.000-0700'
+
+  - id: log_restructure
+    type: restructure
+    ops:
+      - move:
+          from: logger
+          to: $labels.logger
+    output: {{ .output }}
+
+  - id: stanza_log
+    type: stanza_input
+    output: {{ .output }}
