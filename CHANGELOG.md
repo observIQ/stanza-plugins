@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Update `oracledb` plugin ([PR93](https://github.com/observIQ/stanza-plugins/pull/93))
   - Bump version
+  
 ## [0.0.20] - 2020-11-19
 ### Changed
 - Update plugins to add supported_plugins parameter ([PR90](https://github.com/observIQ/stanza-plugins/pull/90))
