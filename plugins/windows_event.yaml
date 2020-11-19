@@ -1,7 +1,9 @@
 # Plugin Info
-version: 0.0.2
+version: 0.0.3
 title: Windows Event Log
 description: Windows Event Log Parser
+supported_platforms: 
+  - windows
 parameters:
   - name: enable_system_events
     label: System Events

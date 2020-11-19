@@ -1,7 +1,9 @@
 # Plugin Info
-version: 0.0.2
+version: 0.0.3
 title: Kubernetes Events
 description: Kubernetes Events Parser
+supported_platforms: 
+  - kubernetes
 parameters:
   - name: namespaces
     label: Namespaces

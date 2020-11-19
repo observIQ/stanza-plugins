@@ -1,7 +1,9 @@
 # Plugin Info
-version: 0.0.3
+version: 0.0.4
 title: Windows DHCP
 description: Log parser for Windows DHCP
+supported_platforms: 
+  - windows
 parameters:
   - name: file_path
     label: Log Path
