@@ -90,6 +90,7 @@ parameters:
 # Pipeline Template
 pipeline:
 {{ if $enable_datanode_logs }}
+  {{ if $datanode_general_log_path }}
   - id: hadoop_datanode_general_input
     type: file_input
     include:
@@ -115,7 +116,9 @@ pipeline:
         warning: warn
         critical: fatal
     output: {{.output}}
+  {{ end }}
 
+  {{ if $datanode_yarn_log_path }}
   - id: hadoop_datanode_yarn_input
     type: file_input
     include:
@@ -141,9 +144,11 @@ pipeline:
         warning: warn
         critical: fatal
     output: {{.output}}
+  {{ end }}
 {{ end }}
 
 {{ if $enable_resourcemgr_logs }}
+  {{ if $resourcemgr_general_log_path}}
   - id: hadoop_resourcemgr_general_input
     type: file_input
     include:
@@ -169,7 +174,9 @@ pipeline:
         warning: warn
         critical: fatal
     output: {{.output}}
+  {{ end }}
 
+  {{ if $resourcemgr_yarn_log_path}}
   - id: hadoop_resourcemgr_yarn_input
     type: file_input
     include:
@@ -195,9 +202,11 @@ pipeline:
         warning: warn
         critical: fatal
     output: {{.output}}
+  {{ end }}
 {{ end }}
 
 {{ if $enable_namenode_logs }}
+  {{ if $namenode_general_log_path }}
   - id: hadoop_namenode_general_input
     type: file_input
     include:
@@ -223,7 +232,9 @@ pipeline:
         warning: warn
         critical: fatal
     output: {{.output}}
+  {{ end }}
 
+  {{ if $namenode_yarn_log_path }}
   - id: hadoop_namenode_yarn_input
     type: file_input
     include:
@@ -249,4 +260,5 @@ pipeline:
         warning: warn
         critical: fatal
     output: {{.output}}
+  {{ end }}
 {{ end }}
