@@ -4,6 +4,45 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.21] - 2020-11-19
+### Changed
+- Update `oracledb` plugin ([PR93](https://github.com/observIQ/stanza-plugins/pull/93))
+  - Bump version
+  
+## [0.0.20] - 2020-11-19
+### Changed
+- Update plugins to add supported_plugins parameter ([PR90](https://github.com/observIQ/stanza-plugins/pull/90))
+  - `kubernetes`
+  - `kubernetes_cluster`
+  - `kubernetes_container`
+  - `kubernetes_events`
+  - `windows_active_directory`
+  - `windows_dhcp`
+  - `windows_events`
+
+## [0.0.19] - 2020-11-19
+### Added
+- Add `bpagent` plugin ([PR81](https://github.com/observIQ/stanza-plugins/pull/81))
+### Changed
+- Update `tomcat` plugin ([PR89](https://github.com/observIQ/stanza-plugins/pull/89))
+  - Further parse catalina parse adding fields `thread` and `tc_source`
+- Update `vmware_vcenter` plugin ([PR87](https://github.com/observIQ/stanza-plugins/pull/87))
+  - Update timestamp parsing to match version 6.7 format
+- Update `oracledb` plugin ([PR86](https://github.com/observIQ/stanza-plugins/pull/86))
+  - Add xml parsing support to alert log
+  - Fix parsing issues in xml regex
+- Update `vmware_vcenter` plugin ([PR85](https://github.com/observIQ/stanza-plugins/pull/85))
+  - Update timestamp parsing to match version 6.7 format
+- Update `mongodb` plugin ([PR84](https://github.com/observIQ/stanza-plugins/pull/84))
+  - Add support for MongoDB 4.4 JSON log format
+- Update `aerospike` plugin ([PR83](https://github.com/observIQ/stanza-plugins/pull/83))
+  - Filter config context
+  - Split `source_location` field to `source_file` and `source_location`
+
+## [0.0.18] - 2020-11-10
+### Changed
+- Add `kubernetes` plugin back to overwrite old version
+
 ## [0.0.17] - 2020-11-10
 ### Changed
 - Plugin parameters are now specified as an ordered array
