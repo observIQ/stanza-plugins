@@ -39,6 +39,7 @@ jobs:
               id=$(basename $i | cut -d '.' -f 1)
               payload="$(jq -Rs "{contents: ., type: \"${id}\"}" $i)"
               curl \
+                --fail \
                 -H "x-selectstar-secret: $X_SELECTSTAR_SECRET" \
                 -X POST \
                 -d "$payload" \
