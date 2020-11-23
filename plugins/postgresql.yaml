@@ -54,7 +54,7 @@ pipeline:
 
   - type: regex_parser
     parse_from: log_entry
-    regex: 't=(?P<time>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\s+[^\s]+)\s+p=(?P<process_id>[^\s]+)\s+s=(?P<process_start_time>[^\s]+)\s+l=(?P<process_log_line>[^\s]+)\s+u=(?P<user_name>[^\s]+)\s+db=(?P<database>[^\s]+)\s+r=(?P<client_address>[^\s]+)\s+[\w]+:\s+(?P<message>[\w\W]+)'
+    regex: 't=(?P<time>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\s+[^\s]+)\s+p=(?P<process_id>\d*)\s+s=(?P<process_start_time>[^\s]*)\s+l=(?P<process_log_line>[^\s]*)\s+u=(?P<user_name>[^\s]*)\s+db=(?P<database>[^\s]*)\s+r=(?P<client_address>[^\s]*)\s+[\w]+:\s+(?P<message>[\w\W]+)'
     timestamp:
       parse_from: time
       layout: '%F %T %Z'
