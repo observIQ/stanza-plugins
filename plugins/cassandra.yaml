@@ -67,7 +67,7 @@ pipeline:
     include:
       - {{ $gc_log_path }}
     multiline:
-      line_start_pattern: '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}[+-]\d{4}'
+      line_start_pattern: '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}[+-]\d{4}|OpenJDK|Memory:|CommandLine|Heap'
     start_at: {{ $start_at }}
     labels:
       log_type: 'cassandra.gc'
@@ -75,7 +75,8 @@ pipeline:
 
   - id: gc_rex_parser
     type: regex_parser
-    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}[+-]\d{4}):\s+(?P<message>[\d\D\s]+)'
+    if: '$record matches "[0-9]{4}-[0-9]{2}-[0-9]{2}T"' 
+    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}[+-]\d{4}):\s+.*stopped: (?P<total_stopped_seconds>[\d\.]+).* took: (?P<stopping_threads_seconds>[\d\.]+)'
     timestamp:
       parse_from: timestamp
       layout: '%FT%T.%L%z'
