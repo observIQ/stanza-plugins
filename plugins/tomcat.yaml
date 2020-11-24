@@ -67,11 +67,10 @@ pipeline:
       parse_from: http_status
       preserve_to: http_status
       mapping:
-        error: 
-          - 4xx
-          - 5xx
-        info: 3xx
-        debug: 2xx
+        info: 2xx
+        notice: 3xx
+        warning: 4xx
+        error: 5xx
     output: {{ .output }}
   #{{ end }}
 
