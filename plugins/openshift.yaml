@@ -1,7 +1,9 @@
 ---
-version: 0.0.3
+version: 0.0.4
 title: Openshift
 description: Log parser for Openshift
+supported_platforms:
+  - openshift
 parameters:
   - name: journald_log_path
     label: Containers Log Path
