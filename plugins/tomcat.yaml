@@ -63,6 +63,14 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%d/%b/%Y:%H:%M:%S %z'
+    severity:
+      parse_from: http_status
+      preserve_to: http_status
+      mapping:
+        info: 2xx
+        notice: 3xx
+        warning: 4xx
+        error: 5xx
     output: {{ .output }}
   #{{ end }}
 
