@@ -35,7 +35,7 @@ pipeline:
 
   - id: pgbouncer_parser
     type: regex_parser
-    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}.\d{3}\s+[A-Z]+)\s+\[(?P<pid>\d+)\]\s(?P<pgbouncer_severity>\w+)\s(?P<message>.*)'
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}.\d{3}) (?P<pid>\d+) (?P<severity>\w+) (?P<message>.*)'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%d %H:%M:%S.%L %Z'
