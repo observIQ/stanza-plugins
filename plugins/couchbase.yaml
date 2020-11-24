@@ -66,7 +66,7 @@ parameters:
     type: string
     default: "/opt/couchbase/var/lib/couchbase/logs/http_access_internal.log"
     relevant_if:
-      enable_internal_log:
+      enable_internal_access_log:
         equals: true
   - name: enable_babysitter_log
     label: Babysitter Logs
@@ -128,7 +128,7 @@ pipeline:
     include:
       - {{ $error_log_path }}
     multiline:
-      line_start_pattern: '\[[^:]*:[^,]*,\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2},[^@]*@[^:]*:'
+      line_start_pattern: '^\[[^:]*:[^,]*,\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2},[^@]*@[^:]*:'
     start_at: {{ $start_at }}
     labels:
       log_type: couchbase.error
@@ -137,13 +137,12 @@ pipeline:
 
   - id: couchbase_error_parser
     type: regex_parser
-    regex: '^\[(?P<type>[^:]*):(?P<couchbase_severity>[^,]*),(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2}),(?P<node>[^@]*)@(?P<host>[^:]*):(?P<message>.*)'
+    regex: '^\[(?P<type>[^:]*):(?P<couchbase_severity>[^,]*),(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2}),(?P<node>[^@]*)@(?P<source>[^\]]+)\](?P<message>(?s).*[^\n\s])[\n\s]*$'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
-      preserve_to: couchbase_severity
     output: {{.output}}
 {{ end }}
 
@@ -153,7 +152,7 @@ pipeline:
     include:
       - {{ $debug_log_path }}
     multiline:
-      line_start_pattern: '\[[^:]*:[^,]*,\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2},[^@]*@[^:]*:'
+      line_start_pattern: '^\[[^:]*:[^,]*,\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2},[^@]*@[^:]*:'
     start_at: {{ $start_at }}
     labels:
       log_type: couchbase.debug
@@ -162,13 +161,12 @@ pipeline:
 
   - id: couchbase_debug_parser
     type: regex_parser
-    regex: '^\[(?P<type>[^:]*):(?P<couchbase_severity>[^,]*),(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2}),(?P<node>[^@]*)@(?P<host>[^:]*):(?P<message>.*)'
+    regex: '^\[(?P<type>[^:]*):(?P<couchbase_severity>[^,]*),(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2}),(?P<node>[^@]*)@(?P<source>[^\]]+)\](?P<message>(?s).*[^\n\s])[\n\s]*$'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
-      preserve_to: couchbase_severity
       mapping:
         warning: warn
     output: {{.output}}
@@ -180,7 +178,7 @@ pipeline:
     include:
       - {{ $info_log_path }}
     multiline:
-      line_start_pattern: '\[[^:]*:[^,]*,\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2},[^@]*@[^:]*:'
+      line_start_pattern: '^\[[^:]*:[^,]*,\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2},[^@]*@[^:]*:'
     start_at: {{ $start_at }}
     labels:
       log_type: couchbase.info
@@ -189,13 +187,12 @@ pipeline:
 
   - id: couchbase_info_parser
     type: regex_parser
-    regex: '^\[(?P<type>[^:]*):(?P<couchbase_severity>[^,]*),(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2}),(?P<node>[^@]*)@(?P<host>[^:]*):(?P<message>.*)'
+    regex: '^\[(?P<type>[^:]*):(?P<couchbase_severity>[^,]*),(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2}),(?P<node>[^@]*)@(?P<source>[^\]]+)\](?P<message>(?s).*[^\n\s])[\n\s]*$'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
-      preserve_to: couchbase_severity
       mapping:
         warning: warn
     output: {{.output}}
@@ -262,7 +259,6 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
-      preserve_to: couchbase_severity
     output: {{.output}}
 {{ end }}
 
@@ -272,6 +268,8 @@ pipeline:
     include:
       - {{ $xdcr_log_path }}
     start_at: {{ $start_at }}
+    multiline:
+      line_start_pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}'
     labels:
       log_type: couchbase.xdcr
       plugin_id: {{ .id }}
@@ -285,6 +283,5 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
-      preserve_to: couchbase_severity
     output: {{.output}}
 {{ end }}
