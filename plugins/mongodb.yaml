@@ -6,7 +6,7 @@ parameters:
     label: Path
     description: The path of the log file
     type: string
-    default: "/var/log/mongodb/mongodb.log.?[0-9]*"
+    default: "/var/log/mongodb/mongodb.log*"
   - name: mongodb_json_log_format
     label: "MongoDB 4.4+ Log Format"
     description: Enable to parse MongoDB 4.4+ JSON log format parsing.
@@ -22,7 +22,7 @@ parameters:
     default: end
 
 # Set Defaults
-# {{$log_path := default "/var/log/mongodb/mongodb.log.?[0-9]*" .log_path}}
+# {{$log_path := default "/var/log/mongodb/mongodb.log*" .log_path}}
 # {{$mongodb_json_log_format := default false .mongodb_json_log_format}}
 # {{$start_at := default "end" .start_at}}
 
