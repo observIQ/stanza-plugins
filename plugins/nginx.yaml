@@ -138,17 +138,36 @@ pipeline:
     timestamp:
       parse_from: time
       layout: '%d/%b/%Y:%H:%M:%S %z'
+    severity:
+      parse_from: status
+      preserve_to: status
+      mapping:
+        error:
+          - 5xx
+          - 4xx
+        info: 3xx
+        debug: 2xx
     output: {{ .output }}
   # {{ else }}
   - id: access_regex_parser
     type: regex_parser
-    regex: '^(?P<remote>[^ ]*) (?P<host>[^ ]*) (?P<user>[^ ]*) \[(?P<time>[^\]]*)\] "(?P<method>\S+)(?: +(?P<path>[^\"]*?)(?: +\S*)?)?" (?P<code>[^ ]*) (?P<size>[^ ]*)(?: "(?P<referrer>[^\"]*)" "(?P<agent>[^\"]*)"(?:\s+(?P<http_x_forwarded_for>[^ ]+))?)?$'
+    regex: '^(?P<remote>[^ ]*) (?P<host>[^ ]*) (?P<user>[^ ]*) \[(?P<time>[^\]]*)\] "(?P<method>\S+)(?: +(?P<path>[^\"]*?)(?: +\S*)?)?" (?P<status>[^ ]*) (?P<size>[^ ]*)(?: "(?P<referrer>[^\"]*)" "(?P<agent>[^\"]*)"(?:\s+(?P<http_x_forwarded_for>[^ ]+))?)?$'
     timestamp:
       parse_from: time
       layout: '%d/%b/%Y:%H:%M:%S %z'
+    severity:
+      parse_from: status
+      preserve_to: status
+      mapping:
+        error:
+          - 5xx
+          - 4xx
+        info: 3xx
+        debug: 2xx
     output: {{ .output }}
   # {{ end }}
 
+  # {{ if $enable_error_log }}
   - id: error_regex_parser
     type: regex_parser
     regex: '^(?P<time>\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}) \[(?P<log_level>\w+)\] (?P<pid>\d+).(?P<tid>\d+): (?P<message>.*)'
@@ -161,3 +180,4 @@ pipeline:
         critical: crit
         emergency: emerg
     output: {{ .output }}
+  # {{ end }}
