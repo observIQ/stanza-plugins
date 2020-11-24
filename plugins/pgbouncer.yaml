@@ -38,10 +38,9 @@ pipeline:
     regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}.\d{3}) (?P<pid>\d+) (?P<severity>\w+) (?P<message>.*)'
     timestamp:
       parse_from: timestamp
-      layout: '%Y-%m-%d %H:%M:%S.%L %Z'
+      layout: '%Y-%m-%d %H:%M:%S.%L'
     severity:
-      parse_from: pgbouncer_severity
-      preserve_to: pgbouncer_severity
+      parse_from: severity
       mapping:
         critical: fatal
         info: log
