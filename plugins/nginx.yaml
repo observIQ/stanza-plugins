@@ -142,11 +142,10 @@ pipeline:
       parse_from: status
       preserve_to: status
       mapping:
-        error:
-          - 5xx
-          - 4xx
-        info: 3xx
-        debug: 2xx
+        info: 2xx
+        notice: 3xx
+        warning: 4xx
+        error: 5xx
     output: {{ .output }}
   # {{ else }}
   - id: access_regex_parser
@@ -159,11 +158,10 @@ pipeline:
       parse_from: status
       preserve_to: status
       mapping:
-        error:
-          - 5xx
-          - 4xx
-        info: 3xx
-        debug: 2xx
+        info: 2xx
+        notice: 3xx
+        warning: 4xx
+        error: 5xx
     output: {{ .output }}
   # {{ end }}
 
