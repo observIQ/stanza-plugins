@@ -96,7 +96,7 @@ pipeline:
     include:
       - {{ $datanode_general_log_path }}
     multiline:
-      line_start_pattern: '\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+ \s'
+      line_start_pattern: '^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+'
     start_at: {{ $start_at }}
     labels:
       log_type: hadoop.datanode.general
@@ -105,7 +105,7 @@ pipeline:
 
   - id: hadoop_datanode_general_parser
     type: regex_parser
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>[^\s].*)'
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>(?s)\S.*\S)'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%d %H:%M:%S'
@@ -124,7 +124,7 @@ pipeline:
     include:
       - {{ $datanode_yarn_log_path }}
     multiline:
-      line_start_pattern: '\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+ \s'
+      line_start_pattern: '^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+'
     start_at: {{ $start_at }}
     labels:
       log_type: hadoop.datanode.yarn
@@ -133,7 +133,7 @@ pipeline:
 
   - id: hadoop_datanode_yarn_parser
     type: regex_parser
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>[^\s].*)'
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>(?s)\S.*\S)'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%d %H:%M:%S'
@@ -154,7 +154,7 @@ pipeline:
     include:
       - {{ $resourcemgr_general_log_path }}
     multiline:
-      line_start_pattern: '\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+ \s'
+      line_start_pattern: '^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+'
     start_at: {{ $start_at }}
     labels:
       log_type: hadoop.resourcemgr.general
@@ -163,7 +163,7 @@ pipeline:
 
   - id: hadoop_resourcemgr_general_parser
     type: regex_parser
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>[^\s].*)'
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>(?s)\S.*\S)'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%d %H:%M:%S'
@@ -182,7 +182,7 @@ pipeline:
     include:
       - {{ $resourcemgr_yarn_log_path }}
     multiline:
-      line_start_pattern: '\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+ \s'
+      line_start_pattern: '^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+'
     start_at: {{ $start_at }}
     labels:
       log_type: hadoop.resourcemgr.yarn
@@ -191,7 +191,7 @@ pipeline:
 
   - id: hadoop_resourcemgr_yarn_parser
     type: regex_parser
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>[^\s].*)'
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>(?s)\S.*\S)'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%d %H:%M:%S'
@@ -212,7 +212,7 @@ pipeline:
     include:
       - {{ $namenode_general_log_path }}
     multiline:
-      line_start_pattern: '\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+ \s'
+      line_start_pattern: '^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+'
     start_at: {{ $start_at }}
     labels:
       log_type: hadoop.namenode.general
@@ -221,7 +221,7 @@ pipeline:
 
   - id: hadoop_namenode_general_parser
     type: regex_parser
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>[^\s].*)'
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>(?s)\S.*\S)'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%d %H:%M:%S'
@@ -240,7 +240,7 @@ pipeline:
     include:
       - {{ $namenode_yarn_log_path }}
     multiline:
-      line_start_pattern: '\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+ \s'
+      line_start_pattern: '^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+'
     start_at: {{ $start_at }}
     labels:
       log_type: hadoop.namenode.yarn
@@ -249,7 +249,7 @@ pipeline:
 
   - id: hadoop_namenode_yarn_parser
     type: regex_parser
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>[^\s].*)'
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>(?s)\S.*\S)'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%d %H:%M:%S'
