@@ -1,22 +1,46 @@
 version: 0.0.3
 title: Apache Cassandra
-description: Log parser for Appache Cassandra
+description: Log parser for Apache Cassandra
 parameters:
+  - name: enable_system_logs
+    label: Enable System Logs
+    description: Enable collection of Cassandra system logs
+    type: bool
+    default: true
   - name: system_log_path
     label: Apache Cassandra System Log Path
     description: Path to the Apache Cassandra system log file.
     type: string
     default: "/var/log/cassandra/cassandra.log"
+    relevant_if:
+      enable_system_logs:
+        equal: true
+  - name: enable_debug_logs
+    label: Enable Debug Logs
+    description: Enable collection of Cassandra debug logs
+    type: bool
+    default: true
   - name: debug_log_path
     label: Apache Cassandra Debug Log Path
     description: Path to the Apache Cassandra debug log file.
     type: string
     default: "/var/log/cassandra/debug.log"
+    relevant_if:
+      enable_debug_logs:
+        equal: true
+  - name: enable_gc_logs
+    label: Enable Garbage Collection Logs
+    description: Enable collection of Cassandra garbage collection logs
+    type: bool
+    default: true
   - name: gc_log_path
     label: Apache Cassandra Garbage Collection Log Path
     description: Path to the Apache Cassandra garbage collection log file.
     type: string
     default: "/var/log/cassandra/gc.log"
+    relevant_if:
+      enable_gc_logs:
+        equal: true
   - name: start_at
     label: Start At
     description: "Start reading file from 'beginning' or 'end'"
@@ -27,13 +51,16 @@ parameters:
     default: end
 
 # Set Defaults
+# {{$enable_system_logs := default true .enable_system_logs}}
 # {{$system_log_path := default "/var/log/cassandra/cassandra.log" .system_log_path}}
+# {{$enable_debug_logs := default true .enable_debug_logs}}
 # {{$debug_log_path := default "/var/log/cassandra/debug.log" .debug_log_path}}
+# {{$enable_gc_logs := default true .enable_gc_logs}}
 # {{$gc_log_path := default "/var/log/cassandra/gc.log" .gc_log_path}}
 # {{$start_at := default "end" .start_at}}
 
 pipeline:
-  # {{ if .system_log_path }}
+  # {{ if $enable_system_logs }}
   - id: system_log_reader
     type: file_input
     include:
@@ -47,13 +74,13 @@ pipeline:
     output: regex_parser
   #  {{ end }}
 
-  # {{ if .debug_log_path }}
+  # {{ if $enable_debug_logs }}
   - id: debug_log_reader
     type: file_input
     include:
       - {{ $debug_log_path }}
     multiline:
-      line_start_pattern: '[A-Z]+\s+\[[^\]]+\]'
+      line_start_pattern: '^[A-Z]+\s+\[[a-z]+\]\s\d{4}-\d{2}-\d{2}'
     start_at: {{ $start_at }}
     labels:
       log_type: 'cassandra.debug'
@@ -61,7 +88,7 @@ pipeline:
     output: regex_parser
   #  {{ end }}
 
-  # {{ if .gc_log_path }}
+  # {{ if $enable_gc_logs }}
   - id: gc_log_reader
     type: file_input
     include:
@@ -85,7 +112,7 @@ pipeline:
 
   - id: regex_parser
     type: regex_parser
-    regex: '(?P<cassandra_severity>[A-Z]+)\s+\[(?P<type>[^\]]+)\]\s+(?P<time1>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}),(?P<time2>\d+)\s+(?P<message>[\s\d\D]+)'
+    regex: '(?P<cassandra_severity>[A-Z]+)\s+\[(?P<type>[^\]]+)\]\s+(?P<time1>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}),(?P<time2>\d+)\s+(?P<message>.*\S)'
     severity:
       parse_from: cassandra_severity
 
