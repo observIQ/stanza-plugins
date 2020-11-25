@@ -53,32 +53,34 @@ pipeline:
     mapping:
       info:
         - Created
-        - SandboxChanged
-        - NodeAllocatableEnforced
-        - SuccessfulMountVolume
-        - SuccessfulAttachVolume
+        - EnsuringLoadBalancer
         - FileSystemResizeSuccessful
-        - VolumeResizeSuccessful
-        - Starting
-        - NodeReady
-        - Pulling
-        - Pulled
-        - Started
         - Killing
+        - NodeAllocatableEnforced
+        - NodeReady
         - NodeSchedulable
+        - Pulled
+        - Pulling
         - RegisteredNode
+        - SandboxChanged
+        - Started
+        - Starting
+        - SuccessfulAttachVolume
+        - SuccessfulCreate
+        - SuccessfulMountVolume
+        - VolumeResizeSuccessful
       warning:
         - AlreadyMountedVolume
         - ContainerGCFailed
-        - ExceededGracePeriod
         - Evicted
+        - ExceededGracePeriod
         - FailedCreatePodSandBox
+        - FailedKillPod
         - FailedNodeAllocatableEnforcement
         - FailedPostStartHook
         - FailedPreStopHook
         - FailedSync
         - FailedValidation
-        - FailedKillPod
         - HostPortConflict
         - ImageGCFailed
         - InspectFailed
@@ -97,10 +99,11 @@ pipeline:
         - FileSystemResizeFailed
         - FreeDiskSpaceFailed
         - KubeletSetupFailed
+        - OOMKilling
         - VolumeResizeFailed
       critical:
-        - ErrImagePull
         - ErrImageNeverPull
+        - ErrImagePull
         - Failed
         - FailedAttachVolume
         - FailedMapVolume
