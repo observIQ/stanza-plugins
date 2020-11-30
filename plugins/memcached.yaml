@@ -23,8 +23,9 @@ parameters:
 pipeline:
   - id: memcached_journald_input
     type: journald_input
-    include:
-      - {{ .memcached_journald_log_path }}
+    # {{ if .memcached_journald_log_path }}
+    directory: '{{ .memcached_journald_log_path }}'
+    # {{ end }}
     start_at: {{ $start_at }}
     labels:
       log_type: memcached
