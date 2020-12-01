@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.3
+version: 0.0.4
 title: VMware vCenter
 description: Log parser for VMware vCenter
 parameters:
