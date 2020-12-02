@@ -50,11 +50,6 @@ parameters:
     description: Include the log file path.
     type: bool
     default: true
-  - name: max_log_size
-    label: Max Log Size
-    description: The maximum size of a log entry to read before failing. Protects against reading large amounts of data into memory.
-    type: int
-    default: 1048576
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -83,7 +78,6 @@ parameters:
 # {{$multiline_line_start_pattern := default "Start of line Regex Pattern" .multiline_line_start_pattern}}
 # {{$include_file_name := default true .include_file_name}}
 # {{$include_file_path := default true .include_file_path}}
-# {{$max_log_size := default 1048576 .max_log_size}}
 # {{$log_type := default "tail" .log_type}}
 # {{$encoding := default "nop" .encoding}}
 # {{$start_at := default "end" .start_at}}
@@ -113,7 +107,6 @@ pipeline:
 # {{ end }}
     include_file_name: {{ $include_file_name }}
     include_file_path: {{ $include_file_path }}
-    max_log_size: {{ $max_log_size }}
     labels:
       plugin_id: {{ .id }}
       log_type: '{{ $log_type }}'
