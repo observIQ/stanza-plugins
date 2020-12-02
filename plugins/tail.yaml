@@ -50,11 +50,6 @@ parameters:
     description: Include the log file path.
     type: bool
     default: true
-  - name: max_log_size
-    label: Max Log Size
-    description: The maximum size of a log entry to read before failing. Protects against reading large amounts of data into memory.
-    type: int
-    default: 1048576
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
