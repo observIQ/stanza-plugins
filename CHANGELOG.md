@@ -4,7 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.25]
+## [0.0.00] - Unreleased
+### Changed
+- Update `windows_dhcp` plugin ([PR121](https://github.com/observIQ/stanza-plugins/pull/121))
+  - Set fields `vendor_class_ascii`, `user_Class_hex`, `user_class_ascii`, `relay_agent_info`, and `dns_reg_error` as optional to fix parsing errors.
+  - Filter start up log messages at beginning of file.
+- Update `mysql` pluging ([PR122](https://github.com/observIQ/stanza-plugins/pull/122))
+  - Bump version
+
+## [0.0.25] - 2020-12-07
 ### Changed
 - Update `mysql` plugin ([PR121](https://github.com/observIQ/stanza-plugins/pull/121))
   - Update Regex for `dbuser` and `dbname` fields to allow non letter characters.
