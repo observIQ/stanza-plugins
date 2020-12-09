@@ -1,4 +1,4 @@
-version: 0.0.4
+version: 0.0.5
 title: Nginx
 description: Log parser for Nginx
 supported_platforms: 
