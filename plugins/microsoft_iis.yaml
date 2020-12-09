@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 0.0.2
 title: Microsoft IIS
 description: Log parser for Microsoft IIS
 parameters:
@@ -28,7 +28,7 @@ pipeline:
     include:
       - {{ $file_path }}
     multiline:
-      line_start_pattern: '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2} '
+      line_start_pattern: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}|#'
     start_at: {{ $start_at }}
     labels:
       log_type: microsoft_iis
@@ -37,8 +37,17 @@ pipeline:
 
   - id: microsoft_iis_parser
     type: regex_parser
+    if: 'not ($record matches "^#")'
     regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) (?P<server_ip>[\d\w\.:]+) (?P<request_method>[A-Z]+) (?P<uri_stem>[^ ]+) (?P<uri_query>[^ ]+) (?P<server_port>\d+) (?P<username>[^ ]+) (?P<client_ip>[\d\w\.:]+) (?P<user_agent>[^ ]+) (?P<referer>[^ ]+) (?P<http_status>\d+) (?P<http_sub_status>\d+) (?P<win32_status>\d+) (?P<time_taken>\d+)'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%d %H:%M:%S'
+    severity:
+      parse_from: http_status
+      preserve_to: http_status
+      mapping:
+        info: 2xx
+        notice: 3xx
+        warning: 4xx
+        error: 5xx
     output: {{.output}}

@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 0.0.2
 title: Elasticsearch
 description: Log parser for Elasticsearch
 parameters:
@@ -75,13 +75,12 @@ pipeline:
 
   - id: elasticsearch_parser
     type: regex_parser
-    regex: '^\[(?P<timestamp>[\d\-:T]+),\d+\]\[(?P<elasticsearch_severity>[A-Z]*)\s?\](?P<message>[^\s].*)'
+    regex: '^\[(?P<timestamp>[\d\-:T]+),\d+\]\[(?P<elasticsearch_severity>[A-Z]*)\s*\]\[(?P<service>\S+)\s*\]\s*\[(?P<hostname>[^\]]+)\]\s*(?P<message>.*\S)\s*'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S'
     severity:
       parse_from: elasticsearch_severity
-      preserve_to: elasticsearch_severity
       mapping:
         warning: warn
     output: {{.output}}
@@ -117,8 +116,6 @@ pipeline:
     type: file_input
     include:
       - {{ $gc_log_path }}
-    multiline:
-      line_start_pattern: '[\d\-:T\.]+:\s'
     start_at: {{ $start_at }}
     labels:
       log_type: elasticsearch.gc
@@ -127,7 +124,7 @@ pipeline:
 
   - id: elasticsearch_gc_parser
     type: regex_parser
-    regex: '^(?P<timestamp>[\d\-:T\.]+):\s(?P<message>.*)'
+    regex: '^\[(?P<timestamp>[^\]]+)\]\[(?P<pid>\d+)\]\[(?P<type>[^\s]+)\s*\] (?P<message>.*)'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%s%z'
