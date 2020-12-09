@@ -1,4 +1,4 @@
-version: 0.0.8
+version: 0.0.9
 title: OracleDB
 description: Log parser for OracleDB
 parameters:
