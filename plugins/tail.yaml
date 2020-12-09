@@ -1,7 +1,13 @@
 # Plugin Info
-version: 0.0.1
+version: 0.0.2
 title: Tail
 description: File Input Parser
+supported_platforms: 
+  - linux
+  - windows
+  - macos
+  - openshift
+  - kubernetes
 parameters:
   - name: file_log_path
     label: File Log Path

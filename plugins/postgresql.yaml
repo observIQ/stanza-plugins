@@ -1,4 +1,4 @@
-version: 0.0.3
+version: 0.0.4
 title: PostgreSQL
 description: |2
   Log parser for PostgreSQL. This plugin expects the following settings in postgresql.conf:
@@ -14,6 +14,12 @@ description: |2
   log_hostname = on
   log_timezone = 'UTC'
   log_line_prefix = 't=%t p=%p s=%c l=%l u=%u db=%d r=%r '
+supported_platforms: 
+  - linux
+  - windows
+  - macos
+  - openshift
+  - kubernetes
 parameters:
   - name: postgresql_log_path
     label: PostgreSQL Log Path

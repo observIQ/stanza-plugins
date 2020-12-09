@@ -1,6 +1,9 @@
-version: 0.0.3
+version: 0.0.4
 title: Nginx
 description: Log parser for Nginx
+supported_platforms: 
+  - kubernetes
+  - openshift
 parameters:
   - name: source
     label: Log source
@@ -9,6 +12,7 @@ parameters:
     valid_values:
       - file
       - kubernetes
+      - openshift
     default: file
   - name: pod_name
     label: Pod Name 
@@ -28,7 +32,7 @@ parameters:
         equals: kubernetes
   - name: enable_access_log
     label: Access Logs
-    description: Enable to collect Nginx access slogs
+    description: Enable to collect Nginx access logs
     type: bool
     default: true
   - name: access_log_path
