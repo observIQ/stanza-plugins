@@ -9,11 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update `hbase` plugin ([PR127](https://github.com/observIQ/stanza-plugins/pull/127))
   - Remove routers in favor of `if:` parameter in regexs
   - Add `thread` and `hbase_source` fields to stardard_parsers for each log type.
+- Update `couchdb` plugin ([PR126](https://github.com/observIQ/stanza-plugins/pull/126))
+  - Allow `-` character in regex parser. Replaced `\w+` with `[\w-]+`
+  - Made `hostname` and `port` optional as they are not always present in the logs.
+- Update `mysql` plugin ([PR123](https://github.com/observIQ/stanza-plugins/pull/123))
+  - Bump version
 - Update `windows_dhcp` plugin ([PR122](https://github.com/observIQ/stanza-plugins/pull/122))
   - Set fields `vendor_class_ascii`, `user_Class_hex`, `user_class_ascii`, `relay_agent_info`, and `dns_reg_error` as optional to fix parsing errors.
   - Filter start up log messages at beginning of file.
-- Update `mysql` pluging ([PR123](https://github.com/observIQ/stanza-plugins/pull/123))
-  - Bump version
 
 ## [0.0.25] - 2020-12-07
 ### Changed

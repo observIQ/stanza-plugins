@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.2
+version: 0.0.3
 title: CouchDB
 description: Log parser for CouchDB
 parameters:
@@ -33,11 +33,10 @@ pipeline:
     labels:
       log_type: couchdb
       plugin_id: {{ .id }}
-    output: couchdb_parser
 
   - id: couchdb_parser
     type: regex_parser
-    regex: '^\[(?P<couchdb_severity>\w*)\] (?P<timestamp>[\d\-\.:TZ]+) (?P<user>\w+)@(?P<upstream_host>[^\s]+) <[^>]+> \w+ (?P<hostname>[\w-]+):(?P<port>\d+) (?P<message>.*)'
+    regex: '^\[(?P<couchdb_severity>\w*)\] (?P<timestamp>[\d\-\.:TZ]+) (?P<user>\w+)@(?P<upstream_host>[^\s]+) <[^>]+> [\w-]+ ((?P<hostname>[\w-]+):(?P<port>\d+) )?(?P<message>.*)'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%sZ'
@@ -47,5 +46,6 @@ pipeline:
         info: notice
         warning: warn
         error: err
+        critical: crit
         emergency: emerg
     output: {{.output}}
