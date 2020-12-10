@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.26] - Unreleased
+## [0.0.26] - 2020-12-10
 ### Changed
 - Update `nginx` plugin ([PR128](https://github.com/observIQ/stanza-plugins/pull/128))
   - Add labels `log_type` and `plugin_id` when source is Kubernetes.
@@ -14,7 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update `couchdb` plugin ([PR126](https://github.com/observIQ/stanza-plugins/pull/126))
   - Allow `-` character in regex parser. Replaced `\w+` with `[\w-]+`
   - Made `hostname` and `port` optional as they are not always present in the logs.
-- Update `nginx` plugin ([PR](https://github.com/observIQ/stanza-plugins/pull/124))
+- Update `oracledb` plugin ([PR125](https://github.com/observIQ/stanza-plugins/pull/125))
+  - Oracle audit log timestamp does not use leading zero on hour
+- Update `nginx` plugin ([PR124](https://github.com/observIQ/stanza-plugins/pull/124))
   - Specified supported platforms
 - Update `mysql` plugin ([PR123](https://github.com/observIQ/stanza-plugins/pull/123))
   - Bump version
