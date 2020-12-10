@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.26] - Unreleased
 ### Changed
+- Update `hbase` plugin ([PR127](https://github.com/observIQ/stanza-plugins/pull/127))
+  - Remove routers in favor of `if:` parameter in regexs
+  - Add `thread` and `hbase_source` fields to stardard_parsers for each log type.
 - Update `couchdb` plugin ([PR126](https://github.com/observIQ/stanza-plugins/pull/126))
   - Allow `-` character in regex parser. Replaced `\w+` with `[\w-]+`
   - Made `hostname` and `port` optional as they are not always present in the logs.
