@@ -103,10 +103,16 @@ pipeline:
       # {{ if $enable_access_log }}
       - expr: "$labels.stream == 'stdout'"
         output: access_regex_parser
+        labels:
+          log_type: 'kubernetes.nginx.access'
+          plugin_id: '{{ .id }}'
       # {{ end }}
       # {{ if $enable_error_log }}
       - expr: "$labels.stream == 'stderr'"
         output: error_regex_parser
+        labels:
+          log_type: 'kubernetes.nginx.error'
+          plugin_id: '{{ .id }}'
       # {{ end }}
   # {{ end }}
 
