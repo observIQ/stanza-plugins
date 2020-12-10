@@ -83,7 +83,7 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hbase_severity
-      perserve_to: hbase_severity
+      preserve_to: hbase_severity
       mapping:
         warning: warn
         emergency: fatal
