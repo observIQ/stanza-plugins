@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update `windows_dhcp` plugin ([PR122](https://github.com/observIQ/stanza-plugins/pull/122))
   - Set fields `vendor_class_ascii`, `user_Class_hex`, `user_class_ascii`, `relay_agent_info`, and `dns_reg_error` as optional to fix parsing errors.
   - Filter start up log messages at beginning of file.
+- Update `nginx` plugin ([PR](https://github.com/observIQ/stanza-plugins/pull/124))
+  - Specified supported platforms
 
 ## [0.0.25] - 2020-12-07
 ### Changed
