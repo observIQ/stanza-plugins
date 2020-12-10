@@ -2,8 +2,11 @@ version: 0.0.5
 title: Nginx
 description: Log parser for Nginx
 supported_platforms: 
-  - kubernetes
+  - linux
+  - windows
+  - macos
   - openshift
+  - kubernetes
 parameters:
   - name: source
     label: Log source
@@ -12,7 +15,6 @@ parameters:
     valid_values:
       - file
       - kubernetes
-      - openshift
     default: file
   - name: pod_name
     label: Pod Name 

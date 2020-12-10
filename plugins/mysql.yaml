@@ -1,12 +1,6 @@
 version: 0.0.10
 title: MySQL
 description: Log parser for MySQL
-supported_platforms: 
-  - linux
-  - windows
-  - macos
-  - openshift
-  - kubernetes
 parameters:
   - name: enable_general_log
     label: General Logs

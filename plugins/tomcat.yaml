@@ -1,12 +1,6 @@
-version: 0.0.9
+version: 0.0.8
 title: Apache Tomcat
 description: Log parser for Apache Tomcat
-supported_platforms: 
-  - linux
-  - windows
-  - macos
-  - openshift
-  - kubernetes
 parameters:
   - name: enable_access_log
     label: Access Logs
