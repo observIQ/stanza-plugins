@@ -62,34 +62,28 @@ parameters:
 
 # Pipeline Template
 pipeline:
-{{ if $enable_master_log }}
+# {{ if $enable_master_log }}
   - id: hbase_master_input
     type: file_input
     include:
       - {{ $master_log_path }}
     multiline:
-      line_start_pattern: '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\s+|\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \w+ \d{4}'
+      line_start_pattern: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\s+|^\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \w+ \d{4}'
     start_at: {{ $start_at }}
     labels:
       log_type: hbase.master
       plugin_id: {{ .id }}
 
-  - type: router
-    routes:
-      - expr: '$record matches "^\\d{4}-\\d{2}-\\d{2}"'
-        output: master_standard_regex_parser
-      - expr:  '$record matches "\\w+ \\w+ \\d{2} \\d{2}:\\d{2}:\\d{2} \\w+ \\d{4}"'
-        output: master_startup_regex_parser
-
   - id: master_standard_regex_parser
     type: regex_parser
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d{3}\s+(?P<hbase_severity>[A-Z]*)\s?(?P<message>(?s).*)\n'
+    if:  '$record matches "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}\\s+"'
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d{3}\s+(?P<hbase_severity>[A-Z]*)\s*?\[(?P<thread>[\w]*)\]\s(?P<hbase_source>[^:]*):\s(?P<message>(?s).*)\n'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hbase_severity
-      preserve_to: hbase_severity
+      perserve_to: hbase_severity
       mapping:
         warning: warn
         emergency: fatal
@@ -97,14 +91,15 @@ pipeline:
 
   - id: master_startup_regex_parser
     type: regex_parser
+    if: '$record matches "^\\w+ \\w+ \\d{2} \\d{2}:\\d{2}:\\d{2} \\w+ \\d{4}"'
     regex: '^(?P<timestamp>\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \w+ \d{4}) (?P<message>(?s).*)\n'
     timestamp:
       parse_from: timestamp
       layout: '%a %h %d %H:%M:%S %Z %Y'
     output: {{.output}}
-{{ end }}
+# {{ end }}
 
-{{ if $enable_region_log }}
+# {{ if $enable_region_log }}
   - id: hbase_region_input
     type: file_input
     include:
@@ -116,16 +111,10 @@ pipeline:
       log_type: hbase.region
       plugin_id: {{ .id }}
 
-  - type: router
-    routes:
-      - expr: '$record matches "^\\d{4}-\\d{2}-\\d{2}"'
-        output: region_standard_regex_parser
-      - expr:  '$record matches "\\w+ \\w+ \\d{2} \\d{2}:\\d{2}:\\d{2} \\w+ \\d{4}"'
-        output: region_startup_regex_parser
-
   - id: region_standard_regex_parser
     type: regex_parser
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d{3}\s+(?P<hbase_severity>[A-Z]*)\s?(?P<message>(?s).*)\n'
+    if:  '$record matches "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}\\s+"'
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d{3}\s+(?P<hbase_severity>[A-Z]*)\s*?\[(?P<thread>[\w]*)\]\s(?P<hbase_source>[^:]*):\s(?P<message>(?s).*)\n'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%d %H:%M:%S'
@@ -139,14 +128,15 @@ pipeline:
 
   - id: region_startup_regex_parser
     type: regex_parser
+    if: '$record matches "^\\w+ \\w+ \\d{2} \\d{2}:\\d{2}:\\d{2} \\w+ \\d{4}"'
     regex: '^(?P<timestamp>\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \w+ \d{4}) (?P<message>(?s).*)\n'
     timestamp:
       parse_from: timestamp
       layout: '%a %h %d %H:%M:%S %Z %Y'
     output: {{.output}}
-{{ end }}
+# {{ end }}
 
-{{ if $enable_zookeeper_log }}
+# {{ if $enable_zookeeper_log }}
   - id: hbase_zookeeper_input
     type: file_input
     include:
@@ -158,16 +148,10 @@ pipeline:
       log_type: hbase.zookeeper
       plugin_id: {{ .id }}
 
-  - type: router
-    routes:
-      - expr: '$record matches "^\\d{4}-\\d{2}-\\d{2}"'
-        output: zookeeper_standard_regex_parser
-      - expr:  '$record matches "\\w+ \\w+ \\d{2} \\d{2}:\\d{2}:\\d{2} \\w+ \\d{4}"'
-        output: zookeeper_startup_regex_parser
-
   - id: zookeeper_standard_regex_parser
     type: regex_parser
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d{3}\s+(?P<hbase_severity>[A-Z]*)\s?(?P<message>(?s).*)\n'
+    if:  '$record matches "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}\\s+"'
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d{3}\s+(?P<hbase_severity>[A-Z]*)\s*?\[(?P<thread>[\w]*)\]\s(?P<hbase_source>[^:]*):\s(?P<message>(?s).*)\n'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%d %H:%M:%S'
@@ -181,9 +165,10 @@ pipeline:
 
   - id: zookeeper_startup_regex_parser
     type: regex_parser
+    if: '$record matches "^\\w+ \\w+ \\d{2} \\d{2}:\\d{2}:\\d{2} \\w+ \\d{4}"'
     regex: '^(?P<timestamp>\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \w+ \d{4}) (?P<message>(?s).*)\n'
     timestamp:
       parse_from: timestamp
       layout: '%a %h %d %H:%M:%S %Z %Y'
     output: {{.output}}
-{{ end }}
+# {{ end }}
