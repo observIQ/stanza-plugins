@@ -31,6 +31,13 @@ parameters:
     relevant_if:
       source:
         equals: kubernetes
+  - name: cluster_name
+    label: Cluster Name
+    description: 'Cluster Name to be added to a resource label'
+    type: string
+    relevant_if:
+      source:
+        equals: kubernetes
   - name: enable_access_log
     label: Access Logs
     description: Enable to collect Nginx access logs
@@ -80,6 +87,7 @@ parameters:
 
 # Set Defaults
 # {{$source := default "file" .source}}
+# {{ $cluster_name := default "" .cluster_name }}
 # {{$enable_access_log := default true .enable_access_log}}
 # {{$access_log_path := default "/var/log/nginx/access.log*" .access_log_path}}
 # {{$enable_error_log := default true .enable_error_log}}
@@ -95,6 +103,7 @@ pipeline:
     type: kubernetes_container
     pod_name: '{{ $pod_name }}'
     container_name: '{{ $container_name }}'
+    cluster_name: '{{ $cluster_name }}'
     start_at: '{{ $start_at }}'
 
   - id: k8s_input_router
