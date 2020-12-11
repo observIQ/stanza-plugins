@@ -1,7 +1,7 @@
 # Plugin Info
-version: 0.0.1
+version: 0.0.2
 title: JBoss
-description: Log parser for JBoss
+description: 'Log parser for JBoss. This plugin expects the following starting format: %d{yyyy-MM-dd HH\:mm\:ss,SSS} %-5p [%c] (%t)'
 parameters:
   - name: file_path
     label: JBoss Logs Path
@@ -28,7 +28,7 @@ pipeline:
     include:
       - {{ $file_path }}
     multiline:
-      line_start_pattern: '\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}.\d{3}\s\w+\s'
+      line_start_pattern: '^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}.\d{3}\s\w+\s'
     start_at: {{ $start_at }}
     labels:
       log_type: jboss
@@ -37,7 +37,7 @@ pipeline:
 
   - id: jboss_parser
     type: regex_parser
-    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}).\d{3}\s(?P<jboss_severity>\w+)\s(?P<message>.*)'
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}).\d{3}\s*(?P<jboss_severity>\w+)\s*\[(?P<category>[^\]]*)\]\s*\((?P<thread>[^)]*)\)(?P<message>.*)\n'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%d %H:%M:%S'
