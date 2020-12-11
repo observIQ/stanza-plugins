@@ -1,4 +1,4 @@
-version: 0.0.8
+version: 0.0.9
 title: Kubernetes Cluster
 description: Log parser for Kubernetes
 supported_platforms:
