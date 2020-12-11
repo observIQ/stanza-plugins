@@ -1,7 +1,7 @@
 version: 0.0.8
 title: Kubernetes Cluster
 description: Log parser for Kubernetes
-supported_platforms: 
+supported_platforms:
   - kubernetes
 parameters:
   - name: container_log_path
@@ -84,7 +84,16 @@ pipeline:
     type: k8s_metadata_decorator
     output: cluster_name_restructurer
 
-  # Add label log_type
+  # Add kubernetes cluster name after adding metadata so it doesn't get overwritten
+  - id: cluster_name_restructurer
+    type: restructure
+    ops:
+      - add:
+          field: "$resource['k8s.cluster.name']"
+          value: "{{ $cluster_name }}"
+    output: add_labels_router
+
+# Add label log_type
   - id: add_labels_router
     type: router
     routes:
