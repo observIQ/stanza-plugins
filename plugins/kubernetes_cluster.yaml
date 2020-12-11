@@ -93,7 +93,7 @@ pipeline:
           value: "{{ $cluster_name }}"
     output: add_labels_router
 
-# Add label log_type
+  # Add label log_type
   - id: add_labels_router
     type: router
     routes:
