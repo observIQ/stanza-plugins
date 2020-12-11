@@ -1,7 +1,7 @@
 version: 0.0.8
 title: Kubernetes Cluster
 description: Log parser for Kubernetes
-supported_platforms: 
+supported_platforms:
   - kubernetes
 parameters:
   - name: container_log_path
@@ -82,7 +82,7 @@ pipeline:
   # Add kubernetes metadata
   - id: add_kubernetes_metadata
     type: k8s_metadata_decorator
-    output: cluster_name_restructurer
+    output: add_labels_router
 
   # Add label log_type
   - id: add_labels_router
