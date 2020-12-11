@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.27] - Unreleased
 ### Changed
+- Update `jboss` plugin ([PR130](https://github.com/observIQ/stanza-plugins/pull/130))
+  - Add fields `category` add `thread` to regex
 - Update `hbase` plugin ([PR129](https://github.com/observIQ/stanza-plugins/pull/129))
   - Change `thread` field regex to capture all characters
 
