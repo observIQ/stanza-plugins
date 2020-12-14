@@ -4,12 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.27] - Unreleased
+## [0.0.27] - 2020-12-11
 ### Changed
 - Update `jboss` plugin ([PR130](https://github.com/observIQ/stanza-plugins/pull/130))
   - Add fields `category` add `thread` to regex
 - Update `hbase` plugin ([PR129](https://github.com/observIQ/stanza-plugins/pull/129))
   - Change `thread` field regex to capture all characters
+- Update `kubernetes_cluster` plugin ([PR131]https://github.com/observIQ/stanza-plugins/pull/131))
+  - Remove reference to cluster_name_restructurer.
 
 ## [0.0.26] - 2020-12-10
 ### Changed
@@ -41,7 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Update `oracledb` plugin ([PR93](https://github.com/observIQ/stanza-plugins/pull/93))
   - Bump version
-  
+
 ## [0.0.20] - 2020-11-19
 ### Changed
 - Update plugins to add supported_plugins parameter ([PR90](https://github.com/observIQ/stanza-plugins/pull/90))
