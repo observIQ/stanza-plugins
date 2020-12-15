@@ -1,4 +1,4 @@
-version: 0.0.5
+version: 0.0.6
 title: Nginx
 description: Log parser for Nginx
 supported_platforms: 
@@ -104,14 +104,19 @@ pipeline:
       - expr: "$labels.stream == 'stdout'"
         output: access_regex_parser
         labels:
-          log_type: 'kubernetes.nginx.access'
+          log_type: 'nginx.access'
           plugin_id: '{{ .id }}'
       # {{ end }}
       # {{ if $enable_error_log }}
-      - expr: "$labels.stream == 'stderr'"
+      - expr: '$labels.stream == "stderr" and $record.message matches "\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2} \\[\\w+\\] (?P<pid>\\d+).(?P<tid>\\d+): "'
         output: error_regex_parser
         labels:
-          log_type: 'kubernetes.nginx.error'
+          log_type: 'nginx.error'
+          plugin_id: '{{ .id }}'
+      - expr: '$labels.stream == "stderr"'
+        output: ingress_controller_regex_parser
+        labels:
+          log_type: 'nginx.ingress.controller'
           plugin_id: '{{ .id }}'
       # {{ end }}
   # {{ end }}
@@ -145,7 +150,7 @@ pipeline:
   # {{ if .format_ingress }}
   - id: access_regex_parser
     type: regex_parser
-    regex: '(?P<remote_addr>\S+) - (?P<remote_user>\S+) \[(?P<time>[^\]]+)\] "(?P<method>[A-Z]+) (?P<path>\S+) [^\"]+" (?P<status>\d+) (?P<body_bytes_sent>\d+) "(?P<http_referer>\S+)" "(?P<user_agent>[^"]+)" (?P<request_length>\d+) (?P<request_time>[\d\.]+) \[(?P<proxy_upstream_name>[^\]]*)\] \[(?P<proxy_alternative_upstream_name>\s*)\] (?P<upstream_addr>\S+) (?P<upstream_response_length>\d+) (?P<upstream_response_time>[\d\.]+) (?P<upstream_status>\d+) (?P<request_id>[a-z0-9]+)'
+    regex: '(?P<remote_addr>\S+) - (?P<remote_user>\S+) \[(?P<time>[^\]]+)\] "(?P<method>[A-Z]+) (?P<path>\S+) [^\"]+" (?P<status>\d+) (?P<body_bytes_sent>\d+) "(?P<http_referer>\S+)" "(?P<http_user_agent>[^"]+)" (?P<request_length>\d+) (?P<request_time>[\d\.]+) \[(?P<proxy_upstream_name>[^\]]*)\] \[(?P<proxy_alternative_upstream_name>\s*)\] (?P<upstream_addr>\S+) (?P<upstream_response_length>\d+) (?P<upstream_response_time>[\d\.]+) (?P<upstream_status>\d+) (?P<request_id>[a-z0-9]+)'
     timestamp:
       parse_from: time
       layout: '%d/%b/%Y:%H:%M:%S %z'
@@ -161,7 +166,7 @@ pipeline:
   # {{ else }}
   - id: access_regex_parser
     type: regex_parser
-    regex: '^(?P<remote>[^ ]*) (?P<host>[^ ]*) (?P<user>[^ ]*) \[(?P<time>[^\]]*)\] "(?P<method>\S+)(?: +(?P<path>[^\"]*?)(?: +\S*)?)?" (?P<status>[^ ]*) (?P<size>[^ ]*)(?: "(?P<referrer>[^\"]*)" "(?P<agent>[^\"]*)"(?:\s+(?P<http_x_forwarded_for>[^ ]+))?)?$'
+    regex: '^(?P<remote_addr>[^ ]*) (?P<host>[^ ]*) (?P<remote_user>[^ ]*) \[(?P<time>[^\]]*)\] "(?P<method>\S+)(?: +(?P<path>[^\"]*?)(?: +\S*)?)?" (?P<status>[^ ]*) (?P<body_bytes_sent>[^ ]*)(?: "(?P<http_referer>[^\"]*)" "(?P<http_user_agent>[^\"]*)"(?:\s+(?P<http_x_forwarded_for>[^ ]+))?)?$'
     timestamp:
       parse_from: time
       layout: '%d/%b/%Y:%H:%M:%S %z'
@@ -177,6 +182,25 @@ pipeline:
   # {{ end }}
 
   # {{ if $enable_error_log }}
+  # NGINX sends all ingress controller logs to stderr. 
+  # The ingress controller uses the same container for two services instead of a separate container for each.
+  - id: ingress_controller_regex_parser
+    type: regex_parser
+    regex: '(?P<severity>\w)(?P<timestamp>\d{4} \d{2}:\d{2}:\d{2}.\d+)\s+(?P<pid>\d+)\s+(?P<source>[^ \]]+)\] (?P<message>.*)'
+    severity:
+      mapping:
+        info: i
+        debug: d
+        error: e
+        warning: w
+        critical: c
+      parse_from: severity
+    timestamp:
+      layout: "%m%d %H:%M:%S.%s"
+      parse_from: timestamp
+    parse_from: message
+    output: {{ .output }}
+    
   - id: error_regex_parser
     type: regex_parser
     regex: '^(?P<time>\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}) \[(?P<log_level>\w+)\] (?P<pid>\d+).(?P<tid>\d+): (?P<message>.*)'
