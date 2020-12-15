@@ -108,7 +108,7 @@ pipeline:
           plugin_id: '{{ .id }}'
       # {{ end }}
       # {{ if $enable_error_log }}
-      - expr: '$labels.stream == "stderr" and $record.message matches "\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2} \\[\\w+\\] (?P<pid>\\d+).(?P<tid>\\d+): "'
+      - expr: '$labels.stream == "stderr" and $record.message matches "\\d{4}\\/\\d{2}\\/\\d{2} \\d{2}:\\d{2}:\\d{2} \\[\\w+\\] \\d+\\.\\d+: "'
         output: error_regex_parser
         labels:
           log_type: 'nginx.error'
@@ -150,7 +150,7 @@ pipeline:
   # {{ if .format_ingress }}
   - id: access_regex_parser
     type: regex_parser
-    regex: '(?P<remote_addr>\S+) - (?P<remote_user>\S+) \[(?P<time>[^\]]+)\] "(?P<method>[A-Z]+) (?P<path>\S+) [^\"]+" (?P<status>\d+) (?P<body_bytes_sent>\d+) "(?P<http_referer>\S+)" "(?P<http_user_agent>[^"]+)" (?P<request_length>\d+) (?P<request_time>[\d\.]+) \[(?P<proxy_upstream_name>[^\]]*)\] \[(?P<proxy_alternative_upstream_name>\s*)\] (?P<upstream_addr>\S+) (?P<upstream_response_length>\d+) (?P<upstream_response_time>[\d\.]+) (?P<upstream_status>\d+) (?P<request_id>[a-z0-9]+)'
+    regex: '(?P<remote_addr>\S+) - (?P<remote_user>\S+) \[(?P<time>[^\]]+)\] "(?P<method>[A-Z]+) (?P<path>\S+) [^\"]+" (?P<status>\d+) (?P<body_bytes_sent>\d+) "(?P<http_referer>\S+)" "(?P<http_user_agent>[^"]+)" (?P<request_length>\d+) (?P<request_time>[\d\.]+) \[(?P<proxy_upstream_name>[^\]]*)\] \[(?P<proxy_alternative_upstream_name>\s*)\] (?P<upstream_addr>\S+) (?P<upstream_response_length>[\d-]+) (?P<upstream_response_time>[\d\.-]+) (?P<upstream_status>[\d-]+) (?P<request_id>[a-z0-9]+)'
     timestamp:
       parse_from: time
       layout: '%d/%b/%Y:%H:%M:%S %z'
@@ -198,7 +198,7 @@ pipeline:
     timestamp:
       layout: "%m%d %H:%M:%S.%s"
       parse_from: timestamp
-    parse_from: message
+    parse_from: $record
     output: {{ .output }}
     
   - id: error_regex_parser
