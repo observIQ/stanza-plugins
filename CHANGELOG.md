@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.28] - Unreleased
+### Changed
+- Update `nginx` plugin ([PR133](https://github.com/observIQ/stanza-plugins/pull/133))
+  - Add labels `log_type` and `plugin_id` fields when input is kubernetes source
+  - Add parser for ingress controller logs
+  - Fix parsing error with 503 status codes
+
 ## [0.0.27] - 2020-12-11
 ### Changed
 - Update `jboss` plugin ([PR130](https://github.com/observIQ/stanza-plugins/pull/130))
