@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.29] - Unreleased
+### Changed
+- Update `kubernetes_container` plugin ([PR136](https://github.com/observIQ/stanza-plugins/pull/136))
+  - Specified output for the plugin so it can be directed.
+
 ## [0.0.28] - 2020-12-15
 ### Changed
 - Update `nginx` plugin ([PR133](https://github.com/observIQ/stanza-plugins/pull/133))
