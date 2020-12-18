@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Update `kubernetes_container` plugin ([PR136](https://github.com/observIQ/stanza-plugins/pull/136))
   - Specified output for the plugin so it can be directed.
+- Update `apache_http` plugin ([PR135](https://github.com/observIQ/stanza-plugins/pull/135))
+  - Updated regex group names to be more descriptive and more inline with docs and nginx.
+  - Removed agent parsing.
 
 ## [0.0.28] - 2020-12-15
 ### Changed
