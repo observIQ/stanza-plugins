@@ -1,36 +1,11 @@
-version: 0.0.6
+version: 0.0.7
 title: Nginx
 description: Log parser for Nginx
 supported_platforms: 
   - linux
   - windows
   - macos
-  - kubernetes
 parameters:
-  - name: source
-    label: Log source
-    description: Where the logs are coming from
-    type: enum
-    valid_values:
-      - file
-      - kubernetes
-    default: file
-  - name: pod_name
-    label: Pod Name 
-    description: The pod name (without the unique identifier on the end)
-    type: string
-    default: "*"
-    relevant_if:
-      source:
-        equals: kubernetes
-  - name: container_name
-    label: Container Name
-    description: The container name of the Nginx container
-    type: string
-    default: "*"
-    relevant_if:
-      source:
-        equals: kubernetes
   - name: enable_access_log
     label: Access Logs
     description: Enable to collect Nginx access logs
@@ -42,8 +17,6 @@ parameters:
     type: string
     default: "/var/log/nginx/access.log*"
     relevant_if:
-      source:
-        equals: file
       enable_access_log:
         equals: true
   - name: enable_error_log
@@ -57,18 +30,8 @@ parameters:
     type: string
     default: "/var/log/nginx/error.log*"
     relevant_if:
-      source:
-        equals: file
       enable_error_log:
         equals: true
-  - name: format_ingress
-    label: Format Ingress
-    description: Expect that the logs are in default format for Kubernetes Ingress
-    default: false
-    type: bool
-    relevant_if:
-      source:
-        equals: kubernetes
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -79,49 +42,15 @@ parameters:
     default: end
 
 # Set Defaults
-# {{$source := default "file" .source}}
 # {{$enable_access_log := default true .enable_access_log}}
 # {{$access_log_path := default "/var/log/nginx/access.log*" .access_log_path}}
 # {{$enable_error_log := default true .enable_error_log}}
 # {{$error_log_path := default "/var/log/nginx/error.log*" .error_log_path}}
 # {{$start_at := default "end" .start_at}}
-# {{$pod_name := default "*" .pod_name}}
-# {{$container_name := default "*" .container_name}}
 
 # Pipeline Template
 pipeline:
-  # {{ if eq $source "kubernetes" }}
-  - id: kubernetes_input
-    type: kubernetes_container
-    pod_name: '{{ $pod_name }}'
-    container_name: '{{ $container_name }}'
-    start_at: '{{ $start_at }}'
-
-  - id: k8s_input_router
-    type: router
-    routes:
-      # {{ if $enable_access_log }}
-      - expr: "$labels.stream == 'stdout'"
-        output: access_regex_parser
-        labels:
-          log_type: 'nginx.access'
-          plugin_id: '{{ .id }}'
-      # {{ end }}
-      # {{ if $enable_error_log }}
-      - expr: '$labels.stream == "stderr" and $record.message matches "\\d{4}\\/\\d{2}\\/\\d{2} \\d{2}:\\d{2}:\\d{2} \\[\\w+\\] \\d+\\.\\d+: "'
-        output: error_regex_parser
-        labels:
-          log_type: 'nginx.error'
-          plugin_id: '{{ .id }}'
-      - expr: '$labels.stream == "stderr"'
-        output: ingress_controller_regex_parser
-        labels:
-          log_type: 'nginx.ingress.controller'
-          plugin_id: '{{ .id }}'
-      # {{ end }}
-  # {{ end }}
-
-  # {{ if and $enable_access_log (eq $source "file") }}
+  # {{ if $enable_access_log }}
   - id: nginx_access_reader
     type: file_input
     include:
@@ -131,44 +60,12 @@ pipeline:
       log_type: 'nginx.access'
       plugin_id: '{{ .id }}'
     output: access_regex_parser
-  # {{ end }}
 
-  # {{ if and $enable_error_log (eq $source "file") }}
-  - id: nginx_error_reader
-    type: file_input
-    include:
-      - '{{ $error_log_path }}'
-    start_at: '{{ $start_at }}'
-    multiline:
-      line_start_pattern: '\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} \[\w+\] (?P<pid>\d+).(?P<tid>\d+): '
-    labels:
-      log_type: 'nginx.error'
-      plugin_id: '{{ .id }}'
-    output: error_regex_parser
-  # {{ end }}
-
-  # {{ if .format_ingress }}
   - id: access_regex_parser
     type: regex_parser
-    regex: '(?P<remote_addr>\S+) - (?P<remote_user>\S+) \[(?P<time>[^\]]+)\] "(?P<method>[A-Z]+) (?P<path>\S+) [^\"]+" (?P<status>\d+) (?P<body_bytes_sent>\d+) "(?P<http_referer>\S+)" "(?P<http_user_agent>[^"]+)" (?P<request_length>\d+) (?P<request_time>[\d\.]+) \[(?P<proxy_upstream_name>[^\]]*)\] \[(?P<proxy_alternative_upstream_name>\s*)\] (?P<upstream_addr>\S+) (?P<upstream_response_length>[\d-]+) (?P<upstream_response_time>[\d\.-]+) (?P<upstream_status>[\d-]+) (?P<request_id>[a-z0-9]+)'
+    regex: '(?P<remote_addr>[^\|]*)\|(?P<remote_user>[^\|]*)\|\[(?P<time_local>[^\]]+)\]\|"(?P<method>[A-Z]*)( )?(?P<path>\S*)( )?[^\"]*"\|(?P<status>[^\|]*)\|(?P<body_bytes_sent>[^\|]*)\|"(?P<http_referer>\S*)"\|"(?P<http_user_agent>[^"]*)"\|(?P<request_length>[^\|]*)\|(?P<request_time>[^\|]*)\|(?P<upstream_addr>[^\|]*)\|(?P<upstream_response_length>[^\|]*)\|(?P<upstream_response_time>[^\|]*)\|(?P<upstream_status>[^\|]*)\|\[(?P<proxy_add_x_forwarded_for>[^\]]*)\]\|(?P<bytes_sent>[^\|]*)\|(?P<time_iso8601>[^\|]*)\|(?P<upstream_connect_time>[^\|]*)\|(?P<upstream_header_time>[^\|]*)\|'
     timestamp:
-      parse_from: time
-      layout: '%d/%b/%Y:%H:%M:%S %z'
-    severity:
-      parse_from: status
-      preserve_to: status
-      mapping:
-        info: 2xx
-        notice: 3xx
-        warning: 4xx
-        error: 5xx
-    output: {{ .output }}
-  # {{ else }}
-  - id: access_regex_parser
-    type: regex_parser
-    regex: '^(?P<remote_addr>[^ ]*) (?P<host>[^ ]*) (?P<remote_user>[^ ]*) \[(?P<time>[^\]]*)\] "(?P<method>\S+)(?: +(?P<path>[^\"]*?)(?: +\S*)?)?" (?P<status>[^ ]*) (?P<body_bytes_sent>[^ ]*)(?: "(?P<http_referer>[^\"]*)" "(?P<http_user_agent>[^\"]*)"(?:\s+(?P<http_x_forwarded_for>[^ ]+))?)?$'
-    timestamp:
-      parse_from: time
+      parse_from: time_local
       layout: '%d/%b/%Y:%H:%M:%S %z'
     severity:
       parse_from: status
@@ -182,25 +79,18 @@ pipeline:
   # {{ end }}
 
   # {{ if $enable_error_log }}
-  # NGINX sends all ingress controller logs to stderr. 
-  # The ingress controller uses the same container for two services instead of a separate container for each.
-  - id: ingress_controller_regex_parser
-    type: regex_parser
-    regex: '(?P<severity>\w)(?P<timestamp>\d{4} \d{2}:\d{2}:\d{2}.\d+)\s+(?P<pid>\d+)\s+(?P<source>[^ \]]+)\] (?P<message>.*)'
-    severity:
-      mapping:
-        info: i
-        debug: d
-        error: e
-        warning: w
-        critical: c
-      parse_from: severity
-    timestamp:
-      layout: "%m%d %H:%M:%S.%s"
-      parse_from: timestamp
-    parse_from: $record
-    output: {{ .output }}
-    
+  - id: nginx_error_reader
+    type: file_input
+    include:
+      - '{{ $error_log_path }}'
+    start_at: '{{ $start_at }}'
+    multiline:
+      line_start_pattern: '\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} \[\w+\] (?P<pid>\d+).(?P<tid>\d+): '
+    labels:
+      log_type: 'nginx.error'
+      plugin_id: '{{ .id }}'
+    output: error_regex_parser
+
   - id: error_regex_parser
     type: regex_parser
     regex: '^(?P<time>\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}) \[(?P<log_level>\w+)\] (?P<pid>\d+).(?P<tid>\d+): (?P<message>.*)'
