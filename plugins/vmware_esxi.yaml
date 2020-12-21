@@ -20,9 +20,7 @@ pipeline:
     labels:
       log_type: vmware_esxi
       plugin_id: {{ .id }}
-    output:
-      - timestamp_router
-      - file_output_raw
+    output: timestamp_router
   - id: timestamp_router
     type: router
     default: {{ .output }}
@@ -77,8 +75,3 @@ pipeline:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     output: {{ .output }}
-
-  - id: file_output_raw
-    type: file_output
-    path: /opt/observiq-agent/log/raw.log
-
