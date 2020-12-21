@@ -20,31 +20,58 @@ pipeline:
     labels:
       log_type: vmware_esxi
       plugin_id: {{ .id }}
-    output: esxi_parser
-
-  - id: esxi_parser
-    type: regex_parser
-    regex: '^(?P<timestamp>[a-zA-z]+ \d{2} \d{2}:\d{2}:\d{2}) (?P<hostname>[^ ]+) (?P<service>[^ ]+) (?P<message>.*)'
     output: timestamp_router
-
   - id: timestamp_router
     type: router
+    default: {{ .output }}
     routes:
-      - output: time_parser
-        expr: '$record.timestamp matches "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d+[+-]\\d{2}:\\d{2}"'
-      - output: time_parser_without_milliseconds_timezone
-        expr: '$record.timestamp matches "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z"'
-      - output: {{ .output }}
-        expr: 'true'
+      - expr: '$record matches "^(<(?P<priority>[\\d]*)>)?(?P<timestamp>[a-zA-z]+ \\d{2} \\d{2}:\\d{2}:\\d{2}).*"'
+        output: esxi_parser_1
+      - expr: '$record matches "^(<(?P<priority>[\\d]*)>)?(?P<timestamp>\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d+Z) (?P<hostname>[^ ]+) (?P<service>[^:]+):.*"'
+        output: esxi_parser_2
+      - expr: '$record matches "^(<(?P<priority>[\\d]*)>)?(?P<timestamp>\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z) (?P<hostname>[^ ]+) (?P<service>[^:]*):.*"'
+        output: esxi_parser_3
+      - expr: '$record matches "^(<(?P<priority>[\\d]*)>)?(?P<timestamp>\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z) (?P<hostname>[^ ]+) (?P<service>[^\\[]*)\\[(?P<pid>[^\\]]*)\\]:.*"'
+        output: esxi_parser_4
+      - expr: '$record matches "^(<(?P<priority>[\\d]*)>)?(?P<timestamp>\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d+[+-]\\d{2}:\\d{2}) (?P<hostname>[^ ]+) (?P<service>[^:]*)(\\[(?P<pid>[^\\]]*)\\]:)?.*"'
+        output: esxi_parser_5
 
-  - id: time_parser
-    type: time_parser
-    parse_from: $record.timestamp
-    layout: '%FT%T.%s%j'
+  - id: esxi_parser_1
+    type: regex_parser
+    regex: '^(<(?P<priority>[\d]*)>)?(?P<timestamp>[a-zA-z]+ \d{2} \d{2}:\d{2}:\d{2}) (?P<hostname>[^ ]+) (?P<service>[^:]+) (?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%b %d %H:%M:%S'
     output: {{ .output }}
 
-  - id: time_parser_without_milliseconds_timezone
-    type: time_parser
-    parse_from: $record.timestamp
-    layout: '%FT%TZ'
+  - id: esxi_parser_2
+    type: regex_parser
+    regex: '^(<(?P<priority>[\d]*)>)?(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+Z) (?P<hostname>[^ ]+) (?P<service>[^:]+): (?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S.%LZ'
+    output: {{ .output }}
+
+  - id: esxi_parser_3
+    type: regex_parser
+    regex: '^(<(?P<priority>[\d]*)>)?(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z) (?P<hostname>[^ ]+) (?P<service>[^:]*): (?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%SZ'
+    output: {{ .output }}
+
+  - id: esxi_parser_4
+    type: regex_parser
+    regex: '^(<(?P<priority>[\d]*)>)?(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z) (?P<hostname>[^ ]+) (?P<service>[^\[]*)\[(?P<pid>[^\]]*)\]: (?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%SZ'
+    output: {{ .output }}
+
+  - id: esxi_parser_5
+    type: regex_parser
+    regex: '^(<(?P<priority>[\d]*)>)?(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d+[+-]\d{2}:\d{2}) (?P<hostname>[^ ]+) (?P<service>[^:]*)(\[(?P<pid>[^\]]*)\])?: (?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     output: {{ .output }}
