@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.6
+version: 0.0.7
 title: Windows DHCP
 description: Log parser for Windows DHCP
 supported_platforms: 
@@ -27,6 +27,7 @@ parameters:
 pipeline:
   - id: windows_dhcp_input
     type: file_input
+    fingerprint_size: 4Kib # long, to look past boilerplate preamble
     include:
       - {{ $file_path }}
     start_at: {{ $start_at }}
