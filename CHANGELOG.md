@@ -5,7 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.0.29] - Unreleased
+### Added
+- Add `nginx_ingress` plugin ([PR137](https://github.com/observIQ/stanza-plugins/pull/137))
+  - Move NGINX Ingress out of NGINX into its own plugin.
+  - Add new regex pattern to parse access logs based on a defined spec.
+  - Add cluster_name parameter.
 ### Changed
+- Update `nginx` plugin ([PR138](https://github.com/observIQ/stanza-plugins/pull/138))
+  - Move NGINX Ingress out of NGINX into its own plugin.
+  - Add new regex pattern to parse access logs based on a defined spec.
 - Update `kubernetes_container` plugin ([PR136](https://github.com/observIQ/stanza-plugins/pull/136))
   - Specified output for the plugin so it can be directed.
 - Update `apache_http` plugin ([PR135](https://github.com/observIQ/stanza-plugins/pull/135))

@@ -1,0 +1,172 @@
+version: 0.0.1
+title: Nginx Ingress
+description: Log parser for Nginx Ingress for Kubernetes
+supported_platforms: 
+  - kubernetes
+parameters:
+  - name: pod_name
+    label: Pod Name 
+    description: The pod name (without the unique identifier on the end)
+    type: string
+    required: true
+  - name: container_name
+    label: Container Name
+    description: The container name of the Nginx container
+    type: string
+    default: "*"
+  - name: cluster_name
+    label: Cluster Name
+    description: 'Cluster Name to be added to a resource label'
+    type: string
+  - name: enable_access_log
+    label: Access Logs
+    description: Enable to collect Nginx access logs
+    type: bool
+    default: true
+  - name: enable_error_log
+    label: Error Logs
+    description: Enable to collect Nginx error logs
+    type: bool
+    default: true
+  - name: start_at
+    label: Start At
+    description: Start reading kubernetes log files from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+  - name: log_format
+    label: Log Format
+    description: |2
+      Default is unmodifed log_format settings for NGINX ingress
+      log_format upstreaminfo
+                    '$remote_addr - $remote_user [$time_local] "$request" '
+                    '$status $body_bytes_sent "$http_referer" "$http_user_agent" '
+                    '$request_length $request_time [$proxy_upstream_name] [$proxy_alternative_upstream_name] $upstream_addr '
+                    '$upstream_response_length $upstream_response_time $upstream_status $req_id';
+      
+      Observiq expects the following format. Remove any fields you do not wish to include, but do not remove the '|' separators. Do not reorder fields.
+      log_format observiq
+                    '$remote_addr|$remote_user|[$time_local]|"$request"'
+                    '|$status|$body_bytes_sent|"$http_referer"|"$http_user_agent"'
+                    '|$request_length|$request_time|[$proxy_upstream_name]|[$proxy_alternative_upstream_name]|$upstream_addr'
+                    '|$upstream_response_length|$upstream_response_time|$upstream_status|$req_id'
+                    '|[$proxy_add_x_forwarded_for]|$bytes_sent|$time_iso8601|$upstream_connect_time|$upstream_header_time'
+                    '|$namespace|$ingress_name|$service_name|$service_port|';
+    type: enum
+    valid_values:
+      - default
+      - observiq
+
+# Set Defaults
+# {{$enable_access_log := default true .enable_access_log}}
+# {{$enable_error_log := default true .enable_error_log}}
+# {{$start_at := default "end" .start_at}}
+# {{$pod_name := .pod_name}}
+# {{$container_name := default "*" .container_name}}
+# {{$cluster_name := default "" .cluster_name}}
+# {{$log_format := default "default" .log_format}}
+
+# Pipeline Template
+pipeline:
+  - id: kubernetes_input
+    type: kubernetes_container
+    pod_name: '{{ $pod_name }}'
+    container_name: '{{ $container_name }}'
+    cluster_name: '{{ $cluster_name }}'
+    start_at: '{{ $start_at }}'
+
+  - id: k8s_input_router
+    type: router
+    routes:
+      # {{ if $enable_access_log }}
+      - expr: "$labels.stream == 'stdout'"
+        output: access_regex_parser
+        labels:
+          log_type: 'nginx.access'
+          plugin_id: '{{ .id }}'
+      # {{ end }}
+      # {{ if $enable_error_log }}
+      - expr: '$labels.stream == "stderr" and $record.message matches "\\d{4}\\/\\d{2}\\/\\d{2} \\d{2}:\\d{2}:\\d{2} \\[\\w+\\] \\d+\\.\\d+: "'
+        output: error_regex_parser
+        labels:
+          log_type: 'nginx.error'
+          plugin_id: '{{ .id }}'
+      - expr: '$labels.stream == "stderr"'
+        output: ingress_controller_regex_parser
+        labels:
+          log_type: 'nginx.ingress.controller'
+          plugin_id: '{{ .id }}'
+      # {{ end }}
+
+  # {{ if $enable_access_log }}
+    # {{ if eq $log_format "default" }}
+  - id: access_regex_parser
+    type: regex_parser
+    regex: '(?P<remote_addr>\S+) - (?P<remote_user>\S+) \[(?P<time_local>[^\]]+)\] "(?P<method>[A-Z]+) (?P<path>\S+) [^\"]+" (?P<status>\d+) (?P<body_bytes_sent>\d+) "(?P<http_referer>\S+)" "(?P<http_user_agent>[^"]+)" (?P<request_length>\d+) (?P<request_time>[\d\.]+) \[(?P<proxy_upstream_name>[^\]]*)\] \[(?P<proxy_alternative_upstream_name>\s*)\] (?P<upstream_addr>\S+) (?P<upstream_response_length>[\d-]+) (?P<upstream_response_time>[\d\.-]+) (?P<upstream_status>[\d-]+) (?P<request_id>[a-z0-9]+)'
+    timestamp:
+      parse_from: time_local
+      layout: '%d/%b/%Y:%H:%M:%S %z'
+    severity:
+      parse_from: status
+      preserve_to: status
+      mapping:
+        info: 2xx
+        notice: 3xx
+        warning: 4xx
+        error: 5xx
+    output: {{ .output }}
+    # {{ end }}
+
+    # {{ if eq $log_format "observiq" }}
+  - id: access_regex_parser
+    type: regex_parser
+    regex: '(?P<remote_addr>[^\|]*)\|(?P<remote_user>[^\|]*)\|\[(?P<time_local>[^\]]*)\]\|"(?P<method>[A-Z]*)( )?(?P<path>\S*)( )?[^\"]*"\|(?P<status>\d*)\|(?P<body_bytes_sent>\d*)\|"(?P<http_referer>\S*)"\|"(?P<http_user_agent>[^"]*)"\|(?P<request_length>[^\|]*)\|(?P<request_time>[^\|]*)\|\[(?P<proxy_upstream_name>[^\]]*)\]\|\[(?P<proxy_alternative_upstream_name>[^\]]*)\]\|(?P<upstream_addr>[^\|]*)\|(?P<upstream_response_length>[^\|]*)\|(?P<upstream_response_time>[^\|]*)\|(?P<upstream_status>[^\|]*)\|(?P<request_id>[^\|]*)\|\[(?P<proxy_add_x_forwarded_for>[^\]]*)\]\|(?P<bytes_sent>[^\|]*)\|(?P<time_iso8601>[^\|]*)\|(?P<upstream_connect_time>[^\|]*)\|(?P<upstream_header_time>[^\|]*)\|(?P<service_namespace>[^\|]*)\|(?P<service_ingress_name>[^\|]*)\|(?P<service_name>[^\|]*)\|(?P<service_port>[^\|]*)\|'
+    timestamp:
+      parse_from: time_local
+      layout: '%d/%b/%Y:%H:%M:%S %z'
+    severity:
+      parse_from: status
+      preserve_to: status
+      mapping:
+        info: 2xx
+        notice: 3xx
+        warning: 4xx
+        error: 5xx
+    output: {{ .output }}
+    # {{ end }}
+  # {{ end }}
+
+  # {{ if $enable_error_log }}
+  # NGINX sends all ingress controller logs to stderr. 
+  # The ingress controller uses the same container for two services instead of a separate container for each.
+  - id: ingress_controller_regex_parser
+    type: regex_parser
+    regex: '(?P<severity>\w)(?P<timestamp>\d{4} \d{2}:\d{2}:\d{2}.\d+)\s+(?P<pid>\d+)\s+(?P<source>[^ \]]+)\] (?P<message>.*)'
+    severity:
+      mapping:
+        info: i
+        debug: d
+        error: e
+        warning: w
+        critical: c
+      parse_from: severity
+    timestamp:
+      layout: "%m%d %H:%M:%S.%s"
+      parse_from: timestamp
+    output: {{ .output }}
+
+  - id: error_regex_parser
+    type: regex_parser
+    regex: '^(?P<time>\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}) \[(?P<log_level>\w+)\] (?P<pid>\d+).(?P<tid>\d+): (?P<message>.*)'
+    timestamp:
+      parse_from: time
+      layout: '%Y/%m/%d %T'
+    severity:
+      parse_from: log_level
+      mapping:
+        critical: crit
+        emergency: emerg
+    output: {{ .output }}
+  # {{ end }}
