@@ -8,7 +8,7 @@ parameters:
     label: Pod Name 
     description: The pod name (without the unique identifier on the end)
     type: string
-    default: "*"
+    required: true
   - name: container_name
     label: Container Name
     description: The container name of the Nginx container
@@ -47,7 +47,7 @@ parameters:
                     '$upstream_response_length $upstream_response_time $upstream_status $req_id';
       
       Observiq expects the following format. Remove any fields you do not wish to include, but do not remove the '|' separators. Do not reorder fields.
-      log_format upstreaminfo
+      log_format observiq
                     '$remote_addr|$remote_user|[$time_local]|"$request"'
                     '|$status|$body_bytes_sent|"$http_referer"|"$http_user_agent"'
                     '|$request_length|$request_time|[$proxy_upstream_name]|[$proxy_alternative_upstream_name]|$upstream_addr'
@@ -63,7 +63,7 @@ parameters:
 # {{$enable_access_log := default true .enable_access_log}}
 # {{$enable_error_log := default true .enable_error_log}}
 # {{$start_at := default "end" .start_at}}
-# {{$pod_name := default "*" .pod_name}}
+# {{$pod_name := .pod_name}}
 # {{$container_name := default "*" .container_name}}
 # {{$cluster_name := default "" .cluster_name}}
 # {{$log_format := default "default" .log_format}}
