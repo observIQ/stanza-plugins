@@ -19,7 +19,7 @@ parameters:
     label: Pod Name
     description: The pod name (without the unique identifier on the end)
     type: string
-    default: "*"
+    required: true
     relevant_if:
       source:
         equals: kubernetes
@@ -98,7 +98,7 @@ parameters:
 # {{$enable_error_log := default true .enable_error_log}}
 # {{$error_log_path := default "/var/log/nginx/error.log*" .error_log_path}}
 # {{$start_at := default "end" .start_at}}
-# {{$pod_name := default "*" .pod_name}}
+# {{$pod_name := .pod_name}}
 # {{$container_name := default "*" .container_name}}
 # {{$log_format := default "default" .log_format}}
 
