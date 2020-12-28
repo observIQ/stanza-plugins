@@ -36,6 +36,28 @@ parameters:
       - beginning
       - end
     default: end
+  - name: log_format
+    label: Log Format
+    description: |2
+      Default is unmodifed log_format settings for NGINX ingress
+      log_format upstreaminfo
+                    '$remote_addr - $remote_user [$time_local] "$request" '
+                    '$status $body_bytes_sent "$http_referer" "$http_user_agent" '
+                    '$request_length $request_time [$proxy_upstream_name] [$proxy_alternative_upstream_name] $upstream_addr '
+                    '$upstream_response_length $upstream_response_time $upstream_status $req_id';
+      
+      Observiq expects the following format. Remove any fields you do not wish to include, but do not remove the '|' separators. Do not reorder fields.
+      log_format upstreaminfo
+                    '$remote_addr|$remote_user|[$time_local]|"$request"'
+                    '|$status|$body_bytes_sent|"$http_referer"|"$http_user_agent"'
+                    '|$request_length|$request_time|[$proxy_upstream_name]|[$proxy_alternative_upstream_name]|$upstream_addr'
+                    '|$upstream_response_length|$upstream_response_time|$upstream_status|$req_id'
+                    '|[$proxy_add_x_forwarded_for]|$bytes_sent|$time_iso8601|$upstream_connect_time|$upstream_header_time'
+                    '|$namespace|$ingress_name|$service_name|$service_port|';
+    type: enum
+    valid_values:
+      - default
+      - observiq
 
 # Set Defaults
 # {{$enable_access_log := default true .enable_access_log}}
@@ -44,6 +66,7 @@ parameters:
 # {{$pod_name := default "*" .pod_name}}
 # {{$container_name := default "*" .container_name}}
 # {{$cluster_name := default "" .cluster_name}}
+# {{$log_format := default "default" .log_format}}
 
 # Pipeline Template
 pipeline:
@@ -78,6 +101,25 @@ pipeline:
       # {{ end }}
 
   # {{ if $enable_access_log }}
+    # {{ if eq $log_format "default" }}
+  - id: access_regex_parser
+    type: regex_parser
+    regex: '(?P<remote_addr>\S+) - (?P<remote_user>\S+) \[(?P<time_local>[^\]]+)\] "(?P<method>[A-Z]+) (?P<path>\S+) [^\"]+" (?P<status>\d+) (?P<body_bytes_sent>\d+) "(?P<http_referer>\S+)" "(?P<http_user_agent>[^"]+)" (?P<request_length>\d+) (?P<request_time>[\d\.]+) \[(?P<proxy_upstream_name>[^\]]*)\] \[(?P<proxy_alternative_upstream_name>\s*)\] (?P<upstream_addr>\S+) (?P<upstream_response_length>[\d-]+) (?P<upstream_response_time>[\d\.-]+) (?P<upstream_status>[\d-]+) (?P<request_id>[a-z0-9]+)'
+    timestamp:
+      parse_from: time_local
+      layout: '%d/%b/%Y:%H:%M:%S %z'
+    severity:
+      parse_from: status
+      preserve_to: status
+      mapping:
+        info: 2xx
+        notice: 3xx
+        warning: 4xx
+        error: 5xx
+    output: {{ .output }}
+    # {{ end }}
+
+    # {{ if eq $log_format "observiq" }}
   - id: access_regex_parser
     type: regex_parser
     regex: '(?P<remote_addr>[^\|]*)\|(?P<remote_user>[^\|]*)\|\[(?P<time_local>[^\]]*)\]\|"(?P<method>[A-Z]*)( )?(?P<path>\S*)( )?[^\"]*"\|(?P<status>\d*)\|(?P<body_bytes_sent>\d*)\|"(?P<http_referer>\S*)"\|"(?P<http_user_agent>[^"]*)"\|(?P<request_length>[^\|]*)\|(?P<request_time>[^\|]*)\|\[(?P<proxy_upstream_name>[^\]]*)\]\|\[(?P<proxy_alternative_upstream_name>[^\]]*)\]\|(?P<upstream_addr>[^\|]*)\|(?P<upstream_response_length>[^\|]*)\|(?P<upstream_response_time>[^\|]*)\|(?P<upstream_status>[^\|]*)\|(?P<request_id>[^\|]*)\|\[(?P<proxy_add_x_forwarded_for>[^\]]*)\]\|(?P<bytes_sent>[^\|]*)\|(?P<time_iso8601>[^\|]*)\|(?P<upstream_connect_time>[^\|]*)\|(?P<upstream_header_time>[^\|]*)\|(?P<service_namespace>[^\|]*)\|(?P<service_ingress_name>[^\|]*)\|(?P<service_name>[^\|]*)\|(?P<service_port>[^\|]*)\|'
@@ -93,6 +135,7 @@ pipeline:
         warning: 4xx
         error: 5xx
     output: {{ .output }}
+    # {{ end }}
   # {{ end }}
 
   # {{ if $enable_error_log }}
