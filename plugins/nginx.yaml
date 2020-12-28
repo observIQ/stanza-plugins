@@ -5,7 +5,32 @@ supported_platforms:
   - linux
   - windows
   - macos
+  - kubernetes
 parameters:
+  - name: source
+    label: Log source
+    description: Where the logs are coming from
+    type: enum
+    valid_values:
+      - file
+      - kubernetes
+    default: file
+  - name: pod_name
+    label: Pod Name
+    description: The pod name (without the unique identifier on the end)
+    type: string
+    default: "*"
+    relevant_if:
+      source:
+        equals: kubernetes
+  - name: container_name
+    label: Container Name
+    description: The container name of the Nginx container
+    type: string
+    default: "*"
+    relevant_if:
+      source:
+        equals: kubernetes
   - name: enable_access_log
     label: Access Logs
     description: Enable to collect Nginx access logs
@@ -17,6 +42,8 @@ parameters:
     type: string
     default: "/var/log/nginx/access.log*"
     relevant_if:
+      source:
+        equals: file
       enable_access_log:
         equals: true
   - name: enable_error_log
@@ -30,6 +57,8 @@ parameters:
     type: string
     default: "/var/log/nginx/error.log*"
     relevant_if:
+      source:
+        equals: file
       enable_error_log:
         equals: true
   - name: start_at
@@ -40,17 +69,68 @@ parameters:
       - beginning
       - end
     default: end
+  - name: log_format
+    label: Log Format
+    description: |2
+      Default is unmodifed log_format settings for NGINX
+      log_format combined '$remote_addr - $remote_user [$time_local] '
+                    '"$request" $status $body_bytes_sent '
+                    '"$http_referer" "$http_user_agent"';
+
+      Observiq expects the following format. Remove any fields you do not wish to include, but do not remove the '|' separators. Do not reorder 
+      log_format observiq '$remote_addr|$remote_user|[$time_local]'
+                    '|"$request"|$status|$body_bytes_sent'
+                    '|"$http_referer"|"$http_user_agent"'
+                    '|$request_length|$request_time|$upstream_addr'
+                    '|$upstream_response_length|$upstream_response_time'
+                    '|$upstream_status|[$proxy_add_x_forwarded_for]'
+                    '|$bytes_sent|$time_iso8601|$upstream_connect_time'
+                    '|$upstream_header_time|';
+    type: enum
+    valid_values:
+      - default
+      - observiq
 
 # Set Defaults
+# {{$source := default "file" .source}}
 # {{$enable_access_log := default true .enable_access_log}}
 # {{$access_log_path := default "/var/log/nginx/access.log*" .access_log_path}}
 # {{$enable_error_log := default true .enable_error_log}}
 # {{$error_log_path := default "/var/log/nginx/error.log*" .error_log_path}}
 # {{$start_at := default "end" .start_at}}
+# {{$pod_name := default "*" .pod_name}}
+# {{$container_name := default "*" .container_name}}
+# {{$log_format := default "default" .log_format}}
 
 # Pipeline Template
 pipeline:
-  # {{ if $enable_access_log }}
+  # {{ if eq $source "kubernetes" }}
+  - id: kubernetes_input
+    type: kubernetes_container
+    pod_name: '{{ $pod_name }}'
+    container_name: '{{ $container_name }}'
+    start_at: '{{ $start_at }}'
+
+  - id: k8s_input_router
+    type: router
+    routes:
+      # {{ if $enable_access_log }}
+      - expr: "$labels.stream == 'stdout'"
+        output: access_regex_parser
+        labels:
+          log_type: 'nginx.access'
+          plugin_id: '{{ .id }}'
+      # {{ end }}
+      # {{ if $enable_error_log }}
+      - expr: '$labels.stream == "stderr" and $record.message matches "\\d{4}\\/\\d{2}\\/\\d{2} \\d{2}:\\d{2}:\\d{2} \\[\\w+\\] \\d+\\.\\d+: "'
+        output: error_regex_parser
+        labels:
+          log_type: 'nginx.error'
+          plugin_id: '{{ .id }}'
+      # {{ end }}
+  # {{ end }}
+
+  # {{ if and $enable_access_log (eq $source "file") }}
   - id: nginx_access_reader
     type: file_input
     include:
@@ -60,7 +140,41 @@ pipeline:
       log_type: 'nginx.access'
       plugin_id: '{{ .id }}'
     output: access_regex_parser
+  # {{ end }}
 
+  # {{ if and $enable_error_log (eq $source "file") }}
+  - id: nginx_error_reader
+    type: file_input
+    include:
+      - '{{ $error_log_path }}'
+    start_at: '{{ $start_at }}'
+    multiline:
+      line_start_pattern: '^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} \[\w+\] (?P<pid>\d+).(?P<tid>\d+): '
+    labels:
+      log_type: 'nginx.error'
+      plugin_id: '{{ .id }}'
+    output: error_regex_parser
+  # {{ end }}
+
+  # {{ if eq $log_format "default" }}
+  - id: access_regex_parser
+    type: regex_parser
+    regex: '^(?P<remote_addr>[^ ]*) (?P<host>[^ ]*) (?P<remote_user>[^ ]*) \[(?P<time>[^\]]*)\] "(?P<method>\S+)(?: +(?P<path>[^\"]*?)(?: +\S*)?)?" (?P<status>[^ ]*) (?P<body_bytes_sent>[^ ]*)(?: "(?P<http_referer>[^\"]*)" "(?P<http_user_agent>[^\"]*)"(?:\s+(?P<http_x_forwarded_for>[^ ]+))?)?$'
+    timestamp:
+      parse_from: time
+      layout: '%d/%b/%Y:%H:%M:%S %z'
+    severity:
+      parse_from: status
+      preserve_to: status
+      mapping:
+        info: 2xx
+        notice: 3xx
+        warning: 4xx
+        error: 5xx
+    output: {{ .output }}
+  # {{ end }}
+
+  # {{ if eq $log_format "observiq" }}
   - id: access_regex_parser
     type: regex_parser
     regex: '(?P<remote_addr>[^\|]*)\|(?P<remote_user>[^\|]*)\|\[(?P<time_local>[^\]]+)\]\|"(?P<method>[A-Z]*)( )?(?P<path>\S*)( )?[^\"]*"\|(?P<status>[^\|]*)\|(?P<body_bytes_sent>[^\|]*)\|"(?P<http_referer>\S*)"\|"(?P<http_user_agent>[^"]*)"\|(?P<request_length>[^\|]*)\|(?P<request_time>[^\|]*)\|(?P<upstream_addr>[^\|]*)\|(?P<upstream_response_length>[^\|]*)\|(?P<upstream_response_time>[^\|]*)\|(?P<upstream_status>[^\|]*)\|\[(?P<proxy_add_x_forwarded_for>[^\]]*)\]\|(?P<bytes_sent>[^\|]*)\|(?P<time_iso8601>[^\|]*)\|(?P<upstream_connect_time>[^\|]*)\|(?P<upstream_header_time>[^\|]*)\|'
@@ -79,18 +193,6 @@ pipeline:
   # {{ end }}
 
   # {{ if $enable_error_log }}
-  - id: nginx_error_reader
-    type: file_input
-    include:
-      - '{{ $error_log_path }}'
-    start_at: '{{ $start_at }}'
-    multiline:
-      line_start_pattern: '\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} \[\w+\] (?P<pid>\d+).(?P<tid>\d+): '
-    labels:
-      log_type: 'nginx.error'
-      plugin_id: '{{ .id }}'
-    output: error_regex_parser
-
   - id: error_regex_parser
     type: regex_parser
     regex: '^(?P<time>\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}) \[(?P<log_level>\w+)\] (?P<pid>\d+).(?P<tid>\d+): (?P<message>.*)'
