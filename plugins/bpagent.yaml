@@ -19,6 +19,7 @@ pipeline:
       - log/launcher.log
     start_at: {{ or .start_at "end" }}
     labels:
+      log_type: observiq.agent
       plugin_id: {{ .id }}
 
   - id: log_json_parser
