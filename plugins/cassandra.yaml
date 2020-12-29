@@ -1,4 +1,4 @@
-version: 0.0.4
+version: 0.0.5
 title: Apache Cassandra
 description: Log parser for Apache Cassandra
 parameters:
@@ -94,7 +94,7 @@ pipeline:
     include:
       - {{ $gc_log_path }}
     multiline:
-      line_start_pattern: '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}[+-]\d{4}|OpenJDK|Memory:|CommandLine|Heap'
+      line_start_pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}[+-]\d{4}|^OpenJDK|^Memory:|^CommandLine|^Heap'
     start_at: {{ $start_at }}
     labels:
       log_type: 'cassandra.gc'
