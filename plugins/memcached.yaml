@@ -1,12 +1,20 @@
 # Plugin Info
-version: 0.0.2
+version: 0.0.3
 title: Memcached
 description: Log parser for Memcached
 parameters:
+  - name: enable_memcached_journald_log_path
+    label: Enable Custom Journald Path
+    description: 'Enable to define custom Journald Log path. If not enabled it will read from "/run/journal" or "/var/log/journal" by default.'
+    type: bool
+    default: false
   - name: memcached_journald_log_path
-    label: Memcached Journald Log Path
-    description: 'Memcached Journald Log path. It will read from /run/journal or /var/log/journal if this parameter is omitted'
+    label: Custom Journald Log Path
+    description: 'Custom Journald Log path.'
     type: string
+    relevant_if:
+      enable_memcached_journald_log_path:
+        equals: true
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -17,13 +25,13 @@ parameters:
     default: end
 
 # Set Defaults
+# {{$enable_memcached_journald_log_path := default false .enable_memcached_journald_log_path}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
 pipeline:
-  - id: memcached_journald_input
-    type: journald_input
-    # {{ if .memcached_journald_log_path }}
+  - type: journald_input
+    # {{ if $enable_memcached_journald_log_path }}
     directory: '{{ .memcached_journald_log_path }}'
     # {{ end }}
     start_at: {{ $start_at }}
