@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.32] - Unreleased
 ### Changed
-
+- Remove `vmware_esxi` plugin ([PR149](https://github.com/observIQ/stanza-plugins/pull/149))
+  - Change order of esxi_parser_3 and esxi_parser_4
 ## [0.0.31] - 2020-12-30
 ### Removed
 - Remove `bpagent` plugin ([PR144](https://github.com/observIQ/stanza-plugins/pull/144))
