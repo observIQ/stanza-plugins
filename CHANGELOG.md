@@ -6,8 +6,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.32] - Unreleased
 ### Changed
-- Update `nginx` plugin ([PR138](https://github.com/observIQ/stanza-plugins/pull/138))
-  - Move NGINX Ingress out of NGINX into its own plugin.
 
 ## [0.0.31] - 2020-12-30
 ### Removed
@@ -37,6 +35,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update `memcached` plugin ([PR142](https://github.com/observIQ/stanza-plugins/pull/142))
   - Add `enable_memcached_journald_log_path` parameter
   - Remove id from `journald_input` to fix id clash within Stanza
+- Update `nginx` plugin ([PR138](https://github.com/observIQ/stanza-plugins/pull/138))
+  - Move NGINX Ingress out of NGINX into its own plugin.
+  - Add parameter `log_format` to allow choice between default combined and observiq log format.
+  - Add new regex pattern to parse access logs based on a defined observiq log format.
+  - Make `pod_name` parameter required and remove default
 
 ## [0.0.30] - 2020-12-23
 ### Changed
