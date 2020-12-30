@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.2
+version: 0.0.3
 title: Couchbase
 description: Log parser for Couchbase
 parameters:
@@ -122,7 +122,7 @@ parameters:
 
 # Pipeline Template
 pipeline:
-{{ if $enable_error_log }}
+# {{ if $enable_error_log }}
   - id: couchbase_error_input
     type: file_input
     include:
@@ -137,16 +137,16 @@ pipeline:
 
   - id: couchbase_error_parser
     type: regex_parser
-    regex: '^\[(?P<type>[^:]*):(?P<couchbase_severity>[^,]*),(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2}),(?P<node>[^@]*)@(?P<source>[^\]]+)\](?P<message>(?s).*[^\n\s])[\n\s]*$'
+    regex: '^\[(?P<type>[^:]*):(?P<couchbase_severity>[^,]*),(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2}),(?P<node>[^@]*)@(?P<host>[^:]*):(?P<source>[^\]]+)\](?P<message>(?s).*[^\n\s])[\n\s]*$'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
     output: {{.output}}
-{{ end }}
+# {{ end }}
 
-{{ if $enable_debug_log }}
+# {{ if $enable_debug_log }}
   - id: couchbase_debug_input
     type: file_input
     include:
@@ -161,7 +161,7 @@ pipeline:
 
   - id: couchbase_debug_parser
     type: regex_parser
-    regex: '^\[(?P<type>[^:]*):(?P<couchbase_severity>[^,]*),(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2}),(?P<node>[^@]*)@(?P<source>[^\]]+)\](?P<message>(?s).*[^\n\s])[\n\s]*$'
+    regex: '^\[(?P<type>[^:]*):(?P<couchbase_severity>[^,]*),(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2}),(?P<node>[^@]*)@(?P<host>[^:]*):(?P<source>[^\]]+)\](?P<message>(?s).*[^\n\s])[\n\s]*$'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
@@ -170,9 +170,9 @@ pipeline:
       mapping:
         warning: warn
     output: {{.output}}
-{{ end }}
+# {{ end }}
 
-{{ if $enable_info_log }}
+# {{ if $enable_info_log }}
   - id: couchbase_info_input
     type: file_input
     include:
@@ -187,7 +187,7 @@ pipeline:
 
   - id: couchbase_info_parser
     type: regex_parser
-    regex: '^\[(?P<type>[^:]*):(?P<couchbase_severity>[^,]*),(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2}),(?P<node>[^@]*)@(?P<source>[^\]]+)\](?P<message>(?s).*[^\n\s])[\n\s]*$'
+    regex: '^\[(?P<type>[^:]*):(?P<couchbase_severity>[^,]*),(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2}),(?P<node>[^@]*)@(?P<host>[^:]*):(?P<source>[^\]]+)\](?P<message>(?s).*[^\n\s])[\n\s]*$'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
@@ -196,9 +196,9 @@ pipeline:
       mapping:
         warning: warn
     output: {{.output}}
-{{ end }}
+# {{ end }}
 
-{{ if $enable_access_log }}
+# {{ if $enable_access_log }}
   - id: couchbase_http_access_input
     type: file_input
     include:
@@ -216,9 +216,9 @@ pipeline:
       parse_from: timestamp
       layout: '%d/%b/%Y:%H:%M:%S %z'
     output: {{.output}}
-{{ end }}
+# {{ end }}
 
-{{ if $enable_internal_access_log }}
+# {{ if $enable_internal_access_log }}
   - id: couchbase_http_access_internal_input
     type: file_input
     include:
@@ -236,9 +236,9 @@ pipeline:
       parse_from: timestamp
       layout: '%d/%b/%Y:%H:%M:%S %z'
     output: {{.output}}
-{{ end }}
+# {{ end }}
 
-{{ if $enable_babysitter_log }}
+# {{ if $enable_babysitter_log }}
   - id: couchbase_babysitter_input
     type: file_input
     include:
@@ -253,16 +253,16 @@ pipeline:
 
   - id: couchbase_babysitter_parser
     type: regex_parser
-    regex: '^\[(?P<type>[^:]*):(?P<couchbase_severity>[^,]*),(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2}),(?P<node>[^@]*)@(?P<host>[^:]*):(?P<message>.*)'
+    regex: '^\[(?P<type>[^:]*):(?P<couchbase_severity>[^,]*),(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2}),(?P<node>[^@]*)@(?P<host>[^:]*):(?P<source>[^\]]+)\](?P<message>(?s).*[^\n\s])[\n\s]*$'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
     output: {{.output}}
-{{ end }}
+# {{ end }}
 
-{{ if $enable_xdcr_log }}
+# {{ if $enable_xdcr_log }}
   - id: couchbase_xdcr_input
     type: file_input
     include:
@@ -284,4 +284,4 @@ pipeline:
     severity:
       parse_from: couchbase_severity
     output: {{.output}}
-{{ end }}
+# {{ end }}
