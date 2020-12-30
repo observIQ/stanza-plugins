@@ -4,16 +4,54 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.29] - Unreleased
+## [0.0.32] - Unreleased
+### Changed
+
+## [0.0.31] - 2020-12-30
+### Removed
+- Remove `bpagent` plugin ([PR144](https://github.com/observIQ/stanza-plugins/pull/144))
+  - Split plugin into two plugins. One plugin for BindPlane and one plugin for observIQ.
 ### Added
+- Add `observiq_agent` plugin ([PR144](https://github.com/observIQ/stanza-plugins/pull/144))
+  - Add `log_type` parameter to labels
+- Add `bindplane_agent` plugin ([PR144](https://github.com/observIQ/stanza-plugins/pull/144))
+  - Add `log_type` parameter to labels
 - Add `nginx_ingress` plugin ([PR137](https://github.com/observIQ/stanza-plugins/pull/137))
   - Move NGINX Ingress out of NGINX into its own plugin.
   - Add new regex pattern to parse access logs based on a defined spec.
   - Add cluster_name parameter.
 ### Changed
+- Update `postgresql` plugin ([PR146](https://github.com/observIQ/stanza-plugins/pull/146))
+  - Update regex to change field `process_start_time` to grab only process start time.
+- Update `cassandra` plugin ([PR145](https://github.com/observIQ/stanza-plugins/pull/145))
+  - Add line start character to multiline line_start_pattern for gc log.
+- Update `postgresql` plugin ([PR143](https://github.com/observIQ/stanza-plugins/pull/143))
+  - Parse logs more deeply to grad more data fields
+  - Added fields depending on the message. All fields are present, but some log messages will not have data for field.
+    - `duration`
+    - `error`
+    - `parameters`
+    - `statement`
+- Update `memcached` plugin ([PR142](https://github.com/observIQ/stanza-plugins/pull/142))
+  - Add `enable_memcached_journald_log_path` parameter
+  - Remove id from `journald_input` to fix id clash within Stanza
 - Update `nginx` plugin ([PR138](https://github.com/observIQ/stanza-plugins/pull/138))
   - Move NGINX Ingress out of NGINX into its own plugin.
-  - Add new regex pattern to parse access logs based on a defined spec.
+  - Add parameter `log_format` to allow choice between default combined and observiq log format.
+  - Add new regex pattern to parse access logs based on a defined observiq log format.
+  - Make `pod_name` parameter required and remove default
+
+## [0.0.30] - 2020-12-23
+### Changed
+- Update `windows_dhcp` plugin ([PR141](https://github.com/observIQ/stanza-plugins/pull/141))
+  - Add `fingerprint_size` parameter to look past boilerplate preamble
+- Update `oracledb` plugin ([PR140](https://github.com/observIQ/stanza-plugins/pull/140))
+  - Fix typo in timestamp parser layout
+
+## [0.0.29] - 2020-12-21
+### Changed
+- Update `vmware_esxi` plugin ([PR139](https://github.com/observIQ/stanza-plugins/pull/139))
+  - Update router and regex to support more time formats
 - Update `kubernetes_container` plugin ([PR136](https://github.com/observIQ/stanza-plugins/pull/136))
   - Specified output for the plugin so it can be directed.
 - Update `apache_http` plugin ([PR135](https://github.com/observIQ/stanza-plugins/pull/135))
