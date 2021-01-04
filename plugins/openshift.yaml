@@ -56,13 +56,13 @@ pipeline:
   - type: router
     routes:
       # Ignore logs written by Stanza to avoid circular parsing
-      - expr: '$record._SYSTEMD_UNIT == "docker.service" and $record.CONTAINER_NAME != nil and $record.CONTAINER_NAME matches "stanza"'
+      - expr: '$record._COMM == "dockerd-current" and $record.CONTAINER_NAME != nil and $record.CONTAINER_NAME matches "stanza"'
         output: drop_output
       # Send all container logs to the container name parser
-      - expr: '$record._SYSTEMD_UNIT == "docker.service" and $record.CONTAINER_NAME != nil'
+      - expr: '$record._COMM == "dockerd-current" and $record.CONTAINER_NAME != nil'
         output: '{{ if $enable_container_logs -}} regex_parser {{- else -}} drop_output {{- end }}'
       # Send all docker logs to the be labeled
-      - expr: '$record._SYSTEMD_UNIT == "docker.service"'
+      - expr: '$record._COMM == "dockerd-current"'
         output: {{ if $enable_docker_logs -}} {{ .output }} {{- else -}} drop_output {{- end }}
         labels:
           log_type: 'docker'
