@@ -14,6 +14,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update `couchbase` plugin ([PR147](https://github.com/observIQ/stanza-plugins/pull/147))
   - Update Debug, Error, and Info log regex to add missing `host` field
   - Update Babysitter log regex to add missing `source` field
+- Update `openshift` plugin ([PR151](https://github.com/observIQ/stanza-plugins/pull/151))
+  - Use `_COMM` field for identifying container logs instead of `_SYSTEMD_UNIT` field
+
 ## [0.0.31] - 2020-12-30
 ### Removed
 - Remove `bpagent` plugin ([PR144](https://github.com/observIQ/stanza-plugins/pull/144))
