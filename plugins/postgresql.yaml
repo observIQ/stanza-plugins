@@ -1,4 +1,4 @@
-version: 0.0.4
+version: 0.0.5
 title: PostgreSQL
 description: |2
   Log parser for PostgreSQL. This plugin expects the following settings in postgresql.conf:
@@ -39,25 +39,26 @@ pipeline:
     include:
       - {{ $postgresql_log_path }}
     multiline:
-      line_start_pattern: 't=\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}'
+      line_start_pattern: '^t=\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}'
     write_to: log_entry
     start_at: {{ $start_at }}
     labels:
-      log_type: 'postgresql'
+      log_type: 'postgresql.general'
       plugin_id: {{ .id }}
 
-  - type: restructure
-    ops:
-      - add:
-          field: severity
-          value: 'info'
-
-  - type: regex_parser
+  - id: general_regex_parser
+    type: regex_parser
     parse_from: log_entry
-    regex: 't=(?P<time>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\s+[^\s]+)\s+p=(?P<process_id>\d*)\s+s=(?P<process_start_time>[^\s]*)\s+l=(?P<process_log_line>[^\s]*)\s+u=(?P<user_name>[^\s]*)\s+db=(?P<database>[^\s]*)\s+r=(?P<client_address>[^\s]*)\s+[\w]+:\s+(?P<message>[\w\W]+)'
+    regex: '^t=(?P<time>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\s+[^\s]+)\s+p=(?P<process_id>\d*)\s+s=(?P<process_start_time>[^\.]*)\.[^\s]+\s+l=(?P<process_log_line>[^\s]*)\s+u=(?P<user_name>[^\s]*)\s+db=(?P<database>[^\s]*)\s+r=(?P<client_address>[^\s]*)\s*((LOG:\s*duration:\s*(?P<duration>[\w\.]*)\s*ms\s*(statement:\s*)?)|(LOG:\s*)|(DETAIL:\s*(parameters:\s*(?P<parameters>[\w\W]+))?)|(STATEMENT:\s*(?P<statement>[\w\W]+))|ERROR:\s*(?P<error>.[\w\W]+)|)(?P<message>[\w\W]+)?'
     timestamp:
       parse_from: time
       layout: '%F %T %Z'
-    severity:
-      parse_from: severity
-    output: {{ .output }}
+
+  - type: router
+    routes:
+      - output: {{ .output }}
+        expr: '$record.duration != ""'
+        labels:
+          log_type: 'postgresql.slow_query'
+      - output: {{ .output }}
+        expr: true
