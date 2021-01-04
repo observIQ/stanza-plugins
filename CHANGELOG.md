@@ -4,14 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.32] - Unreleased
+## [0.0.32] - 2021-01-04
 ### Changed
 - Fixed exclude for `kubernetes_container` plugin ([PR152](https://github.com/observIQ/stanza-plugins/pull/152))
 - Update `jboss` plugin ([PR151](https://github.com/observIQ/stanza-plugins/pull/151))
   - Remove `jboss_severity` field
 - Remove `vmware_esxi` plugin ([PR149](https://github.com/observIQ/stanza-plugins/pull/149))
   - Change order of esxi_parser_3 and esxi_parser_4
-
+- Update `couchbase` plugin ([PR147](https://github.com/observIQ/stanza-plugins/pull/147))
+  - Update Debug, Error, and Info log regex to add missing `host` field
+  - Update Babysitter log regex to add missing `source` field
 ## [0.0.31] - 2020-12-30
 ### Removed
 - Remove `bpagent` plugin ([PR144](https://github.com/observIQ/stanza-plugins/pull/144))
