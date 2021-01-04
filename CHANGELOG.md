@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.32] - Unreleased
 ### Changed
-
+- Update `jboss` plugin ([PR151](https://github.com/observIQ/stanza-plugins/pull/151))
+  - Remove `jboss_severity` field
 ## [0.0.31] - 2020-12-30
 ### Removed
 - Remove `bpagent` plugin ([PR144](https://github.com/observIQ/stanza-plugins/pull/144))
