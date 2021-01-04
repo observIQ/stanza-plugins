@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.32] - Unreleased
 ### Changed
+- Update `couchbase` plugin ([PR147](https://github.com/observIQ/stanza-plugins/pull/147))
+  - Update Debug, Error, and Info log regex to add missing `host` field
+  - Update Babysitter log regex to add missing `source` field
 - Update `jboss` plugin ([PR151](https://github.com/observIQ/stanza-plugins/pull/151))
   - Remove `jboss_severity` field
 - Fixed exclude for `kubernetes_container` plugin ([PR152](https://github.com/observIQ/stanza-plugins/pull/152))
