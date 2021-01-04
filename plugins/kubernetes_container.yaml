@@ -1,4 +1,4 @@
-version: 0.0.9
+version: 0.0.10
 title: Kubernetes Container
 id: kubernetes
 description: Log parser for Kubernetes
@@ -48,7 +48,7 @@ pipeline:
       - '/var/log/containers/{{ $pod_name }}-*_{{ $container_name }}-*.log'
     exclude:
     {{ range $index, $element := .exclude }}
-      - $element
+      - {{ $element }}
     {{ end }}
 
     start_at: '{{ $start_at }}'
