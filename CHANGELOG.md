@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.33] - Unreleased
 ### Changed
+- Update `vmware_esxi` plugin ([PR157](https://github.com/observIQ/stanza-plugins/pull/157))
+  - Add severity parser to parse priority field.
 - Update `aerospike` plugin ([PR156](https://github.com/observIQ/stanza-plugins/pull/156))  
   - Update regex to handle `FAILED ASSERTION` severity.
   - Remove `preserve_to` parameter
