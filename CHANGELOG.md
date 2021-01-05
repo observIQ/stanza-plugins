@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.33] - Unreleased
 ### Changed
+- Update `vmware_esxi` plugin ([PR157](https://github.com/observIQ/stanza-plugins/pull/157))
+  - Add severity parser to parse priority field.
 - Update `sap_hana` plugin ([PR151](https://github.com/observIQ/stanza-plugins/pull/151))
   - Remove `file_path` and `preserve_to` parameter
   - Add `file_name` and `logs_directory` parameter
