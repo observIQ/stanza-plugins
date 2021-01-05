@@ -8,10 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Update `vmware_esxi` plugin ([PR157](https://github.com/observIQ/stanza-plugins/pull/157))
   - Add severity parser to parse priority field.
-- Update `sap_hana` plugin ([PR151](https://github.com/observIQ/stanza-plugins/pull/151))
+- Update `aerospike` plugin ([PR156](https://github.com/observIQ/stanza-plugins/pull/156))  
+  - Update regex to handle `FAILED ASSERTION` severity.
+  - Remove `preserve_to` parameter
+- Update `sap_hana` plugin ([PR155](https://github.com/observIQ/stanza-plugins/pull/155))
   - Remove `file_path` and `preserve_to` parameter
   - Add `file_name` and `logs_directory` parameter
   - Exclude `nameserver_history*.trc`, `nameserver*loads*.trc`, `nameserver*unloads*.trc`, and `nameserver*executed_statements*.trc` files
+
 ## [0.0.32] - 2021-01-04
 ### Changed
 - Fixed exclude for `kubernetes_container` plugin ([PR152](https://github.com/observIQ/stanza-plugins/pull/152))
