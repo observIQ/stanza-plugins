@@ -7,10 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.33] - Unreleased
 ### Changed
 - Update `sap_hana` plugin ([PR151](https://github.com/observIQ/stanza-plugins/pull/151))
-  - Remove `file_path` parameter
-  - Add `logs_directory` parameter
-  - Add `file_name` parameter
-  - Remove `preserve_to` parameter
+  - Remove `file_path` and `preserve_to` parameter
+  - Add `file_name` and `logs_directory` parameter
+  - Exclude `nameserver_history*.trc`, `nameserver*loads*.trc`, `nameserver*unloads*.trc`, and `nameserver*executed_statements*.trc` files
 ## [0.0.32] - 2021-01-04
 ### Changed
 - Fixed exclude for `kubernetes_container` plugin ([PR152](https://github.com/observIQ/stanza-plugins/pull/152))
