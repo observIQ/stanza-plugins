@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update `kubernetes_cluster` plugin ([PR160](https://github.com/observIQ/stanza-plugins/pull/160))
   - Update `title` parameter value to Kubernetes Node
   - Change default log_type to k8s.node
+- Update `kubernetes_container` plugin ([PR159](https://github.com/observIQ/stanza-plugins/pull/159))
+  - Add log_type k8s.container to labels
+  - Exclude kube* pods
 ## [0.0.33] - 2021-01-07
 ### Changed
 - Update `nginx` plugin ([PR158](https://github.com/observIQ/stanza-plugins/pull/158))
