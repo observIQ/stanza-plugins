@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 ## [0.0.33] - 2021-01-07
 ### Changed
+- Update `nginx` plugin ([PR158](https://github.com/observIQ/stanza-plugins/pull/158))
+  - Add default parameter to `log_format` parameter
 - Update `nginx_ingress` plugin ([PR158](https://github.com/observIQ/stanza-plugins/pull/158))
   - Update `nginx_ingress` with source parameter
   - Add default parameter to `log_format` parameter
