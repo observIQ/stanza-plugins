@@ -3,9 +3,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-## [0.0.33] - Unreleased
+## [0.0.34] - Unreleased
 ### Changed
+## [0.0.33] - 2021-01-07
+### Changed
+- Update `nginx` plugin ([PR158](https://github.com/observIQ/stanza-plugins/pull/158))
+  - Add default parameter to `log_format` parameter
+- Update `nginx_ingress` plugin ([PR158](https://github.com/observIQ/stanza-plugins/pull/158))
+  - Update `nginx_ingress` with source parameter
+  - Add default parameter to `log_format` parameter
 - Update `vmware_esxi` plugin ([PR157](https://github.com/observIQ/stanza-plugins/pull/157))
   - Add severity parser to parse priority field.
 - Update `aerospike` plugin ([PR156](https://github.com/observIQ/stanza-plugins/pull/156))  
