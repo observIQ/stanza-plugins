@@ -1,4 +1,4 @@
-version: 0.0.7
+version: 0.0.8
 title: Nginx
 description: Log parser for Nginx
 supported_platforms: 
@@ -90,6 +90,7 @@ parameters:
     valid_values:
       - default
       - observiq
+    default: default
 
 # Set Defaults
 # {{$source := default "file" .source}}
