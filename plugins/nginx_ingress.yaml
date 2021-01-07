@@ -1,4 +1,4 @@
-version: 0.0.1
+version: 0.0.2
 title: Nginx Ingress
 description: Log parser for Nginx Ingress for Kubernetes
 supported_platforms: 
@@ -58,6 +58,14 @@ parameters:
     valid_values:
       - default
       - observiq
+    default: default
+  - name: source
+    label: Log source
+    description: Where the logs are coming from
+    type: enum
+    valid_values:
+      - kubernetes
+    default: kubernetes
 
 # Set Defaults
 # {{$enable_access_log := default true .enable_access_log}}
