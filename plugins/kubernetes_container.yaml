@@ -1,4 +1,4 @@
-version: 0.0.10
+version: 0.0.11
 title: Kubernetes Container
 id: kubernetes
 description: Log parser for Kubernetes
@@ -47,12 +47,13 @@ pipeline:
     include:
       - '/var/log/containers/{{ $pod_name }}-*_{{ $container_name }}-*.log'
     exclude:
-    {{ range $index, $element := .exclude }}
+      - '/var/log/containers/kube*'
+    # {{ range $index, $element := .exclude }}
       - {{ $element }}
-    {{ end }}
-
+    # {{ end }}
     start_at: '{{ $start_at }}'
     labels:
+      log_type: 'k8s.container'
       plugin_id: '{{ .id }}'
     resource:
       k8s.node.name: "EXPR(env('NODE_NAME'))"
