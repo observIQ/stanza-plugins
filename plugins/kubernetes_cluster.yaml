@@ -1,6 +1,6 @@
-version: 0.0.9
-title: Kubernetes Cluster
-description: Log parser for Kubernetes
+version: 0.0.10
+title: Kubernetes Node
+description: Log parser for Kubernetes Node
 supported_platforms:
   - kubernetes
 parameters:
@@ -107,7 +107,7 @@ pipeline:
       - output: {{ .output }}
         expr: true
         labels:
-          log_type: 'k8s.container'
+          log_type: 'k8s.node'
 
   # Use journald to gather kubelet logs. Use provided path for journald if available otherwise use default locations.
   - id: kubelet_reader
