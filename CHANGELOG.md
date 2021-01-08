@@ -3,7 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-## [0.0.34] - Unreleased
+## [0.0.35] - Unreleased
+- Update kubernetes_events plugin ([PR162](https://github.com/observIQ/stanza-plugins/pull/162))
+  - Add missing INFO level cluster events
+## [0.0.34] - 2021-01-07
 ### Changed
 - Update `kubernetes_cluster` plugin ([PR160](https://github.com/observIQ/stanza-plugins/pull/160))
   - Update `title` parameter value to Kubernetes Node
@@ -11,8 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update `kubernetes_container` plugin ([PR159](https://github.com/observIQ/stanza-plugins/pull/159))
   - Add log_type k8s.container to labels
   - Exclude kube* pods
-- Update kubernetes_events plugin ([commit](https://github.com/observIQ/stanza-plugins/commit/5cb848e581fef1f9a0b9a5bc058dda6171579ee0))
-  - Add missing INFO level cluster events
 ## [0.0.33] - 2021-01-07
 ### Changed
 - Update `nginx` plugin ([PR158](https://github.com/observIQ/stanza-plugins/pull/158))
