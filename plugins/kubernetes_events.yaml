@@ -1,8 +1,8 @@
 # Plugin Info
-version: 0.0.4
+version: 0.0.5
 title: Kubernetes Events
 description: Kubernetes Events Parser
-supported_platforms: 
+supported_platforms:
   - kubernetes
 parameters:
   - name: namespaces
@@ -53,21 +53,32 @@ pipeline:
     mapping:
       info:
         - Created
+        - CREATE
         - EnsuringLoadBalancer
+        - ExternalProvisioning
         - FileSystemResizeSuccessful
         - Killing
         - NodeAllocatableEnforced
         - NodeReady
         - NodeSchedulable
+        - NodeHasSufficientMemory
+        - NodeHasSufficientPID
+        - NodeHasNoDiskPressure
         - Pulled
         - Pulling
         - RegisteredNode
         - SandboxChanged
+        - ScalingReplicaSet
+        - Scheduled
         - Started
         - Starting
         - SuccessfulAttachVolume
         - SuccessfulCreate
         - SuccessfulMountVolume
+        - LeaderElection
+        - Provisioning
+        - ProvisioningSucceeded
+        - UPDATE
         - VolumeResizeSuccessful
       warning:
         - AlreadyMountedVolume
