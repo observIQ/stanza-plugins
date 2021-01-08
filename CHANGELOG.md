@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update `kubernetes_container` plugin ([PR159](https://github.com/observIQ/stanza-plugins/pull/159))
   - Add log_type k8s.container to labels
   - Exclude kube* pods
+- Update kubernetes_events plugin ([commit](https://github.com/observIQ/stanza-plugins/commit/5cb848e581fef1f9a0b9a5bc058dda6171579ee0))
+  - Add missing INFO level cluster events
 ## [0.0.33] - 2021-01-07
 ### Changed
 - Update `nginx` plugin ([PR158](https://github.com/observIQ/stanza-plugins/pull/158))
