@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 0.0.2
 title: Docker Swarm
 description: Log parser for Docker Swarm
 parameters:
@@ -37,7 +37,7 @@ pipeline:
     regex: '^(?P<timestamp>[A-Za-z]*\s+\d+ \d+:\d+:\d+) (?P<host>[^ ]*) (?P<type>[^:]*): (?P<message>.*)'
     timestamp:
       parse_from: timestamp
-      layout: '%b %d %H:%M:%S'
+      layout: '%b %e %H:%M:%S'
     output: docker_swarm_router
 
   - id: docker_swarm_router
@@ -66,7 +66,6 @@ pipeline:
     regex: '^time="(?P<timestamp>[^"]*)" level=(?P<dockerd_severity>[^ ]*) msg=(?P<message>.*)'
     severity:
       parse_from: dockerd_severity
-      preserve_to: dockerd_severity
       mapping:
         warning: warn
     timestamp:
@@ -80,7 +79,6 @@ pipeline:
     regex: '^time="(?P<timestamp>[^"]*)" level=(?P<dockerd_severity>[^ ]*) msg=(?P<message>.*)'
     severity:
       parse_from: dockerd_severity
-      preserve_to: dockerd_severity
       mapping:
         warning: warn
     timestamp:
