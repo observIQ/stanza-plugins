@@ -76,9 +76,9 @@ pipeline:
   - id: containerd_parser
     type: regex_parser
     parse_from: message
-    regex: '^time="(?P<timestamp>[^"]*)" level=(?P<dockerd_severity>[^ ]*) msg=(?P<message>.*)'
+    regex: '^time="(?P<timestamp>[^"]*)" level=(?P<containerd_severity>[^ ]*) msg=(?P<message>.*)'
     severity:
-      parse_from: dockerd_severity
+      parse_from: containerd_severity
       mapping:
         warning: warn
     timestamp:
