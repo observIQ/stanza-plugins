@@ -107,5 +107,5 @@ pipeline:
           to: "$labels.stream"
       - move:
           from: log
-          to: "$record"
+          to: "$record.message"
     output: {{ .output }}
