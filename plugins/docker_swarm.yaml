@@ -51,11 +51,11 @@ pipeline:
         expr: '$.type matches "containerd"'
         labels:
           log_type: docker_swarm.containerd
-      - output: {{ .output }}
+      - output: type_parser
         expr: '$.type matches "kernel"'
         labels:
           log_type: docker_swarm.kernel
-      - output: {{ .output }}
+      - output: type_parser
         expr: '$.type matches "NetworkManager"'
         labels:
           log_type: docker_swarm.network_manager
@@ -71,7 +71,7 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%s%j'
-    output: {{ .output }}
+    output: type_parser
 
   - id: containerd_parser
     type: regex_parser
@@ -84,4 +84,11 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%s%j'
+    output: type_parser
+
+  - id: type_parser
+    type: regex_parser
+    parse_from: $record.type
+    if: '$record.type matches ".*\\[[^\\]]*\\]"'
+    regex: '(?P<type>.*)\[(?P<pid>[^\]]*)\]'
     output: {{ .output }}
