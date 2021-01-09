@@ -1,4 +1,4 @@
-version: 0.0.8
+version: 0.0.9
 title: Nginx
 description: Log parser for Nginx
 supported_platforms: 
@@ -160,7 +160,7 @@ pipeline:
   # {{ if eq $log_format "default" }}
   - id: access_regex_parser
     type: regex_parser
-    regex: '^(?P<remote_addr>[^ ]*) - (?P<remote_user>[^ ]*) \[(?P<time_local>[^\]]*)\] "(?P<method>\S+)(?: +(?P<path>[^\"]*?)(?: +\S*)?)?" (?P<status>[^ ]*) (?P<body_bytes_sent>[^ ]*)(?: "(?P<http_referer>[^\"]*)" "(?P<http_user_agent>[^\"]*)"(?:\s+(?P<http_x_forwarded_for>[^ ]+))?)?$'
+    regex: '^(?P<remote_addr>[^ ]*) - (?P<remote_user>[^ ]*) \[(?P<time_local>[^\]]*)\] "(?P<method>\S+) +(?P<path>[^\"]*?)\S*" (?P<status>[^ ]*) (?P<body_bytes_sent>[^ ]*) "(?P<http_referer>[^\"]*)" "(?P<http_user_agent>[^\"]*)"'
     timestamp:
       parse_from: time_local
       layout: '%d/%b/%Y:%H:%M:%S %z'
