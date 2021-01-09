@@ -1,4 +1,4 @@
-version: 0.0.11
+version: 0.0.12
 title: Kubernetes Container
 id: kubernetes
 description: Log parser for Kubernetes
@@ -72,6 +72,12 @@ pipeline:
     type: regex_parser
     parse_from: $labels.file_name
     regex: '^(?P<pod_name>[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?P<namespace>[^_]+)_(?P<container_name>.+)-(?P<container_id>[a-z0-9]{64})\.log$'
+    severity:
+      parse_from: stream
+      preserve_to: stream
+      mapping:
+        error: stderr
+        info: stdout
 
   - id: resource_restructurer
     type: restructure
@@ -101,5 +107,5 @@ pipeline:
           to: "$labels.stream"
       - move:
           from: log
-          to: "$record"
+          to: "$record.message"
     output: {{ .output }}
