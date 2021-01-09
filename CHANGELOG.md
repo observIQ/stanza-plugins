@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.35] - Unreleased
+- Update `rabbitmq` plugin ([PR168](https://github.com/observIQ/stanza-plugins/pull/168))  
+  - Remove `preserve_to` parameter from severity
 - Update `redis` plugin ([PR167](https://github.com/observIQ/stanza-plugins/pull/167))  
   - Remove `preserve_to` parameter from severity
 - Update `nginx_ingress` plugin ([PR166](https://github.com/observIQ/stanza-plugins/pull/166))
