@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update docker_swarm_parser parser timestamp layout to use space padded day. 
   - Remove the severity `preserve_to` parameter from dockerd_parser and containerd_parser
   - Change severity name on containerd_parser to containerd_severity
+  - Add pid field
 ## [0.0.34] - 2021-01-07
 ### Changed
 - Update `kubernetes_cluster` plugin ([PR160](https://github.com/observIQ/stanza-plugins/pull/160))
