@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.35] - Unreleased
 ### Changed
+- Update `kubernetes_events` plugin ([PR162](https://github.com/observIQ/stanza-plugins/pull/162))
+  - Add missing INFO level cluster events
 - Update `dockerswarm` plugin ([PR161](https://github.com/observIQ/stanza-plugins/pull/161))
   - Update docker_swarm_parser parser timestamp layout to use space padded day. 
   - Remove the severity `preserve_to` parameter from dockerd_parser and containerd_parser
