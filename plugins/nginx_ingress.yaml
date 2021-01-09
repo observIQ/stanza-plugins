@@ -1,4 +1,4 @@
-version: 0.0.2
+version: 0.0.3
 title: Nginx Ingress
 description: Log parser for Nginx Ingress for Kubernetes
 supported_platforms: 
@@ -92,14 +92,14 @@ pipeline:
       - expr: "$labels.stream == 'stdout'"
         output: access_regex_parser
         labels:
-          log_type: 'nginx.access'
+          log_type: 'nginx.ingress.access'
           plugin_id: '{{ .id }}'
       # {{ end }}
       # {{ if $enable_error_log }}
       - expr: '$labels.stream == "stderr" and $record.message matches "\\d{4}\\/\\d{2}\\/\\d{2} \\d{2}:\\d{2}:\\d{2} \\[\\w+\\] \\d+\\.\\d+: "'
         output: error_regex_parser
         labels:
-          log_type: 'nginx.error'
+          log_type: 'nginx.ingress.error'
           plugin_id: '{{ .id }}'
       - expr: '$labels.stream == "stderr"'
         output: ingress_controller_regex_parser
