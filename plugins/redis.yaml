@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 0.0.2
 title: Redis
 description: Log parser for Redis
 parameters:
@@ -43,7 +43,6 @@ pipeline:
       layout: '%d %b %H:%M:%S.%s'
     severity:
       parse_from: redis_severity
-      preserve_to: redis_severity
       mapping:
         warning: ' # '
         info: ' - '

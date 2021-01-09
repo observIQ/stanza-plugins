@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.35] - Unreleased
 - Update `rabbitmq` plugin ([PR168](https://github.com/observIQ/stanza-plugins/pull/168))  
   - Remove `preserve_to` parameter from severity
+- Update `redis` plugin ([PR167](https://github.com/observIQ/stanza-plugins/pull/167))  
+  - Remove `preserve_to` parameter from severity
+- Update `nginx_ingress` plugin ([PR166](https://github.com/observIQ/stanza-plugins/pull/166))
+  - Update error and access `log_type` values to `nginx.ingress.error` and `nginx.ingress.access`
 - Update kubernetes_cluster plugin ([PR164](https://github.com/observIQ/stanza-plugins/pull/164))
   - Remove `container_log_path` parameter and hard code path `/var/log/containers/`
   - Move log field to message field
