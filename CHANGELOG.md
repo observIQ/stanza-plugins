@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.35] - Unreleased
 ### Changed
+- Update `couchbase` plugin ([PR170](https://github.com/observIQ/stanza-plugins/pull/170))
+  - Rename name `http_status_code` field to `status`
+  - Add severity parser to internal access and access logs
+- Update `rabbitmq` plugin ([PR168](https://github.com/observIQ/stanza-plugins/pull/168))  
+  - Remove `preserve_to` parameter from severity
+- Update `redis` plugin ([PR167](https://github.com/observIQ/stanza-plugins/pull/167))  
+  - Remove `preserve_to` parameter from severity
 - Update `nginx_ingress` plugin ([PR166](https://github.com/observIQ/stanza-plugins/pull/166))
   - Update error and access `log_type` values to `nginx.ingress.error` and `nginx.ingress.access`
 - Update kubernetes_cluster plugin ([PR164](https://github.com/observIQ/stanza-plugins/pull/164))

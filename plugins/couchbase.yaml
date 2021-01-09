@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.3
+version: 0.0.4
 title: Couchbase
 description: Log parser for Couchbase
 parameters:
@@ -211,10 +211,19 @@ pipeline:
 
   - id: couchbase_http_access_parser
     type: regex_parser
-    regex: '(?P<ip_address>\d+.\d+.\d+.\d+)\s+(?P<user_identifier>.*) \[(?P<timestamp>\d{2}\/\w+\/\d{4}:\d{2}:\d{2}:\d{2} -\d{4})\] \\*"(?P<request_line>[^"]*)\\*" (?P<http_status_code>\d{3}) (?P<size>\d*) *-*(?P<message>.*)'
+    regex: '(?P<ip_address>\d+.\d+.\d+.\d+)\s+(?P<user_identifier>.*) \[(?P<timestamp>\d{2}\/\w+\/\d{4}:\d{2}:\d{2}:\d{2} -\d{4})\] \\*"(?P<request_line>[^"]*)\\*" (?P<status>\d{3}) (?P<size>\d*) *-*(?P<message>.*)'
     timestamp:
       parse_from: timestamp
       layout: '%d/%b/%Y:%H:%M:%S %z'
+    severity:
+      parse_from: status
+      preset: none
+      preserve_to: status
+      mapping:
+        info: 2xx
+        notice: 3xx
+        warning: 4xx
+        error: 5xx
     output: {{.output}}
 # {{ end }}
 
@@ -231,10 +240,19 @@ pipeline:
 
   - id: couchbase_http_access_internal_parser
     type: regex_parser
-    regex: '(?P<ip_address>\d+.\d+.\d+.\d+)\s+(?P<user_identifier>.*) \[(?P<timestamp>\d{2}\/\w+\/\d{4}:\d{2}:\d{2}:\d{2} -\d{4})\] \\*"(?P<request_line>[^"]*)\\*" (?P<http_status_code>\d{3}) (?P<size>\d*) *-*(?P<message>.*)'
+    regex: '(?P<ip_address>\d+.\d+.\d+.\d+)\s+(?P<user_identifier>.*) \[(?P<timestamp>\d{2}\/\w+\/\d{4}:\d{2}:\d{2}:\d{2} -\d{4})\] \\*"(?P<request_line>[^"]*)\\*" (?P<status>\d{3}) (?P<size>\d*) *-*(?P<message>.*)'
     timestamp:
       parse_from: timestamp
       layout: '%d/%b/%Y:%H:%M:%S %z'
+    severity:
+      parse_from: status
+      preset: none
+      preserve_to: status
+      mapping:
+        info: 2xx
+        notice: 3xx
+        warning: 4xx
+        error: 5xx
     output: {{.output}}
 # {{ end }}
 
