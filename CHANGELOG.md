@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update kubernetes_cluster plugin ([PR164](https://github.com/observIQ/stanza-plugins/pull/164))
   - Remove `container_log_path` parameter and hard code path `/var/log/containers/`
   - Move log field to message field
+- Update `kubernetes_container` plugin ([PR163](https://github.com/observIQ/stanza-plugins/pull/163))
+  - Add severity parser
 - Update kubernetes_events plugin ([PR162](https://github.com/observIQ/stanza-plugins/pull/162))
   - Add missing INFO level cluster events
 ## [0.0.34] - 2021-01-07
