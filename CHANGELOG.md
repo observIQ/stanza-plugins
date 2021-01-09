@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.35] - Unreleased
 - Update `couchbase` plugin ([PR170](https://github.com/observIQ/stanza-plugins/pull/170))
   - Rename name `http_status_code` field to `status`
+- Update `hbase` plugin ([PR169](https://github.com/observIQ/stanza-plugins/pull/169))
+  - Remove `preserve_to` parameter from severity
   - Add severity parser to internal access and access logs
 - Update `rabbitmq` plugin ([PR168](https://github.com/observIQ/stanza-plugins/pull/168))  
   - Remove `preserve_to` parameter from severity
