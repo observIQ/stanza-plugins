@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update error and access `log_type` values to `nginx.ingress.error` and `nginx.ingress.access`
 - Update `nginx` plugin ([PR165](https://github.com/observIQ/stanza-plugins/pull/165))
   - Update default log format to remove http_x_forwarded_for field
+  - Update observiq log format to use json formatting and parsing
 - Update kubernetes_cluster plugin ([PR164](https://github.com/observIQ/stanza-plugins/pull/164))
   - Remove `container_log_path` parameter and hard code path `/var/log/containers/`
   - Move log field to message field
