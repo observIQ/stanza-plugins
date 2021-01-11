@@ -1,21 +1,13 @@
 # Plugin Info
-version: 0.0.5
+version: 0.0.6
 title: Aerospike
 description: Log parser for Aerospike
 parameters:
-  - name: enable_general_log
-    label: General Logs
-    description: Enable to collect general Aerospike logs
-    type: bool
-    default: true
   - name: general_log_path
     label: General Logs Path
     description: The absolute path to the general Aerospike logs
     type: string
     default: "/var/log/aerospike/aerospike.log"
-    relevant_if:
-      enable_general_log:
-        equals: true
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -39,7 +31,7 @@ pipeline:
       - {{ $general_log_path }}
     start_at: {{ $start_at }}
     labels:
-      log_type: aerospike.general
+      log_type: aerospike
       plugin_id: {{ .id }}
     output: aerospike_general_parser
 

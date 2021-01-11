@@ -5,15 +5,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.35] - Unreleased
 ### Changed
+- Update `nginx_ingress` plugin 
+  - Update observiq log format to be JSON format ([PR173](https://github.com/observIQ/stanza-plugins/pull/173))
+  - Update error and access `log_type` values to `nginx.ingress.error` and `nginx.ingress.access` ([PR166](https://github.com/observIQ/stanza-plugins/pull/166))
+- Update `pgbouncer` plugin ([PR172](https://github.com/observIQ/stanza-plugins/pull/172))
+  - Remove `*` from `file_path` parameter defaults
+- Update `aerospike` plugin ([PR171](https://github.com/observIQ/stanza-plugins/pull/171))
+  - Remove `enable_general_log` parameter
+  - Change log_type to aerospike
 - Update `couchbase` plugin ([PR170](https://github.com/observIQ/stanza-plugins/pull/170))
   - Rename name `http_status_code` field to `status`
+- Update `hbase` plugin ([PR169](https://github.com/observIQ/stanza-plugins/pull/169))
+  - Remove `preserve_to` parameter from severity
   - Add severity parser to internal access and access logs
 - Update `rabbitmq` plugin ([PR168](https://github.com/observIQ/stanza-plugins/pull/168))  
   - Remove `preserve_to` parameter from severity
 - Update `redis` plugin ([PR167](https://github.com/observIQ/stanza-plugins/pull/167))  
   - Remove `preserve_to` parameter from severity
-- Update `nginx_ingress` plugin ([PR166](https://github.com/observIQ/stanza-plugins/pull/166))
-  - Update error and access `log_type` values to `nginx.ingress.error` and `nginx.ingress.access`
+- Update `nginx` plugin ([PR165](https://github.com/observIQ/stanza-plugins/pull/165))
+  - Update default log format to remove http_x_forwarded_for field
+  - Update observiq log format to use json formatting and parsing
 - Update kubernetes_cluster plugin ([PR164](https://github.com/observIQ/stanza-plugins/pull/164))
   - Remove `container_log_path` parameter and hard code path `/var/log/containers/`
   - Move log field to message field

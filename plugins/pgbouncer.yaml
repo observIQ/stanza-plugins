@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.2
+version: 0.0.3
 title: PgBouncer
 description: Log parser for PgBouncer
 parameters:
@@ -7,7 +7,7 @@ parameters:
     label: PgBouncer Logs Path
     description: The absolute path to the PgBouncer logs
     type: string
-    default: "/var/log/pgbouncer/pgbouncer.log*"
+    default: "/var/log/pgbouncer/pgbouncer.log"
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -18,7 +18,7 @@ parameters:
     default: end
 
 # Set Defaults
-# {{$file_path := default "/var/log/pgbouncer/pgbouncer.log*" .file_path}}
+# {{$file_path := default "/var/log/pgbouncer/pgbouncer.log" .file_path}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
