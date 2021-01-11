@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.35] - Unreleased
+- Update `nginx_ingress` plugin 
+  - Update observiq log format to be JSON format ([PR173](https://github.com/observIQ/stanza-plugins/pull/173))
+  - Update error and access `log_type` values to `nginx.ingress.error` and `nginx.ingress.access` ([PR166](https://github.com/observIQ/stanza-plugins/pull/166))
 - Update `pgbouncer` plugin ([PR172](https://github.com/observIQ/stanza-plugins/pull/172))
   - Remove `*` from `file_path` parameter defaults
 - Update `aerospike` plugin ([PR171](https://github.com/observIQ/stanza-plugins/pull/171))
@@ -18,8 +21,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Remove `preserve_to` parameter from severity
 - Update `redis` plugin ([PR167](https://github.com/observIQ/stanza-plugins/pull/167))  
   - Remove `preserve_to` parameter from severity
-- Update `nginx_ingress` plugin ([PR166](https://github.com/observIQ/stanza-plugins/pull/166))
-  - Update error and access `log_type` values to `nginx.ingress.error` and `nginx.ingress.access`
 - Update `nginx` plugin ([PR165](https://github.com/observIQ/stanza-plugins/pull/165))
   - Update default log format to remove http_x_forwarded_for field
   - Update observiq log format to use json formatting and parsing
