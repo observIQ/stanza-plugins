@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.3
+version: 0.0.4
 title: Windows Event Log
 description: Windows Event Log Parser
 supported_platforms: 
@@ -56,7 +56,7 @@ pipeline:
     max_reads: {{ $max_reads }}
     poll_interval: {{ $poll_interval }}
     labels:
-      log_type: "windows_event_log.system"
+      log_type: "windows_event.system"
       plugin_id: {{ .id }}
     start_at: {{ $start_at }}
     output: {{ .output }}
@@ -69,7 +69,7 @@ pipeline:
     max_reads: {{ $max_reads }}
     poll_interval: {{ $poll_interval }}
     labels:
-      log_type: "windows_event_log.application"
+      log_type: "windows_event.application"
       plugin_id: {{ .id }}
     start_at: {{ $start_at }}
     output: {{ .output }}
@@ -82,7 +82,7 @@ pipeline:
     max_reads: {{ $max_reads }}
     poll_interval: {{ $poll_interval }}
     labels:
-      log_type: "windows_event_log.security"
+      log_type: "windows_event.security"
       plugin_id: {{ .id }}
     start_at: {{ $start_at }}
     output: {{ .output }}
