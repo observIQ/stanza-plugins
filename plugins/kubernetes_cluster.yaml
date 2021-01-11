@@ -1,14 +1,9 @@
-version: 0.0.9
-title: Kubernetes Cluster
-description: Log parser for Kubernetes
+version: 0.0.11
+title: Kubernetes Node
+description: Log parser for Kubernetes Node
 supported_platforms:
   - kubernetes
 parameters:
-  - name: container_log_path
-    label: Containers Log Path
-    description: Kubernetes Containers Log Path
-    type: string
-    default: "/var/log/containers/"
   - name: kubelet_journald_log_path
     label: Kubelet Journald Log Path
     description: 'Kubernetes Kubelet Journald Log path. It will read from /run/journal or /var/log/journal if this parameter is omitted'
@@ -28,7 +23,6 @@ parameters:
 
 # Set Defaults
 # {{ $cluster_name := default "" .cluster_name }}
-# {{ $container_log_path := default "/var/log/containers/*" .container_log_path }}
 # {{ $start_at := default "end" .start_at }}
 
 # Pipeline Template
@@ -36,7 +30,7 @@ pipeline:
   - id: container_reader
     type: file_input
     include:
-      - '{{ $container_log_path }}kube*'
+      - '/var/log/containers/kube*'
     start_at: '{{ $start_at }}'
     labels:
       plugin_id: '{{ .id }}'
@@ -116,26 +110,34 @@ pipeline:
   - id: add_labels_router
     type: router
     routes:
-      - output: {{ .output }}
+      - output: log_restructure
         expr: '$labels["k8s_pod_label/component"] == "kube-controller-manager"'
         labels:
           log_type: 'k8s.controller'
-      - output: {{ .output }}
+      - output: log_restructure
         expr: '$labels["k8s_pod_label/component"]  == "kube-scheduler"'
         labels:
           log_type: 'k8s.scheduler'
-      - output: {{ .output }}
+      - output: log_restructure
         expr: '$labels["k8s_pod_label/component"] == "kube-apiserver"'
         labels:
           log_type: 'k8s.apiserver'
-      - output: {{ .output }}
+      - output: log_restructure
         expr: '$labels["k8s_pod_label/component"] startsWith "kube-proxy"'
         labels:
           log_type: 'k8s.proxy'
-      - output: {{ .output }}
+      - output: log_restructure
         expr: true
         labels:
-          log_type: 'k8s.container'
+          log_type: 'k8s.node'
+
+  - id: log_restructure
+    type: restructure
+    ops:
+      - move:
+          from: '$record.log'
+          to: '$record.message'
+    output: {{ .output }}
 
   # Use journald to gather kubelet logs. Use provided path for journald if available otherwise use default locations.
   - id: kubelet_reader

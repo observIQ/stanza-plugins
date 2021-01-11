@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 0.0.2
 title: RabbitMQ
 description: Log parser for RabbitMQ
 parameters:
@@ -43,5 +43,4 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S.%s'
     severity:
       parse_from: rabbitmq_severity
-      preserve_to: rabbitmq_severity
     output: {{.output}}

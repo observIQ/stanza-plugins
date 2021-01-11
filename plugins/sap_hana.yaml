@@ -1,13 +1,18 @@
 # Plugin Info
-version: 0.0.1
+version: 0.0.2
 title: SAP HANA
 description: Log parser for SAP HANA
 parameters:
-  - name: file_path
-    label: SAP HANA Database Trace Logs
-    description: The absolute path to the SAP HANA logs
+  - name: logs_directory
+    label: Logs directory for SAP HANA Database Trace Logs
+    description: The directory to the SAP HANA trace logs. No trailing slash should be included.
     type: string
-    default: "/usr/sap/*/HDB*/*/trace/*.trc"
+    default: "/usr/sap/*/HDB*/*/trace"
+  - name: file_name
+    label: File Name of SAP HANA Database Trace Logs
+    description: 'The file name of the SAP HANA trace log. This can be a glob pattern. Use "*.trc" to get all files with file extension of "trc". The files nameserver_history*.trc, nameserver*loads*.trc, nameserver*unloads*.trc, and nameserver*executed_staments*.trc are excluded from the logs directory and will not be parsed.'
+    type: string
+    default: "*.trc"
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -18,7 +23,8 @@ parameters:
     default: end
 
 # Set Defaults
-# {{$file_path := default "/usr/sap/*/HDB*/*/trace/*.trc" .file_path}}
+# {{$file_name := default "*.trc" .file_name}}
+# {{$logs_directory := default "/usr/sap/*/HDB*/*/trace" .logs_directory}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
@@ -26,7 +32,12 @@ pipeline:
   - id: sap_hana_input
     type: file_input
     include:
-      - {{ $file_path }}
+      - '{{ $logs_directory }}/{{ $file_name }}'
+    exclude:
+      - '{{ $logs_directory }}/nameserver_history*.trc'
+      - '{{ $logs_directory }}/nameserver*loads*.trc'
+      - '{{ $logs_directory }}/nameserver*unloads*.trc'
+      - '{{ $logs_directory }}/nameserver*executed_statements*.trc'
     multiline:
       line_start_pattern: '\[\d+\]{[^}]+}\[[^\/]+\/[^\]]+\] \d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\.\d+ [^ ]+ [^ ]+\s+[^ ]+ :'
     start_at: {{ $start_at }}
@@ -43,7 +54,6 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S.%s'
     severity:
       parse_from: sap_severity
-      preserve_to: sap_severity
       mapping:
         debug: d
         info: i

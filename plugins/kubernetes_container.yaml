@@ -1,4 +1,4 @@
-version: 0.0.10
+version: 0.0.12
 title: Kubernetes Container
 description: Log parser for Kubernetes
 min_stanza_version: 0.9.8
@@ -43,23 +43,31 @@ parameters:
 pipeline:
   - id: container_reader
     type: file_input
+    include:
+      - '/var/log/containers/{{ $pod_name }}-*_{{ $container_name }}-*.log'
+    exclude:
+      - '/var/log/containers/kube*'
+    # {{ range $index, $element := .exclude }}
+      - {{ $element }}
+    # {{ end }}
     start_at: '{{ $start_at }}'
     labels:
+      log_type: 'k8s.container'
       plugin_id: '{{ .id }}'
     resource:
       k8s.node.name: "EXPR(env('NODE_NAME'))"
       k8s.cluster.name: "{{ $cluster_name }}"
-    include:
-      - '/var/log/containers/{{ $pod_name }}-*_{{ $container_name }}-*.log'
-    exclude:
-    {{ range $index, $element := .exclude }}
-      - {{ $element }}
-    {{ end }}
 
   - id: file_name_parser
     type: regex_parser
     parse_from: $labels.file_name
     regex: '^(?P<pod_name>[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?P<namespace>[^_]+)_(?P<container_name>.+)-(?P<container_id>[a-z0-9]{64})\.log$'
+    severity:
+      parse_from: stream
+      preserve_to: stream
+      mapping:
+        error: stderr
+        info: stdout
 
   - id: resource_restructurer
     type: restructure
@@ -118,8 +126,12 @@ pipeline:
     ops:
       - move:
           from: log
+<<<<<<< HEAD
           to: '$record'
 
   - id: add_kubernetes_metadata
     type: k8s_metadata_decorator
+=======
+          to: "$record.message"
+>>>>>>> @{-1}
     output: {{ .output }}

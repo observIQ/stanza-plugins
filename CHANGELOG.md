@@ -3,6 +3,66 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [0.0.36] - Unreleased
+### Changed
+## [0.0.35] - 2021-01-11
+### Changed
+- Update `nginx_ingress` plugin 
+  - Update observiq log format to be JSON format ([PR173](https://github.com/observIQ/stanza-plugins/pull/173))
+  - Update error and access `log_type` values to `nginx.ingress.error` and `nginx.ingress.access` ([PR166](https://github.com/observIQ/stanza-plugins/pull/166))
+- Update `pgbouncer` plugin ([PR172](https://github.com/observIQ/stanza-plugins/pull/172))
+  - Remove `*` from `file_path` parameter defaults
+- Update `aerospike` plugin ([PR171](https://github.com/observIQ/stanza-plugins/pull/171))
+  - Remove `enable_general_log` parameter
+  - Change log_type to aerospike
+- Update `couchbase` plugin ([PR170](https://github.com/observIQ/stanza-plugins/pull/170))
+  - Rename name `http_status_code` field to `status`
+- Update `hbase` plugin ([PR169](https://github.com/observIQ/stanza-plugins/pull/169))
+  - Remove `preserve_to` parameter from severity
+  - Add severity parser to internal access and access logs
+- Update `rabbitmq` plugin ([PR168](https://github.com/observIQ/stanza-plugins/pull/168))  
+  - Remove `preserve_to` parameter from severity
+- Update `redis` plugin ([PR167](https://github.com/observIQ/stanza-plugins/pull/167))  
+  - Remove `preserve_to` parameter from severity
+- Update `nginx` plugin ([PR165](https://github.com/observIQ/stanza-plugins/pull/165))
+  - Update default log format to remove http_x_forwarded_for field
+  - Update observiq log format to use json formatting and parsing
+- Update kubernetes_cluster plugin ([PR164](https://github.com/observIQ/stanza-plugins/pull/164))
+  - Remove `container_log_path` parameter and hard code path `/var/log/containers/`
+  - Move log field to message field
+- Update `kubernetes_container` plugin ([PR163](https://github.com/observIQ/stanza-plugins/pull/163))
+  - Add severity parser
+- Update `kubernetes_events` plugin ([PR162](https://github.com/observIQ/stanza-plugins/pull/162))
+  - Add missing INFO level cluster events
+- Update `dockerswarm` plugin ([PR161](https://github.com/observIQ/stanza-plugins/pull/161))
+  - Update docker_swarm_parser parser timestamp layout to use space padded day. 
+  - Remove the severity `preserve_to` parameter from dockerd_parser and containerd_parser
+  - Change severity name on containerd_parser to containerd_severity
+  - Add pid field
+## [0.0.34] - 2021-01-07
+### Changed
+- Update `kubernetes_cluster` plugin ([PR160](https://github.com/observIQ/stanza-plugins/pull/160))
+  - Update `title` parameter value to Kubernetes Node
+  - Change default log_type to k8s.node
+- Update `kubernetes_container` plugin ([PR159](https://github.com/observIQ/stanza-plugins/pull/159))
+  - Add log_type k8s.container to labels
+  - Exclude kube* pods
+## [0.0.33] - 2021-01-07
+### Changed
+- Update `nginx` plugin ([PR158](https://github.com/observIQ/stanza-plugins/pull/158))
+  - Add default parameter to `log_format` parameter
+- Update `nginx_ingress` plugin ([PR158](https://github.com/observIQ/stanza-plugins/pull/158))
+  - Update `nginx_ingress` with source parameter
+  - Add default parameter to `log_format` parameter
+- Update `vmware_esxi` plugin ([PR157](https://github.com/observIQ/stanza-plugins/pull/157))
+  - Add severity parser to parse priority field.
+- Update `aerospike` plugin ([PR156](https://github.com/observIQ/stanza-plugins/pull/156))  
+  - Update regex to handle `FAILED ASSERTION` severity.
+  - Remove `preserve_to` parameter
+- Update `sap_hana` plugin ([PR155](https://github.com/observIQ/stanza-plugins/pull/155))
+  - Remove `file_path` and `preserve_to` parameter
+  - Add `file_name` and `logs_directory` parameter
+  - Exclude `nameserver_history*.trc`, `nameserver*loads*.trc`, `nameserver*unloads*.trc`, and `nameserver*executed_statements*.trc` files
 
 ## [0.0.32] - 2021-01-04
 ### Changed

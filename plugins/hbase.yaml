@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.4
+version: 0.0.5
 title: Apache HBase
 description: Log parser for Apache HBase
 parameters:
@@ -83,7 +83,6 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hbase_severity
-      preserve_to: hbase_severity
       mapping:
         warning: warn
         emergency: fatal
@@ -120,7 +119,6 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hbase_severity
-      preserve_to: hbase_severity
       mapping:
         warning: warn
         emergency: fatal
@@ -157,7 +155,6 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hbase_severity
-      preserve_to: hbase_severity
       mapping:
         warning: warn
         emergency: fatal
