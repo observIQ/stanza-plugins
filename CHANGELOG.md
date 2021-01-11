@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.35] - Unreleased
+- Update `nginx_ingress` plugin ([PR173](https://github.com/observIQ/stanza-plugins/pull/173))
+  - Update observiq log format to be JSON format
 - Update `aerospike` plugin ([PR171](https://github.com/observIQ/stanza-plugins/pull/171))
   - Remove `enable_general_log` parameter
   - Change log_type to aerospike
