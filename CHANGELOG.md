@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.35] - Unreleased
+- Update `pgbouncer` plugin ([PR172](https://github.com/observIQ/stanza-plugins/pull/172))
+  - Remove `*` from `file_path` parameter defaults
 - Update `couchbase` plugin ([PR170](https://github.com/observIQ/stanza-plugins/pull/170))
   - Rename name `http_status_code` field to `status`
 - Update `hbase` plugin ([PR169](https://github.com/observIQ/stanza-plugins/pull/169))
