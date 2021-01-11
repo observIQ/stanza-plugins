@@ -89,7 +89,7 @@ pipeline:
     type: windows_eventlog_input
     channel: DFS Replication
     labels:
-      log_type: active_directory.dfs_replication
+      log_type: active_directory.dfs
       plugin_id: {{ .id }}
     poll_interval: {{ $poll_interval }}
     max_reads: {{ $max_reads }}
@@ -102,7 +102,7 @@ pipeline:
     type: windows_eventlog_input
     channel: File Replication Service
     labels:
-      log_type: active_directory.file_replication
+      log_type: active_directory.frs
       plugin_id: {{ .id }}
     poll_interval: {{ $poll_interval }}
     max_reads: {{ $max_reads }}
