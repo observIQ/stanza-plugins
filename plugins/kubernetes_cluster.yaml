@@ -44,24 +44,10 @@ pipeline:
       k8s.node.name: "EXPR(env('NODE_NAME'))"
       k8s.cluster.name: '{{ .cluster_name }}'
 
-  # Initial log entry should be safe to parse as JSON
-  - id: container_json_parser
-    type: json_parser
-
-  # Log field has been parsed if possible and now we can parse the file name field for container information.
-  - id: container_regex_parser
+  - id: file_name_parser
     type: regex_parser
     parse_from: $labels.file_name
     regex: '^(?P<pod_name>[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?P<namespace>[^_]+)_(?P<container_name>.+)-(?P<container_id>[a-z0-9]{64})\.log$'
-    severity:
-      parse_from: stream
-      preserve_to: stream
-      mapping:
-        error: stderr
-        info: stdout
-    timestamp:
-      parse_from: time
-      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
 
   - id: resource_restructurer
     type: restructure
@@ -79,10 +65,52 @@ pipeline:
           from: '$record.container_id'
           to: '$resource["container.id"]'
 
-  # Add kubernetes metadata
+  - id: container_type_router
+    type: router
+    routes:
+      - expr: '$record matches "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,9}Z std(?:out|err) [FP] .*"'
+        output: containerd_parser
+    default: docker_json_parser
+
+  - id: containerd_parser
+    type: regex_parser 
+    regex: '^(?P<time>[^\s]+) (?P<stream>\w+) (?P<partial>\w) (?P<log>.*)'
+
+  - id: containerd_recombine
+    type: recombine
+    combine_field: log
+    is_last_entry: "$record.partial == 'F'"
+    output: nested_json_parser
+
+  - id: docker_json_parser
+    type: json_parser
+
+  - id: nested_json_parser
+    type: json_parser
+    if: '$record.log != nil and $record.log matches "^{.*}\\s*$"'
+
+  - id: timestamp_parser
+    type: time_parser
+      parse_from: time
+      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+
+  - id: sev_parser
+    type: severity_parser
+    parse_from: stream
+    preserve_to: '$labels.stream'
+    mapping:
+      error: stderr
+      info: stdout
+
+  - type: restructure
+    ops:
+      - move:
+          from: log
+          to: '$record'
+
   - id: add_kubernetes_metadata
     type: k8s_metadata_decorator
-    output: add_labels_router
+    output: {{ .output }}
 
   # Add label log_type
   - id: add_labels_router

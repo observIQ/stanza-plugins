@@ -45,46 +45,14 @@ pipeline:
     write_to: log
 
   # Filter out agent logs. Check if file_name field starts with stanza or bindplane-agent.
-  - id: filename_filter
+  - id: file_name_filter
     type: filter
     expr: '$labels.file_name != nil and ($labels.file_name contains "stanza" or $labels.file_name contains "bindplane-agent")'
 
-  # Initial log entry should be safe to parse as JSON
-  - id: container_json_parser
-    type: json_parser
-    parse_from: log
-
-  # Attempt to parse nested JSON in log field if it exists and if JSON is detected
-  - id: log_json_router
-    type: router
-    routes:
-      # It appears to be JSON so send it to be parsed as JSON.
-      - output: nested_json_parser
-        expr: '$record.log != nil and $record.log matches "^{.*}\\s*$"'
-      # If log field doesn't appear to be JSON then, skip nested JSON parsers
-      - output: container_regex_parser
-        expr: true
-
-  # Attempt to parse nested JSON since the log appears to be JSON
-  - id: nested_json_parser
-    type: json_parser
-    parse_from: $record.log
-    output: container_regex_parser
-
-  # Log field has been parsed if possible and now we can parse the file name field for container information.
-  - id: container_regex_parser
+  - id: file_name_parser
     type: regex_parser
     parse_from: $labels.file_name
     regex: '^(?P<pod_name>[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?P<namespace>[^_]+)_(?P<container_name>.+)-(?P<container_id>[a-z0-9]{64})\.log$'
-    severity:
-      parse_from: stream
-      preserve: true
-      mapping:
-        error: stderr
-        info: stdout
-    timestamp:
-      parse_from: time
-      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
 
   - id: resource_restructurer
     type: restructure
@@ -101,6 +69,30 @@ pipeline:
       - move:
           from: '$record.container_id'
           to: '$resource["container.id"]'
+
+  - id: container_type_router
+    type: router
+    routes:
+      - expr: '$record matches "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,9}Z std(?:out|err) [FP] .*"'
+        output: containerd_parser
+    default: docker_json_parser
+
+  - id: containerd_parser
+    type: regex_parser 
+    regex: '^(?P<time>[^\s]+) (?P<stream>\w+) (?P<partial>\w) (?P<log>.*)'
+
+  - id: containerd_recombine
+    type: recombine
+    combine_field: log
+    is_last_entry: "$record.partial == 'F'"
+    output: nested_json_parser
+
+  - id: docker_json_parser
+    type: json_parser
+
+  - id: nested_json_parser
+    type: json_parser
+    if: '$record.log != nil and $record.log matches "^{.*}\\s*$"'
 
   # Add kubernetes metadata
   - id: add_kubernetes_metadata
