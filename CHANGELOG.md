@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Update `observiq_agent` plugin ([PR175](https://github.com/observIQ/stanza-plugins/pull/175))
   - Add log_type_router to add log_type `observiq.agent.manager` and `observiq.agent.launcher`
+  - Add metadata to add log_type `observiq.agent.logagent`
 ## [0.0.35] - 2021-01-11
 ### Changed
 - Update `nginx_ingress` plugin 
