@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.36] - Unreleased
 ### Changed
+- Update `observiq_agent` plugin ([PR175](https://github.com/observIQ/stanza-plugins/pull/175))
+  - Add log_type_router to add log_type `observiq.agent.manager` and `observiq.agent.launcher`
 ## [0.0.35] - 2021-01-11
 ### Changed
 - Update `nginx_ingress` plugin 
