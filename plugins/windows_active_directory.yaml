@@ -76,7 +76,7 @@ pipeline:
     type: windows_eventlog_input
     channel: DNS Server
     labels:
-      log_type: active_directory.dns_server
+      log_type: active_directory.dns
       plugin_id: {{ .id }}
     poll_interval: {{ $poll_interval }}
     max_reads: {{ $max_reads }}
