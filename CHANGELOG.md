@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add RELOAD, Sync, FailedBinding severity mappings
 - Update `kubernetes_container` plugin ([PR180](https://github.com/observIQ/stanza-plugins/pull/180))
   - Change move from `log` field back to `$record`
+- Update `windows_event` plugin ([PR179](https://github.com/observIQ/stanza-plugins/pull/179))
+  - Update log_types
+    - windows_event_log.security -> windows_event.security
+    - windows_event_log.application -> windows_event.application
+    - windows_event_log.system -> windows_event.system
 - Update `sqlserver` plugin ([PR178](https://github.com/observIQ/stanza-plugins/pull/178))
   - Update `log_type` parameter from `sqlserver` to `sql_server`
 - Update `windows_active_directory` plugin ([PR177](https://github.com/observIQ/stanza-plugins/pull/177))
