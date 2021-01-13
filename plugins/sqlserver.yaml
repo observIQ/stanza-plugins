@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 0.0.2
 title: Microsoft SQL Server
 description: Log parser for Microsoft SQL Server
 parameters:
@@ -29,7 +29,7 @@ parameters:
 
 # Pipeline Template
 pipeline:
-  - id: sqlserver_input
+  - id: sql_server_input
     type: windows_eventlog_input
     channel: Application
     poll_interval: {{ $poll_interval }}
@@ -37,12 +37,12 @@ pipeline:
     start_at: {{ $start_at }}
     labels:
       plugin_id: {{ .id }}
-    output: sqlserver_router
+    output: sql_server_router
 
-  - id: sqlserver_router
+  - id: sql_server_router
     type: router
     routes:
       - output: {{ .output }}
         expr: '$.provider.name matches "SQLSERVER"'
         labels:
-          log_type: sqlserver
+          log_type: sql_server
