@@ -1,4 +1,4 @@
-version: 0.0.12
+version: 0.0.13
 title: Kubernetes Container
 id: kubernetes
 description: Log parser for Kubernetes
@@ -107,5 +107,5 @@ pipeline:
           to: "$labels.stream"
       - move:
           from: log
-          to: "$record.message"
+          to: "$record"
     output: {{ .output }}
