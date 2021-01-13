@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Update `kubernetes_container` plugin ([PR180](https://github.com/observIQ/stanza-plugins/pull/180))
   - Change move from `log` field back to `$record`
+- Update 'kubernetes_events' plugin ([PR181](https://github.com/observIQ/stanza-plugins/pull/181/files))
+  - Add RELOAD, Sync, FailedBinding severity mappings
 ## [0.0.35] - 2021-01-11
 ### Changed
 - Update `nginx_ingress` plugin 
