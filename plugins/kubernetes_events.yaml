@@ -67,6 +67,7 @@ pipeline:
         - Pulled
         - Pulling
         - RegisteredNode
+        - RELOAD
         - SandboxChanged
         - ScalingReplicaSet
         - Scheduled
@@ -75,6 +76,7 @@ pipeline:
         - SuccessfulAttachVolume
         - SuccessfulCreate
         - SuccessfulMountVolume
+        - Sync
         - LeaderElection
         - Provisioning
         - ProvisioningSucceeded
@@ -85,6 +87,7 @@ pipeline:
         - ContainerGCFailed
         - Evicted
         - ExceededGracePeriod
+        - FailedBinding
         - FailedCreatePodSandBox
         - FailedKillPod
         - FailedNodeAllocatableEnforcement
