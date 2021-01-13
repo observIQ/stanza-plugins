@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.36] - Unreleased
 ### Changed
+- Update `kubernetes_container` plugin ([PR180](https://github.com/observIQ/stanza-plugins/pull/180))
+  - Change move from `log` field back to `$record`
 ## [0.0.35] - 2021-01-11
 ### Changed
 - Update `nginx_ingress` plugin 
