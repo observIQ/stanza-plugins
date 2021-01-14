@@ -1,36 +1,7 @@
-version: 0.0.9
+version: 0.0.8
 title: Apache Tomcat
 description: Log parser for Apache Tomcat
-supported_platforms: 
-  - linux
-  - windows
-  - macos
-  - kubernetes
 parameters:
-  - name: source
-    label: Log source
-    description: Where the logs are coming from
-    type: enum
-    valid_values:
-      - file
-      - kubernetes
-    default: file
-  - name: pod_name
-    label: Pod Name
-    description: The pod name (without the unique identifier on the end)
-    type: string
-    required: true
-    relevant_if:
-      source:
-        equals: kubernetes
-  - name: container_name
-    label: Container Name
-    description: The container name of the Nginx container
-    type: string
-    default: "*"
-    relevant_if:
-      source:
-        equals: kubernetes
   - name: enable_access_log
     label: Access Logs
     description: Enable to collect Apache Tomcat access logs
@@ -42,8 +13,6 @@ parameters:
     type: string
     default: "/usr/local/tomcat/logs/localhost_access_log.*.txt"
     relevant_if:
-      source:
-        equals: file
       enable_access_log:
         equals: true
   - name: enable_catalina_log
@@ -57,8 +26,6 @@ parameters:
     type: string
     default: "/usr/local/tomcat/logs/catalina.out"
     relevant_if:
-      source:
-        equals: file
       enable_catalina_log:
         equals: true
   - name: start_at
@@ -69,57 +36,17 @@ parameters:
      - beginning
      - end
     default: end
-  - name: log_format
-    label: Log Format
-    description: |2
-      Default is unmodifed log_format settings for Apache HTTP
 
-      Observiq expects the following format. This format will generate a json log entry. This log_format can be modified to meet your requirements as long as key names do not change and it is valid json.
-    type: enum
-    valid_values:
-      - default
-      - observiq
-    default: default
 # Set Defaults
-# {{$source := default "file" .source}}
-# {{$pod_name := .pod_name}}
-# {{$container_name := default "*" .container_name}}
 # {{$enable_access_log := default true .enable_access_log}}
 # {{$access_log_path := default "/usr/local/tomcat/logs/localhost_access_log.*.txt" .access_log_path}}
 # {{$enable_catalina_log := default true .enable_catalina_log}}
 # {{$catalina_log_path := default "/usr/local/tomcat/logs/catalina.out" .catalina_log_path}}
 # {{$start_at := default "end" .start_at}}
-# {{$log_format := default "default" .log_format}}
 
 # Pipeline Template
 pipeline:
-  # {{ if eq $source "kubernetes" }}
-  - id: kubernetes_input
-    type: kubernetes_container
-    pod_name: '{{ $pod_name }}'
-    container_name: '{{ $container_name }}'
-    start_at: '{{ $start_at }}'
-
-  - id: k8s_input_router
-    type: router
-    routes:
-      # {{ if $enable_access_log }}
-      - expr: "$labels.stream == 'stdout'"
-        output: access_parser
-        labels:
-          log_type: 'tomcat.access'
-          plugin_id: '{{ .id }}'
-      # {{ end }}
-      # {{ if $enable_catalina_log }}
-      # TODO: Update expression
-      - expr: '$labels.stream == "stderr" and $record.message matches "\\d{4}\\/\\d{2}\\/\\d{2} \\d{2}:\\d{2}:\\d{2} \\[\\w+\\] \\d+\\.\\d+: "'
-        output: error_regex_parser
-        labels:
-          log_type: 'tomcat.catalina'
-          plugin_id: '{{ .id }}'
-      # {{ end }}
-  # {{ end }}
-  #{{ if and $enable_access_log (eq $source "file") }}
+  #{{ if $enable_access_log }}
   - id: tomcat_access_reader
     type: file_input
     include:
@@ -129,9 +56,7 @@ pipeline:
       log_type: 'tomcat.access'
       plugin_id: {{ .id }}
     output: access_regex_parser
-  # {{ end }}
 
-  # {{ if $enable_access_log }}
   - id: access_regex_parser
     type: regex_parser
     regex: '(?P<remote_host>[^\s]+) - (?P<remote_user>[^\s]+) \[(?P<timestamp>[^\]]+)\] "(?P<http_method>[A-Z]+) (?P<path>[^\s]+)[^"]+" (?P<http_status>\d+) (?P<bytes_sent>[^\s]+)'
