@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.2
+version: 0.0.3
 title: Syslog
 description: Log parser for Syslog
 parameters:
@@ -7,7 +7,7 @@ parameters:
     label: Listen Address
     description: A syslog address of the form `<ip>:<port>`
     type: string
-    default: ":514"
+    default: "0.0.0.0:514"
   - name: connection_type
     label: Connection Type
     description: The type of syslog connection (`udp` or `tcp`)
@@ -21,9 +21,9 @@ parameters:
     description: The protocol of received syslog messages (`rfc3164` or `rfc5424`)
     type: enum
     valid_values:
-      - rfc3164
-      - rfc5424
-    default: rfc5424
+      - rfc3164 (BSD)
+      - rfc5424 (IETF)
+    default: rfc5424 (IETF)
 
 # Set Defaults
 # {{$listen_address := default "0.0.0.0:514" .listen_address}}
