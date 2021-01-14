@@ -1,4 +1,4 @@
-version: 0.0.9
+version: 0.0.10
 title: Nginx
 description: Log parser for Nginx
 supported_platforms: 
@@ -182,6 +182,13 @@ pipeline:
         notice: 3xx
         warning: 4xx
         error: 5xx
+
+  - id: request_parser
+    type: regex_parser
+    parse_from: $record.request
+    preserve_to: $record.request
+    if: '$record.request != nil and $record.request matches "\\S+ +[^ ]* "'
+    regex: '(?P<method>\S+) +(?P<path>[^ ]* ((?P<protocol>[^/]*)/(?P<protocol_version>.*))|.*)?'
     output: {{ .output }}
   # {{ end }}
 
