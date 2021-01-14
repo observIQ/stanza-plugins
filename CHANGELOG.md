@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Update `syslog` plugin ([PR187](https://github.com/observIQ/stanza-plugins/pull/18))
   - Update `protocol` parameter valid values field to `rfc5424 (IETF)` and `rfc3164 (BSD)`
+  - Update `listen_address` default to 0.0.0.0:514
 ## [0.0.37] - 2021-01-14
 ### Changed
 - Update `nginx` plugin ([PR184](https://github.com/observIQ/stanza-plugins/pull/184))
