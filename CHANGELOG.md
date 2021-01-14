@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.38] - Unreleased
 ### Changed
+- Update `syslog` plugin ([PR187](https://github.com/observIQ/stanza-plugins/pull/18))
+  - Update `protocol` parameter valid values field to `rfc5424 (IETF)` and `rfc3164 (BSD)`
 ## [0.0.37] - 2021-01-14
 ### Changed
 - Update `nginx` plugin ([PR184](https://github.com/observIQ/stanza-plugins/pull/184))
