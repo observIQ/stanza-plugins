@@ -73,6 +73,7 @@ pipeline:
         - Scheduled
         - Started
         - Starting
+        - SuccessfulDelete
         - SuccessfulAttachVolume
         - SuccessfulCreate
         - SuccessfulMountVolume
