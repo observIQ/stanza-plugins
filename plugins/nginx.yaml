@@ -153,7 +153,7 @@ pipeline:
   # {{ if eq $log_format "default" }}
   - id: access_parser
     type: regex_parser
-    regex: '^(?P<remote_addr>[^ ]*) - (?P<remote_user>[^ ]*) \[(?P<time_local>[^\]]*)\] "(?P<method>\S+) +(?P<path>[^\"]*?)\S*" (?P<status>[^ ]*) (?P<body_bytes_sent>[^ ]*) "(?P<http_referer>[^\"]*)" "(?P<http_user_agent>[^\"]*)"'
+    regex: '^(?P<remote_addr>[^ ]*) - (?P<remote_user>[^ ]*) \[(?P<time_local>[^\]]*)\] "(?P<method>\S+) +(?P<path>[^ ]*) ((?P<protocol>[^/]*)/(?P<protocol_version>.*)|.*)?" (?P<status>[^ ]*) (?P<body_bytes_sent>[^ ]*) "(?P<http_referer>[^\"]*)" "(?P<http_user_agent>[^\"]*)"'
     timestamp:
       parse_from: time_local
       layout: '%d/%b/%Y:%H:%M:%S %z'
@@ -188,7 +188,7 @@ pipeline:
     parse_from: $record.request
     preserve_to: $record.request
     if: '$record.request != nil and $record.request matches "\\S+ +[^ ]* "'
-    regex: '(?P<method>\S+) +(?P<path>[^ ]* ((?P<protocol>[^/]*)/(?P<protocol_version>.*))|.*)?'
+    regex: '(?P<method>\S+) +(?P<path>[^ ]*) ((?P<protocol>[^/]*)/(?P<protocol_version>.*)|.*)?'
     output: {{ .output }}
   # {{ end }}
 
