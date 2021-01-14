@@ -6,11 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.37] - Unreleased
 ### Changed
 - Update `nginx` plugin ([PR184](https://github.com/observIQ/stanza-plugins/pull/184))
-  - Add `request` field parser for `protocol` and `protocol_version`
-  - Update default regex to parse `protocol` and `protocol_version`
+  - Add fields `protocol` and `protocol_version`
+  - Add `request` field parser for observIQ JSON format
 - Update `nginx_ingress` plugin ([PR184](https://github.com/observIQ/stanza-plugins/pull/184))
-  - Add `request` field parser for `protocol` and `protocol_version`
-  - Update default regex to parse `protocol` and `protocol_version`
+  - Add fields `protocol` and `protocol_version`
+  - Add `request` field parser for observIQ JSON format
   - Add `http_x_forwarded_for` field ([PR183](https://github.com/observIQ/stanza-plugins/pull/183))
 ## [0.0.36] - 2021-01-13
 ### Changed
