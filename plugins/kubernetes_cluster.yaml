@@ -115,7 +115,7 @@ pipeline:
     type: router
     default: {{ .output }}
     routes:
-      - output: log_restructure
+      - output: message_regex_parser
         expr: '$record.message matches "^\\w\\d{4}"'
 
   # Use journald to gather kubelet logs. Use provided path for journald if available otherwise use default locations.
