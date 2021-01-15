@@ -1,4 +1,4 @@
-version: 0.0.2
+version: 0.0.3
 title: BindPlane Universal Agent
 description: Agent logs for the BindPlane Universal Agent
 parameters:
@@ -30,7 +30,6 @@ pipeline:
       parse_from: level
     timestamp:
       parse_from: ts
-      preserve: false
       layout_type: gotime
       layout: '2006-01-02T15:04:05.000-0700'
 
