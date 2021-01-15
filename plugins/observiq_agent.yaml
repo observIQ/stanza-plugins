@@ -30,7 +30,6 @@ pipeline:
       parse_from: level
     timestamp:
       parse_from: ts
-      preserve: false
       layout_type: gotime
       layout: '2006-01-02T15:04:05.000-0700'
 
