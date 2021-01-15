@@ -5,13 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.38] - Unreleased
 ### Changed
+- Update `kubernetes_node` plugin ([PR188](https://github.com/observIQ/stanza-plugins/pull/188))
+  - Add router to route logs to glogs format parser if it matches pattern
 - Update `syslog` plugin ([PR187](https://github.com/observIQ/stanza-plugins/pull/187))
   - Update `protocol` parameter valid values field to `rfc5424 (IETF)` and `rfc3164 (BSD)`
   - Update `listen_address` default to 0.0.0.0:514
 - Update `kubernetes_events` plugin ([PR186](https://github.com/observIQ/stanza-plugins/pull/186))
   - Add SuccessfulDelete to info severity
-- Update `kubernetes_node` plugin ([PR188](https://github.com/observIQ/stanza-plugins/pull/188))
-  - Add router to route logs to glogs format parser if it matches pattern
 ## [0.0.37] - 2021-01-14
 ### Changed
 - Update `nginx` plugin ([PR184](https://github.com/observIQ/stanza-plugins/pull/184))
