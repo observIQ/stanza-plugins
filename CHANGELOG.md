@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add SuccessfulDelete to info severity
 - Update `observiq_agent` plugin ([PR189](https://github.com/observIQ/stanza-plugins/pull/189))
   - Remove `preserve` field as it has been removed from Stanza in favor of `preserve_to`
+- Update `bindplane_agent` plugin ([PR189](https://github.com/observIQ/stanza-plugins/pull/189))
+  - Remove `preserve` field as it has been removed from Stanza in favor of `preserve_to`
 ## [0.0.37] - 2021-01-14
 ### Changed
 - Update `nginx` plugin ([PR184](https://github.com/observIQ/stanza-plugins/pull/184))
