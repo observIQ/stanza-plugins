@@ -136,7 +136,7 @@ pipeline:
   - id: access_json_parser
     type: json_parser
     timestamp:
-      parse_from: time
+      parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%s%z'
     severity:
       parse_from: status
