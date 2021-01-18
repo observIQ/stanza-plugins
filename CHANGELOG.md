@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update `apache_http` plugin ([PR190](https://github.com/observIQ/stanza-plugins/pull/190))
   - Add parameter `log_format`
   - Add observiq JSON log format parsing for access and error logs
+  - Additional fields added by observiq format
+  - `http_x_forwarded_for`, `logid.request`, `logid.connection`
 - Update `syslog` plugin ([PR187](https://github.com/observIQ/stanza-plugins/pull/187))
   - Update `protocol` parameter valid values field to `rfc5424 (IETF)` and `rfc3164 (BSD)`
   - Update `listen_address` default to 0.0.0.0:514
