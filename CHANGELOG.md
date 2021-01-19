@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.38] - Unreleased
 ### Changed
+- Update `jboss` plugin ([PR191](https://github.com/observIQ/stanza-plugins/pull/191))
+  - Parse `error_id` from message field if it exists
 - Update `syslog` plugin ([PR187](https://github.com/observIQ/stanza-plugins/pull/187))
   - Update `protocol` parameter valid values field to `rfc5424 (IETF)` and `rfc3164 (BSD)`
   - Update `listen_address` default to 0.0.0.0:514
