@@ -1,4 +1,4 @@
-version: 0.0.11
+version: 0.0.12
 title: Kubernetes Node
 description: Log parser for Kubernetes Node
 supported_platforms:
@@ -68,10 +68,10 @@ pipeline:
           to: '$resource["k8s.namespace.name"]'
       - move:
           from: '$record.container_name'
-          to: '$resource["container.name"]'
+          to: '$resource["k8s.container.name"]'
       - move:
           from: '$record.container_id'
-          to: '$resource["container.id"]'
+          to: '$resource["k8s.container.id"]'
 
   # Add kubernetes metadata
   - id: add_kubernetes_metadata
@@ -83,19 +83,19 @@ pipeline:
     type: router
     routes:
       - output: log_restructure
-        expr: '$labels["k8s_pod_label/component"] == "kube-controller-manager"'
+        expr: '$labels["k8s-pod/component"] == "kube-controller-manager"'
         labels:
           log_type: 'k8s.controller'
       - output: log_restructure
-        expr: '$labels["k8s_pod_label/component"]  == "kube-scheduler"'
+        expr: '$labels["k8s-pod/component"]  == "kube-scheduler"'
         labels:
           log_type: 'k8s.scheduler'
       - output: log_restructure
-        expr: '$labels["k8s_pod_label/component"] == "kube-apiserver"'
+        expr: '$labels["k8s-pod/component"] == "kube-apiserver"'
         labels:
           log_type: 'k8s.apiserver'
       - output: log_restructure
-        expr: '$labels["k8s_pod_label/component"] startsWith "kube-proxy"'
+        expr: '$labels["k8s-pod/component"] startsWith "kube-proxy"'
         labels:
           log_type: 'k8s.proxy'
       - output: log_restructure
@@ -109,7 +109,14 @@ pipeline:
       - move:
           from: '$record.log'
           to: '$record.message'
-    output: {{ .output }}
+    output: glogs_parser_router
+
+  - id: glogs_parser_router
+    type: router
+    default: {{ .output }}
+    routes:
+      - output: message_regex_parser
+        expr: '$record.message matches "^\\w\\d{4}"'
 
   # Use journald to gather kubelet logs. Use provided path for journald if available otherwise use default locations.
   - id: kubelet_reader
@@ -144,17 +151,16 @@ pipeline:
   # If message field matches format then, parse it otherwise send down the pipeline.
   - id: kubelet_message_parser_router
     type: router
+    default: {{ .output }}
     routes:
       - output: message_regex_parser
         expr: '$record.message matches "^\\w\\d{4}"'
-      - output: {{ .output }}
-        expr: true
 
   # message field seems to match expected format.
   - id: message_regex_parser
     type: regex_parser
     parse_from: message
-    regex: '(?P<severity>\w)(?P<timestamp>\d{4} \d{2}:\d{2}:\d{2}.\d+)\s+(?P<pid>\d+)\s+(?P<source>[^ \]]+)\] (?P<message>.*)'
+    regex: '(?P<severity>\w)(?P<timestamp>\d{4} \d{2}:\d{2}:\d{2}.\d+)\s+(?P<pid>\d+)\s+(?P<src>[^:]*):(?P<src_line>[^\]]*)\] (?P<message>.*)'
     severity:
       parse_from: severity
       mapping:
