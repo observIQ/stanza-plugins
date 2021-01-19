@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update label `resource.container.name` to `resource.k8s.container.name`
   - Update label `resource.container.id` to `resource.k8s.container.id`
   - Update `add_labels_router` to point to correct label name `$labels["k8s-pod/component"]`
+  - Rename `source` field to `src` and parse `src_line`
 - Update `syslog` plugin ([PR187](https://github.com/observIQ/stanza-plugins/pull/187))
   - Update `protocol` parameter valid values field to `rfc5424 (IETF)` and `rfc3164 (BSD)`
   - Update `listen_address` default to 0.0.0.0:514
