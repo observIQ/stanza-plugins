@@ -37,7 +37,7 @@ pipeline:
 
   - id: jboss_parser
     type: regex_parser
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}).\d{3}\s*(?P<jboss_severity>\w+)\s*\[(?P<category>[^\]]*)\]\s*\((?P<thread>[^)]*)\)(?P<message>.*)\n'
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}).\d{3}\s*(?P<jboss_severity>\w+)\s*\[(?P<category>[^\]]*)\]\s*\((?P<thread>[^)]*)\)( (?P<error_id>[^:]*):)? (?P<message>.*)\n'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%d %H:%M:%S'
@@ -46,4 +46,4 @@ pipeline:
       mapping:
         emergency: fatal
         warning: warn
-    output: {{.output}}
+    output: {{ .output }}

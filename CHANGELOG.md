@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.38] - Unreleased
 ### Changed
+- Update `jboss` plugin ([PR191](https://github.com/observIQ/stanza-plugins/pull/191))
+  - Parse `error_id` from message field if it exists
 - Update `observiq_agent` plugin ([PR189](https://github.com/observIQ/stanza-plugins/pull/189))
   - Remove `preserve` field as it has been removed from Stanza in favor of `preserve_to`
 - Update `bindplane_agent` plugin ([PR189](https://github.com/observIQ/stanza-plugins/pull/189))
