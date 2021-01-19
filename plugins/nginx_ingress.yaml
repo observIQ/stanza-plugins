@@ -1,4 +1,4 @@
-version: 0.0.3
+version: 0.0.4
 title: Nginx Ingress
 description: Log parser for Nginx Ingress for Kubernetes
 supported_platforms: 
@@ -47,7 +47,7 @@ parameters:
                     '$upstream_response_length $upstream_response_time $upstream_status $req_id';
       
       Observiq expects the following format. This format will generate a json log entry. This log_format can be modified to meet your requirements as long as key names do not change and it is valid json.
-      log-format-upstream: '{"remote_addr":"$remote_addr","remote_user":"$remote_user","time_local":"$time_local","request":"$request","status":"$status","body_bytes_sent":"$body_bytes_sent","http_referer":"$http_referer","http_user_agent":"$http_user_agent","request_length":"$request_length","request_time":"$request_time","proxy_upstream_name":"$proxy_upstream_name","proxy_alternative_upstream_name":"$proxy_alternative_upstream_name","upstream_addr":"$upstream_addr","upstream_response_length":"$upstream_response_length","upstream_response_time":"$upstream_response_time","upstream_status":"$upstream_status","req_id":"$req_id","proxy_add_x_forwarded_for":"$proxy_add_x_forwarded_for","bytes_sent":"$bytes_sent","time_iso8601":"$time_iso8601","upstream_connect_time":"$upstream_connect_time","upstream_header_time":"$upstream_header_time","namespace":"$namespace","ingress_name":"$ingress_name","service_name":"$service_name","service_port":"$service_port"}'
+      log-format-upstream: '{"remote_addr":"$remote_addr","remote_user":"$remote_user","time_local":"$time_local","request":"$request","status":"$status","body_bytes_sent":"$body_bytes_sent","http_referer":"$http_referer","http_user_agent":"$http_user_agent","request_length":"$request_length","request_time":"$request_time","proxy_upstream_name":"$proxy_upstream_name","proxy_alternative_upstream_name":"$proxy_alternative_upstream_name","upstream_addr":"$upstream_addr","upstream_response_length":"$upstream_response_length","upstream_response_time":"$upstream_response_time","upstream_status":"$upstream_status","req_id":"$req_id","proxy_add_x_forwarded_for":"$proxy_add_x_forwarded_for","bytes_sent":"$bytes_sent","time_iso8601":"$time_iso8601","upstream_connect_time":"$upstream_connect_time","upstream_header_time":"$upstream_header_time","namespace":"$namespace","ingress_name":"$ingress_name","service_name":"$service_name","service_port":"$service_port","http_x_forwarded_for":"$http_x_forwarded_for"}'
     type: enum
     valid_values:
       - default
@@ -106,7 +106,7 @@ pipeline:
     # {{ if eq $log_format "default" }}
   - id: access_parser
     type: regex_parser
-    regex: '(?P<remote_addr>\S+) - (?P<remote_user>\S+) \[(?P<time_local>[^\]]+)\] "(?P<method>[A-Z]+) (?P<path>\S+) [^\"]+" (?P<status>\d+) (?P<body_bytes_sent>\d+) "(?P<http_referer>\S+)" "(?P<http_user_agent>[^"]+)" (?P<request_length>\d+) (?P<request_time>[\d\.]+) \[(?P<proxy_upstream_name>[^\]]*)\] \[(?P<proxy_alternative_upstream_name>\s*)\] (?P<upstream_addr>\S+) (?P<upstream_response_length>[\d-]+) (?P<upstream_response_time>[\d\.-]+) (?P<upstream_status>[\d-]+) (?P<request_id>[a-z0-9]+)'
+    regex: '(?P<remote_addr>\S+) - (?P<remote_user>\S+) \[(?P<time_local>[^\]]+)\] "(?P<method>\S+) +(?P<path>[^ ]*) ((?P<protocol>[^/]*)/(?P<protocol_version>.*)|.*)?" (?P<status>\d+) (?P<body_bytes_sent>\d+) "(?P<http_referer>\S+)" "(?P<http_user_agent>[^"]+)" (?P<request_length>\d+) (?P<request_time>[\d\.]+) \[(?P<proxy_upstream_name>[^\]]*)\] \[(?P<proxy_alternative_upstream_name>\s*)\] (?P<upstream_addr>\S+) (?P<upstream_response_length>[\d-]+) (?P<upstream_response_time>[\d\.-]+) (?P<upstream_status>[\d-]+) (?P<request_id>[a-z0-9]+)'
     timestamp:
       parse_from: time_local
       layout: '%d/%b/%Y:%H:%M:%S %z'
@@ -135,6 +135,13 @@ pipeline:
         notice: 3xx
         warning: 4xx
         error: 5xx
+
+  - id: request_parser
+    type: regex_parser
+    parse_from: $record.request
+    preserve_to: $record.request
+    if: '$record.request != nil and $record.request matches "\\S+ +[^ ]* "'
+    regex: '(?P<method>\S+) +(?P<path>[^ ]*) ((?P<protocol>[^/]*)/(?P<protocol_version>.*)|.*)?'
     output: {{ .output }}
     # {{ end }}
   # {{ end }}
