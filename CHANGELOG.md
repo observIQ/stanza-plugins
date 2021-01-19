@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Update `jboss` plugin ([PR191](https://github.com/observIQ/stanza-plugins/pull/191))
   - Parse `error_id` from message field if it exists
+- Update `apache_http` plugin ([PR190](https://github.com/observIQ/stanza-plugins/pull/190))
+  - Add parameter `log_format`
+  - Add observiq JSON log format parsing for access and error logs
+  - Additional fields added by observiq format
+  - `http_x_forwarded_for`, `logid.request`, `logid.connection`
 - Update `observiq_agent` plugin ([PR189](https://github.com/observIQ/stanza-plugins/pull/189))
   - Remove `preserve` field as it has been removed from Stanza in favor of `preserve_to`
 - Update `bindplane_agent` plugin ([PR189](https://github.com/observIQ/stanza-plugins/pull/189))
