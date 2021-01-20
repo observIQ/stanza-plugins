@@ -1,4 +1,4 @@
-version: 0.0.13
+version: 0.0.14
 title: Kubernetes Container
 id: kubernetes
 description: Log parser for Kubernetes
@@ -90,10 +90,10 @@ pipeline:
           to: '$resource["k8s.namespace.name"]'
       - move:
           from: '$record.container_name'
-          to: '$resource["container.name"]'
+          to: '$resource["k8s.container.name"]'
       - move:
           from: '$record.container_id'
-          to: '$resource["container.id"]'
+          to: '$resource["k8s.container.id"]'
 
   # Add kubernetes metadata
   - id: add_kubernetes_metadata
