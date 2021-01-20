@@ -1,0 +1,57 @@
+# Plugin Info
+version: 0.0.1
+title: Journald
+description: Journald input parser
+parameters:
+  - name: enable_journald_log_path
+    label: Enable Custom Journald Path
+    description: 'Enable to define custom Journald Log path. If not enabled it will read from "/run/journal" or "/var/log/journal" by default.'
+    type: bool
+    default: false
+  - name: journald_log_path
+    label: Custom Journald Log Path
+    description: 'Custom Journald Log path.'
+    type: string
+    relevant_if:
+      enable_journald_log_path:
+        equals: true
+  - name: start_at
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+  - name: log_type
+    label: Log Type
+    description: Adds label log_type to identify journald source.
+    type: string
+    default: journald
+# Set Defaults
+# {{$enable_journald_log_path := default false .enable_journald_log_path}}
+# {{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+  - type: journald_input
+    # {{ if $enable_journald_log_path }}
+    directory: '{{ $enable_journald_log_path }}'
+    # {{ end }}
+    start_at: {{ $start_at }}
+    labels:
+      plugin_id: {{ .id }}
+      log_type: '{{ $log_type }}'
+
+  - type: severity_parser
+    parse_from: $record.PRIORITY
+    mapping:
+      emergency: 0
+      alert: 1
+      critical: 2
+      error: 3
+      warning: 4
+      notice: 5
+      info: 6
+      debug: 7
+    output: {{ .output }}
