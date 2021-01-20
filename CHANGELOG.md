@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.39] - Unreleased
 ### Changed
+- Update `tail` plugin ([PR193](https://github.com/observIQ/stanza-plugins/pull/193))
+  - Remove parameters `poll_interval`, `file_name`, and `file_path`
+  - Set to always add file_name label
+  - Add `revelent_if` if `enable_multiline` is true to `multiline_line_start_pattern`
+  - Require `multiline_line_start_pattern` and remove default pattern
+  - Update `log_type` and `multiline_line_start_pattern` description
 ## [0.0.38] - 2021-01-20
 ### Changed
 - Update `jboss` plugin ([PR191](https://github.com/observIQ/stanza-plugins/pull/191))
