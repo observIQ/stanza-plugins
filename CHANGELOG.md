@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `journald` plugin ([PR194](https://github.com/observIQ/stanza-plugins/pull/194))
   - Add journald operator as a plugin
 ### Changed
+- Update `tail` plugin ([PR193](https://github.com/observIQ/stanza-plugins/pull/193))
+  - Remove parameters `poll_interval`, `file_name`, and `file_path`
+  - Set to always add file_name label
+  - Add `relevant_if` if `enable_multiline` is true to `multiline_line_start_pattern`
+  - Require `multiline_line_start_pattern` and remove default pattern
+  - Update `log_type` and `multiline_line_start_pattern` description
 ## [0.0.38] - 2021-01-20
 ### Changed
 - Update `jboss` plugin ([PR191](https://github.com/observIQ/stanza-plugins/pull/191))
