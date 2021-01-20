@@ -3,19 +3,44 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-## [0.0.38] - Unreleased
+## [0.0.39] - Unreleased
+### Added
+- Add `journald` plugin ([PR194](https://github.com/observIQ/stanza-plugins/pull/194))
+  - Add journald operator as a plugin
+### Changed
+- Update `kubernetes_container` plugin ([PR195](https://github.com/observIQ/stanza-plugins/pull/195))
+  - Update label `resource.container.name` to `resource.k8s.container.name`
+  - Update label `resource.container.id` to `resource.k8s.container.id`
+- Update `tail` plugin ([PR193](https://github.com/observIQ/stanza-plugins/pull/193))
+  - Remove parameters `poll_interval`, `file_name`, and `file_path`
+  - Set to always add file_name label
+  - Add `relevant_if` if `enable_multiline` is true to `multiline_line_start_pattern`
+  - Require `multiline_line_start_pattern` and remove default pattern
+  - Update `log_type` and `multiline_line_start_pattern` description
+## [0.0.38] - 2021-01-20
 ### Changed
 - Update `jboss` plugin ([PR191](https://github.com/observIQ/stanza-plugins/pull/191))
   - Parse `error_id` from message field if it exists
+- Update `apache_http` plugin ([PR190](https://github.com/observIQ/stanza-plugins/pull/190))
+  - Add parameter `log_format`
+  - Add observiq JSON log format parsing for access and error logs
+  - Additional fields added by observiq format
+  - `http_x_forwarded_for`, `logid.request`, `logid.connection`
+- Update `observiq_agent` plugin ([PR189](https://github.com/observIQ/stanza-plugins/pull/189))
+  - Remove `preserve` field as it has been removed from Stanza in favor of `preserve_to`
+- Update `bindplane_agent` plugin ([PR189](https://github.com/observIQ/stanza-plugins/pull/189))
+  - Remove `preserve` field as it has been removed from Stanza in favor of `preserve_to`
+- Update `kubernetes_node` plugin ([PR188](https://github.com/observIQ/stanza-plugins/pull/188))
+  - Add router to route logs to glogs format parser if it matches pattern
+  - Update label `resource.container.name` to `resource.k8s.container.name`
+  - Update label `resource.container.id` to `resource.k8s.container.id`
+  - Update `add_labels_router` to point to correct label name `$labels["k8s-pod/component"]`
+  - Rename `source` field to `src` and parse `src_line`
 - Update `syslog` plugin ([PR187](https://github.com/observIQ/stanza-plugins/pull/187))
   - Update `protocol` parameter valid values field to `rfc5424 (IETF)` and `rfc3164 (BSD)`
   - Update `listen_address` default to 0.0.0.0:514
 - Update `kubernetes_events` plugin ([PR186](https://github.com/observIQ/stanza-plugins/pull/186))
   - Add SuccessfulDelete to info severity
-- Update `observiq_agent` plugin ([PR189](https://github.com/observIQ/stanza-plugins/pull/189))
-  - Remove `preserve` field as it has been removed from Stanza in favor of `preserve_to`
-- Update `bindplane_agent` plugin ([PR189](https://github.com/observIQ/stanza-plugins/pull/189))
-  - Remove `preserve` field as it has been removed from Stanza in favor of `preserve_to`
 ## [0.0.37] - 2021-01-14
 ### Changed
 - Update `nginx` plugin ([PR184](https://github.com/observIQ/stanza-plugins/pull/184))
