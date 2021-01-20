@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `journald` plugin ([PR194](https://github.com/observIQ/stanza-plugins/pull/194))
   - Add journald operator as a plugin
 ### Changed
+- Update `kubernetes_container` plugin ([PR195](https://github.com/observIQ/stanza-plugins/pull/195))
+  - Update label `resource.container.name` to `resource.k8s.container.name`
+  - Update label `resource.container.id` to `resource.k8s.container.id`
 - Update `tail` plugin ([PR193](https://github.com/observIQ/stanza-plugins/pull/193))
   - Remove parameters `poll_interval`, `file_name`, and `file_path`
   - Set to always add file_name label
