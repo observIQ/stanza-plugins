@@ -31,6 +31,7 @@ parameters:
 # Set Defaults
 # {{$enable_journald_log_path := default false .enable_journald_log_path}}
 # {{$start_at := default "end" .start_at}}
+# {{$log_type := default "journald" .log_type}}
 
 # Pipeline Template
 pipeline:
