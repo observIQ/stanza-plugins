@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.6
+version: 0.0.7
 title: Kubernetes Events
 description: Kubernetes Events Parser
 supported_platforms:
@@ -21,9 +21,9 @@ parameters:
 pipeline:
   - type: k8s_event_input
     namespaces:
-{{ range $i, $ns := .namespaces  }}
+# {{ range $i, $ns := .namespaces  }}
       - {{ $ns }}
-{{ end }}
+# {{ end }}
     labels:
       plugin_id: '{{ .id }}'
       log_type: "k8s.events"
@@ -95,6 +95,7 @@ pipeline:
         - FailedPostStartHook
         - FailedPreStopHook
         - FailedSync
+        - FailedToUpdateEndpoint
         - FailedValidation
         - HostPortConflict
         - ImageGCFailed
