@@ -45,7 +45,7 @@ parameters:
       To setup, edit Apache's configuration. Add both log formats to the logging section. On Debian, update all `sites-enabled` configurations to include `CustomLog ${APACHE_LOG_DIR}/access.log observiq`. On CentOS, update Apache's configuration to include `CustomLog "logs/access_log" observiq`.
 
       Access Log Format:
-      Logformat "{\"timestamp\":\"%{%Y-%m-%dT%T}t.%{usec_frac}t%{%z}t\",\"remote_addr\":\"%a\",\"request\":{\"protocol\":\"%H\",\"method\":\"%m\",\"query\":\"%q\",\"path\":\"%U\"},\"status\":\"%>s\",\"http_user_agent\":\"%{User-agent}i\",\"http_referer\":\"%{Referer}i\",\"remote_user\":\"%u\",\"body_bytes_sent\":\"%b\",\"request_time_microseconds\":\"%D\",\"http_x_forwarded_for\":\"%{X-Forwarded-For}i\"}" observiq
+      Logformat "{\"timestamp\":\"%{%Y-%m-%dT%T}t.%{usec_frac}t%{%z}t\",\"remote_addr\":\"%a\",\"protocol\":\"%H\",\"method\":\"%m\",\"query\":\"%q\",\"path\":\"%U\",\"status\":\"%>s\",\"http_user_agent\":\"%{User-agent}i\",\"http_referer\":\"%{Referer}i\",\"remote_user\":\"%u\",\"body_bytes_sent\":\"%b\",\"request_time_microseconds\":\"%D\",\"http_x_forwarded_for\":\"%{X-Forwarded-For}i\"}" observiq
 
       Error Log Format:
       ErrorLogFormat "{\"time\":\"%{cu}t\",\"module\":\"%-m\",\"client\":\"%-a\",\"http_x_forwarded_for\":\"%-{X-Forwarded-For}i\",\"log_level\":\"%-l\",\"pid\":\"%-P\",\"tid\":\"%-T\",\"message\":\"%-M\",\"logid\":{\"request\":\"%-L\",\"connection\":\"%-{c}L\"},\"request_note_name\":\"%-{name}n\"}"
