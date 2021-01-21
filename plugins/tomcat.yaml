@@ -163,12 +163,12 @@ pipeline:
         notice: 3xx
         warning: 4xx
         error: 5xx
-  #   output: access_protocol_parser
+    output: access_protocol_parser
 
-  # - id: access_protocol_parser
-  #   type: regex_parser
-  #   parse_from: $record.protocol
-  #   regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
+  - id: access_protocol_parser
+    type: regex_parser
+    parse_from: $record.protocol
+    regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
     output: {{ .output }}
     # {{ end }}
   #{{ end }}
