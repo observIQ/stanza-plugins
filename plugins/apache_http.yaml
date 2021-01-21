@@ -1,4 +1,4 @@
-version: 0.0.5
+version: 0.0.6
 title: Apache HTTP Server
 description: Log parser for Apache HTTP Server
 parameters:
@@ -93,7 +93,7 @@ pipeline:
   # {{ if eq $log_format "default" }}
   - id: access_regex_parser
     type: regex_parser
-    regex: '^(?P<remote_addr>[^ ]*) (?P<remote_host>[^ ]*) (?P<remote_user>[^ ]*) \[(?P<time>[^\]]*)\] "(?P<method>\S+)(?: +(?P<path>[^\"]*?)(?: +\S*)?)?" (?P<status>[^ ]*) (?P<body_bytes_sent>[^ ]*)(?: "(?P<http_referer>[^\"]*)" "(?P<http_user_agent>[^\"]*)"(?:\s+(?P<http_x_forwarded_for>[^ ]+))?)?'
+    regex: '^(?P<remote_addr>[^ ]*) (?P<remote_host>[^ ]*) (?P<remote_user>[^ ]*) \[(?P<time>[^\]]*)\] "(?P<method>\S+) +(?P<path>[^ ]*)( (?P<protocol>[^/]*)/(?P<protocol_version>[^\"]*)|[^\"]*)?" (?P<status>[^ ]*) (?P<body_bytes_sent>[^ ]*)(?: "(?P<http_referer>[^\"]*)" "(?P<http_user_agent>[^\"]*)"(?:\s+(?P<http_x_forwarded_for>[^ ]+))?)?'
     timestamp:
       parse_from: time
       layout: '%d/%b/%Y:%H:%M:%S %z'
@@ -151,8 +151,7 @@ pipeline:
 
   - id: access_protocol_parser
     type: regex_parser
-    parse_from: $record.request.protocol
-    parse_to: $record.request
+    parse_from: $record.protocol
     regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
     output: {{ .output }}
 
