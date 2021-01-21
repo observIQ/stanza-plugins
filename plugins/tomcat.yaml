@@ -73,8 +73,11 @@ parameters:
     label: Log Format
     description: |2
       Default is unmodifed log_format settings for Apache HTTP
-
+      
       Observiq expects the following format. This format will generate a json log entry. This log_format can be modified to meet your requirements as long as key names do not change and it is valid json.
+      suffix=".json"
+      pattern="{&quot;remote_host&quot;: &quot;%h&quot;,&quot;timestamp&quot;: &quot;%t&quot;,&quot;remote_user&quot;: &quot;%u&quot;,&quot;user_session_id&quot;: &quot;%S&quot;,&quot;method&quot;: &quot;%m&quot;,&quot;path&quot;: &quot;%U&quot;,&quot;status&quot;: &quot;%s&quot;,&quot;bytes_sent&quot;: &quot;%b&quot;,&quot;protocol&quot;: &quot;%H&quot;,&quot;query&quot;: &quot;%q&quot;,&quot;http_x_forwarded_for&quot;: &quot;%{X-Forwarded-For}i&quot;,&quot;user_agent&quot;: &quot;%{User-Agent}i&quot;,&quot;commit_millis&quot;: &quot;%F&quot;,&quot;process_millis&quot;: &quot;%D&quot;,&quot;thread_name&quot;: &quot;%I&quot;}" />
+
     type: enum
     valid_values:
       - default
