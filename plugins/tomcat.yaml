@@ -153,7 +153,7 @@ pipeline:
     type: json_parser
     timestamp:
       parse_from: timestamp
-      layout: '%Y-%m-%dT%H:%M:%S.%s%z'
+      layout: '[%d/%h/%Y:%H:%M:%S %z]'
     severity:
       parse_from: status
       preset: none
@@ -163,12 +163,12 @@ pipeline:
         notice: 3xx
         warning: 4xx
         error: 5xx
-    output: access_protocol_parser
+  #   output: access_protocol_parser
 
-  - id: access_protocol_parser
-    type: regex_parser
-    parse_from: $record.protocol
-    regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
+  # - id: access_protocol_parser
+  #   type: regex_parser
+  #   parse_from: $record.protocol
+  #   regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
     output: {{ .output }}
     # {{ end }}
   #{{ end }}
