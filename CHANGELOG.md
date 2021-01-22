@@ -8,13 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `journald` plugin ([PR194](https://github.com/observIQ/stanza-plugins/pull/194))
   - Add journald operator as a plugin
 ### Changed
+- Update `oracledb` plugin ([PR199](https://github.com/observIQ/stanza-plugins/pull/199))
+  - Change `status` field to `status_code` in audit and listner logs
 - Update `apache_http` plugin ([PR198](https://github.com/observIQ/stanza-plugins/pull/198))
   - Parse `protocol` and `protocol_version` in default format
   - Change JSON spec to not nest request fields under request
   - Update `parse_from` path for access_protocol_parser to $record.protocol
 - Update `tomcat` plugin ([PR197](https://github.com/observIQ/stanza-plugins/pull/197))
   - Add kubernetes ingest option
-  - Add `log_format` with default and observiq options 
+  - Add `log_format` with default and observiq options
 - Update `kubernetes_events` plugin ([PR196](https://github.com/observIQ/stanza-plugins/pull/196))
   - Add `FailedToUpdateEndpoint` to warning severity
 - Update `kubernetes_container` plugin ([PR195](https://github.com/observIQ/stanza-plugins/pull/195))
