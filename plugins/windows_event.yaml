@@ -22,12 +22,12 @@ parameters:
     default: true
   - name: enable_custom_channels
     label: Custom Events Channel
-    description: Enable to collect custom event logs from provided channel
+    description: Enable to collect custom event logs from provided channels
     type: bool
     default: false
   - name: custom_channels
-    label: Exclude files
-    description: A pattern of files to exclude
+    label: Custom Event Channels
+    description: Add custom channels to get event logs
     type: strings
     required: true
     relevant_if:
