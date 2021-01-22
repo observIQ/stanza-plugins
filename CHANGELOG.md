@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.40] - Unreleased
 ### Changed
 - Update `kubernetes_node` plugin ([PR201](https://github.com/observIQ/stanza-plugins/pull/201))
-  - Add `severity_parser` to parse $record.PRIORITY for kubelet logs when router doesn't match glogs format
+  - Add `severity_parser` to parse $record.PRIORITY when router doesn't match glogs format
 ## [0.0.39] - 2021-01-22
 ### Added
 - Add `journald` plugin ([PR194](https://github.com/observIQ/stanza-plugins/pull/194))
