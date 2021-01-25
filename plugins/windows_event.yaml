@@ -104,7 +104,7 @@ pipeline:
 
 # {{ if $enable_custom_channels }}
   # {{ range $index, $element := .custom_channels }}
-  - id: '{{$element}}_event_input'
+  - id: 'custom_event_input_1'
     type: windows_eventlog_input
     channel: {{$element}}
     max_reads: {{ $max_reads }}
