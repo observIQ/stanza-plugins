@@ -1,4 +1,4 @@
-version: 0.0.10
+version: 0.0.11
 title: Nginx
 description: Log parser for Nginx
 supported_platforms: 
@@ -19,6 +19,7 @@ parameters:
     label: Pod Name
     description: The pod name (without the unique identifier on the end)
     type: string
+    default: 'nginx-*'
     required: true
     relevant_if:
       source:
