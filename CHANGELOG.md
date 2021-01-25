@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.40] - Unreleased
 ### Changed
+- Update `mysql` plugin ([PR204](https://github.com/observIQ/stanza-plugins/pull/204))
+  - Change slow query log `id` field to `tid`
 - Update `tomcat` plugin ([PR203](https://github.com/observIQ/stanza-plugins/pull/203))
   - Add default for `pod_name` parameter
 - Update `nginx` plugin ([PR203](https://github.com/observIQ/stanza-plugins/pull/203))
