@@ -23,6 +23,7 @@ parameters:
     description: A Regex pattern that matches the start of a multiline log entry in the log file.
     type: string
     default: ''
+    required: true
     relevant_if:
       enable_multiline:
         equals: true
