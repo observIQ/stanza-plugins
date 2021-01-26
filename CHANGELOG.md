@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.40] - Unreleased
 ### Changed
+- Update `journald` plugin ([PR208](https://github.com/observIQ/stanza-plugins/pull/208))
+  - Add `supported_platforms` with linux as only option
 - Update `tomcat` plugin ([PR206](https://github.com/observIQ/stanza-plugins/pull/206))
   - Add default for `pod_name` parameter
   - Update description for `log_format`
