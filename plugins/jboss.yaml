@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.3
+version: 0.0.4
 title: JBoss
 description: 'Log parser for JBoss. This plugin expects the following starting format: %d{yyyy-MM-dd HH\:mm\:ss,SSS} %-5p [%c] (%t)'
 parameters:
@@ -37,7 +37,7 @@ pipeline:
 
   - id: jboss_parser
     type: regex_parser
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}).\d{3}\s*(?P<jboss_severity>\w+)\s*\[(?P<category>[^\]]*)\]\s*\((?P<thread>[^)]*)\)( (?P<error_id>[^:]*):)? (?P<message>.*)\n'
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}).\d{3}\s*(?P<jboss_severity>\w+)\s*\[(?P<category>[^\]]*)\]\s*\((?P<thread>[^)]*)\)( (?P<id>[^:]*):)? (?P<message>.*)\n'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%d %H:%M:%S'
