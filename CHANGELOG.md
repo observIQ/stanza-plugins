@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update `postgresql` plugin ([PR209](https://github.com/observIQ/stanza-plugins/pull/2019)
   - Change general regex parser to only parse duration from message.
   - Parse `client_address_port` from `client_address` field
+  - Update description for `plugin`
 - Update `kubernetes_node` plugin ([PR201](https://github.com/observIQ/stanza-plugins/pull/201))
   - Add `severity_parser` to parse kubelet severity from $record.PRIORITY when router doesn't match glogs format
 ## [0.0.39] - 2021-01-22
