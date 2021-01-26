@@ -102,17 +102,19 @@ pipeline:
     output: {{ .output }}
 # {{ end }}
 
+# {{$output := .output}}
+# {{$id := .id}}
 # {{ if $enable_custom_channels }}
   # {{ range $index, $element := .custom_channels }}
-  - id: 'custom_event_input_1'
+  - id: custom_event_input_{{$index}}
     type: windows_eventlog_input
     channel: {{$element}}
-    max_reads: {{ $max_reads }}
-    poll_interval: {{ $poll_interval }}
+    max_reads: {{$max_reads}}
+    poll_interval: {{$poll_interval}}
     labels:
       log_type: "windows_event.{{$element}}"
-      plugin_id: {{ .id }}
-    start_at: {{ $start_at }}
-    output: {{ .output }}
+      plugin_id: {{$id}}
+    start_at: beginning
+    output: {{$output}}
   # {{ end }}
 # {{ end }}
