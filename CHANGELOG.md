@@ -9,6 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Change general regex parser to only parse duration from message.
   - Parse `client_address_port` from `client_address` field
   - Update description for `plugin`
+- Update `journald` plugin ([PR208](https://github.com/observIQ/stanza-plugins/pull/208))
+  - Add `supported_platforms` with linux as only option
+- Update `tomcat` plugin ([PR206](https://github.com/observIQ/stanza-plugins/pull/206))
+  - Add default for `pod_name` parameter
+  - Update description for `log_format`
+- Update `nginx` plugin ([PR206](https://github.com/observIQ/stanza-plugins/pull/206))
+  - Add default for `pod_name` parameter
+  - Update description for `log_format`
+- Update `tail` plugin ([PR206](https://github.com/observIQ/stanza-plugins/pull/206))
+  - Add default for `multiline_line_start_pattern` parameter
 - Update `kubernetes_node` plugin ([PR201](https://github.com/observIQ/stanza-plugins/pull/201))
   - Add `severity_parser` to parse kubelet severity from $record.PRIORITY when router doesn't match glogs format
 ## [0.0.39] - 2021-01-22
