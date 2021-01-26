@@ -112,7 +112,7 @@ pipeline:
     max_reads: {{$max_reads}}
     poll_interval: {{$poll_interval}}
     labels:
-      log_type: "windows_event.{{$element}}"
+      log_type: "windows_event.custom"
       plugin_id: {{$id}}
     start_at: beginning
     output: {{$output}}
