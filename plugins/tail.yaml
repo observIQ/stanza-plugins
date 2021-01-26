@@ -2,6 +2,7 @@
 version: 0.0.3
 title: Tail
 description: File Input Parser
+min_stanza_version: 0.13.12
 parameters:
   - name: file_log_path
     label: File Log Path
