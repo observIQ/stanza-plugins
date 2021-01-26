@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update `kubernetes_cluster` plugin ([PR201](https://github.com/observIQ/stanza-plugins/pull/201))
 - Update `journald` plugin ([PR208](https://github.com/observIQ/stanza-plugins/pull/208))
   - Add `supported_platforms` with linux as only option
+- Update `jboss` plugin ([PR207](https://github.com/observIQ/stanza-plugins/pull/207))
+  - Update `error_id` field name to `id`
 - Update `tomcat` plugin ([PR206](https://github.com/observIQ/stanza-plugins/pull/206))
   - Add default for `pod_name` parameter
   - Update description for `log_format`
