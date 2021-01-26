@@ -1,19 +1,6 @@
 version: 0.0.6
 title: PostgreSQL
-description: |2
-  Log parser for PostgreSQL. This plugin expects the following settings in postgresql.conf:
-  log_destination = 'stderr'
-  logging_collector = on
-  log_directory = 'pg_log'
-  log_filename = 'postgresql-%Y-%m-%d_%H%M%S.log'
-  log_truncate_on_rotation = off
-  log_rotation_age = 1d
-  log_min_duration_statement = 0
-  log_connections = on
-  log_duration = on
-  log_hostname = on
-  log_timezone = 'UTC'
-  log_line_prefix = 't=%t p=%p s=%c l=%l u=%u db=%d r=%r '
+description: 'Log parser for PostgreSQL. This plugin expects the custom settings in postgresql.conf. See our help documentation for setup requirements.'
 parameters:
   - name: postgresql_log_path
     label: PostgreSQL Log Path
