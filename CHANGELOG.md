@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.40] - Unreleased
 ### Changed
+- Update `postgresql` plugin ([PR209](https://github.com/observIQ/stanza-plugins/pull/2019)
+  - Change general regex parser to only parse duration from message.
+  - Parse `client_address_port` from `client_address` field
+  - Update description for `plugin`
 - Update `journald` plugin ([PR208](https://github.com/observIQ/stanza-plugins/pull/208))
   - Add `supported_platforms` with linux as only option
 - Update `jboss` plugin ([PR207](https://github.com/observIQ/stanza-plugins/pull/207))
