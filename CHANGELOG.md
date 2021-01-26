@@ -7,8 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Update `tomcat` plugin ([PR206](https://github.com/observIQ/stanza-plugins/pull/206))
   - Add default for `pod_name` parameter and remove `required: true`
-  - Update `nginx` plugin ([PR206](https://github.com/observIQ/stanza-plugins/pull/206))
+- Update `nginx` plugin ([PR206](https://github.com/observIQ/stanza-plugins/pull/206))
   - Add default for `pod_name` parameter  and remove `required: true`
+- Update `tail` plugin ([PR206](https://github.com/observIQ/stanza-plugins/pull/206))
+  - Add default for `multiline_line_start_pattern` parameter  and remove `required: true`
 - Update `kubernetes_node` plugin ([PR201](https://github.com/observIQ/stanza-plugins/pull/201))
   - Add `severity_parser` to parse kubelet severity from $record.PRIORITY when router doesn't match glogs format
 ## [0.0.39] - 2021-01-22
