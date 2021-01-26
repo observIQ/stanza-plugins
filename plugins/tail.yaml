@@ -1,7 +1,8 @@
 # Plugin Info
-version: 0.0.2
+version: 0.0.3
 title: Tail
 description: File Input Parser
+min_stanza_version: 0.13.12
 parameters:
   - name: file_log_path
     label: File Log Path
@@ -22,6 +23,7 @@ parameters:
     label: Multiline Start Pattern
     description: A Regex pattern that matches the start of a multiline log entry in the log file.
     type: string
+    default: ''
     required: true
     relevant_if:
       enable_multiline:
