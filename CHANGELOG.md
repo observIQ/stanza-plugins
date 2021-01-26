@@ -5,6 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.40] - Unreleased
 ### Changed
+- Update `kubernetes_cluster` plugin ([PR201](https://github.com/observIQ/stanza-plugins/pull/201))
 - Update `journald` plugin ([PR208](https://github.com/observIQ/stanza-plugins/pull/208))
   - Add `supported_platforms` with linux as only option
 - Update `tomcat` plugin ([PR206](https://github.com/observIQ/stanza-plugins/pull/206))
@@ -15,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Update description for `log_format`
 - Update `tail` plugin ([PR206](https://github.com/observIQ/stanza-plugins/pull/206))
   - Add default for `multiline_line_start_pattern` parameter
+- Update `nginx_ingress` plugin ([PR205](https://github.com/observIQ/stanza-plugins/pull/205))
+  - Update `k8s_input_router` to match from `$record` instead of `$record.message`
 - Update `kubernetes_node` plugin ([PR201](https://github.com/observIQ/stanza-plugins/pull/201))
   - Add `severity_parser` to parse kubelet severity from $record.PRIORITY when router doesn't match glogs format
 ## [0.0.39] - 2021-01-22
