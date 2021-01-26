@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.40] - Unreleased
 ### Changed
+- Update `jboss` plugin ([PR207](https://github.com/observIQ/stanza-plugins/pull/207))
+  - Update `error_id` field name to `id`
 - Update `kubernetes_node` plugin ([PR201](https://github.com/observIQ/stanza-plugins/pull/201))
   - Add `severity_parser` to parse kubelet severity from $record.PRIORITY when router doesn't match glogs format
 ## [0.0.39] - 2021-01-22
