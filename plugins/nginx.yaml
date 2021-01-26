@@ -1,6 +1,7 @@
-version: 0.0.10
+version: 0.0.11
 title: Nginx
 description: Log parser for Nginx
+min_stanza_version: 0.13.12
 supported_platforms: 
   - linux
   - windows
@@ -19,6 +20,7 @@ parameters:
     label: Pod Name
     description: The pod name (without the unique identifier on the end)
     type: string
+    default: 'nginx-*'
     required: true
     relevant_if:
       source:
@@ -71,14 +73,7 @@ parameters:
     default: end
   - name: log_format
     label: Log Format
-    description: |2
-      Default is unmodifed log_format settings for NGINX
-      log_format combined '$remote_addr - $remote_user [$time_local] '
-                    '"$request" $status $body_bytes_sent '
-                    '"$http_referer" "$http_user_agent"';
-
-      Observiq expects the following format. This format will generate a json log entry. This log_format can be modified to meet your requirements as long as key names do not change and it is valid json.
-      log_format observiq '{"remote_addr":"$remote_addr","remote_user":"$remote_user","time_local":"$time_local","request":"$request","status":"$status","body_bytes_sent":"$body_bytes_sent","http_referer":"$http_referer","http_user_agent":"$http_user_agent","request_length":"$request_length","request_time":"$request_time","upstream_addr":"$upstream_addr","upstream_response_length":"$upstream_response_length","upstream_response_time":"$upstream_response_time","upstream_status":"$upstream_status","proxy_add_x_forwarded_for":"$proxy_add_x_forwarded_for","bytes_sent":"$bytes_sent","time_iso8601":"$time_iso8601","upstream_connect_time":"$upstream_connect_time","upstream_header_time":"$upstream_header_time","http_x_forwarded_for":"$http_x_forwarded_for"}';
+    description: Default is unmodifed log_format settings for NGINX. Observiq is a our recommended spec that we defined to get extra information from the log. See our help documentation for setup requirements.
     type: enum
     valid_values:
       - default
@@ -92,7 +87,7 @@ parameters:
 # {{$enable_error_log := default true .enable_error_log}}
 # {{$error_log_path := default "/var/log/nginx/error.log*" .error_log_path}}
 # {{$start_at := default "end" .start_at}}
-# {{$pod_name := .pod_name}}
+# {{$pod_name := default "nginx-*" .pod_name}}
 # {{$container_name := default "*" .container_name}}
 # {{$log_format := default "default" .log_format}}
 
