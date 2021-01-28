@@ -1,4 +1,4 @@
-version: 0.0.1
+version: 0.0.3
 title: BindPlane Universal Agent
 description: Agent logs for the BindPlane Universal Agent
 parameters:
@@ -10,14 +10,16 @@ parameters:
       - beginning
       - end
     default: end
+# Set Defaults
+# {{$start_at := default "end" .start_at}}
+# Pipeline Template
 pipeline:
-
   - id: log_reader
     type: file_input
     include:
       - log/manager.log
       - log/launcher.log
-    start_at: {{ or .start_at "end" }}
+    start_at: {{ $start_at }}
     labels:
       log_type: bindplane.agent
       plugin_id: {{ .id }}
@@ -28,9 +30,21 @@ pipeline:
       parse_from: level
     timestamp:
       parse_from: ts
-      preserve: false
       layout_type: gotime
       layout: '2006-01-02T15:04:05.000-0700'
+
+  - id: log_type_router
+    type: router
+    default: log_restructure
+    routes:
+      - output: log_restructure
+        expr: '$labels.file_name == "manager.log"'
+        labels:
+          log_type: bindplane.agent.manager
+      - output: log_restructure
+        expr: '$labels.file_name == "launcher.log"'
+        labels:
+          log_type: bindplane.agent.launcher
 
   - id: log_restructure
     type: restructure
@@ -42,4 +56,8 @@ pipeline:
 
   - id: stanza_log
     type: stanza_input
+
+  - type: metadata
+    labels:
+      log_type: bindplane.agent.logagent
     output: {{ .output }}

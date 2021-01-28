@@ -1,7 +1,8 @@
 # Plugin Info
-version: 0.0.1
+version: 0.0.3
 title: Tail
 description: File Input Parser
+min_stanza_version: 0.13.12
 parameters:
   - name: file_log_path
     label: File Log Path
@@ -13,11 +14,6 @@ parameters:
     description: An array of file log path glob patterns to be excluded.
     type: strings
     default: []
-  - name: poll_interval
-    label: Poll Interval
-    description: The duration between filesystem polls.
-    type: string
-    default: 200ms
   - name: enable_multiline
     label: Enable Multiline
     description: Enable to parse Multiline Log Files
@@ -25,9 +21,13 @@ parameters:
     default: false
   - name: multiline_line_start_pattern
     label: Multiline Start Pattern
-    description: A Regex pattern to match with start of a line.
+    description: A Regex pattern that matches the start of a multiline log entry in the log file.
     type: string
-    default: "Start of line Regex Pattern"
+    default: ''
+    required: true
+    relevant_if:
+      enable_multiline:
+        equals: true
   - name: encoding
     label: Encoding
     description: The encoding of the log file.
@@ -40,29 +40,6 @@ parameters:
       - ascii
       - big5
     default: nop
-  - name: include_file_name
-    label: Include File Name
-    description: Include the log file name.
-    type: bool
-    default: true
-  - name: include_file_path
-    label: Include File Path
-    description: Include the log file path.
-    type: bool
-    default: true
-  - name: start_at
-    label: Start At
-    description: Start reading file from 'beginning' or 'end'
-    type: enum
-    valid_values:
-      - beginning
-      - end
-    default: end
-  - name: log_type
-    label: Log Type
-    description: Adds label log_type to identify tail source.
-    type: string
-    default: tail
   - name: parse_format
     label: Format
     description: The log format to parse.
@@ -71,17 +48,26 @@ parameters:
       - none
       - JSON
     default: none
-
+  - name: log_type
+    label: Log Type
+    description: 'Adds label log_type to identify tail source. In observIQ, the "log_type" will appear as "Type".'
+    type: string
+    default: tail
+  - name: start_at
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
 # Set Defaults
-# {{$poll_interval := default "200ms" .poll_interval}}
 # {{$enable_multiline := default false .enable_multiline}}
-# {{$multiline_line_start_pattern := default "Start of line Regex Pattern" .multiline_line_start_pattern}}
-# {{$include_file_name := default true .include_file_name}}
-# {{$include_file_path := default true .include_file_path}}
-# {{$log_type := default "tail" .log_type}}
+# {{$multiline_line_start_pattern := default "" .multiline_line_start_pattern}}
 # {{$encoding := default "nop" .encoding}}
-# {{$start_at := default "end" .start_at}}
 # {{$parse_format := default "none" .parse_format}}
+# {{$log_type := default "tail" .log_type}}
+# {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
 pipeline:
@@ -97,7 +83,6 @@ pipeline:
       - '{{ $efp }}'
   # {{ end }}
 # {{ end }}
-    poll_interval: {{ $poll_interval }}
 # {{ if $enable_multiline }}
     multiline:
       line_start_pattern: '{{ $multiline_line_start_pattern }}'
@@ -105,8 +90,7 @@ pipeline:
 # {{ if $encoding }}
     encoding: '{{ $encoding }}'
 # {{ end }}
-    include_file_name: {{ $include_file_name }}
-    include_file_path: {{ $include_file_path }}
+    include_file_name: true
     labels:
       plugin_id: {{ .id }}
       log_type: '{{ $log_type }}'

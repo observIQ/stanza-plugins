@@ -1,4 +1,4 @@
-version: 0.0.4
+version: 0.0.6
 title: Apache HTTP Server
 description: Log parser for Apache HTTP Server
 parameters:
@@ -36,14 +36,31 @@ parameters:
      - beginning
      - end
     default: end
+  - name: log_format
+    label: Log Format
+    description: |2
+      Default is unmodifed log_format settings for Apache HTTPD access.log and error.log
 
+      Observiq Log Format expects the following formats for the access and error logs. This format will generate a json log entry. This log_format can be modified to meet your requirements as long as key names do not change and it is valid json.
+      To setup, edit Apache's configuration. Add both log formats to the logging section. On Debian, update all `sites-enabled` configurations to include `CustomLog ${APACHE_LOG_DIR}/access.log observiq`. On CentOS, update Apache's configuration to include `CustomLog "logs/access_log" observiq`.
+
+      Access Log Format:
+      Logformat "{\"timestamp\":\"%{%Y-%m-%dT%T}t.%{usec_frac}t%{%z}t\",\"remote_addr\":\"%a\",\"protocol\":\"%H\",\"method\":\"%m\",\"query\":\"%q\",\"path\":\"%U\",\"status\":\"%>s\",\"http_user_agent\":\"%{User-agent}i\",\"http_referer\":\"%{Referer}i\",\"remote_user\":\"%u\",\"body_bytes_sent\":\"%b\",\"request_time_microseconds\":\"%D\",\"http_x_forwarded_for\":\"%{X-Forwarded-For}i\"}" observiq
+
+      Error Log Format:
+      ErrorLogFormat "{\"time\":\"%{cu}t\",\"module\":\"%-m\",\"client\":\"%-a\",\"http_x_forwarded_for\":\"%-{X-Forwarded-For}i\",\"log_level\":\"%-l\",\"pid\":\"%-P\",\"tid\":\"%-T\",\"message\":\"%-M\",\"logid\":{\"request\":\"%-L\",\"connection\":\"%-{c}L\"},\"request_note_name\":\"%-{name}n\"}"
+    type: enum
+    valid_values:
+      - default
+      - observiq
+    default: default
 # Set Defaults
 #{{$enable_error_log := default true .enable_error_log}}
 #{{$error_log_path := default "/var/log/apache2/error.log" .error_log_path}}
 #{{$enable_access_log := default true .enable_access_log}}
 #{{$access_log_path := default "/var/log/apache2/access.log" .access_log_path}}
 #{{$start_at := default "end" .start_at}}
-
+# {{$log_format := default "default" .log_format}}
 pipeline:
   #{{ if $enable_access_log }}
   - id: access_log_reader
@@ -54,10 +71,29 @@ pipeline:
     labels:
       log_type: 'apache_http.access'
       plugin_id: {{ .id }}
+    output: '{{ if eq $log_format "default" }}access_regex_parser{{ else if eq $log_format "observiq" }}access_json_parser{{ end }}'
+  #{{ end }}
 
+  #{{ if $enable_error_log }}
+  - id: error_log_reader
+    type: file_input
+    include:
+      - {{ $error_log_path }}
+    start_at: {{ $start_at }}
+    # {{ if eq $log_format "default" }}
+    multiline:
+      line_start_pattern: '\[(?P<time>\w+ \w+ \d{2} \d{2}:\d{2}:\d{2}\.\d+ \d+)\] '
+    # {{ end }}
+    labels:
+      log_type: 'apache_http.error'
+      plugin_id: {{ .id }}
+    output: '{{ if eq $log_format "default" }}error_regex_parser{{ else if eq $log_format "observiq" }}error_json_parser{{ end }}'
+  #{{ end }}
+
+  # {{ if eq $log_format "default" }}
   - id: access_regex_parser
     type: regex_parser
-    regex: '^(?P<remote_addr>[^ ]*) (?P<remote_host>[^ ]*) (?P<remote_user>[^ ]*) \[(?P<time>[^\]]*)\] "(?P<method>\S+)(?: +(?P<path>[^\"]*?)(?: +\S*)?)?" (?P<status>[^ ]*) (?P<body_bytes_sent>[^ ]*)(?: "(?P<http_referer>[^\"]*)" "(?P<http_user_agent>[^\"]*)"(?:\s+(?P<http_x_forwarded_for>[^ ]+))?)?'
+    regex: '^(?P<remote_addr>[^ ]*) (?P<remote_host>[^ ]*) (?P<remote_user>[^ ]*) \[(?P<time>[^\]]*)\] "(?P<method>\S+) +(?P<path>[^ ]*)( (?P<protocol>[^/]*)/(?P<protocol_version>[^\"]*)|[^\"]*)?" (?P<status>[^ ]*) (?P<body_bytes_sent>[^ ]*)(?: "(?P<http_referer>[^\"]*)" "(?P<http_user_agent>[^\"]*)"(?:\s+(?P<http_x_forwarded_for>[^ ]+))?)?'
     timestamp:
       parse_from: time
       layout: '%d/%b/%Y:%H:%M:%S %z'
@@ -71,19 +107,6 @@ pipeline:
         warning: 4xx
         error: 5xx
     output: {{ .output }}
-  #{{ end }}
-
-  #{{ if $enable_error_log }}
-  - id: error_log_reader
-    type: file_input
-    include:
-      - {{ $error_log_path }}
-    start_at: {{ $start_at }}
-    multiline:
-      line_start_pattern: '\[(?P<time>\w+ \w+ \d{2} \d{2}:\d{2}:\d{2}\.\d+ \d+)\] '
-    labels:
-      log_type: 'apache_http.error'
-      plugin_id: {{ .id }}
 
   - id: error_regex_parser
     type: regex_parser
@@ -107,4 +130,56 @@ pipeline:
           - trace7
           - trace8
     output: {{ .output }}
-  #{{ end }}
+  # {{ end }}
+
+  # {{ if eq $log_format "observiq" }}
+  - id: access_json_parser
+    type: json_parser
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S.%s%z'
+    severity:
+      parse_from: status
+      preset: none
+      preserve_to: status
+      mapping:
+        info: 2xx
+        notice: 3xx
+        warning: 4xx
+        error: 5xx
+    output: access_protocol_parser
+
+  - id: access_protocol_parser
+    type: regex_parser
+    parse_from: $record.protocol
+    regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
+    output: {{ .output }}
+
+  - id: error_json_parser
+    type: json_parser
+    timestamp:
+      parse_from: time
+      layout: '%Y-%m-%d %H:%M:%S.%s'
+    severity:
+      parse_from: log_level
+      mapping:
+        critical: crit
+        emergency: emerg
+        warning: warn
+        trace:
+          - trace1
+          - trace2
+          - trace3
+          - trace4
+          - trace5
+          - trace6
+          - trace7
+          - trace8
+    output: error_message_parser
+
+  - id: error_message_parser
+    type: regex_parser
+    parse_from: $record.message
+    regex: '(?P<error_code>[^:]*):(?P<message>.*)'
+    output: {{ .output }}
+  # {{ end }}

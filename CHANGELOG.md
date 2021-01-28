@@ -3,8 +3,116 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-## [0.0.36] - Unreleased
+## [0.0.41] - Unreleased
 ### Changed
+## [0.0.40] - 2021-01-26
+### Changed
+- Update `postgresql` plugin ([PR209](https://github.com/observIQ/stanza-plugins/pull/209)
+  - Change general regex parser to only parse duration from message.
+  - Parse `client_address_port` from `client_address` field
+  - Update description for `plugin`
+- Update `journald` plugin ([PR208](https://github.com/observIQ/stanza-plugins/pull/208))
+  - Add `supported_platforms` with linux as only option
+- Update `jboss` plugin ([PR207](https://github.com/observIQ/stanza-plugins/pull/207))
+  - Update `error_id` field name to `id`
+- Update `tomcat` plugin ([PR206](https://github.com/observIQ/stanza-plugins/pull/206))
+  - Add default for `pod_name` parameter
+  - Update description for `log_format`
+- Update `nginx` plugin ([PR206](https://github.com/observIQ/stanza-plugins/pull/206))
+  - Add default for `pod_name` parameter
+  - Update description for `log_format`
+- Update `tail` plugin ([PR206](https://github.com/observIQ/stanza-plugins/pull/206))
+  - Add default for `multiline_line_start_pattern` parameter
+- Update `nginx_ingress` plugin ([PR205](https://github.com/observIQ/stanza-plugins/pull/205))
+  - Update `k8s_input_router` to match from `$record` instead of `$record.message`
+- Update `mysql` plugin ([PR204](https://github.com/observIQ/stanza-plugins/pull/204))
+  - Change slow query log `id` field to `tid`
+- Update `kubernetes_cluster` plugin ([PR201](https://github.com/observIQ/stanza-plugins/pull/201))
+  - Add `severity_parser` to parse kubelet severity from $record.PRIORITY when router doesn't match glogs format
+## [0.0.39] - 2021-01-22
+### Added
+- Add `journald` plugin ([PR194](https://github.com/observIQ/stanza-plugins/pull/194))
+  - Add journald operator as a plugin
+### Changed
+- Update `oracledb` plugin ([PR199](https://github.com/observIQ/stanza-plugins/pull/199))
+  - Change `status` field to `status_code` in audit and listener logs
+- Update `apache_http` plugin ([PR198](https://github.com/observIQ/stanza-plugins/pull/198))
+  - Parse `protocol` and `protocol_version` in default format
+  - Change JSON spec to not nest request fields under request
+  - Update `parse_from` path for access_protocol_parser to $record.protocol
+- Update `tomcat` plugin ([PR197](https://github.com/observIQ/stanza-plugins/pull/197))
+  - Add kubernetes ingest option
+  - Add `log_format` with default and observiq options
+- Update `kubernetes_events` plugin ([PR196](https://github.com/observIQ/stanza-plugins/pull/196))
+  - Add `FailedToUpdateEndpoint` to warning severity
+- Update `kubernetes_container` plugin ([PR195](https://github.com/observIQ/stanza-plugins/pull/195))
+  - Update label `resource.container.name` to `resource.k8s.container.name`
+  - Update label `resource.container.id` to `resource.k8s.container.id`
+- Update `tail` plugin ([PR193](https://github.com/observIQ/stanza-plugins/pull/193))
+  - Remove parameters `poll_interval`, `file_name`, and `file_path`
+  - Set to always add file_name label
+  - Add `relevant_if` if `enable_multiline` is true to `multiline_line_start_pattern`
+  - Require `multiline_line_start_pattern` and remove default pattern
+  - Update `log_type` and `multiline_line_start_pattern` description
+## [0.0.38] - 2021-01-20
+### Changed
+- Update `jboss` plugin ([PR191](https://github.com/observIQ/stanza-plugins/pull/191))
+  - Parse `error_id` from message field if it exists
+- Update `apache_http` plugin ([PR190](https://github.com/observIQ/stanza-plugins/pull/190))
+  - Add parameter `log_format`
+  - Add observiq JSON log format parsing for access and error logs
+  - Additional fields added by observiq format
+  - `http_x_forwarded_for`, `logid.request`, `logid.connection`
+- Update `observiq_agent` plugin ([PR189](https://github.com/observIQ/stanza-plugins/pull/189))
+  - Remove `preserve` field as it has been removed from Stanza in favor of `preserve_to`
+- Update `bindplane_agent` plugin ([PR189](https://github.com/observIQ/stanza-plugins/pull/189))
+  - Remove `preserve` field as it has been removed from Stanza in favor of `preserve_to`
+- Update `kubernetes_node` plugin ([PR188](https://github.com/observIQ/stanza-plugins/pull/188))
+  - Add router to route logs to glogs format parser if it matches pattern
+  - Update label `resource.container.name` to `resource.k8s.container.name`
+  - Update label `resource.container.id` to `resource.k8s.container.id`
+  - Update `add_labels_router` to point to correct label name `$labels["k8s-pod/component"]`
+  - Rename `source` field to `src` and parse `src_line`
+- Update `syslog` plugin ([PR187](https://github.com/observIQ/stanza-plugins/pull/187))
+  - Update `protocol` parameter valid values field to `rfc5424 (IETF)` and `rfc3164 (BSD)`
+  - Update `listen_address` default to 0.0.0.0:514
+- Update `kubernetes_events` plugin ([PR186](https://github.com/observIQ/stanza-plugins/pull/186))
+  - Add SuccessfulDelete to info severity
+## [0.0.37] - 2021-01-14
+### Changed
+- Update `nginx` plugin ([PR184](https://github.com/observIQ/stanza-plugins/pull/184))
+  - Add fields `protocol` and `protocol_version`
+  - Add `request` field parser for observIQ JSON format
+- Update `nginx_ingress` plugin ([PR184](https://github.com/observIQ/stanza-plugins/pull/184))
+  - Add fields `protocol` and `protocol_version`
+  - Add `request` field parser for observIQ JSON format
+  - Add `http_x_forwarded_for` field ([PR183](https://github.com/observIQ/stanza-plugins/pull/183))
+## [0.0.36] - 2021-01-13
+### Changed
+- Update `kubernetes_events` plugin ([PR181](https://github.com/observIQ/stanza-plugins/pull/181))
+  - Add RELOAD, Sync, FailedBinding severity mappings
+- Update `kubernetes_container` plugin ([PR180](https://github.com/observIQ/stanza-plugins/pull/180))
+  - Change move from `log` field back to `$record`
+- Update `windows_event` plugin ([PR179](https://github.com/observIQ/stanza-plugins/pull/179))
+  - Update log_types
+    - windows_event_log.security -> windows_event.security
+    - windows_event_log.application -> windows_event.application
+    - windows_event_log.system -> windows_event.system
+- Update `sqlserver` plugin ([PR178](https://github.com/observIQ/stanza-plugins/pull/178))
+  - Update `log_type` parameter from `sqlserver` to `sql_server`
+- Update `windows_active_directory` plugin ([PR177](https://github.com/observIQ/stanza-plugins/pull/177))
+  - Update log_types
+    - windows_active_directory.general -> active_directory.general
+    - windows_active_directory.web_services ->  active_directory.web_services
+    - windows_active_directory.dns -> active_directory.dns_server
+    - windows_active_directory.dfs_replication -> activte_directory.dfs
+    - windows_active_directory.file_replication -> active_directory.frs
+- Update `bindplane_agent` plugin ([PR176](https://github.com/observIQ/stanza-plugins/pull/176))
+  - Add log_type_router to add log_type `bindplane.agent.manager` and `bindplane.agent.launcher`
+  - Add metadata to add log_type `bindplane.agent.logagent`
+- Update `observiq_agent` plugin ([PR175](https://github.com/observIQ/stanza-plugins/pull/175))
+  - Add log_type_router to add log_type `observiq.agent.manager` and `observiq.agent.launcher`
+  - Add metadata to add log_type `observiq.agent.logagent`
 ## [0.0.35] - 2021-01-11
 ### Changed
 - Update `nginx_ingress` plugin 

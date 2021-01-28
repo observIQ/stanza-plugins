@@ -1,19 +1,6 @@
-version: 0.0.5
+version: 0.0.6
 title: PostgreSQL
-description: |2
-  Log parser for PostgreSQL. This plugin expects the following settings in postgresql.conf:
-  log_destination = 'stderr'
-  logging_collector = on
-  log_directory = 'pg_log'
-  log_filename = 'postgresql-%Y-%m-%d_%H%M%S.log'
-  log_truncate_on_rotation = off
-  log_rotation_age = 1d
-  log_min_duration_statement = 0
-  log_connections = on
-  log_duration = on
-  log_hostname = on
-  log_timezone = 'UTC'
-  log_line_prefix = 't=%t p=%p s=%c l=%l u=%u db=%d r=%r '
+description: 'Log parser for PostgreSQL. This plugin expects the custom settings in postgresql.conf. See our help documentation for setup requirements.'
 parameters:
   - name: postgresql_log_path
     label: PostgreSQL Log Path
@@ -49,16 +36,29 @@ pipeline:
   - id: general_regex_parser
     type: regex_parser
     parse_from: log_entry
-    regex: '^t=(?P<time>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\s+[^\s]+)\s+p=(?P<process_id>\d*)\s+s=(?P<process_start_time>[^\.]*)\.[^\s]+\s+l=(?P<process_log_line>[^\s]*)\s+u=(?P<user_name>[^\s]*)\s+db=(?P<database>[^\s]*)\s+r=(?P<client_address>[^\s]*)\s*((LOG:\s*duration:\s*(?P<duration>[\w\.]*)\s*ms\s*(statement:\s*)?)|(LOG:\s*)|(DETAIL:\s*(parameters:\s*(?P<parameters>[\w\W]+))?)|(STATEMENT:\s*(?P<statement>[\w\W]+))|ERROR:\s*(?P<error>.[\w\W]+)|)(?P<message>[\w\W]+)?'
+    regex: '^t=(?P<time>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\s+[^\s]+)\s+p=(?P<process_id>\d*)\s+s=(?P<process_start_time>[^\.]*)\.[^\s]+\s+l=(?P<process_log_line>[^\s]*)\s+u=(?P<user_name>[^\s]*)\s+db=(?P<database>[^\s]*)\s+r=(?P<client_address>[^\s]*)\s*(LOG:\s*duration:\s*(?P<duration>[\w\.:]*)\s*ms\s*)?(?P<message>[\w\W]+)?'
     timestamp:
       parse_from: time
       layout: '%F %T %Z'
 
   - type: router
+    default: client_address_regex_parser
     routes:
-      - output: {{ .output }}
+      - output: client_address_regex_parser
         expr: '$record.duration != ""'
         labels:
           log_type: 'postgresql.slow_query'
-      - output: {{ .output }}
-        expr: true
+
+  - id: client_address_regex_parser
+    if: '$record.client_address matches "[\\w\\.]*\\([\\d]*\\)"'
+    type: regex_parser
+    parse_from: $record.client_address
+    regex: '(?P<client_address>[^\(]*)\((?P<client_address_port>[^\)]*)\)'
+    output: statement_regex_parser
+
+  - id: statement_regex_parser
+    if: '$record.message matches "^STATEMENT:|^statement:"'
+    type: regex_parser
+    parse_from: $record.message
+    regex: '(^STATEMENT:\s*|^statement:\s*)(?P<statement>.*)'
+    output: {{ .output }}

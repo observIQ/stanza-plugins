@@ -1,4 +1,4 @@
-version: 0.0.12
+version: 0.0.14
 title: Kubernetes Container
 description: Log parser for Kubernetes
 min_stanza_version: 0.9.8
@@ -80,10 +80,10 @@ pipeline:
           to: '$resource["k8s.namespace.name"]'
       - move:
           from: '$record.container_name'
-          to: '$resource["container.name"]'
+          to: '$resource["k8s.container.name"]'
       - move:
           from: '$record.container_id'
-          to: '$resource["container.id"]'
+          to: '$resource["k8s.container.id"]'
 
   - id: container_type_router
     type: router
@@ -111,8 +111,8 @@ pipeline:
 
   - id: timestamp_parser
     type: time_parser
-      parse_from: time
-      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+    parse_from: time
+    layout: '%Y-%m-%dT%H:%M:%S.%sZ'
 
   - id: sev_parser
     type: severity_parser
@@ -126,12 +126,11 @@ pipeline:
     ops:
       - move:
           from: log
-<<<<<<< HEAD
           to: '$record'
+      - move: 
+          from: stream
+          to: "$labels.stream"
 
   - id: add_kubernetes_metadata
     type: k8s_metadata_decorator
-=======
-          to: "$record.message"
->>>>>>> @{-1}
     output: {{ .output }}

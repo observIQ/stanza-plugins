@@ -1,7 +1,38 @@
-version: 0.0.8
+version: 0.0.10
 title: Apache Tomcat
 description: Log parser for Apache Tomcat
+min_stanza_version: 0.13.12
+supported_platforms: 
+  - linux
+  - windows
+  - macos
+  - kubernetes
 parameters:
+  - name: source
+    label: Log source
+    description: Where the logs are coming from
+    type: enum
+    valid_values:
+      - file
+      - kubernetes
+    default: file
+  - name: pod_name
+    label: Pod Name
+    description: The pod name (without the unique identifier on the end)
+    type: string
+    default: 'tomcat-*'
+    required: true
+    relevant_if:
+      source:
+        equals: kubernetes
+  - name: container_name
+    label: Container Name
+    description: The container name of the Nginx container
+    type: string
+    default: "*"
+    relevant_if:
+      source:
+        equals: kubernetes
   - name: enable_access_log
     label: Access Logs
     description: Enable to collect Apache Tomcat access logs
@@ -13,6 +44,8 @@ parameters:
     type: string
     default: "/usr/local/tomcat/logs/localhost_access_log.*.txt"
     relevant_if:
+      source:
+        equals: file
       enable_access_log:
         equals: true
   - name: enable_catalina_log
@@ -26,6 +59,8 @@ parameters:
     type: string
     default: "/usr/local/tomcat/logs/catalina.out"
     relevant_if:
+      source:
+        equals: file
       enable_catalina_log:
         equals: true
   - name: start_at
@@ -36,17 +71,53 @@ parameters:
      - beginning
      - end
     default: end
-
+  - name: log_format
+    label: Log Format
+    description: Default is unmodified log_format settings for Apache HTTP. Observiq is a our recommended spec that we defined to get extra information from the log. See our help documentation for setup requirements.
+    type: enum
+    valid_values:
+      - default
+      - observiq
+    default: default
 # Set Defaults
+# {{$source := default "file" .source}}
+# {{$pod_name := default "tomcat-*" .pod_name}}
+# {{$container_name := default "*" .container_name}}
 # {{$enable_access_log := default true .enable_access_log}}
 # {{$access_log_path := default "/usr/local/tomcat/logs/localhost_access_log.*.txt" .access_log_path}}
 # {{$enable_catalina_log := default true .enable_catalina_log}}
 # {{$catalina_log_path := default "/usr/local/tomcat/logs/catalina.out" .catalina_log_path}}
 # {{$start_at := default "end" .start_at}}
+# {{$log_format := default "default" .log_format}}
 
 # Pipeline Template
 pipeline:
-  #{{ if $enable_access_log }}
+  # {{ if eq $source "kubernetes" }}
+  - id: kubernetes_input
+    type: kubernetes_container
+    pod_name: '{{ $pod_name }}'
+    container_name: '{{ $container_name }}'
+    start_at: '{{ $start_at }}'
+
+  - id: k8s_input_router
+    type: router
+    routes:
+      # {{ if $enable_access_log }}
+      - expr: "$labels.stream == 'stdout'"
+        output: '{{ if eq $log_format "default" }}access_regex_parser{{ else if eq $log_format "observiq" }}access_json_parser{{ end }}'
+        labels:
+          log_type: 'tomcat.access'
+          plugin_id: '{{ .id }}'
+      # {{ end }}
+      # {{ if $enable_catalina_log }}
+      - expr: '$labels.stream == "stderr" and $record matches  "^[0-9]{2}-[A-Za-z]{3}-[0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}"'
+        output: catalina_regex_parser
+        labels:
+          log_type: 'tomcat.catalina'
+          plugin_id: '{{ .id }}'
+      # {{ end }}
+  # {{ end }}
+  #{{ if and $enable_access_log (eq $source "file") }}
   - id: tomcat_access_reader
     type: file_input
     include:
@@ -55,26 +126,53 @@ pipeline:
     labels:
       log_type: 'tomcat.access'
       plugin_id: {{ .id }}
-    output: access_regex_parser
+    output: '{{ if eq $log_format "default" }}access_regex_parser{{ else if eq $log_format "observiq" }}access_json_parser{{ end }}'
+  # {{ end }}
 
+  # {{ if $enable_access_log }}
+    # {{ if eq $log_format "default" }}
   - id: access_regex_parser
     type: regex_parser
-    regex: '(?P<remote_host>[^\s]+) - (?P<remote_user>[^\s]+) \[(?P<timestamp>[^\]]+)\] "(?P<http_method>[A-Z]+) (?P<path>[^\s]+)[^"]+" (?P<http_status>\d+) (?P<bytes_sent>[^\s]+)'
+    regex: '(?P<remote_host>[^\s]+) - (?P<remote_user>[^\s]+) \[(?P<timestamp>[^\]]+)\] "(?P<method>[A-Z]+) (?P<path>[^\s]+)[^"]+" (?P<status>\d+) (?P<bytes_sent>[^\s]+)'
     timestamp:
       parse_from: timestamp
       layout: '%d/%b/%Y:%H:%M:%S %z'
     severity:
-      parse_from: http_status
-      preserve_to: http_status
+      parse_from: status
+      preserve_to: status
       mapping:
         info: 2xx
         notice: 3xx
         warning: 4xx
         error: 5xx
     output: {{ .output }}
+    # {{ end }}
+    # {{ if eq $log_format "observiq" }}
+  - id: access_json_parser
+    type: json_parser
+    timestamp:
+      parse_from: timestamp
+      layout: '[%d/%h/%Y:%H:%M:%S %z]'
+    severity:
+      parse_from: status
+      preset: none
+      preserve_to: status
+      mapping:
+        info: 2xx
+        notice: 3xx
+        warning: 4xx
+        error: 5xx
+    output: access_protocol_parser
+
+  - id: access_protocol_parser
+    type: regex_parser
+    parse_from: $record.protocol
+    regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
+    output: {{ .output }}
+    # {{ end }}
   #{{ end }}
 
-  #{{ if $enable_catalina_log }}
+  #{{ if and $enable_catalina_log (eq $source "file") }}
   - id: tomcat_catalina_reader
     type: file_input
     include:
@@ -86,10 +184,12 @@ pipeline:
       log_type: 'tomcat.catalina'
       plugin_id: {{ .id }}
     output: catalina_regex_parser
+  #{{ end }}
 
+  #{{ if $enable_catalina_log }}
   - id: catalina_regex_parser
     type: regex_parser
-    regex: '(?P<timestamp>[0-9]{2}-[A-Za-z]{3}-[0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3})\s(?P<tomcat_severity>[A-Z]*)\s\[(?P<thread>[\w]*)\]\s(?P<tc_source>[^ ]*)\s(?P<message>[\s\S]+)'
+    regex: '(?P<timestamp>[0-9]{2}-[A-Za-z]{3}-[0-9]{4} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3})\s(?P<tomcat_severity>[A-Z]*)\s\[(?P<thread>[\w-]*)\]\s(?P<tc_source>[^ ]*)\s(?P<message>[\s\S]+)'
     timestamp:
       parse_from: timestamp
       layout: '%d-%b-%Y %H:%M:%S.%L'
