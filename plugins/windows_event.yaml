@@ -30,6 +30,8 @@ parameters:
     description: Add custom channels to get event logs
     type: strings
     required: true
+    default:
+      - ''
     relevant_if:
       enable_custom_channels:
         equals: true
