@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.41] - Unreleased
 ### Changed
+- Update `kubernetes_container` plugin ([PR211](https://github.com/observIQ/stanza-plugins/pull/211)
+  - Add containerd support log parsing support
 ## [0.0.40] - 2021-01-26
 ### Changed
 - Update `postgresql` plugin ([PR209](https://github.com/observIQ/stanza-plugins/pull/209)
