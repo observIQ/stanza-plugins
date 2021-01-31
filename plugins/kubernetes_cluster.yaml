@@ -36,13 +36,81 @@ pipeline:
       plugin_id: '{{ .id }}'
     resource:
       k8s.node.name: "EXPR(env('NODE_NAME'))"
-      k8s.cluster.name: '{{ .cluster_name }}'
+      k8s.cluster.name: '{{ $cluster_name }}'
 
+  - id: container_type_router
+    type: router
+    routes:
+      # Route to containerd parser if it matches containerd log format
+      - expr: '$record matches "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,9}([\\+-]\\d{2}:\\d{2}|Z) std(?:out|err) [FP] .*"'
+        output: containerd_parser
+    default: docker_json_parser
+
+  # Parse containerd log from $record
+  - id: containerd_parser
+    type: regex_parser 
+    regex: '^(?P<time>[^\s]+) (?P<stream>\w+) (?P<partial>\w) (?P<log>.*)'
+
+  # Recombine multiline containerd log messages
+  - id: containerd_recombine
+    type: recombine
+    combine_field: log
+    is_last_entry: "$record.partial == 'F'"
+
+  # Route Containerd time formats
+  - id: time_parser_router
+    type: router
+    routes:
+      - output: local_containerd_timestamp_parser
+        expr: '$record.time != nil and $record.time matches "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,9}[\\+-]\\d{2}:\\d{2}"'
+      - output: utc_containerd_timestamp_parser
+        expr: '$record.time != nil and $record.time matches "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,9}Z"'
+
+  # Containerd can have a couple timestamp formats depending if the node has local time set
+  - id: local_containerd_timestamp_parser
+    type: time_parser
+    parse_from: $record.time
+    layout: '%Y-%m-%dT%H:%M:%S.%s%j'
+    output: nested_json_parser
+
+  # Containerd can have a couple timestamp formats depending if the node has local time set
+  - id: utc_containerd_timestamp_parser
+    type: time_parser
+    parse_from: $record.time
+    layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+    output: nested_json_parser
+
+  # Parse docker log format
+  - id: docker_json_parser
+    type: json_parser
+
+  # Parse time from docker log format
+  - id: docker_timestamp_parser
+    type: time_parser
+    parse_from: time
+    layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+
+  # Check to see if log message is actually nested JSON.
+  - id: nested_json_parser
+    type: json_parser
+    if: '$record.log != nil and $record.log matches "^{.*}\\s*$"'
+
+  # $record.stream should exist now so parse it.
+  - id: sev_parser
+    type: severity_parser
+    parse_from: stream
+    preserve_to: '$labels.stream'
+    mapping:
+      error: stderr
+      info: stdout
+
+  # Parse file name to grab resource information
   - id: file_name_parser
     type: regex_parser
     parse_from: $labels.file_name
     regex: '^(?P<pod_name>[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?P<namespace>[^_]+)_(?P<container_name>.+)-(?P<container_id>[a-z0-9]{64})\.log$'
 
+  # Move resource information from $record to $resource
   - id: resource_restructurer
     type: restructure
     ops:
@@ -59,52 +127,9 @@ pipeline:
           from: '$record.container_id'
           to: '$resource["k8s.container.id"]'
 
-  - id: container_type_router
-    type: router
-    routes:
-      - expr: '$record matches "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,9}Z std(?:out|err) [FP] .*"'
-        output: containerd_parser
-    default: docker_json_parser
-
-  - id: containerd_parser
-    type: regex_parser 
-    regex: '^(?P<time>[^\s]+) (?P<stream>\w+) (?P<partial>\w) (?P<log>.*)'
-
-  - id: containerd_recombine
-    type: recombine
-    combine_field: log
-    is_last_entry: "$record.partial == 'F'"
-    output: nested_json_parser
-
-  - id: docker_json_parser
-    type: json_parser
-
-  - id: nested_json_parser
-    type: json_parser
-    if: '$record.log != nil and $record.log matches "^{.*}\\s*$"'
-
-  - id: timestamp_parser
-    type: time_parser
-      parse_from: time
-      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
-
-  - id: sev_parser
-    type: severity_parser
-    parse_from: stream
-    preserve_to: '$labels.stream'
-    mapping:
-      error: stderr
-      info: stdout
-
-  - type: restructure
-    ops:
-      - move:
-          from: log
-          to: '$record'
-
+  # Add kubernetes metadata
   - id: add_kubernetes_metadata
     type: k8s_metadata_decorator
-    output: {{ .output }}
 
   # Add label log_type
   - id: add_labels_router
@@ -131,6 +156,7 @@ pipeline:
         labels:
           log_type: 'k8s.node'
 
+  # Move message from log field to $record
   - id: log_restructure
     type: restructure
     ops:
@@ -139,6 +165,7 @@ pipeline:
           to: '$record.message'
     output: glogs_parser_router
 
+  # Check if message matches glog format and send to parser if it does
   - id: glogs_parser_router
     type: router
     default: {{ .output }}
@@ -184,6 +211,7 @@ pipeline:
       - output: message_regex_parser
         expr: '$record.message matches "^\\w\\d{4}"'
 
+  # Severity parser for journald
   - type: severity_parser
     parse_from: $record.PRIORITY
     mapping:
