@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.4
+version: 0.0.5
 title: Windows Event Log
 description: Windows Event Log Parser
 supported_platforms: 
@@ -20,6 +20,21 @@ parameters:
     description: Enable to collect security event logs
     type: bool
     default: true
+  - name: enable_custom_channels
+    label: Custom Events Channel
+    description: Enable to collect custom event logs from provided channels
+    type: bool
+    default: false
+  - name: custom_channels
+    label: Custom Event Channels
+    description: Add custom channels to get event logs
+    type: strings
+    required: true
+    default:
+      - ''
+    relevant_if:
+      enable_custom_channels:
+        equals: true
   - name: max_reads
     label: Max Reads
     description: The maximum number of records read into memory, before beginning a new batch
@@ -43,6 +58,7 @@ parameters:
 # {{$enable_system_events := default true .enable_system_events}}
 # {{$enable_application_events := default true .enable_application_events}}
 # {{$enable_security_events := default true .enable_security_events}}
+# {{$enable_custom_channels := default false .enable_custom_channels}}
 # {{$max_reads := default 100 .max_reads}}
 # {{$poll_interval := default 1 .poll_interval}}
 # {{$start_at := default "end" .start_at}}
@@ -86,4 +102,21 @@ pipeline:
       plugin_id: {{ .id }}
     start_at: {{ $start_at }}
     output: {{ .output }}
+# {{ end }}
+
+# {{$output := .output}}
+# {{$id := .id}}
+# {{ if $enable_custom_channels }}
+  # {{ range $index, $element := .custom_channels }}
+  - id: custom_event_input_{{$index}}
+    type: windows_eventlog_input
+    channel: {{$element}}
+    max_reads: {{$max_reads}}
+    poll_interval: {{$poll_interval}}
+    labels:
+      log_type: "windows_event.custom"
+      plugin_id: {{$id}}
+    start_at: beginning
+    output: {{$output}}
+  # {{ end }}
 # {{ end }}
