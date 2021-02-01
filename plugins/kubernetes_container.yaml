@@ -91,14 +91,14 @@ pipeline:
     type: time_parser
     parse_from: time
     layout: '%Y-%m-%dT%H:%M:%S.%s%j'
-    output: nested_json_parser
+    output: sev_parser
 
   # Containerd can have a couple timestamp formats depending if the node has local time set
   - id: utc_containerd_timestamp_parser
     type: time_parser
     parse_from: time
     layout: '%Y-%m-%dT%H:%M:%S.%sZ'
-    output: nested_json_parser
+    output: sev_parser
 
   # Parse docker log format
   - id: docker_json_parser
@@ -109,11 +109,6 @@ pipeline:
     type: time_parser
     parse_from: time
     layout: '%Y-%m-%dT%H:%M:%S.%sZ'
-
-  # Check to see if log message is actually nested JSON.
-  - id: nested_json_parser
-    type: json_parser
-    if: '$record.log != nil and $record.log matches "^{.*}\\s*$"'
 
   # $record.stream should exist now so parse it.
   - id: sev_parser
