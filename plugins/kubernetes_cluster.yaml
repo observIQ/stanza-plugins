@@ -48,7 +48,7 @@ pipeline:
 
   # Parse containerd log from $record
   - id: containerd_parser
-    type: regex_parser 
+    type: regex_parser
     regex: '^(?P<time>[^\s]+) (?P<stream>\w+) (?P<partial>\w) (?P<log>.*)'
 
   # Recombine multiline containerd log messages
@@ -203,7 +203,7 @@ pipeline:
     type: router
     default: severity_parser
     routes:
-      - output: message_regex_parser
+      - output: message_regex_parser_kubelet
         expr: '$record.message matches "^\\w\\d{4}"'
 
   # Severity parser for journald
@@ -236,4 +236,31 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%m%d %H:%M:%S.%s'
+    output: {{ .output }}
+
+  # kubelet logs come from journald with UTC timestamps,
+  # so we ignore the timestamp given in the glog message because
+  # it is known to have the wrong time zone (host's timzone)
+  # unlike the other cluster services that run within containers
+  # using UTC time.
+  - id: message_regex_parser_kubelet
+    type: regex_parser
+    parse_from: message
+    regex: '(?P<severity>\w)(?P<drop_time>\d{4} \d{2}:\d{2}:\d{2}.\d+)\s+(?P<pid>\d+)\s+(?P<src>[^:]*):(?P<src_line>[^\]]*)\] (?P<message>.*)'
+    severity:
+      parse_from: severity
+      mapping:
+        debug: d
+        info: i
+        warning: w
+        error: e
+        critical: c
+    timestamp:
+      parse_from: timestamp
+      layout: '%m%d %H:%M:%S.%s'
+    output: drop_time
+  - id: drop_time
+    type: restructure
+    ops:
+      - remove: '$record.drop_time'
     output: {{ .output }}
