@@ -168,6 +168,24 @@ pipeline:
       - output: message_regex_parser
         expr: '$record.message matches "^\\w\\d{4}"'
 
+  # message field seems to match expected format.
+  - id: message_regex_parser
+    type: regex_parser
+    parse_from: message
+    regex: '(?P<severity>\w)(?P<timestamp>\d{4} \d{2}:\d{2}:\d{2}.\d+)\s+(?P<pid>\d+)\s+(?P<src>[^:]*):(?P<src_line>[^\]]*)\] (?P<message>.*)'
+    severity:
+      parse_from: severity
+      mapping:
+        debug: d
+        info: i
+        warning: w
+        error: e
+        critical: c
+    timestamp:
+      parse_from: timestamp
+      layout: '%m%d %H:%M:%S.%s'
+    output: {{ .output }}
+
   # Use journald to gather kubelet logs. Use provided path for journald if available otherwise use default locations.
   - id: kubelet_reader
     type: journald_input
@@ -218,24 +236,6 @@ pipeline:
       notice: 5
       info: 6
       debug: 7
-    output: {{ .output }}
-
-  # message field seems to match expected format.
-  - id: message_regex_parser
-    type: regex_parser
-    parse_from: message
-    regex: '(?P<severity>\w)(?P<timestamp>\d{4} \d{2}:\d{2}:\d{2}.\d+)\s+(?P<pid>\d+)\s+(?P<src>[^:]*):(?P<src_line>[^\]]*)\] (?P<message>.*)'
-    severity:
-      parse_from: severity
-      mapping:
-        debug: d
-        info: i
-        warning: w
-        error: e
-        critical: c
-    timestamp:
-      parse_from: timestamp
-      layout: '%m%d %H:%M:%S.%s'
     output: {{ .output }}
 
   # kubelet logs come from journald with UTC timestamps,
