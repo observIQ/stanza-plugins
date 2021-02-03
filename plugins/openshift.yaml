@@ -77,7 +77,7 @@ pipeline:
 
   # Parse the container name into service name, pod name, and namespace
   - type: regex_parser
-    regex: '^(?P<service_name>[-a-z0-9_]+)_(?P<pod_name>[-a-z0-9]+)_(?P<namespace>[-a-z0-9]+)_[-a-z0-9]+_\d+$'
+    regex: '^k8s_(?P<service_name>[-a-z0-9_]+)_(?P<pod_name>[-a-z0-9\.]+)_(?P<namespace>[-a-z0-9]+)_[-a-z0-9]+_\d+$'
     parse_from: CONTAINER_NAME
     parse_to: k8s_metadata
 
