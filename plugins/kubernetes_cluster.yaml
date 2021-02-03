@@ -1,4 +1,4 @@
-version: 0.0.12
+version: 0.0.13
 title: Kubernetes Node
 description: Log parser for Kubernetes Node
 supported_platforms:
@@ -255,10 +255,8 @@ pipeline:
         warning: w
         error: e
         critical: c
-    timestamp:
-      parse_from: timestamp
-      layout: '%m%d %H:%M:%S.%s'
     output: drop_time
+
   - id: drop_time
     type: restructure
     ops:
