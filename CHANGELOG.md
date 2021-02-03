@@ -3,7 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-## [0.0.42] - Unreleased
+## [0.0.43] - Unreleased
+### Changed
+## [0.0.42] - 2021-02-03
 ### Changed
 - Update `kubernetes_cluster` plugin ([PR216](https://github.com/observIQ/stanza-plugins/pull/216)
   - Fix timestamp parser error when parsing kublet logs.
