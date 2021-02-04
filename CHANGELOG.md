@@ -4,11 +4,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.44] - Unreleased
+### Changed
+- Update plugins ([PR219](https://github.com/observIQ/stanza-plugins/pull/219))
+  - `kubernetes_container`
+    - Add `enable_nested_json_parser` parameter.
+    - Add optional parsing of messages if they match a JSON format
+  - `tomcat`
+    - Update `source` and `log_format` descriptions
+    - Update parameter order
+    - Disable parsing of messages if they match a JSON format from `kubernetes_container`
+  - `apache_http`
+    - Update `log_format` descriptions
+    - Update parameter order
+    - Disable parsing of messages if they match a JSON format from `kubernetes_container`
+  - `nginx`
+    - Update `source` and `log_format` descriptions
+    - Update parameter order
+    - Disable parsing of messages if they match a JSON format from `kubernetes_container`
+  - `nginx_ingress`
+    - Update `log_format` descriptions
+    - Update parameter order
+    - Disable parsing of messages if they match a JSON format from `kubernetes_container`
 ## [0.0.43] - 2021-02-04
+### Changed
 - Update `openshift` plugin ([PR218](https://github.com/observIQ/stanza-plugins/pull/218))
   - Fix regex_parser to handle periods in pod name
   - Fix regex_parser: remove `k8s_` prefix from service name
-### Changed
 ## [0.0.42] - 2021-02-03
 ### Changed
 - Update `kubernetes_cluster` plugin ([PR216](https://github.com/observIQ/stanza-plugins/pull/216)

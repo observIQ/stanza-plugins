@@ -1,4 +1,4 @@
-version: 0.0.11
+version: 0.0.12
 title: Nginx
 description: Log parser for Nginx
 min_stanza_version: 0.13.12
@@ -10,12 +10,20 @@ supported_platforms:
 parameters:
   - name: source
     label: Log source
-    description: Where the logs are coming from
+    description: Use this field to specify where your logs are coming from. When choosing the 'file' option, the agent reads in logs from the log paths specified below.  When choosing the 'Kubernetes' options, the agent reads logs from /var/log/containers based on the Pod and Container specified below.
     type: enum
     valid_values:
       - file
       - kubernetes
     default: file
+  - name: log_format
+    label: Log Format
+    description:  When choosing the 'default' option, the agent will expect and parse logs in a format that matches the default logging configuration. When choosing the 'observIQ' option, the agent will expect and parse logs in an optimized JSON format that adheres to the observIQ specification, requiring an update to the nginx.conf file. See the <a href="https://docs.observiq.com/docs/nginx">NGINX source page</a> for more information.
+    type: enum
+    valid_values:
+      - default
+      - observiq
+    default: default
   - name: pod_name
     label: Pod Name
     description: The pod name (without the unique identifier on the end)
@@ -71,14 +79,6 @@ parameters:
       - beginning
       - end
     default: end
-  - name: log_format
-    label: Log Format
-    description: Default is unmodifed log_format settings for NGINX. Observiq is a our recommended spec that we defined to get extra information from the log. See our help documentation for setup requirements.
-    type: enum
-    valid_values:
-      - default
-      - observiq
-    default: default
 
 # Set Defaults
 # {{$source := default "file" .source}}

@@ -1,9 +1,21 @@
-version: 0.0.5
+version: 0.0.6
 title: Nginx Ingress
 description: Log parser for Nginx Ingress for Kubernetes
 supported_platforms:
   - kubernetes
 parameters:
+  - name: log_format
+    label: Log Format
+    description: When choosing the 'default' option, the agent will expect and parse logs in a format that matches the default logging configuration. When choosing the 'observIQ' option, the agent will expect and parse logs in an optimized JSON format that adheres to the observIQ specification, requiring an update to the nginx config map. See the <a href="https://docs.observiq.com/docs/nginx-ingress-controller">NGINX Ingress Controller source page</a> for more information.
+    type: enum
+    valid_values:
+      - default
+      - observiq
+    default: default
+  - name: cluster_name
+    label: Cluster Name
+    description: 'Cluster Name to be added to a resource label'
+    type: string
   - name: pod_name
     label: Pod Name
     description: The pod name (without the unique identifier on the end)
@@ -14,10 +26,6 @@ parameters:
     description: The container name of the Nginx container
     type: string
     default: "*"
-  - name: cluster_name
-    label: Cluster Name
-    description: 'Cluster Name to be added to a resource label'
-    type: string
   - name: enable_access_log
     label: Access Logs
     description: Enable to collect Nginx access logs
@@ -36,30 +44,6 @@ parameters:
       - beginning
       - end
     default: end
-  - name: log_format
-    label: Log Format
-    description: |2
-      Default is unmodifed log_format settings for NGINX ingress
-      log_format upstreaminfo
-                    '$remote_addr - $remote_user [$time_local] "$request" '
-                    '$status $body_bytes_sent "$http_referer" "$http_user_agent" '
-                    '$request_length $request_time [$proxy_upstream_name] [$proxy_alternative_upstream_name] $upstream_addr '
-                    '$upstream_response_length $upstream_response_time $upstream_status $req_id';
-
-      Observiq expects the following format. This format will generate a json log entry. This log_format can be modified to meet your requirements as long as key names do not change and it is valid json.
-      log-format-upstream: '{"remote_addr":"$remote_addr","remote_user":"$remote_user","time_local":"$time_local","request":"$request","status":"$status","body_bytes_sent":"$body_bytes_sent","http_referer":"$http_referer","http_user_agent":"$http_user_agent","request_length":"$request_length","request_time":"$request_time","proxy_upstream_name":"$proxy_upstream_name","proxy_alternative_upstream_name":"$proxy_alternative_upstream_name","upstream_addr":"$upstream_addr","upstream_response_length":"$upstream_response_length","upstream_response_time":"$upstream_response_time","upstream_status":"$upstream_status","req_id":"$req_id","proxy_add_x_forwarded_for":"$proxy_add_x_forwarded_for","bytes_sent":"$bytes_sent","time_iso8601":"$time_iso8601","upstream_connect_time":"$upstream_connect_time","upstream_header_time":"$upstream_header_time","namespace":"$namespace","ingress_name":"$ingress_name","service_name":"$service_name","service_port":"$service_port","http_x_forwarded_for":"$http_x_forwarded_for"}'
-    type: enum
-    valid_values:
-      - default
-      - observiq
-    default: default
-  - name: source
-    label: Log source
-    description: Where the logs are coming from
-    type: enum
-    valid_values:
-      - kubernetes
-    default: kubernetes
 
 # Set Defaults
 # {{$enable_access_log := default true .enable_access_log}}
