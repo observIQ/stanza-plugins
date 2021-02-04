@@ -24,6 +24,10 @@ parameters:
     description: A pattern of files to exclude
     type: strings
     required: false
+  - name: enable_nested_json_parser
+    label: Enable JSON Parsing
+    description: Enable to this to attempt to parse JSON from log message.
+    default: true
   - name: start_at
     label: Start At
     description: "Start reading file from 'beginning' or 'end'"
@@ -37,6 +41,7 @@ parameters:
 # {{ $cluster_name := default "" .cluster_name }}
 # {{ $pod_name := default "*" .pod_name }}
 # {{ $container_name := default "*" .container_name }}
+# {{ $enable_nested_json_parser := default true .enable_nested_json_parser}}
 # {{ $start_at := default "end" .start_at }}
 
 # Pipeline Template
@@ -142,6 +147,7 @@ pipeline:
           from: '$record.container_id'
           to: '$resource["k8s.container.id"]'
 
+# {{ if $enable_nested_json_parser }}
   # Attempt to parse nested JSON in log field if it exists and if JSON is detected
   - id: log_json_router
     type: router
@@ -156,6 +162,7 @@ pipeline:
     type: json_parser
     parse_from: $record.log
     output: add_kubernetes_metadata
+# {{ end }}
 
   # Move message from log field to $record
   - id: move_log_to_record
