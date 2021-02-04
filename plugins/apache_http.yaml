@@ -1,20 +1,15 @@
-version: 0.0.6
+version: 0.0.7
 title: Apache HTTP Server
 description: Log parser for Apache HTTP Server
 parameters:
-  - name: enable_error_log
-    label: Error Logs
-    description: Enable to collect Apache HTTP Server error logs
-    type: bool
-    default: true
-  - name: error_log_path
-    label: Error Log Path
-    description: Path to error log file
-    type: string
-    default: "/var/log/apache2/error.log"
-    relevant_if:
-      enable_error_log:
-        equals: true
+  - name: log_format
+    label: Log Format
+    description: When choosing the 'default' option, the agent will expect and parse logs in a format that matches the default logging configuration. When choosing the 'observIQ' option, the agent will expect and parse logs in an optimized JSON format that adheres to the observIQ specification, requiring an update to the apache2.conf file. See the <a href="https://docs.observiq.com/docs/apache-http-server">Apache HTTP Server source page</a> for more information.
+    type: enum
+    valid_values:
+      - default
+      - observiq
+    default: default
   - name: enable_access_log
     label: Access Logs
     description: Enable to collect Apache HTTP Server access logs
@@ -28,6 +23,19 @@ parameters:
     relevant_if:
       enable_access_log:
         equals: true
+  - name: enable_error_log
+    label: Error Logs
+    description: Enable to collect Apache HTTP Server error logs
+    type: bool
+    default: true
+  - name: error_log_path
+    label: Error Log Path
+    description: Path to error log file
+    type: string
+    default: "/var/log/apache2/error.log"
+    relevant_if:
+      enable_error_log:
+        equals: true
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -36,24 +44,6 @@ parameters:
      - beginning
      - end
     default: end
-  - name: log_format
-    label: Log Format
-    description: |2
-      Default is unmodifed log_format settings for Apache HTTPD access.log and error.log
-
-      Observiq Log Format expects the following formats for the access and error logs. This format will generate a json log entry. This log_format can be modified to meet your requirements as long as key names do not change and it is valid json.
-      To setup, edit Apache's configuration. Add both log formats to the logging section. On Debian, update all `sites-enabled` configurations to include `CustomLog ${APACHE_LOG_DIR}/access.log observiq`. On CentOS, update Apache's configuration to include `CustomLog "logs/access_log" observiq`.
-
-      Access Log Format:
-      Logformat "{\"timestamp\":\"%{%Y-%m-%dT%T}t.%{usec_frac}t%{%z}t\",\"remote_addr\":\"%a\",\"protocol\":\"%H\",\"method\":\"%m\",\"query\":\"%q\",\"path\":\"%U\",\"status\":\"%>s\",\"http_user_agent\":\"%{User-agent}i\",\"http_referer\":\"%{Referer}i\",\"remote_user\":\"%u\",\"body_bytes_sent\":\"%b\",\"request_time_microseconds\":\"%D\",\"http_x_forwarded_for\":\"%{X-Forwarded-For}i\"}" observiq
-
-      Error Log Format:
-      ErrorLogFormat "{\"time\":\"%{cu}t\",\"module\":\"%-m\",\"client\":\"%-a\",\"http_x_forwarded_for\":\"%-{X-Forwarded-For}i\",\"log_level\":\"%-l\",\"pid\":\"%-P\",\"tid\":\"%-T\",\"message\":\"%-M\",\"logid\":{\"request\":\"%-L\",\"connection\":\"%-{c}L\"},\"request_note_name\":\"%-{name}n\"}"
-    type: enum
-    valid_values:
-      - default
-      - observiq
-    default: default
 # Set Defaults
 #{{$enable_error_log := default true .enable_error_log}}
 #{{$error_log_path := default "/var/log/apache2/error.log" .error_log_path}}
