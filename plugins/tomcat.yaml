@@ -2,7 +2,7 @@ version: 0.0.10
 title: Apache Tomcat
 description: Log parser for Apache Tomcat
 min_stanza_version: 0.13.12
-supported_platforms: 
+supported_platforms:
   - linux
   - windows
   - macos
@@ -98,6 +98,7 @@ pipeline:
     pod_name: '{{ $pod_name }}'
     container_name: '{{ $container_name }}'
     start_at: '{{ $start_at }}'
+    enable_nested_json_parser: false
 
   - id: k8s_input_router
     type: router
