@@ -3,8 +3,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-## [0.0.41] - Unreleased
+## [0.0.43] - Unreleased
 ### Changed
+## [0.0.42] - 2021-02-03
+### Changed
+- Update `kubernetes_cluster` plugin ([PR216](https://github.com/observIQ/stanza-plugins/pull/216)
+  - Fix timestamp parser error when parsing kublet logs.
+## [0.0.41] - 2021-02-03
+### Changed
+- Update `syslog` plugin ([PR214](https://github.com/observIQ/stanza-plugins/pull/214))
+  - Add `location` parameter with UTC default
+  - Fix invalid protocol error when starting log agent.
 - Update `kubernetes_events` plugin ([PR212](https://github.com/observIQ/stanza-plugins/pull/212))
   - Add `SuccessfulRescale` mapping to  `severity_parser`
 - Update `kubernetes_container` plugin ([PR211](https://github.com/observIQ/stanza-plugins/pull/211)
