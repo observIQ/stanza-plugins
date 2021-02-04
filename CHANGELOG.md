@@ -3,7 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-## [0.0.43] - Unreleased
+## [0.0.44] - Unreleased
+## [0.0.43] - 2021-02-04
+- Update `openshift` plugin ([PR218](https://github.com/observIQ/stanza-plugins/pull/218))
+  - Fix regex_parser to handle periods in pod name
+  - Fix regex_parser: remove `k8s_` prefix from service name
 ### Changed
 ## [0.0.42] - 2021-02-03
 ### Changed
@@ -132,7 +136,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add metadata to add log_type `observiq.agent.logagent`
 ## [0.0.35] - 2021-01-11
 ### Changed
-- Update `nginx_ingress` plugin 
+- Update `nginx_ingress` plugin
   - Update observiq log format to be JSON format ([PR173](https://github.com/observIQ/stanza-plugins/pull/173))
   - Update error and access `log_type` values to `nginx.ingress.error` and `nginx.ingress.access` ([PR166](https://github.com/observIQ/stanza-plugins/pull/166))
 - Update `pgbouncer` plugin ([PR172](https://github.com/observIQ/stanza-plugins/pull/172))
@@ -160,7 +164,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update `kubernetes_events` plugin ([PR162](https://github.com/observIQ/stanza-plugins/pull/162))
   - Add missing INFO level cluster events
 - Update `dockerswarm` plugin ([PR161](https://github.com/observIQ/stanza-plugins/pull/161))
-  - Update docker_swarm_parser parser timestamp layout to use space padded day. 
+  - Update docker_swarm_parser parser timestamp layout to use space padded day.
   - Remove the severity `preserve_to` parameter from dockerd_parser and containerd_parser
   - Change severity name on containerd_parser to containerd_severity
   - Add pid field
