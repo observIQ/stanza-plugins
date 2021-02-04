@@ -1,4 +1,4 @@
-version: 0.0.15
+version: 0.0.16
 title: Kubernetes Container
 description: Log parser for Kubernetes
 min_stanza_version: 0.9.8
@@ -142,8 +142,24 @@ pipeline:
           from: '$record.container_id'
           to: '$resource["k8s.container.id"]'
 
+  # Attempt to parse nested JSON in log field if it exists and if JSON is detected
+  - id: log_json_router
+    type: router
+    default: move_log_to_record
+    routes:
+      # It appears to be JSON so send it to be parsed as JSON.
+      - output: nested_json_parser
+        expr: '$record.log != nil and $record.log matches "^{.*}\\s*$"'
+
+  # Attempt to parse nested JSON since the log appears to be JSON
+  - id: nested_json_parser
+    type: json_parser
+    parse_from: $record.log
+    output: add_kubernetes_metadata
+
   # Move message from log field to $record
-  - type: restructure
+  - id: move_log_to_record
+    type: restructure
     ops:
       - move:
           from: log
