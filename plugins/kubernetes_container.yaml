@@ -27,6 +27,7 @@ parameters:
   - name: enable_nested_json_parser
     label: Enable JSON Parsing
     description: Enable to this to attempt to parse JSON from log message.
+    type: bool
     default: true
   - name: start_at
     label: Start At
