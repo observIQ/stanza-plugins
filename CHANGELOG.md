@@ -16,7 +16,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `apache_http`
     - Update `log_format` descriptions
     - Update parameter order
-    - Disable parsing of messages if they match a JSON format from `kubernetes_container`
   - `nginx`
     - Update `source` and `log_format` descriptions
     - Update parameter order
