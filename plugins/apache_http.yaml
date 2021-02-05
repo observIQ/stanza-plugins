@@ -1,10 +1,10 @@
-version: 0.0.7
+version: 0.0.8
 title: Apache HTTP Server
 description: Log parser for Apache HTTP Server
 parameters:
   - name: log_format
     label: Log Format
-    description: When choosing the 'default' option, the agent will expect and parse logs in a format that matches the default logging configuration. When choosing the 'observIQ' option, the agent will expect and parse logs in an optimized JSON format that adheres to the observIQ specification, requiring an update to the apache2.conf file. See the <a href="https://docs.observiq.com/docs/apache-http-server">Apache HTTP Server source page</a> for more information.
+    description: When choosing the 'default' option, the agent will expect and parse logs in a format that matches the default logging configuration. When choosing the 'observIQ' option, the agent will expect and parse logs in an optimized JSON format that adheres to the observIQ specification, requiring an update to the apache2.conf file. See the Apache HTTP Server source page for more information.
     type: enum
     valid_values:
       - default

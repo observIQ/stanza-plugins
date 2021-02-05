@@ -1,4 +1,4 @@
-version: 0.0.12
+version: 0.0.13
 title: Nginx
 description: Log parser for Nginx
 min_stanza_version: 0.13.12
@@ -18,12 +18,20 @@ parameters:
     default: file
   - name: log_format
     label: Log Format
-    description:  When choosing the 'default' option, the agent will expect and parse logs in a format that matches the default logging configuration. When choosing the 'observIQ' option, the agent will expect and parse logs in an optimized JSON format that adheres to the observIQ specification, requiring an update to the nginx.conf file. See the <a href="https://docs.observiq.com/docs/nginx">NGINX source page</a> for more information.
+    description:  When choosing the 'default' option, the agent will expect and parse logs in a format that matches the default logging configuration. When choosing the 'observIQ' option, the agent will expect and parse logs in an optimized JSON format that adheres to the observIQ specification, requiring an update to the nginx.conf file. See the NGINX source page for more information.
     type: enum
     valid_values:
       - default
       - observiq
     default: default
+  - name: cluster_name
+    label: Cluster Name
+    description: 'Cluster Name to be added to a resource label'
+    type: string
+    default: ""
+    relevant_if:
+      source:
+        equals: kubernetes
   - name: pod_name
     label: Pod Name
     description: The pod name (without the unique identifier on the end)
@@ -82,14 +90,15 @@ parameters:
 
 # Set Defaults
 # {{$source := default "file" .source}}
+# {{$log_format := default "default" .log_format}}
+# {{$cluster_name := default "" .cluster_name}}
+# {{$pod_name := default "nginx-*" .pod_name}}
+# {{$container_name := default "*" .container_name}}
 # {{$enable_access_log := default true .enable_access_log}}
 # {{$access_log_path := default "/var/log/nginx/access.log*" .access_log_path}}
 # {{$enable_error_log := default true .enable_error_log}}
 # {{$error_log_path := default "/var/log/nginx/error.log*" .error_log_path}}
 # {{$start_at := default "end" .start_at}}
-# {{$pod_name := default "nginx-*" .pod_name}}
-# {{$container_name := default "*" .container_name}}
-# {{$log_format := default "default" .log_format}}
 
 # Pipeline Template
 pipeline:
@@ -98,6 +107,7 @@ pipeline:
     type: kubernetes_container
     pod_name: '{{ $pod_name }}'
     container_name: '{{ $container_name }}'
+    cluster_name: '{{ $cluster_name }}'
     start_at: '{{ $start_at }}'
     enable_nested_json_parser: false
 
