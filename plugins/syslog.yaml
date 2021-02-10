@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.4
+version: 0.0.5
 title: Syslog
 description: Log parser for Syslog
 parameters:
@@ -37,7 +37,7 @@ parameters:
 # Set Defaults
 # {{$listen_address := default "0.0.0.0:514" .listen_address}}
 # {{$connection_type := default "udp" .connection_type}}
-# {{$protocol := default "rfc5424" .protocol}}
+# {{$protocol := default "rfc5424 (IETF)" .protocol}}
 # {{$location := default "UTC" .location}}
 
 # Pipeline Template
@@ -59,6 +59,19 @@ pipeline:
     labels:
       log_type: syslog
       plugin_id: {{ .id }}
+    output: handle_new_lines
+
+  # tcp input uses \n to break messages into seperate
+  # entries, this can be a problem for Syslog if the
+  # structured_data key=value pairs or message fields contain
+  # a \n. This is unlikly, but not impossible. It has been
+  # observed with rfc5424 structured_data field.
+  # '<' can be relied on to be the first character of every
+  # syslog message for both rfc 5424 and 3164
+  - id: handle_new_lines
+    type: recombine
+    combine_field: $record
+    is_first_entry: "$record startsWith '<'"
     output: syslog_parser
 # {{ end }}
 
