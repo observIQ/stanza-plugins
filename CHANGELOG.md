@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.45] - Unreleased
 ### Changed
+- Update Syslog plugin ([PR222](https://github.com/observIQ/stanza-plugins/pull/222))
+  - Use recombine operator to support multiline Syslog
 - Update plugins ([PR221](https://github.com/observIQ/stanza-plugins/pull/221))
   - `tomcat` and `nginx`
     - Update `log_format` description
