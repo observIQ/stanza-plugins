@@ -37,7 +37,7 @@ parameters:
 # Set Defaults
 # {{$listen_address := default "0.0.0.0:514" .listen_address}}
 # {{$connection_type := default "udp" .connection_type}}
-# {{$protocol := default "rfc5424" .protocol}}
+# {{$protocol := default "rfc5424 (IETF)" .protocol}}
 # {{$location := default "UTC" .location}}
 
 # Pipeline Template
