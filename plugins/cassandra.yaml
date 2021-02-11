@@ -14,7 +14,7 @@ parameters:
     default: "/var/log/cassandra/cassandra.log"
     relevant_if:
       enable_system_logs:
-        equal: true
+        equals: true
   - name: enable_debug_logs
     label: Enable Debug Logs
     description: Enable collection of Cassandra debug logs
@@ -27,7 +27,7 @@ parameters:
     default: "/var/log/cassandra/debug.log"
     relevant_if:
       enable_debug_logs:
-        equal: true
+        equals: true
   - name: enable_gc_logs
     label: Enable Garbage Collection Logs
     description: Enable collection of Cassandra garbage collection logs
@@ -40,7 +40,7 @@ parameters:
     default: "/var/log/cassandra/gc.log"
     relevant_if:
       enable_gc_logs:
-        equal: true
+        equals: true
   - name: start_at
     label: Start At
     description: "Start reading file from 'beginning' or 'end'"
