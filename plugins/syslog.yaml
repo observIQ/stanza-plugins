@@ -81,9 +81,6 @@ pipeline:
     routes:
       - expr: '$record matches ".*\\\\r.*"'
         output: return_parser
-        labels:
-            log_type: 'router.true'
-
 
   - id: return_parser
     type: regex_parser
