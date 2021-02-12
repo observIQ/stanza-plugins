@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.5
+version: 0.0.6
 title: Syslog
 description: Log parser for Syslog
 parameters:
@@ -72,8 +72,32 @@ pipeline:
     type: recombine
     combine_field: $record
     is_first_entry: "$record startsWith '<'"
-    output: syslog_parser
+    output: return_router
 # {{ end }}
+
+  - id: return_router
+    type: router
+    default: syslog_parser
+    routes:
+      - expr: '$record matches ".*\\\\r.*"'
+        output: return_parser
+        labels:
+            log_type: 'router.true'
+
+
+  - id: return_parser
+    type: regex_parser
+    parse_from: $record
+    regex: '(?P<message1>.*)(?P<return>\\r)(?P<message2>.*)'
+    output: return_restructurer
+
+  - id: return_restructurer
+    type: restructure
+    ops:
+      - add:
+          field: $record
+          value_expr: '$record.message1 + "\\\\r" + $record.message2'
+    output: syslog_parser
 
   - id: syslog_parser
     type: syslog_parser
