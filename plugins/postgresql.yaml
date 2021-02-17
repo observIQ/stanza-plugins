@@ -60,7 +60,7 @@ pipeline:
     if: '$record.message matches "^STATEMENT:|^statement:"'
     type: regex_parser
     parse_from: $record.message
-    regex: '(^STATEMENT:\s*|^statement:\s*)(?P<statement>.*)'
+    regex: '(^STATEMENT:\s*|^statement:\s*)(?P<statement>[\w\W]+)'
 
   - id: sql_command_alter
     type: restructure
