@@ -1,4 +1,4 @@
-version: 0.0.6
+version: 0.0.7
 title: PostgreSQL
 description: 'Log parser for PostgreSQL. This plugin expects the custom settings in postgresql.conf. See our help documentation for setup requirements.'
 parameters:
@@ -61,4 +61,121 @@ pipeline:
     type: regex_parser
     parse_from: $record.message
     regex: '(^STATEMENT:\s*|^statement:\s*)(?P<statement>.*)'
-    output: {{ .output }}
+
+  - id: sql_command_alter
+    type: restructure
+    if: '$record.statement != nil and $record.statement matches "^ALTER"'
+    ops:
+      - add:
+          field: "sql_command"
+          value: "ALTER"
+
+  - id: sql_command_commit
+    type: restructure
+    if: '$record.statement != nil and $record.statement matches "^COMMIT"'
+    ops:
+      - add:
+          field: "sql_command"
+          value: "COMMIT"
+
+  - id: sql_command_copy
+    type: restructure
+    if: '$record.statement != nil and $record.statement matches "^COPY"'
+    ops:
+      - add:
+          field: "sql_command"
+          value: "COPY"
+
+  - id: sql_command_create
+    type: restructure
+    if: '$record.statement != nil and $record.statement matches "^CREATE"'
+    ops:
+      - add:
+          field: "sql_command"
+          value: "CREATE"
+
+  - id: sql_command_delete
+    type: restructure
+    if: '$record.statement != nil and $record.statement matches "^DELETE"'
+    ops:
+      - add:
+          field: "sql_command"
+          value: "DELETE"
+
+  - id: sql_command_drop
+    type: restructure
+    if: '$record.statement != nil and $record.statement matches "^DROP"'
+    ops:
+      - add:
+          field: "sql_command"
+          value: "DROP"
+
+  - id: sql_command_grant
+    type: restructure
+    if: '$record.statement != nil and $record.statement matches "^GRANT"'
+    ops:
+      - add:
+          field: "sql_command"
+          value: "GRANT"
+
+  - id: sql_command_insert
+    type: restructure
+    if: '$record.statement != nil and $record.statement matches "^INSERT"'
+    ops:
+      - add:
+          field: "sql_command"
+          value: "INSERT"
+
+  - id: sql_command_revoke
+    type: restructure
+    if: '$record.statement != nil and $record.statement matches "^REVOKE"'
+    ops:
+      - add:
+          field: "sql_command"
+          value: "REVOKE"
+
+  - id: sql_command_rollback
+    type: restructure
+    if: '$record.statement != nil and $record.statement matches "^ROLLBACK"'
+    ops:
+      - add:
+          field: "sql_command"
+          value: "ROLLBACK"
+
+  - id: sql_command_select
+    type: restructure
+    if: '$record.statement != nil and $record.statement matches "^SELECT"'
+    ops:
+      - add:
+          field: "sql_command"
+          value: "SELECT"
+
+  - id: sql_command_truncate
+    type: restructure
+    if: '$record.statement != nil and $record.statement matches "^TRUNCATE"'
+    ops:
+      - add:
+          field: "sql_command"
+          value: "TRUNCATE"
+
+  - id: sql_command_update
+    type: restructure
+    if: '$record.statement != nil and $record.statement matches "^UPDATE"'
+    ops:
+      - add:
+          field: "sql_command"
+          value: "UPDATE"
+
+  - id: sql_command_vacuum
+    type: restructure
+    if: '$record.statement != nil and $record.statement matches "^VACUUM"'
+    ops:
+      - add:
+          field: "sql_command"
+          value: "VACUUM"
+
+  - id: output_router
+    type: router
+    routes:
+      - output: {{.output}}
+        expr: 'true'
