@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Update `mysql` plugin ([PR228](https://github.com/observIQ/stanza-plugins/pull/228))
   - Add `sql_command` field to `slow_query_log` and `general_log`
+- Update `postgresql` plugin ([PR227](https://github.com/observIQ/stanza-plugins/pull/227))
+  - Add `sql_command` field
+  - Fix statement parsing error not capturing multiline messages
 ## [0.0.46] - 2021-02-15
 ### Changed
 - Update `syslog` plugin ([PR225](https://github.com/observIQ/stanza-plugins/pull/225))
