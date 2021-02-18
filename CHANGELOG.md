@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.47] - Unreleased
 ### Changed
+- Update `mysql` plugin ([PR228](https://github.com/observIQ/stanza-plugins/pull/228))
+  - Add `sql_command` field to `slow_query_log` and `general_log`
 ## [0.0.46] - 2021-02-15
 ### Changed
 - Update `syslog` plugin ([PR225](https://github.com/observIQ/stanza-plugins/pull/225))
