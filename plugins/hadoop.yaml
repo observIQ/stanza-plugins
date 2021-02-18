@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.2
+version: 0.0.3
 title: Apache Hadoop
 description: Log parser for Apache Hadoop
 parameters:
@@ -83,7 +83,6 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hadoop_severity
-      preserve_to: hadoop_severity
       mapping:
         warning: warn
         critical: fatal
@@ -111,7 +110,6 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hadoop_severity
-      preserve_to: hadoop_severity
       mapping:
         warning: warn
         critical: fatal
@@ -139,7 +137,6 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hadoop_severity
-      preserve_to: hadoop_severity
       mapping:
         warning: warn
         critical: fatal
