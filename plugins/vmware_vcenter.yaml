@@ -48,8 +48,8 @@ pipeline:
       plugin_id: {{ .id }}
     tls:
       enable: {{ $enable_tls }}
-      certificate: {{ $.certificate_file }}
-      private_key: {{ $.private_key_file }}
+      certificate: {{ $certificate_file }}
+      private_key: {{ $private_key_file }}
     output: prefix_router
 
   # vcenter will (sometimes) prepend an id to the messages, check
