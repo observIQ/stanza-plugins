@@ -8,9 +8,35 @@ parameters:
     description: A syslog address of the form `<ip>:<port>`
     type: string
     default: "0.0.0.0:5140"
+  - name: enable_tls
+    label: Enable TLS
+    description: Enable TLS for the TCP listener
+    type: bool
+    default: false
+  - name: certificate_file
+    label: TLS certificate path
+    description: File path for the X509 TLS certificate chain
+    type: string
+    default: "/opt/cert"
+    required: true
+    relevant_if:
+      enable_tls:
+        equals: true
+  - name: private_key_file
+    label: TLS private key path
+    description: File path for the X509 TLS certificate chain
+    type: string
+    default: "/opt/key"
+    required: true
+    relevant_if:
+      enable_tls:
+        equals: true
 
 # Set Defaults
 # {{$listen_address := default "0.0.0.0:5140" .listen_address}}
+# {{$enable_tls := default true .enable_tls}}
+# {{$certificate_file := default "" .certificate_file}}
+# {{$private_key_file := default "" .private_key_file}}
 
 # Pipeline Template
 pipeline:
@@ -20,6 +46,10 @@ pipeline:
     labels:
       log_type: vmware_esxi
       plugin_id: {{ .id }}
+    tls:
+      enable: {{ $enable_tls }}
+      certificate: {{ $certificate_file }}
+      private_key: {{ $private_key_file }}
     output: timestamp_router
   - id: timestamp_router
     type: router
