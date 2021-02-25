@@ -17,7 +17,7 @@ parameters:
     label: TLS certificate path
     description: File path for the X509 TLS certificate chain
     type: string
-    default: ""
+    default: "/opt/cert"
     required: true
     relevant_if:
       enable_tls:
@@ -26,7 +26,7 @@ parameters:
     label: TLS private key path
     description: File path for the X509 TLS certificate chain
     type: string
-    default: ""
+    default: "/opt/key"
     required: true
     relevant_if:
       enable_tls:
