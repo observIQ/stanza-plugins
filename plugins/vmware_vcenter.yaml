@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.4
+version: 0.0.5
 title: VMware vCenter
 description: Log parser for VMware vCenter
 parameters:
@@ -8,9 +8,35 @@ parameters:
     description: A syslog address of the form `<ip>:<port>`
     type: string
     default: "0.0.0.0:5140"
+  - name: enable_tls
+    label: Enable TLS
+    description: Enable TLS for the TCP listener
+    type: bool
+    default: false
+  - name: certificate_file
+    label: TLS certificate path
+    description: File path for the X509 TLS certificate chain
+    type: string
+    default: "/opt/cert"
+    required: true
+    relevant_if:
+      enable_tls:
+        equals: true
+  - name: private_key_file
+    label: TLS private key path
+    description: File path for the X509 TLS certificate chain
+    type: string
+    default: "/opt/key"
+    required: true
+    relevant_if:
+      enable_tls:
+        equals: true
 
 # Set Defaults
 # {{$listen_address := default "0.0.0.0:5140" .listen_address}}
+# {{$enable_tls := default true .enable_tls}}
+# {{$certificate_file := default "" .certificate_file}}
+# {{$private_key_file := default "" .private_key_file}}
 
 # Pipeline Template
 pipeline:
@@ -20,6 +46,34 @@ pipeline:
     labels:
       log_type: vmware_vcenter
       plugin_id: {{ .id }}
+    tls:
+      enable: {{ $enable_tls }}
+      certificate: {{ $certificate_file }}
+      private_key: {{ $private_key_file }}
+    output: prefix_router
+
+  # vcenter will (sometimes) prepend an id to the messages, check
+  # for the id and drop it if it exsits
+  # example: '257 <14>1. . . '
+  - id: prefix_router
+    type: router
+    routes:
+      - expr: '$record matches "^\\d* "'
+        output: pre_parser
+    default: vcenter_parser
+
+  - id: pre_parser
+    type: regex_parser
+    regex: '^(?P<drop>\d* )(?P<syslog_message>[\w\W]*)'
+    output: pre_parser_restructure
+
+  - id: pre_parser_restructure
+    type: restructure
+    ops:
+      - remove: "$record.drop"
+      - move:
+          from: "$record.syslog_message"
+          to: "$record"
     output: vcenter_parser
 
   - id: vcenter_parser

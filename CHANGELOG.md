@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Update `hadoop` plugin ([PR230](https://github.com/observIQ/stanza-plugins/pull/230))
   - Remove `preserve_to` parameter from severity
+- Update `vmware_vcenter` and `vmware_esxi` plugins ([PR231](https://github.com/observIQ/stanza-plugins/pull/231))
+  - Add support for TLS (requires Stanza v0.13.14 or newer)
 ## [0.0.47] - 2021-02-18
 ### Changed
 - Update `mysql` plugin ([PR228](https://github.com/observIQ/stanza-plugins/pull/228))
