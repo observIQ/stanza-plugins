@@ -1,6 +1,7 @@
 version: 0.0.12
 title: MySQL
 description: Log parser for MySQL
+min_stanza_version: 0.13.17
 parameters:
   - name: enable_general_log
     label: General Logs
