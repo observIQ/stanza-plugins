@@ -3,8 +3,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [0.0.50] - Unreleased
 
-## [0.0.49] - Unreleased
+## [0.0.49] - 2021-03-18
 - Update `mysql` plugin ([PR232](https://github.com/observIQ/stanza-plugins/pull/232))
   - Add MariaDB audit plugin log parser using new `csv_parser`
   - Add `min_stanza_version` and set to v0.13.17
