@@ -1,6 +1,7 @@
-version: 0.0.11
+version: 0.0.12
 title: MySQL
 description: Log parser for MySQL
+min_stanza_version: 0.13.17
 parameters:
   - name: enable_general_log
     label: General Logs
@@ -41,6 +42,19 @@ parameters:
     relevant_if:
       enable_error_log:
         equals: true
+  - name: enable_mariadb_audit_log
+    label: Error Logs
+    description: Enable to collect MySQL error logs
+    type: bool
+    default: false
+  - name: mariadb_audit_log_path
+    label: MariaDB Audit Log Path
+    description: Path to audit log file created by MariaDB plugin
+    type: string
+    default: "/var/log/mysql/audit.log"
+    relevant_if:
+      enable_mariadb_audit_log:
+        equals: true
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -57,6 +71,8 @@ parameters:
 # {{$slow_query_log_path := default "/var/log/mysql/slow.log" .slow_query_log_path}}
 # {{$enable_error_log := default true .enable_error_log}}
 # {{$error_log_path := default "/var/log/mysql/mysqld.log" .error_log_path}}
+# {{$enable_mariadb_audit_log := default false .enable_mariadb_audit_log}}
+# {{$mariadb_audit_log_path := default "/var/log/mysql/audit.log" .mariadb_audit_log_path}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
@@ -214,6 +230,48 @@ pipeline:
       mapping:
         notice:
           - note
+    output: {{ .output }}
+  # {{ end }}
+
+  # {{ if $enable_mariadb_audit_log }}
+  - id: mariadb_audit_reader
+    type: file_input
+    include:
+      - {{ $mariadb_audit_log_path }}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: 'mysql.audit'
+      plugin_id: {{ .id }}
+    output: single_quote_router
+
+  - id: single_quote_router
+    type: router
+    default: mariadb_audit_csv_parser
+    routes:
+      - expr: $record matches ".*\\'.*\\'.*"
+        output: single_quote_parser
+
+  - id: single_quote_parser
+    type: regex_parser
+    parse_from: $record
+    regex: "(?P<message1>.*)(?P<single_quote1>')(?P<query_message>.*)(?P<single_quote2>')(?P<message2>.*)"
+    output: single_quote_restructurer
+
+  - id: single_quote_restructurer
+    type: restructure
+    ops:
+      - add:
+          field: $record
+          value_expr: "$record.message1 + '\"' + $record.query_message + '\"' + $record.message2"
+    output: mariadb_audit_csv_parser
+
+  - id: mariadb_audit_csv_parser
+    type: csv_parser
+    header: "timestamp,host,dbuser,client_address,connection_id,query_id,operation,dbname,object,retcode"
+    delimiter: ","
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y%m%d %H:%M:%S'
     output: {{ .output }}
   # {{ end }}
 
