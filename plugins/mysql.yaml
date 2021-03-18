@@ -1,4 +1,4 @@
-version: 0.0.12
+version: 0.0.13
 title: MySQL
 description: Log parser for MySQL
 min_stanza_version: 0.13.17
@@ -43,8 +43,8 @@ parameters:
       enable_error_log:
         equals: true
   - name: enable_mariadb_audit_log
-    label: Error Logs
-    description: Enable to collect MySQL error logs
+    label: Audit Logs
+    description: Enable to collect MySQL audit logs provided by MariaDB Audit plugin
     type: bool
     default: false
   - name: mariadb_audit_log_path
