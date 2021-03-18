@@ -3,7 +3,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-## [0.0.50] - Unreleased
+## [0.0.51] - Unreleased
+### Changed
+## [0.0.50] - 2021-03-18
+### Changed
 - Update `mysql` plugin ([PR234](https://github.com/observIQ/stanza-plugins/pull/234))
   - Update `label` and `description` of `enable_mariadb_audit_log` parameter.
 ## [0.0.49] - 2021-03-18
