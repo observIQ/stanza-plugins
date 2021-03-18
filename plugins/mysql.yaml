@@ -242,11 +242,32 @@ pipeline:
     labels:
       log_type: 'mysql.audit'
       plugin_id: {{ .id }}
+    output: single_quote_router
+
+  - id: single_quote_router
+    type: router
+    default: mariadb_audit_csv_parser
+    routes:
+      - expr: $record matches ".*\\'.*\\'.*"
+        output: single_quote_parser
+
+  - id: single_quote_parser
+    type: regex_parser
+    parse_from: $record
+    regex: "(?P<message1>.*)(?P<single_quote1>')(?P<query_message>.*)(?P<single_quote2>')(?P<message2>.*)"
+    output: single_quote_restructurer
+
+  - id: single_quote_restructurer
+    type: restructure
+    ops:
+      - add:
+          field: $record
+          value_expr: "$record.message1 + '\"' + $record.query_message + '\"' + $record.message2"
     output: mariadb_audit_csv_parser
 
   - id: mariadb_audit_csv_parser
     type: csv_parser
-    header: "timestamp,serverhost,username,host,connectionid,queryid,operation,database,object,retcode"
+    header: "timestamp,host,dbuser,client_address,connection_id,query_id,operation,dbname,object,retcode"
     delimiter: ","
     timestamp:
       parse_from: timestamp
