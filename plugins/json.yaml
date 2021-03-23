@@ -1,0 +1,67 @@
+# Plugin Info
+version: 0.0.1
+title: JSON
+description: File Input JSON Parser
+min_stanza_version: 0.13.12
+parameters:
+  - name: file_log_path
+    label: File Path
+    description: Specify a single path or multiple paths to read one or many files. You may also use a wildcard (*) to read multiple files within a directory.
+    type: strings
+    required: true
+  - name: exclude_file_log_path
+    label: Exclude File Path
+    description: Specify a single path or multiple paths to exclude one or many files from being read. You may also use a wildcard (*) to exclude multiple files from being read within a directory.
+    type: strings
+    default: []
+  - name: encoding
+    label: Encoding
+    description: Specify the encoding of the file(s) being read. In most cases, you can leave the default option selected.
+    type: enum
+    valid_values:
+      - utf-8
+      - utf-16le
+      - utf-16be
+    default: utf-8
+  - name: log_type
+    label: Type
+    description: Adds the specified 'Type' as a label to each log message.
+    type: string
+    default: json
+  - name: start_at
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+# Set Defaults
+# {{$encoding := default "utf-8" .encoding}}
+# {{$log_type := default "json" .log_type}}
+# {{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+  - type: file_input
+    start_at: '{{ $start_at }}'
+    include:
+# {{ range $i, $fp := .file_log_path  }}
+      - '{{ $fp }}'
+# {{ end }}
+# {{ if .exclude_file_log_path }}
+    exclude:
+  # {{ range $i, $efp := .exclude_file_log_path  }}
+      - '{{ $efp }}'
+  # {{ end }}
+# {{ end }}
+# {{ if $encoding }}
+    encoding: '{{ $encoding }}'
+# {{ end }}
+    include_file_name: true
+    labels:
+      plugin_id: {{ .id }}
+      log_type: '{{ $log_type }}'
+
+  - type: json_parser
+    output: {{ .output }}
