@@ -5,7 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ## [0.0.51] - Unreleased
 ### Added
-- Add `file` plugin ([PR236](https://github.com/observIQ/stanza-plugins/pull/236))
+- Add plugins ([PR236](https://github.com/observIQ/stanza-plugins/pull/236))
+  - `file`
+  - `json`
 ### Changed
 ## [0.0.50] - 2021-03-18
 ### Changed
