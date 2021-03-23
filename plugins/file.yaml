@@ -1,0 +1,89 @@
+# Plugin Info
+version: 0.0.1
+title: File
+description: File Input Parser
+min_stanza_version: 0.13.12
+parameters:
+  - name: file_log_path
+    label: File Path
+    description: Specify a single path or multiple paths to read one or many files. You may also use a wildcard (*) to read multiple files within a directory.
+    type: strings
+    required: true
+  - name: exclude_file_log_path
+    label: Exclude File Path
+    description: Specify a single path or multiple paths to exclude one or many files from being read. You may also use a wildcard (*) to exclude multiple files from being read within a directory.
+    type: strings
+    default: []
+  - name: enable_multiline
+    label: Enable Multiline
+    description: Enable to parse Multiline Log Files
+    type: bool
+    default: false
+  - name: multiline_line_start_pattern
+    label: Multiline Start Pattern
+    description: A Regex pattern that matches the start of a multiline log entry in the log file.
+    type: string
+    default: ''
+    required: true
+    relevant_if:
+      enable_multiline:
+        equals: true
+  - name: encoding
+    label: Encoding
+    description: Specify the encoding of the file(s) being read. In most cases, you can leave the default option selected.
+    type: enum
+    valid_values:
+      - nop
+      - utf-8
+      - utf-16le
+      - utf-16be
+      - ascii
+      - big5
+    default: nop
+  - name: log_type
+    label: Type
+    description: Adds the specified 'Type' as a label to each log message.
+    type: string
+    default: file
+  - name: start_at
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+# Set Defaults
+# {{$enable_multiline := default false .enable_multiline}}
+# {{$multiline_line_start_pattern := default "" .multiline_line_start_pattern}}
+# {{$encoding := default "nop" .encoding}}
+# {{$log_type := default "file" .log_type}}
+# {{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+  - type: file_input
+    start_at: '{{ $start_at }}'
+    include:
+# {{ range $i, $fp := .file_log_path  }}
+      - '{{ $fp }}'
+# {{ end }}
+# {{ if .exclude_file_log_path }}
+    exclude:
+  # {{ range $i, $efp := .exclude_file_log_path  }}
+      - '{{ $efp }}'
+  # {{ end }}
+# {{ end }}
+# {{ if $enable_multiline }}
+    multiline:
+      line_start_pattern: '{{ $multiline_line_start_pattern }}'
+# {{ end }}
+# {{ if $encoding }}
+    encoding: '{{ $encoding }}'
+# {{ end }}
+    include_file_name: true
+    labels:
+      plugin_id: {{ .id }}
+      log_type: '{{ $log_type }}'
+    output: {{ .output }}
+# {{ end }}
