@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add plugins ([PR236](https://github.com/observIQ/stanza-plugins/pull/236))
   - `file`
   - `json`
+  - `csv`
 ### Changed
 ## [0.0.50] - 2021-03-18
 ### Changed
