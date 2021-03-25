@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `file`
   - `json`
   - `csv`
+- Bumped versions of `zookeeper` and `kafka` plugins so they can be registered with platform information.
 ### Changed
 ## [0.0.50] - 2021-03-18
 ### Changed
