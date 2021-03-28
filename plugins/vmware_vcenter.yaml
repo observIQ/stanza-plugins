@@ -40,6 +40,7 @@ parameters:
 
 # Set Defaults
 # {{$listen_address := default "0.0.0.0:5140" .listen_address}}
+# {{$max_buffer_size := default "1024kib" .max_buffer_size}}
 # {{$enable_tls := default true .enable_tls}}
 # {{$certificate_file := default "" .certificate_file}}
 # {{$private_key_file := default "" .private_key_file}}
