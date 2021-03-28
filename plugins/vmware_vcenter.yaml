@@ -8,6 +8,12 @@ parameters:
     description: A syslog address of the form `<ip>:<port>`
     type: string
     default: "0.0.0.0:5140"
+  - name: max_buffer_size
+    label: Max Buffer Size
+    description: Maximum size of buffer that may be allocated while reading TCP input
+    type: string
+    default: "1024kib"
+    required: false
   - name: enable_tls
     label: Enable TLS
     description: Enable TLS for the TCP listener
@@ -43,6 +49,7 @@ pipeline:
   - id: vcenter_input
     type: tcp_input
     listen_address: {{ $listen_address }}
+    max_buffer_size: {{ $max_buffer_size }}
     labels:
       log_type: vmware_vcenter
       plugin_id: {{ .id }}
