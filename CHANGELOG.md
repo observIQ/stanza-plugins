@@ -11,9 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `file`
   - `json`
   - `csv`
-- Bumped versions of `zookeeper` and `kafka` plugins so they can be registered with platform information.
 ### Changed
 - Update VMware vCenter to make use of TCP input's adjustable buffer ([PR238](https://github.com/observIQ/stanza-plugins/pull/238))
+- Update plugins ([PR237](https://github.com/observIQ/stanza-plugins/pull/237))
+  - Bumped versions of `zookeeper` and `kafka` plugins so they can be registered with platform information.
 ## [0.0.50] - 2021-03-18
 ### Changed
 - Update `mysql` plugin ([PR234](https://github.com/observIQ/stanza-plugins/pull/234))
