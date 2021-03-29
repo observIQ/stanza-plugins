@@ -2,6 +2,7 @@
 version: 0.0.6
 title: VMware vCenter
 description: Log parser for VMware vCenter
+min_stanza_version: 0.13.16
 parameters:
   - name: listen_address
     label: Listen Address
