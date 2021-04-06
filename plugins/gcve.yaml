@@ -53,7 +53,7 @@ pipeline:
     listen_address: {{ $listen_address }}
     max_buffer_size: {{ $max_buffer_size }}
     labels:
-      log_type: gcve
+      log_type: gcve.syslog
       plugin_id: {{ .id }}
     tls:
       enable: {{ $enable_tls }}
