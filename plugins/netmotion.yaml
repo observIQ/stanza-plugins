@@ -36,6 +36,7 @@ pipeline:
     is_first_entry: "$record startsWith '<'"
     output: m_user_router
 
+  # Handles brackets for m_user key/value pairs within structured data
   - id: m_user_router
     type: router
     default: url2_router
