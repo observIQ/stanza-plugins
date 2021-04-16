@@ -1,0 +1,106 @@
+# Plugin Info
+version: 0.0.1
+title: Netmotion
+description: Log parser for Netmotion Syslog
+parameters:
+  - name: listen_address
+    label: Listen Address
+    description: A TCP network address of the form `<ip>:<port>`
+    type: string
+    default: "0.0.0.0:514"
+
+# Set Defaults
+# {{$listen_address := default "0.0.0.0:514" .listen_address}}
+
+# Pipeline Template
+pipeline:
+  - id: netmotion_input
+    type: tcp_input
+    listen_address: {{ $listen_address }}
+    labels:
+      log_type: netmotion
+      plugin_id: {{ .id }}
+    output: handle_new_lines
+
+  # tcp input uses \n to break messages into seperate
+  # entries, this can be a problem for Syslog if the
+  # structured_data key=value pairs or message fields contain
+  # a \n. This is unlikly, but not impossible. It has been
+  # observed with rfc5424 structured_data field.
+  # '<' can be relied on to be the first character of every
+  # syslog message for both rfc 5424 and 3164
+  - id: handle_new_lines
+    type: recombine
+    combine_field: $record
+    is_first_entry: "$record startsWith '<'"
+    output: m_user_router
+
+  - id: m_user_router
+    type: router
+    default: url2_router
+    routes:
+      - expr: '$record matches ".*\\[None\\\\].*"'
+        output: m_user_parser
+
+  - id: m_user_parser
+    type: regex_parser
+    parse_from: $record
+    regex: '(?P<message1>.*)(?P<m_user_none>\[None\\\])(?P<message2>.*)'
+    output: m_user_restructurer
+
+  - id: m_user_restructurer
+    type: restructure
+    ops:
+      - add:
+          field: $record
+          value_expr: '$record.message1 + "None" + $record.message2'
+    output: url2_router
+
+  # Handle brackets in url2 field
+  - id: url2_router
+    type: router
+    default: sd_bracket_space_router
+    routes:
+      - expr: '$record matches "\\[.*URL2=\".*\\[.*\\\\\\]/\".*\\]"'
+        output: url2_parser
+
+  - id: url2_parser
+    type: regex_parser
+    parse_from: $record
+    regex: '(?P<message1>.*\[.*URL2=".*)\[(?P<url1>.*)\\](?P<url2>[^"]*)(?P<message2>".*\].*)'
+    output: url2_restructurer
+
+  - id: url2_restructurer
+    type: restructure
+    ops:
+      - add:
+          field: $record
+          value_expr: '$record.message1 + $record.url1 + $record.url2 + $record.message2'
+    output: sd_bracket_space_router
+
+  # Handle no space after structured data bracket
+  - id: sd_bracket_space_router
+    type: router
+    default: syslog_parser
+    routes:
+      - expr: '$record matches "\"\\][^\\s]"'
+        output: sd_bracket_space_parser
+
+  - id: sd_bracket_space_parser
+    type: regex_parser
+    parse_from: $record
+    regex: '(?P<message1>.*)(?P<spaceless_bracket>"])(?P<message2>[^\s].*)'
+    output: sd_bracket_space_restructurer
+
+  - id: sd_bracket_space_restructurer
+    type: restructure
+    ops:
+      - add:
+          field: $record
+          value_expr: '$record.message1 + $record.spaceless_bracket + " " + $record.message2'
+    output: syslog_parser
+
+  - id: syslog_parser
+    type: syslog_parser
+    protocol: rfc5424
+    output: {{ .output }}
