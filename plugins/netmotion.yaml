@@ -2,6 +2,7 @@
 version: 0.0.1
 title: Netmotion
 description: Log parser for Netmotion Syslog
+min_stanza_version: 0.13.19
 parameters:
   - name: listen_address
     label: Listen Address
