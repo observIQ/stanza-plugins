@@ -2,6 +2,7 @@
 version: 0.0.1
 title: Azure Event Hub
 description: Azure Event Hub input parser
+min_stanza_version: 0.13.20
 parameters:
   - name: namespace
     label: Namespace
