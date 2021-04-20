@@ -1,0 +1,779 @@
+version: 0.0.1
+title: MariaDB
+description: Log parser for MariaDB
+min_stanza_version: 0.13.17
+parameters:
+  - name: enable_general_log
+    label: General Logs
+    description: Enable to collect MariaDB general logs
+    type: bool
+    default: true
+  - name: general_log_path
+    label: General Log Path
+    description: Path to general log file
+    type: string
+    default: "/var/log/mariadb/general.log"
+    relevant_if:
+      enable_general_log:
+        equals: true
+  - name: enable_slow_log
+    label: Slow Query Logs
+    description: Enable to collect MariaDB slow query logs
+    type: bool
+    default: true
+  - name: slow_query_log_path
+    label: Slow Query Log Path
+    description: Path to slow query log file
+    type: string
+    default: "/var/log/mariadb/slow.log"
+    relevant_if:
+      enable_slow_log:
+        equals: true
+  - name: enable_error_log
+    label: Error Logs
+    description: Enable to collect MariaDB error logs
+    type: bool
+    default: true
+  - name: error_log_path
+    label: Error Log Path
+    description: Path to MariaDB error log file
+    type: string
+    default: "/var/log/mariadb/error.log"
+    relevant_if:
+      enable_error_log:
+        equals: true
+  - name: enable_mariadb_audit_log
+    label: Audit Logs
+    description: Enable to collect MariaDB audit logs provided by MariaDB Audit plugin
+    type: bool
+    default: false
+  - name: mariadb_audit_log_path
+    label: MariaDB Audit Log Path
+    description: Path to audit log file created by MariaDB plugin
+    type: string
+    default: "/var/log/mariadb/audit.log"
+    relevant_if:
+      enable_mariadb_audit_log:
+        equals: true
+  - name: start_at
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+     - beginning
+     - end
+    default: end
+
+# Set Defaults
+# {{$enable_general_log := default true .enable_general_log}}
+# {{$general_log_path := default "/var/log/mariadb/general.log" .general_log_path}}
+# {{$enable_slow_log := default true .enable_slow_log}}
+# {{$slow_query_log_path := default "/var/log/mariadb/slow.log" .slow_query_log_path}}
+# {{$enable_error_log := default true .enable_error_log}}
+# {{$error_log_path := default "/var/log/mariadb/error.log" .error_log_path}}
+# {{$enable_mariadb_audit_log := default false .enable_mariadb_audit_log}}
+# {{$mariadb_audit_log_path := default "/var/log/mariadb/audit.log" .mariadb_audit_log_path}}
+# {{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+  # {{ if $enable_slow_log }}
+  - id: slow_query_reader
+    type: file_input
+    include:
+      - {{ $slow_query_log_path }}
+    start_at: {{ $start_at }}
+    multiline:
+      line_start_pattern: '# Time: \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z\s|/\w+/\w+/mysqld,'
+    labels:
+      plugin_id: {{ .id }}
+    output: slow_query_router
+
+  - id: slow_query_router
+    type: router
+    routes:
+      - output: slow_query_regex_parser
+        expr: '$ startsWith "# Time: "'
+        labels:
+          log_type: 'mariadb.slow_query'
+      - output: server_start_regex_parser
+        expr: $ matches '/\\w+/\\w+/mysqld'
+        labels:
+          log_type: 'mariadb.server-start'
+
+  - id: slow_query_regex_parser
+    type: regex_parser
+    regex: '# Time: (?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s# User@Host:\s+(?P<dbuser>[^\[]*)\[(?P<dbname>[^\]]*)\]\s+@\s+((?P<host>[^\s]+)\s)?\[(?P<ip_address>[\w\d\.:]*)\]\s+Id:\s+(?P<tid>\d+)\s+#\s+Query_time:\s+(?P<query_time>[\d\.]+)\s+Lock_time:\s+(?P<lock_time>[\d\.]+)\s+Rows_sent:\s+(?P<rows_sent>\d+)\s+Rows_examined:\s(?P<rows_examined>\d+)\s+(?P<query>(?s).*[^\s])'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+
+  - id: slow_query_sql_command_router
+    type: router
+    default: {{.output}}
+    routes:
+      - output: sql_command_alter
+        expr: '$record.query != nil and $record.query matches "^ALTER"'
+      - output: sql_command_analyze
+        expr: '$record.query != nil and $record.query matches "^ANALYZE"'
+      - output: sql_command_begin
+        expr: '$record.query != nil and $record.query matches "^BEGIN"'
+      - output: sql_command_cache
+        expr: '$record.query != nil and $record.query matches "^CACHE"'
+      - output: sql_command_call
+        expr: '$record.query != nil and $record.query matches "^CALL"'
+      - output: sql_command_change
+        expr: '$record.query != nil and $record.query matches "^CHANGE"'
+      - output: sql_command_check
+        expr: '$record.query != nil and $record.query matches "^CHECK"'
+      - output: sql_command_commit
+        expr: '$record.query != nil and $record.query matches "^COMMIT"'
+      - output: sql_command_copy
+        expr: '$record.query != nil and $record.query matches "^COPY"'
+      - output: sql_command_create
+        expr: '$record.query != nil and $record.query matches "^CREATE"'
+      - output: sql_command_delete
+        expr: '$record.query != nil and $record.query matches "^DELETE"'
+      - output: sql_command_do
+        expr: '$record.query != nil and $record.query matches "^DO"'
+      - output: sql_command_drop
+        expr: '$record.query != nil and $record.query matches "^DROP"'
+      - output: sql_command_execute
+        expr: '$record.query != nil and $record.query matches "^EXECUTE"'
+      - output: sql_command_flush
+        expr: '$record.query != nil and $record.query matches "^FLUSH"'
+      - output: sql_command_grant
+        expr: '$record.query != nil and $record.query matches "^GRANT"'
+      - output: sql_command_handler
+        expr: '$record.query != nil and $record.query matches "^HANDLER"'
+      - output: sql_command_insert
+        expr: '$record.query != nil and $record.query matches "^INSERT"'
+      - output: sql_command_import
+        expr: '$record.query != nil and $record.query matches "^IMPORT"'
+      - output: sql_command_install
+        expr: '$record.query != nil and $record.query matches "^INSTALL"'
+      - output: sql_command_load
+        expr: '$record.query != nil and $record.query matches "^LOAD"'
+      - output: sql_command_lock
+        expr: '$record.query != nil and $record.query matches "^LOCK"'
+      - output: sql_command_optimize
+        expr: '$record.query != nil and $record.query matches "^OPTIMIZE"'
+      - output: sql_command_prepare
+        expr: '$record.query != nil and $record.query matches "^PREPARE"'
+      - output: sql_command_purge
+        expr: '$record.query != nil and $record.query matches "^PURGE"'
+      - output: sql_command_release
+        expr: '$record.query != nil and $record.query matches "^RELEASE"'
+      - output: sql_command_rename
+        expr: '$record.query != nil and $record.query matches "^RENAME"'
+      - output: sql_command_repair
+        expr: '$record.query != nil and $record.query matches "^REPAIR"'
+      - output: sql_command_replace
+        expr: '$record.query != nil and $record.query matches "^REPLACE"'
+      - output: sql_command_reset
+        expr: '$record.query != nil and $record.query matches "^RESET"'
+      - output: sql_command_revoke
+        expr: '$record.query != nil and $record.query matches "^REVOKE"'
+      - output: sql_command_rollback
+        expr: '$record.query != nil and $record.query matches "^ROLLBACK"'
+      - output: sql_command_savepoint
+        expr: '$record.query != nil and $record.query matches "^SAVEPOINT"'
+      - output: sql_command_select
+        expr: '$record.query != nil and $record.query matches "^SELECT"'
+      - output: sql_command_set
+        expr: '$record.query != nil and $record.query matches "^SET"'
+      - output: sql_command_show
+        expr: '$record.query != nil and $record.query matches "^SHOW"'
+      - output: sql_command_start
+        expr: '$record.query != nil and $record.query matches "^START"'
+      - output: sql_command_stop
+        expr: '$record.query != nil and $record.query matches "^STOP"'
+      - output: sql_command_table
+        expr: '$record.query != nil and $record.query matches "^TABLE"'
+      - output: sql_command_truncate
+        expr: '$record.query != nil and $record.query matches "^TRUNCATE"'
+      - output: sql_command_uninstall
+        expr: '$record.query != nil and $record.query matches "^UNINSTALL"'
+      - output: sql_command_unlock
+        expr: '$record.query != nil and $record.query matches "^UNLOCK"'
+      - output: sql_command_update
+        expr: '$record.query != nil and $record.query matches "^UPDATE"'
+      - output: sql_command_values
+        expr: '$record.query != nil and $record.query matches "^VALUES"'
+      - output: sql_command_with
+        expr: '$record.query != nil and $record.query matches "^WITH"'
+      - output: sql_command_xa
+        expr: '$record.query != nil and $record.query matches "^XA"'
+  # {{ end }}
+
+  # {{ if $enable_error_log }}
+  - id: error_reader
+    type: file_input
+    include:
+      - {{ $error_log_path }}
+    start_at: {{ $start_at }}
+    multiline:
+      line_start_pattern: \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z
+    labels:
+      log_type: 'mariadb.error'
+      plugin_id: {{ .id }}
+    output: error_regex_parser
+
+  - id: error_regex_parser
+    type: regex_parser
+    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s+(?P<tid>\d+)\s+\[(?P<mariadb_severity>[^\]]+)]\s+(?P<message>[\d\D\s]+)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+    severity:
+      parse_from: mariadb_severity
+      mapping:
+        notice:
+          - note
+    output: {{ .output }}
+  # {{ end }}
+
+  # {{ if $enable_mariadb_audit_log }}
+  - id: mariadb_audit_reader
+    type: file_input
+    include:
+      - {{ $mariadb_audit_log_path }}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: 'mariadb.audit'
+      plugin_id: {{ .id }}
+    output: single_quote_router
+
+  - id: single_quote_router
+    type: router
+    default: mariadb_audit_csv_parser
+    routes:
+      - expr: $record matches ".*\\'.*\\'.*"
+        output: single_quote_parser
+
+  - id: single_quote_parser
+    type: regex_parser
+    parse_from: $record
+    regex: "(?P<message1>.*)(?P<single_quote1>')(?P<query_message>.*)(?P<single_quote2>')(?P<message2>.*)"
+    output: single_quote_restructurer
+
+  - id: single_quote_restructurer
+    type: restructure
+    ops:
+      - add:
+          field: $record
+          value_expr: "$record.message1 + '\"' + $record.query_message + '\"' + $record.message2"
+    output: mariadb_audit_csv_parser
+
+  - id: mariadb_audit_csv_parser
+    type: csv_parser
+    header: "timestamp,host,dbuser,client_address,connection_id,query_id,operation,dbname,object,retcode"
+    delimiter: ","
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y%m%d %H:%M:%S'
+    output: {{ .output }}
+  # {{ end }}
+
+  # {{ if $enable_general_log }}
+  - id: general_query_reader
+    type: file_input
+    include:
+      - {{ $general_log_path }}
+    start_at: {{ $start_at }}
+    multiline:
+      line_start_pattern: '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z|/\w+/\w+/mysqld,'
+    labels:
+      plugin_id: {{ .id }}
+    output: general_router
+
+  - id: general_router
+    type: router
+    routes:
+      - output: general_regex_parser
+        expr: $ matches '\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d+Z'
+        labels:
+          log_type: 'mariadb.general'
+      - output: server_start_regex_parser
+        expr: $ matches '/\\w+/\\w+/mysqld'
+        labels:
+          log_type: 'mariadb.server-start'
+
+  - id: general_regex_parser
+    type: regex_parser
+    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s+(?P<tid>\d+)\s+(?P<command>\w+)(\s+(?P<message>(?s).+\S))?'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+
+  - id: general_sql_command_router
+    type: router
+    default: {{.output}}
+    routes:
+      - output: sql_command_alter
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^ALTER"'
+      - output: sql_command_analyze
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^ANALYZE"'
+      - output: sql_command_begin
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^BEGIN"'
+      - output: sql_command_cache
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^CACHE"'
+      - output: sql_command_call
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^CALL"'
+      - output: sql_command_change
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^CHANGE"'
+      - output: sql_command_check
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^CHECK"'
+      - output: sql_command_commit
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^COMMIT"'
+      - output: sql_command_copy
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^COPY"'
+      - output: sql_command_create
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^CREATE"'
+      - output: sql_command_delete
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^DELETE"'
+      - output: sql_command_do
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^DO"'
+      - output: sql_command_drop
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^DROP"'
+      - output: sql_command_execute
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^EXECUTE"'
+      - output: sql_command_flush
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^FLUSH"'
+      - output: sql_command_grant
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^GRANT"'
+      - output: sql_command_handler
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^HANDLER"'
+      - output: sql_command_insert
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^INSERT"'
+      - output: sql_command_import
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^IMPORT"'
+      - output: sql_command_install
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^INSTALL"'
+      - output: sql_command_load
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^LOAD"'
+      - output: sql_command_lock
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^LOCK"'
+      - output: sql_command_optimize
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^OPTIMIZE"'
+      - output: sql_command_prepare
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^PREPARE"'
+      - output: sql_command_purge
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^PURGE"'
+      - output: sql_command_release
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^RELEASE"'
+      - output: sql_command_rename
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^RENAME"'
+      - output: sql_command_repair
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^REPAIR"'
+      - output: sql_command_replace
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^REPLACE"'
+      - output: sql_command_reset
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^RESET"'
+      - output: sql_command_revoke
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^REVOKE"'
+      - output: sql_command_rollback
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^ROLLBACK"'
+      - output: sql_command_savepoint
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^SAVEPOINT"'
+      - output: sql_command_select
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^SELECT"'
+      - output: sql_command_set
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^SET"'
+      - output: sql_command_show
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^SHOW"'
+      - output: sql_command_start
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^START"'
+      - output: sql_command_stop
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^STOP"'
+      - output: sql_command_table
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^TABLE"'
+      - output: sql_command_truncate
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^TRUNCATE"'
+      - output: sql_command_uninstall
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^UNINSTALL"'
+      - output: sql_command_unlock
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^UNLOCK"'
+      - output: sql_command_update
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^UPDATE"'
+      - output: sql_command_values
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^VALUES"'
+      - output: sql_command_with
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^WITH"'
+      - output: sql_command_xa
+        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^XA"'
+  # {{ end }}
+
+  - id: server_start_regex_parser
+    type: regex_parser
+    regex: '(?P<path>/\w+/\w+/mysqld),\sVersion:\s(?P<version>[\s\d\D]+)\.\s(?P<started_with>[\s\d\D]+)'
+    output: {{ .output }}
+
+
+  - id: sql_command_alter
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "ALTER"
+    output: {{.output}}
+
+  - id: sql_command_analyze
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "ANALYZE"
+    output: {{.output}}
+
+  - id: sql_command_begin
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "BEGIN"
+    output: {{.output}}
+
+  - id: sql_command_cache
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "CACHE"
+    output: {{.output}}
+
+  - id: sql_command_call
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "CALL"
+    output: {{.output}}
+
+  - id: sql_command_change
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "CHANGE"
+    output: {{.output}}
+
+  - id: sql_command_check
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "CHECK"
+    output: {{.output}}
+
+  - id: sql_command_commit
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "COMMIT"
+    output: {{.output}}
+
+  - id: sql_command_copy
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "COPY"
+    output: {{.output}}
+
+  - id: sql_command_create
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "CREATE"
+    output: {{.output}}
+
+  - id: sql_command_delete
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "DELETE"
+    output: {{.output}}
+
+  - id: sql_command_do
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "DO"
+    output: {{.output}}
+
+  - id: sql_command_drop
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "DROP"
+    output: {{.output}}
+
+  - id: sql_command_execute
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "EXECUTE"
+    output: {{.output}}
+
+  - id: sql_command_flush
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "FLUSH"
+    output: {{.output}}
+
+  - id: sql_command_grant
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "GRANT"
+    output: {{.output}}
+
+  - id: sql_command_handler
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "HANDLER"
+    output: {{.output}}
+
+  - id: sql_command_import
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "IMPORT"
+    output: {{.output}}
+
+  - id: sql_command_insert
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "INSERT"
+    output: {{.output}}
+
+  - id: sql_command_install
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "INSTALL"
+    output: {{.output}}
+
+  - id: sql_command_load
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "LOAD"
+    output: {{.output}}
+
+  - id: sql_command_lock
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "LOCK"
+    output: {{.output}}
+
+  - id: sql_command_optimize
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "OPTIMIZE"
+    output: {{.output}}
+
+  - id: sql_command_prepare
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "PREPARE"
+    output: {{.output}}
+
+  - id: sql_command_purge
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "PURGE"
+    output: {{.output}}
+
+  - id: sql_command_release
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "RELEASE"
+    output: {{.output}}
+
+  - id: sql_command_rename
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "RENAME"
+    output: {{.output}}
+
+  - id: sql_command_repair
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "REPAIR"
+    output: {{.output}}
+
+  - id: sql_command_replace
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "REPLACE"
+    output: {{.output}}
+
+  - id: sql_command_reset
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "RESET"
+    output: {{.output}}
+
+  - id: sql_command_revoke
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "REVOKE"
+    output: {{.output}}
+
+  - id: sql_command_rollback
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "ROLLBACK"
+    output: {{.output}}
+
+  - id: sql_command_savepoint
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "SAVEPOINT"
+    output: {{.output}}
+
+  - id: sql_command_select
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "SELECT"
+    output: {{.output}}
+
+  - id: sql_command_set
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "SET"
+    output: {{.output}}
+
+  - id: sql_command_show
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "SHOW"
+    output: {{.output}}
+
+  - id: sql_command_start
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "START"
+    output: {{.output}}
+
+  - id: sql_command_stop
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "STOP"
+    output: {{.output}}
+
+  - id: sql_command_table
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "TABLE"
+    output: {{.output}}
+
+  - id: sql_command_truncate
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "TRUNCATE"
+    output: {{.output}}
+
+  - id: sql_command_uninstall
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "UNINSTALL"
+    output: {{.output}}
+
+  - id: sql_command_unlock
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "UNLOCK"
+    output: {{.output}}
+
+  - id: sql_command_update
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "UPDATE"
+    output: {{.output}}
+
+  - id: sql_command_values
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "VALUES"
+    output: {{.output}}
+
+  - id: sql_command_with
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "WITH"
+    output: {{.output}}
+
+  - id: sql_command_xa
+    type: restructure
+    ops:
+      - add:
+          field: "sql_command"
+          value: "XA"
+    output: {{.output}}
