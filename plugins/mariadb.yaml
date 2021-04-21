@@ -84,7 +84,7 @@ pipeline:
       - {{ $slow_query_log_path }}
     start_at: {{ $start_at }}
     multiline:
-      line_start_pattern: '# Time: \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z\s|/\w+/\w+/mysqld,'
+      line_start_pattern: '#\s+User@Host:\s+|/\w+/\w+/mysqld,'
     labels:
       plugin_id: {{ .id }}
     output: slow_query_router
@@ -93,7 +93,7 @@ pipeline:
     type: router
     routes:
       - output: slow_query_regex_parser
-        expr: '$ startsWith "# Time: "'
+        expr: '$ startsWith "# User@Host: "'
         labels:
           log_type: 'mariadb.slow_query'
       - output: server_start_regex_parser
@@ -103,10 +103,7 @@ pipeline:
 
   - id: slow_query_regex_parser
     type: regex_parser
-    regex: '# Time: (?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s# User@Host:\s+(?P<dbuser>[^\[]*)\[(?P<dbname>[^\]]*)\]\s+@\s+((?P<host>[^\s]+)\s)?\[(?P<ip_address>[\w\d\.:]*)\]\s+Id:\s+(?P<tid>\d+)\s+#\s+Query_time:\s+(?P<query_time>[\d\.]+)\s+Lock_time:\s+(?P<lock_time>[\d\.]+)\s+Rows_sent:\s+(?P<rows_sent>\d+)\s+Rows_examined:\s(?P<rows_examined>\d+)\s+(?P<query>(?s).*[^\s])'
-    timestamp:
-      parse_from: timestamp
-      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+    regex: '# User@Host:\s+(?P<dbuser>[^\[]*)\[(?P<dbname>[^\]]*)\]\s+@\s+((?P<host>[^\s]+)\s)?\[(?P<ip_address>[\w\d\.:]*)\]\s+#\s+Thread_id:\s+(?P<tid>\d+)\s+Schema:\s+(?P<schema>\w*)\s+QC_hit:\s+(?P<qc_hit>\w*)\s*#\s+Query_time:\s+(?P<query_time>[\d\.]+)\s+Lock_time:\s+(?P<lock_time>[\d\.]+)\s+Rows_sent:\s+(?P<rows_sent>\d+)\s+Rows_examined:\s(?P<rows_examined>\d+)\s+#\s+Rows_affected:\s+(?P<rows_affected>\d+)\s*(?P<query>[^#]*\s*)'
 
   - id: slow_query_sql_command_router
     type: router
@@ -213,18 +210,41 @@ pipeline:
       - {{ $error_log_path }}
     start_at: {{ $start_at }}
     multiline:
-      line_start_pattern: \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z
+      line_start_pattern: '\d{4}-\d{2}-\d{2}\s+\d{1,2}:\d{2}:\d{2} |\d{6} \d{2}:\d{2}:\d{2} '
     labels:
       log_type: 'mariadb.error'
       plugin_id: {{ .id }}
-    output: error_regex_parser
+    output: mariadb_version_error_router
 
-  - id: error_regex_parser
+  - id: mariadb_version_error_router
+    type: router
+    default: {{ .output }}
+    routes:
+      - output: error_10_1_4_minus_regex_parser
+        expr: $ matches '\\d{6} \\d{2}:\\d{2}:\\d{2} \\[.*\\]'
+      - output: error_10_1_5_plus_regex_parser
+        expr: $ matches '\\d{4}-\\d{2}-\\d{2}\\s+\\d{1,2}:\\d{2}:\\d{2} '
+
+  - id: error_10_1_4_minus_regex_parser
     type: regex_parser
-    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s+(?P<tid>\d+)\s+\[(?P<mariadb_severity>[^\]]+)]\s+(?P<message>[\d\D\s]+)'
+    regex: '(?P<timestamp>\d{6} \d{2}:\d{2}:\d{2})\s+\[(?P<mariadb_severity>[^\]]+)]\s+(?P<message>[\d\D\s]+)'
     timestamp:
       parse_from: timestamp
-      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+      layout_type: gotime
+      layout: '060102 15:04:05'
+    severity:
+      parse_from: mariadb_severity
+      mapping:
+        notice:
+          - note
+    output: {{ .output }}
+
+  - id: error_10_1_5_plus_regex_parser
+    type: regex_parser
+    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}\s+\d{1,2}:\d{2}:\d{2})\s+(?P<tid>\d+)\s+\[(?P<mariadb_severity>[^\]]+)]\s+(?P<message>[\d\D\s]+)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: mariadb_severity
       mapping:
@@ -239,6 +259,7 @@ pipeline:
     include:
       - {{ $mariadb_audit_log_path }}
     start_at: {{ $start_at }}
+    write_to: $record.temp_message
     labels:
       log_type: 'mariadb.audit'
       plugin_id: {{ .id }}
@@ -246,32 +267,66 @@ pipeline:
 
   - id: single_quote_router
     type: router
-    default: mariadb_audit_csv_parser
+    default: temp_restructurer
     routes:
-      - expr: $record matches ".*\\'.*\\'.*"
+      - expr: $record.temp_message matches ".*,.*,.*,.*,.*,.*,.*,.*,.*\\'.*\\',.*"
         output: single_quote_parser
 
   - id: single_quote_parser
     type: regex_parser
-    parse_from: $record
-    regex: "(?P<message1>.*)(?P<single_quote1>')(?P<query_message>.*)(?P<single_quote2>')(?P<message2>.*)"
+    parse_from: $record.temp_message
+    regex: "(?P<message1>.*,.*,.*,.*,.*,.*,.*,.*,)'(?P<temp_object>.*)'(?P<message2>,.*)"
     output: single_quote_restructurer
 
   - id: single_quote_restructurer
     type: restructure
     ops:
       - add:
-          field: $record
-          value_expr: "$record.message1 + '\"' + $record.query_message + '\"' + $record.message2"
+          field: $record.message
+          value_expr: "$record.message1 + $record.message2"
     output: mariadb_audit_csv_parser
+
+  - id: temp_restructurer
+    type: restructure
+    ops:
+      - move:
+          from: $record.temp_message
+          to: $record.message
 
   - id: mariadb_audit_csv_parser
     type: csv_parser
     header: "timestamp,host,dbuser,client_address,connection_id,query_id,operation,dbname,object,retcode"
     delimiter: ","
+    parse_from: $record.message
+    parse_to: $record.parsed_csv
     timestamp:
-      parse_from: timestamp
+      parse_from: $record.parsed_csv.timestamp
       layout: '%Y%m%d %H:%M:%S'
+
+  - id: flatten_restructurer
+    type: restructure
+    ops:
+      - flatten: $record.parsed_csv
+
+  - id: temp_object_restructure
+    type: restructure
+    if: '$record.temp_object != nil'
+    ops:
+      - move:
+          from: $record.temp_object
+          to: $record.object
+
+  - id: message1_restructure
+    type: restructure
+    if: '$record.message1 != nil'
+    ops:
+      - remove: $record.message1
+
+  - id: message2_restructure
+    type: restructure
+    if: '$record.message2 != nil'
+    ops:
+      - remove: $record.message2
     output: {{ .output }}
   # {{ end }}
 
@@ -282,7 +337,7 @@ pipeline:
       - {{ $general_log_path }}
     start_at: {{ $start_at }}
     multiline:
-      line_start_pattern: '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z|/\w+/\w+/mysqld,'
+      line_start_pattern: '\d{6} \d{2}:\d{2}:\d{2}\s+|/\w+/\w+/mysqld,'
     labels:
       plugin_id: {{ .id }}
     output: general_router
@@ -291,7 +346,7 @@ pipeline:
     type: router
     routes:
       - output: general_regex_parser
-        expr: $ matches '\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}.\\d+Z'
+        expr: $ matches '\\d{6} \\d{2}:\\d{2}:\\d{2}\\s+'
         labels:
           log_type: 'mariadb.general'
       - output: server_start_regex_parser
@@ -301,107 +356,12 @@ pipeline:
 
   - id: general_regex_parser
     type: regex_parser
-    regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z)\s+(?P<tid>\d+)\s+(?P<command>\w+)(\s+(?P<message>(?s).+\S))?'
+    regex: '(?P<timestamp>\d{6}\s\d{2}:\d{2}:\d{2})\s+(?P<id>\d*)\s+(?P<command>\w*)\s+(?P<message>[\d\D\s]+)'
     timestamp:
       parse_from: timestamp
-      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
-
-  - id: general_sql_command_router
-    type: router
-    default: {{.output}}
-    routes:
-      - output: sql_command_alter
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^ALTER"'
-      - output: sql_command_analyze
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^ANALYZE"'
-      - output: sql_command_begin
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^BEGIN"'
-      - output: sql_command_cache
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^CACHE"'
-      - output: sql_command_call
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^CALL"'
-      - output: sql_command_change
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^CHANGE"'
-      - output: sql_command_check
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^CHECK"'
-      - output: sql_command_commit
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^COMMIT"'
-      - output: sql_command_copy
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^COPY"'
-      - output: sql_command_create
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^CREATE"'
-      - output: sql_command_delete
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^DELETE"'
-      - output: sql_command_do
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^DO"'
-      - output: sql_command_drop
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^DROP"'
-      - output: sql_command_execute
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^EXECUTE"'
-      - output: sql_command_flush
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^FLUSH"'
-      - output: sql_command_grant
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^GRANT"'
-      - output: sql_command_handler
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^HANDLER"'
-      - output: sql_command_insert
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^INSERT"'
-      - output: sql_command_import
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^IMPORT"'
-      - output: sql_command_install
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^INSTALL"'
-      - output: sql_command_load
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^LOAD"'
-      - output: sql_command_lock
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^LOCK"'
-      - output: sql_command_optimize
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^OPTIMIZE"'
-      - output: sql_command_prepare
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^PREPARE"'
-      - output: sql_command_purge
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^PURGE"'
-      - output: sql_command_release
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^RELEASE"'
-      - output: sql_command_rename
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^RENAME"'
-      - output: sql_command_repair
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^REPAIR"'
-      - output: sql_command_replace
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^REPLACE"'
-      - output: sql_command_reset
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^RESET"'
-      - output: sql_command_revoke
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^REVOKE"'
-      - output: sql_command_rollback
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^ROLLBACK"'
-      - output: sql_command_savepoint
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^SAVEPOINT"'
-      - output: sql_command_select
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^SELECT"'
-      - output: sql_command_set
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^SET"'
-      - output: sql_command_show
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^SHOW"'
-      - output: sql_command_start
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^START"'
-      - output: sql_command_stop
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^STOP"'
-      - output: sql_command_table
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^TABLE"'
-      - output: sql_command_truncate
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^TRUNCATE"'
-      - output: sql_command_uninstall
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^UNINSTALL"'
-      - output: sql_command_unlock
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^UNLOCK"'
-      - output: sql_command_update
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^UPDATE"'
-      - output: sql_command_values
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^VALUES"'
-      - output: sql_command_with
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^WITH"'
-      - output: sql_command_xa
-        expr: '$record.command != nil and $record.command == "Query" and $record.message matches "^XA"'
+      layout_type: gotime
+      layout: '060102 15:04:05'
+    output: {{ .output }}
   # {{ end }}
 
   - id: server_start_regex_parser
