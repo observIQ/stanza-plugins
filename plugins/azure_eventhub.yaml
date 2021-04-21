@@ -8,22 +8,31 @@ parameters:
     label: Namespace
     description: Event Hub Namespace
     type: string
+    default: ''
+    required: true
   - name: name
     label: Name
     description: Event Hub Name
     type: string
+    default: ''
+    required: true
   - name: group
     label: Consumer Group
     description: Event Hub Consumer Group
     type: string
+    default: ''
+    required: true
   - name: connection_string
     label: Connection String
     description: Event Hub Connection String
     type: string
+    default: ''
+    required: true
   - name: prefetch_count
     label: Prefetch Count
     description: Event Hub Prefetch Count
     type: int
+    default: 1000
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
