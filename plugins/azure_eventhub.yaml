@@ -43,9 +43,9 @@ parameters:
     default: end
   - name: log_type
     label: Log Type
-    description: Adds label log_type to identify journald source
+    description: Adds label log_type to identify Azure Event Hub source
     type: string
-    default: azure_eventhub
+    default: azure_event_hub
 # Set Defaults
 # {{$namespace := default "" .namespace}}
 # {{$name := default "" .name}}
@@ -53,11 +53,11 @@ parameters:
 # {{$connection_string := default "" .connection_string}}
 # {{$prefetch_count := default 1000 .prefetch_count}}
 # {{$start_at := default "end" .start_at}}
-# {{$log_type := default "journald" .log_type}}
+# {{$log_type := default "azure_event_hub" .log_type}}
 
 # Pipeline Template
 pipeline:
-  - type: azure_eventhub_input
+  - type: azure_event_hub_input
     namespace: '{{ $namespace }}'
     name: '{{ $name }}'
     group: '{{ $group }}'
