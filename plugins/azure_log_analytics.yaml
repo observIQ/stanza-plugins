@@ -88,8 +88,3 @@ pipeline:
     parse_from: $record.logentry
     parse_to: $record.logentry
     output: {{ .output }}
-
-
-# TODO:
-# - nest log_analytics key names
-#  - record.<table name>.<field name>: some value
