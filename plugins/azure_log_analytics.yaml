@@ -1,0 +1,90 @@
+# Plugin Info
+version: 0.0.1
+title: Azure Log Analytics
+description: Azure Log Analytics input
+min_stanza_version: 0.13.20
+parameters:
+  - name: namespace
+    label: Namespace
+    description: Event Hub Namespace
+    type: string
+    default: ''
+    required: true
+  - name: name
+    label: Name
+    description: Event Hub Name
+    type: string
+    default: ''
+    required: true
+  - name: group
+    label: Consumer Group
+    description: Event Hub Consumer Group
+    type: string
+    default: ''
+    required: true
+  - name: connection_string
+    label: Connection String
+    description: Event Hub Connection String
+    type: string
+    default: ''
+    required: true
+  - name: prefetch_count
+    label: Prefetch Count
+    description: Event Hub Prefetch Count
+    type: int
+    default: 1000
+  - name: start_at
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+  - name: log_type
+    label: Log Type
+    description: Adds label log_type to identify Azure Log Analytics source
+    type: string
+    default: azure_log_analytics
+# Set Defaults
+# {{$namespace := default "" .namespace}}
+# {{$name := default "" .name}}
+# {{$group := default "" .group}}
+# {{$connection_string := default "" .connection_string}}
+# {{$prefetch_count := default 1000 .prefetch_count}}
+# {{$start_at := default "end" .start_at}}
+# {{$log_type := default "azure_log_analytics" .log_type}}
+
+# Pipeline Template
+pipeline:
+  - type: azure_log_analytics_input
+    namespace: '{{ $namespace }}'
+    name: '{{ $name }}'
+    group: '{{ $group }}'
+    connection_string: '{{ $connection_string }}'
+    start_at: '{{ $start_at }}'
+    prefetch_count: {{ $prefetch_count }}
+    labels:
+      plugin_id: {{ .id }}
+      log_type: '{{ $log_type }}'
+    output: resource_router
+
+  - id: resource_router
+    type: router
+    routes:
+      - output: aks_router
+        expr: '$labels.azure_log_analytics_type == "ContainerLog"'
+    default: {{ .output }}
+  
+  - id: aks_router
+    type: router
+    routes:
+      - output: aks_nested_parser
+        expr: '$record.logentry != nil and $record.logentry matches "^{.*}\\s*$"'
+    default: {{ .output }}
+    
+  - id: aks_nested_parser
+    type: json_parser
+    parse_from: $record.logentry
+    parse_to: $record.logentry
+    output: {{ .output }}

@@ -1,0 +1,71 @@
+# Plugin Info
+version: 0.0.1
+title: Azure Event Hub
+description: Azure Event Hub input parser
+min_stanza_version: 0.13.20
+parameters:
+  - name: namespace
+    label: Namespace
+    description: Event Hub Namespace
+    type: string
+    default: ''
+    required: true
+  - name: name
+    label: Name
+    description: Event Hub Name
+    type: string
+    default: ''
+    required: true
+  - name: group
+    label: Consumer Group
+    description: Event Hub Consumer Group
+    type: string
+    default: ''
+    required: true
+  - name: connection_string
+    label: Connection String
+    description: Event Hub Connection String
+    type: string
+    default: ''
+    required: true
+  - name: prefetch_count
+    label: Prefetch Count
+    description: Event Hub Prefetch Count
+    type: int
+    default: 1000
+  - name: start_at
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+  - name: log_type
+    label: Log Type
+    description: Adds label log_type to identify Azure Event Hub source
+    type: string
+    default: azure_event_hub
+# Set Defaults
+# {{$namespace := default "" .namespace}}
+# {{$name := default "" .name}}
+# {{$group := default "" .group}}
+# {{$connection_string := default "" .connection_string}}
+# {{$prefetch_count := default 1000 .prefetch_count}}
+# {{$start_at := default "end" .start_at}}
+# {{$log_type := default "azure_event_hub" .log_type}}
+
+# Pipeline Template
+pipeline:
+  - type: azure_event_hub_input
+    namespace: '{{ $namespace }}'
+    name: '{{ $name }}'
+    group: '{{ $group }}'
+    connection_string: '{{ $connection_string }}'
+    start_at: '{{ $start_at }}'
+    prefetch_count: {{ $prefetch_count }}
+    labels:
+      plugin_id: {{ .id }}
+      log_type: '{{ $log_type }}'
+    output: {{ .output }}
+
