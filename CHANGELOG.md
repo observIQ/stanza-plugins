@@ -5,6 +5,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.0.54] - Unreleased
+### Changed
+- Fixed nested json parsing for Azure Container Logs using Azure Log Analytics ([PR249](https://github.com/observIQ/stanza-plugins/pull/249) 
+- Renamed plugin parameter `name` to `event_hub_name` for Azure plugins Event Hub and Log Analytics ([PR249](https://github.com/observIQ/stanza-plugins/pull/249))
 
 ## [0.0.53] - 2021-05-06
 ### Added
