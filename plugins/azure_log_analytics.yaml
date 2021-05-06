@@ -86,5 +86,5 @@ pipeline:
   - id: aks_nested_parser
     type: json_parser
     parse_from: $record.containerlog.logentry
-    parse_to: $record.containerlog.logentry
+    parse_to: $record.containerlog.logentry_json
     output: {{ .output }}
