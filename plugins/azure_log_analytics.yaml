@@ -5,19 +5,19 @@ description: Azure Log Analytics input
 min_stanza_version: 0.13.20
 parameters:
   - name: namespace
-    label: Namespace
+    label: Event Hub Namespace
     description: Event Hub Namespace
     type: string
     default: ''
     required: true
-  - name: name
-    label: Name
+  - name: event_hub_name
+    label: Event Hub Name
     description: Event Hub Name
     type: string
     default: ''
     required: true
   - name: group
-    label: Consumer Group
+    label: Event Hub Consumer Group
     description: Event Hub Consumer Group
     type: string
     default: ''
@@ -48,7 +48,7 @@ parameters:
     default: azure_log_analytics
 # Set Defaults
 # {{$namespace := default "" .namespace}}
-# {{$name := default "" .name}}
+# {{$event_hub_name := default "" .event_hub_name}}
 # {{$group := default "" .group}}
 # {{$connection_string := default "" .connection_string}}
 # {{$prefetch_count := default 1000 .prefetch_count}}
@@ -59,7 +59,7 @@ parameters:
 pipeline:
   - type: azure_log_analytics_input
     namespace: '{{ $namespace }}'
-    name: '{{ $name }}'
+    name: '{{ $event_hub_name }}'
     group: '{{ $group }}'
     connection_string: '{{ $connection_string }}'
     start_at: '{{ $start_at }}'
@@ -73,18 +73,18 @@ pipeline:
     type: router
     routes:
       - output: aks_router
-        expr: '$labels.azure_log_analytics_type == "ContainerLog"'
+        expr: '$labels.azure_log_analytics_table == "containerlog"'
     default: {{ .output }}
   
   - id: aks_router
     type: router
     routes:
       - output: aks_nested_parser
-        expr: '$record.logentry != nil and $record.logentry matches "^{.*}\\s*$"'
+        expr: '$record.containerlog.logentry != nil and $record.containerlog.logentry matches "^{.*}\\s*$"'
     default: {{ .output }}
     
   - id: aks_nested_parser
     type: json_parser
-    parse_from: $record.logentry
-    parse_to: $record.logentry
+    parse_from: $record.containerlog.logentry
+    parse_to: $record.containerlog.logentry_json
     output: {{ .output }}

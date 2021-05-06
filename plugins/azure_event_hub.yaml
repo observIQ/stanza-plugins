@@ -5,19 +5,19 @@ description: Azure Event Hub input parser
 min_stanza_version: 0.13.20
 parameters:
   - name: namespace
-    label: Namespace
+    label: Event Hub Namespace
     description: Event Hub Namespace
     type: string
     default: ''
     required: true
-  - name: name
-    label: Name
+  - name: event_hub_name
+    label: Event Hub Name
     description: Event Hub Name
     type: string
     default: ''
     required: true
   - name: group
-    label: Consumer Group
+    label: Event Hub Consumer Group
     description: Event Hub Consumer Group
     type: string
     default: ''
@@ -48,7 +48,7 @@ parameters:
     default: azure_event_hub
 # Set Defaults
 # {{$namespace := default "" .namespace}}
-# {{$name := default "" .name}}
+# {{$event_hub_name := default "" .event_hub_name}}
 # {{$group := default "" .group}}
 # {{$connection_string := default "" .connection_string}}
 # {{$prefetch_count := default 1000 .prefetch_count}}
@@ -59,7 +59,7 @@ parameters:
 pipeline:
   - type: azure_event_hub_input
     namespace: '{{ $namespace }}'
-    name: '{{ $name }}'
+    name: '{{ $event_hub_name }}'
     group: '{{ $group }}'
     connection_string: '{{ $connection_string }}'
     start_at: '{{ $start_at }}'
