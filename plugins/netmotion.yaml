@@ -61,7 +61,7 @@ pipeline:
   # Handle brackets in url2 field
   - id: url2_router
     type: router
-    default: sd_bracket_space_router
+    default: fwver_router
     routes:
       - expr: '$record matches "\\[.*URL2=\".*\\[.*\\\\\\]/\".*\\]"'
         output: url2_parser
@@ -78,6 +78,28 @@ pipeline:
       - add:
           field: $record
           value_expr: '$record.message1 + $record.url1 + $record.url2 + $record.message2'
+    output: fwver_router
+
+  # Handle brackets in fwver field
+  - id: fwver_router
+    type: router
+    default: sd_bracket_space_router
+    routes:
+      - expr: '$record matches "\\[.*fwver=\".*\\[.*\\\\\\]\".*\\]"'
+        output: fwver_parser
+
+  - id: fwver_parser
+    type: regex_parser
+    parse_from: $record
+    regex: '(?P<message1>.*\[.*fwver=")(?P<fwver1>.*)\[(?P<fwver2>.*)\\](?P<message2>".*\].*)'
+    output: fwver_restructurer
+
+  - id: fwver_restructurer
+    type: restructure
+    ops:
+      - add:
+          field: $record
+          value_expr: '$record.message1 + $record.fwver1 + $record.fwver2 + $record.message2'
     output: sd_bracket_space_router
 
   # Handle no space after structured data bracket

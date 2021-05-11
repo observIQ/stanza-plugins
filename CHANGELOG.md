@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.54] - Unreleased
 ### Changed
+- Update `netmotion` plugin ([PR250](https://github.com/observIQ/stanza-plugins/pull/250))
+  - Add handle bracket in fwver field for structured data.
 - Fixed nested json parsing for Azure Container Logs using Azure Log Analytics ([PR249](https://github.com/observIQ/stanza-plugins/pull/249) 
 - Renamed plugin parameter `name` to `event_hub_name` for Azure plugins Event Hub and Log Analytics ([PR249](https://github.com/observIQ/stanza-plugins/pull/249))
 
