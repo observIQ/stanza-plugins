@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.0.55] - Unreleased
+### Added
+- Add `aws_cloudwatch` plugin ([PR251](https://github.com/observIQ/stanza-plugins/pull/251))
 ### Changed
 - Update `netmotion` plugin ([PR250](https://github.com/observIQ/stanza-plugins/pull/250))
   - Add handle bracket in fwver field for structured data.

@@ -1,0 +1,85 @@
+# Plugin Info
+version: 0.0.1
+title: AWS Cloudwatch Logs
+description: AWS Cloudwatch Logs Input
+min_stanza_version: 0.14.1
+parameters:
+  - name: log_group_name
+    label: Log Group Name
+    description: The Cloudwatch Logs Log Group Name.
+    type: string
+    default: ''
+    required: true
+  - name: region
+    label: Region
+    description: The AWS Region to be used
+    type: string
+    default: ''
+    required: true
+  - name: log_stream_name_prefix
+    label: Log Stream Name Prefix
+    description: The log stream name prefix to use.
+    type: string
+    default: ''
+  - name: log_stream_names
+    label: Log Stream Names
+    description: Log stream names from which to get events.
+    type: strings
+  - name: profile
+    label: Profile
+    description: Profile to use for authentication.
+    type: string
+    default: ''
+  - name: event_limit
+    label: Event Limit
+    description: The maximum number of events to return per call.
+    type: int
+    default: 10000
+  - name: poll_interval
+    label: Poll Interval
+    description: The duration between event calls.
+    type: string
+    default: '1m'
+  - name: start_at
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+  - name: log_type
+    label: Log Type
+    description: Adds label log_type to identify AWS Cloudwatch Log source
+    type: string
+    default: aws_cloudwatch
+# Set Defaults
+# {{$log_group_name := default "" .log_group_name}}
+# {{$region := default "" .region}}
+# {{$log_stream_name_prefix := default "" .log_stream_name_prefix}}
+# {{$profile := default "" .profile}}
+# {{$event_limit := default 10000 .event_limit}}
+# {{$poll_interval := default "1m" .poll_interval}}
+# {{$start_at := default "end" .start_at}}
+# {{$log_type := default "aws_cloudwatch" .log_type}}
+
+# Pipeline Template
+pipeline:
+- type: aws_cloudwatch_input
+  log_group_name: {{ $log_group_name }}
+  log_stream_name_prefix: '{{ $log_stream_name_prefix }}'
+  # {{ if .log_stream_names }}
+  log_stream_names: 
+    # {{ range $i, $lsn := .log_stream_names }}
+    - '{{ $lsn }}'
+    # {{ end }}
+  # {{ end }}
+  region: {{ $region }}
+  profile: {{ $profile }}
+  event_limit: {{ $event_limit }}
+  poll_interval: {{ $poll_interval }}
+  start_at: {{ $start_at }}
+  labels:
+    plugin_id: {{ .id }}
+    log_type: '{{ $log_type }}'
+  output: {{ .output }}
