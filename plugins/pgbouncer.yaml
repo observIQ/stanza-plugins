@@ -35,10 +35,7 @@ pipeline:
 
   - id: pgbouncer_parser
     type: regex_parser
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}.\d{3}) (?P<pid>\d+) (?P<severity>\w+) (?P<message>.*)'
-    timestamp:
-      parse_from: timestamp
-      layout: '%Y-%m-%d %H:%M:%S.%L'
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}.\d{3}(\s*[^\d\s]{3})?)\s*(\[)?(?P<pid>\d+)(\])? (?P<severity>\w+) (?P<message>.*)'
     severity:
       parse_from: severity
       mapping:
@@ -46,4 +43,47 @@ pipeline:
         info: log
         notice: stats
         debug: noise
-    output: {{.output}}
+    output: time_parser_router
+
+  # Handle different timestamps
+  - id: time_parser_router
+    type: router
+    default: message_router
+    routes:
+      - output: time_parser_with_timezone
+        expr: '$record.timestamp != nil and $record.timestamp matches "^\\d{4}-\\d{2}-\\d{2}\\s\\d{2}:\\d{2}:\\d{2}.\\d{3}\\s[^\\d\\s]{3}"'
+      - output: time_parser_without_timezone
+        expr: '$record.timestamp != nil and $record.timestamp matches "^\\d{4}-\\d{2}-\\d{2}\\s\\d{2}:\\d{2}:\\d{2}.\\d{3}"'
+
+  - id: time_parser_with_timezone
+    type: time_parser
+    parse_from: $record.timestamp
+    layout: '%Y-%m-%d %H:%M:%S.%L %Z'
+    output: message_router
+
+  - id: time_parser_without_timezone
+    type: time_parser
+    parse_from: $record.timestamp
+    layout: '%Y-%m-%d %H:%M:%S.%L'
+    output: message_router
+
+  - id: message_router
+    type: router
+    default: {{ .output }}
+    routes:
+      - expr: '$record.message matches "^[Ss]tats: "'
+        output: stats_parser
+      - expr: '$record.message matches "^[CS]-\\w*"'
+        output: request_parser
+
+  - id: stats_parser
+    type: regex_parser
+    parse_from: $record.message
+    regex: '^[Ss]tats: (?P<xacts_per_second>\d+)[^,]*,\s(?P<queries_per_second>\d+)[^,]*,\sin\s(?P<in_bytes_per_second>\d+)[^,]*,\sout\s(?P<out_bytes_per_second>\d+)[^,]*,\sxact\s(?P<xact_microsecond>\d+)[^,]*,\squery\s(?P<query_microsecond>\d+)\sus(,)?\swait(\stime)?\s(?P<wait_time_microsecond>\d+).*'
+    output: {{ .output }}
+
+  - id: request_parser
+    type: regex_parser
+    parse_from: $record.message
+    regex: '^[CS]-\w*:\s(?P<db_name>\w*)\/(?P<user_name>\w*)@(?P<host>[^:]*):(?P<port>\d*)\s*(?P<message>[^\(]*)(\s*\(age=(?P<age>\d*)s\))?'
+    output: {{ .output }}
