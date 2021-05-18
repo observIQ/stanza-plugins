@@ -85,5 +85,5 @@ pipeline:
   - id: request_parser
     type: regex_parser
     parse_from: $record.message
-    regex: '^[CS]-\w*:\s(?P<db_name>\w*)\/(?P<user_name>\w*)@(?P<host>[^:]*):(?P<port>\d*)\s*(?P<message>[^\(]*)(\s*\(age=(?P<age>\d*)s\))?'
+    regex: '^[CS]-\w*:\s(\()?(?P<db_name>\w*)(\))?\/(\()?(?P<user_name>\w*)(\))?@(?P<host>[^:]*):(?P<port>\d*)\s*(?P<message>[^\(]*)(\s*\(age=(?P<age>\d*)s\))?'
     output: {{ .output }}
