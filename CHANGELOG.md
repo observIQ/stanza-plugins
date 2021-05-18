@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update `pgbouncer` plugin ([PR254](https://github.com/observIQ/stanza-plugins/pull/254))
   - Parse stats from logs.
   - Parse requests from logs.
+  - Handle timestamps with timezone
+  - Handle brackets around pid
 
 ## [0.0.55] - 2021-05-17
 ### Changed
