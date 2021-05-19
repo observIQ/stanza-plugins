@@ -46,7 +46,7 @@ parameters:
     default: end
   - name: source
     label: Log source
-    description: Use this field to specify where your logs are coming from. When choosing the 'Kubernetes' options, the agent reads logs from /var/log/containers based on the Pod and Container specified below.
+    description: Use this field to specify where your logs are coming from. When choosing the 'Kubernetes' options, the agent reads logs from /var/log/containers based on the Pod and Container specified.
     type: enum
     valid_values:
       - kubernetes
