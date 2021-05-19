@@ -44,6 +44,13 @@ parameters:
       - beginning
       - end
     default: end
+  - name: source
+    label: Log source
+    description: Use this field to specify where your logs are coming from. When choosing the 'Kubernetes' options, the agent reads logs from /var/log/containers based on the Pod and Container specified below.
+    type: enum
+    valid_values:
+      - kubernetes
+    default: kubernetes
 
 # Set Defaults
 # {{$enable_access_log := default true .enable_access_log}}
@@ -53,6 +60,7 @@ parameters:
 # {{$container_name := default "*" .container_name}}
 # {{$cluster_name := default "" .cluster_name}}
 # {{$log_format := default "default" .log_format}}
+# {{$source := default "kubernetes" .source}}
 
 # Pipeline Template
 pipeline:
