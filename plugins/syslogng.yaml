@@ -63,7 +63,7 @@ pipeline:
 # {{ end }}
 
   - id: syslogng_parser
-    type: syslogng_parser
+    type: syslog_parser
     protocol: '{{ if eq $protocol "rfc3164 (BSD)" }}rfc3164{{- else -}}rfc5424{{end}}'
 # {{ if eq $protocol "rfc3164 (BSD)" }}
     location: {{$location}}
