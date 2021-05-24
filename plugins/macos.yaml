@@ -12,7 +12,7 @@ parameters:
     label: System Log Path
     description: The absolute path to the System log
     type: string
-    default: "/var/log/install.log"
+    default: "/var/log/system.log"
   - name: enable_install_log
     label: Install Logs
     description: Enable to collect MacOS install logs
@@ -22,7 +22,7 @@ parameters:
     label: Install Log Path
     description: The absolute path to the Install log
     type: string
-    default: "/var/log/system.log"
+    default: "/var/log/install.log"
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -36,7 +36,7 @@ parameters:
 # {{$enable_system_log := default true .enable_system_log}}
 # {{$system_log_path := default "/var/log/system.log" .system_log_path}}
 # {{$enable_install_log := default true .enable_install_log}}
-# {{$install_log_path := default "/var/log/system.log" .install_log_path}}
+# {{$install_log_path := default "/var/log/install.log" .install_log_path}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
