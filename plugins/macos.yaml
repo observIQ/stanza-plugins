@@ -1,0 +1,109 @@
+# Plugin Info
+version: 0.0.1
+title: MacOS
+description: Log parser for MacOS
+parameters:
+  - name: enable_system_log
+    label: System Logs
+    description: Enable to collect MacOS system logs
+    type: bool
+    default: true
+  - name: system_log_path
+    label: System Log Path
+    description: The absolute path to the System log
+    type: string
+    default: "/var/log/system.log"
+  - name: enable_install_log
+    label: Install Logs
+    description: Enable to collect MacOS install logs
+    type: bool
+    default: true
+  - name: install_log_path
+    label: Install Log Path
+    description: The absolute path to the Install log
+    type: string
+    default: "/var/log/install.log"
+  - name: start_at
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+
+# Set Defaults
+# {{$enable_system_log := default true .enable_system_log}}
+# {{$system_log_path := default "/var/log/system.log" .system_log_path}}
+# {{$enable_install_log := default true .enable_install_log}}
+# {{$install_log_path := default "/var/log/install.log" .install_log_path}}
+# {{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+  # {{ if $enable_system_log }}
+  - id: system_input
+    type: file_input
+    include:
+      - {{ $system_log_path }}
+    start_at: {{ $start_at }}
+    multiline:
+      line_start_pattern: '\w{3} \d{1,2} \d{2}:\d{2}:\d{2}'
+    labels:
+      log_type: macos.system
+      plugin_id: {{ .id }}
+    output: system_parser
+
+  - id: system_parser
+    type: regex_parser
+    regex: '^(?P<timestamp>\w{3} \d{1,2} \d{2}:\d{2}:\d{2}) (---|(?P<host>[^ ]*))? ((?P<process>[^\[]*)\[(?P<pid>[^\]]*)\])?( \((?P<subprocess>[^\[]*)(\[(?P<spid>[^\]]*)\])?\))?(: )?(?P<message>[\w\W]*)'
+    timestamp:
+      parse_from: timestamp
+      layout_type: gotime
+      layout: 'Jan _2 15:04:05'
+    output: {{ .output }}
+  # {{ end }}
+
+  # {{ if $enable_install_log }}
+  - id: install_input
+    type: file_input
+    include:
+      - {{ $install_log_path }}
+    start_at: {{ $start_at }}
+    multiline:
+      line_start_pattern: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[+-]\d{2}|^\w{3}\s*\d{1,2} \d{2}:\d{2}:\d{2}'
+    labels:
+      log_type: macos.install
+      plugin_id: {{ .id }}
+    output: install_parser
+
+
+  - id: install_parser
+    type: regex_parser
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[+-]\d{2}|\w{3}\s*\d{1,2} \d{2}:\d{2}:\d{2}) (---|(?P<host>[^ ]*))? ((?P<process>[^\[]*)\[(?P<pid>[^\]]*)\])?( \((?P<subprocess>[^\[]*)(\[(?P<spid>[^\]]*)\])?\))?(: )?(?P<message>[\w\W]*)'
+    output: time_parser_router
+
+  # Handle different timestamps
+  - id: time_parser_router
+    type: router
+    default: {{ .output }}
+    routes:
+      - output: time_parser_with_timezone
+        expr: '$record.timestamp != nil and $record.timestamp matches "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}[+-]\\d{2}"'
+      - output: time_parser_without_timezone
+        expr: '$record.timestamp != nil and $record.timestamp matches "^\\w{3}\\s*\\d{1,2} \\d{2}:\\d{2}:\\d{2}"'
+
+  - id: time_parser_with_timezone
+    type: time_parser
+    parse_from: $record.timestamp
+    layout_type: gotime
+    layout: '2006-01-02 15:04:05-07'
+    output: {{ .output }}
+
+  - id: time_parser_without_timezone
+    type: time_parser
+    parse_from: $record.timestamp
+    layout_type: gotime
+    layout: 'Jan _2 15:04:05'
+    output: {{ .output }}
+  # {{ end }}
