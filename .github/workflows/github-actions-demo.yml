@@ -12,7 +12,5 @@ jobs:
         file: "stanza_linux_amd64"
         target: "stanza"
         token: ${{ secrets.GITHUB_TOKEN }}
-    - run: whoami
-    - run: ls -la
+    - run: "sudo chown $(whoami): ./stanza"
     - run: chmod +x ./stanza
-    - run: ./stanza --validate
