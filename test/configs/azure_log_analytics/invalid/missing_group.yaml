@@ -1,0 +1,5 @@
+pipeline:
+- type: azure_log_analytics
+  namespace: stanza
+  event_hub_name: stanza_hub
+  connection_string: some_connection_string

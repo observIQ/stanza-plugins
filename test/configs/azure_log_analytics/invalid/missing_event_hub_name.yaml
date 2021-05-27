@@ -1,0 +1,5 @@
+pipeline:
+- type: azure_log_analytics
+  namespace: stanza
+  group: $Default
+  connection_string: some_connection_string
