@@ -3,7 +3,7 @@ title: str()
 description: str()
 parameters: list(include('parameter'))
 pipeline: list(include('operator'))
-
+---
 parameter:
   name: str()
   label: str()
