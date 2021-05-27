@@ -1,21 +1,11 @@
 name: Validate YAML
 on: [push]
 jobs:
-  Validate:
+  ValidateYaml:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    # - uses: dsaltares/fetch-gh-release-asset@master
-    #   with:
-    #     repo: "jsirianni/stanza"
-    #     version: "latest"
-    #     file: "stanza_linux_amd64"
-    #     target: "stanza"
-    #     token: ${{ secrets.GITHUB_TOKEN }}
-    # - run: "sudo chown $(whoami): ./stanza"
-    # - run: chmod +x ./stanza
-    # - run: ./stanza --validate
     - uses: nrkno/yaml-schema-validator-github-action@master
       with:
         schema: 'schema.yaml'
-        target: 'plugins/aerospike.yaml'
+        target: 'plugins/aerospike.yaml plugins/apache_http.yaml'
