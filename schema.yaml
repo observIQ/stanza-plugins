@@ -9,7 +9,7 @@ parameter:
   label: str()
   description: str()
   type: str()
-  valid_values: list()
+  valid_values: list(required=False)
 
 operator:
   id: str()
