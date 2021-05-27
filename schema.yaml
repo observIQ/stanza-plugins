@@ -20,7 +20,7 @@ operator:
   output: str(required=False) 
   regex: str(required=False)
   timestamp: map(include('timestamp_list'), str(), required=False)
-  severity: map(include('severity_list'), required=False)
+  severity: map(include('severity_list'), str(), required=False)
 
 timestamp_list:
   parse_from: str()
