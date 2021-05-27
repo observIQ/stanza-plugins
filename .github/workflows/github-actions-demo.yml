@@ -5,5 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: YAML Lint
-      uses: ibiqlik/action-yamllint@v3.0.2
+    - name: Install Stanza
+      uses: jaxxstorm/action-install-gh-release@release/v1-alpha
+      with: # Grab a specific tag
+        repo: observiq/stanza
