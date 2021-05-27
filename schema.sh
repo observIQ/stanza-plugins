@@ -17,7 +17,7 @@ rm -rf temp/
 export INPUT_SCHEMA=./schema.yaml
 export INPUT_TARGET=./plugins/aerospike.yaml
 
-/usr/bin/docker run \
+docker run \
     --workdir /github/workspace \
     --rm \
     -e INPUT_SCHEMA \
