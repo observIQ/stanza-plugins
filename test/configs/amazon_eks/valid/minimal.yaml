@@ -1,0 +1,2 @@
+pipeline:
+- type: amazon_eks

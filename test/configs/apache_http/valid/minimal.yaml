@@ -1,0 +1,2 @@
+pipeline:
+- type: apache_http

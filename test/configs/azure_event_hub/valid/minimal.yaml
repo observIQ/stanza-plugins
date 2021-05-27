@@ -1,0 +1,6 @@
+pipeline:
+- type: azure_event_hub
+  namespace: stanza
+  event_hub_name: stanza_hub
+  group: $Default
+  connection_string: some_connection_string
