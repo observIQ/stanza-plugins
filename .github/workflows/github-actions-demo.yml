@@ -13,4 +13,6 @@ jobs:
         target: "stanza"
         token: ${{ secrets.GITHUB_TOKEN }}
     - run: chmod +x ./stanza
+    - run: whoami
+    - run: ls -la
     - run: ./stanza --validate
