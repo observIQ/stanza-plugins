@@ -59,7 +59,7 @@ pipeline:
       - output: namespace_restructure
         expr: '$record.namespace == ""'
       # namespace not empty
-      - output: {{.output}}
+      - output: '{{.output}}'
         expr: true
 
   - id: namespace_restructure
