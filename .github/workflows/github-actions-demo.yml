@@ -4,7 +4,7 @@ jobs:
   Validate:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - uses: dsaltares/fetch-gh-release-asset@master
       with:
         repo: "jsirianni/stanza"
@@ -14,4 +14,8 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
     - run: "sudo chown $(whoami): ./stanza"
     - run: chmod +x ./stanza
-    - run: ./stanza --validate
+    # - run: ./stanza --validate
+    - uses: nrkno/yaml-schema-validator-github-action@master
+      with:
+        schema: 'schema.yaml'
+        target: 'plugins/aerospike.yaml'
