@@ -14,3 +14,4 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
     - run: "sudo chown $(whoami): ./stanza"
     - run: chmod +x ./stanza
+    - run: ./stanza --validate
