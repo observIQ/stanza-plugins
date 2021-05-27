@@ -5,8 +5,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: yaml-lint
-      uses: ibiqlik/action-yamllint@v3
-      with:
-        file_or_dir: plugins/
-        config_file: .
+    - name: YAML Lint
+      uses: ibiqlik/action-yamllint@v3.0.2
