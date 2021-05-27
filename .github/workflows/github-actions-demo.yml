@@ -12,7 +12,7 @@ jobs:
         file: "stanza_linux_amd64"
         target: "stanza"
         token: ${{ secrets.GITHUB_TOKEN }}
-    - run: chmod +x ./stanza
     - run: whoami
     - run: ls -la
+    - run: chmod +x ./stanza
     - run: ./stanza --validate
