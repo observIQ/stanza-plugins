@@ -1,0 +1,11 @@
+# nginx from file, default values
+pipeline:
+- type: nginx
+  source: file
+  log_format: default
+  pod_name: ""
+  enable_access_log: true
+  access_log_path: "/var/log/custom/path/nginx/access.log"
+  enable_error_log: true
+  error_log_path: "/var/log/nginx/errors/error.log*"
+  start_at: beginning
