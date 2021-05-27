@@ -19,7 +19,7 @@ operator:
   labels: list()
   output: str() 
   regex: str(required=False)
-  timestamp: list(include('timestamp_list') required=False))
+  timestamp: list(include('timestamp_list') required=False)
   severity: list(include('severity_list') required=False)
 
 timestamp_list:
