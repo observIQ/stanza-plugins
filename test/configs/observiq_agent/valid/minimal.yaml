@@ -1,0 +1,2 @@
+pipeline:
+- type: observiq_agent
