@@ -17,10 +17,10 @@ operator:
   include: list(required=False)
   start_at: str(required=False)
   labels: map(str(), required=False)
-  output: str() 
+  output: str(required=False) 
   regex: str(required=False)
-  timestamp: list(include('timestamp_list'), required=False)
-  severity: list(include('severity_list'), required=False)
+  timestamp: map(include('timestamp_list'), required=False)
+  severity: map(include('severity_list'), required=False)
 
 timestamp_list:
   parse_from: str()
