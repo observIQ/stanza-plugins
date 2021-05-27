@@ -1,6 +1,6 @@
-version: str()
-title: str()
-description: str()
+# version: str()
+# title: str()
+# description: str()
 # parameters: list(include('parameter'))
 # pipeline: list(include('operator'))
 
@@ -39,4 +39,7 @@ description: str()
 #       catastrophe: str(required=False)
 #     preserve_to: str()
 #     if: str()
-
+name: str()
+age: int(max=200)
+height: num()
+awesome: bool()
