@@ -1,0 +1,5 @@
+# nginx from file, default values
+pipeline:
+- type: nginx
+  source: file
+  pod_name: ""
