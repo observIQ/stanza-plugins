@@ -28,11 +28,11 @@ pipeline:
   - id: aerospike_general_input
     type: file_input
     include:
-      - '{{ $general_log_path }}'
-    start_at: '{{ $start_at }}'
+      - {{ $general_log_path }}
+    start_at: {{ $start_at }}
     labels:
       log_type: aerospike
-      plugin_id: '{{ .id }}'
+      plugin_id: {{ .id }}
     output: aerospike_general_parser
 
   - id: aerospike_general_parser
@@ -59,13 +59,13 @@ pipeline:
       - output: namespace_restructure
         expr: '$record.namespace == ""'
       # namespace not empty
-      - output: '{{.output}}'
+      - output: {{.output}}
         expr: true
 
   - id: namespace_restructure
     type: restructure
     ops:
       - remove: "namespace"
-    output: '{{.output}}'
+    output: {{.output}}
 # {{ end }}
 

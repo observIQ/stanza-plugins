@@ -7,5 +7,5 @@ jobs:
     - uses: actions/checkout@v2
     - uses: nrkno/yaml-schema-validator-github-action@master
       with:
-        schema: 'schema.yaml'
+        schema: 'schemas/aerospike.yaml'
         target: 'plugins/aerospike.yaml'

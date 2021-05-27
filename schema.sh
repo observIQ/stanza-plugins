@@ -14,11 +14,11 @@ rm -rf temp/
 # FOR EACH PLUGIN FILE
 #
 
-export INPUT_SCHEMA=./schema.yaml
+export INPUT_SCHEMA=./schemas/aerospike.yaml
 export INPUT_TARGET=./plugins/aerospike.yaml
 
 docker run \
-    --workdir /github/workspace \
+     --workdir /github/workspace \
     --rm \
     -e INPUT_SCHEMA \
     -e INPUT_TARGET \
@@ -43,7 +43,8 @@ docker run \
     -e GITHUB_WORKSPACE \
     -e GITHUB_ACTION \
     -e GITHUB_EVENT_PATH \
-    -e GITHUB_ACTION_REPOSITORY -e GITHUB_ACTION_REF -e GITHUB_PATH -e GITHUB_ENV -e RUNNER_OS \
+    -e GITHUB_ACTION_REPOSITORY \
+    -e GITHUB_ACTION_REF -e GITHUB_PATH -e GITHUB_ENV -e RUNNER_OS \
     -e RUNNER_TOOL_CACHE -e RUNNER_TEMP -e RUNNER_WORKSPACE -e ACTIONS_RUNTIME_URL -e ACTIONS_RUNTIME_TOKEN \
     -e ACTIONS_CACHE_URL -e GITHUB_ACTIONS=true -e CI=true \
     -v "$(pwd)":"/github/workspace" \
