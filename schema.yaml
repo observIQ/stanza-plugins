@@ -1,0 +1,42 @@
+version: str()
+title: str()
+description: str()
+parameters: list(include('parameter'))
+pipeline: list(include('operator'))
+
+parameter:
+  name: str()
+  label: str()
+  description: str()
+  type: str()
+  valid_values: list()
+
+operator:
+  id: str()
+  type: str()
+  include: list()
+  start_at: str()
+  labels:
+    log_type: str()
+    plugin_id: str()
+  output: str()
+  regex: str()
+  timestamp:
+    parse_from: str()
+    layout: str()
+  severity:
+    parse_from: str()
+    preset: str()
+    mapping:
+      info: str(required=False)
+      error: str(required=False)
+      warning: str(required=False)
+      critical: str(required=False)
+      debug: str(required=False)
+      trace: str(required=False)
+      alert: str(required=False)
+      emergency: str(required=False)
+      catastrophe: str(required=False)
+    preserve_to: str()
+    if: str()
+
