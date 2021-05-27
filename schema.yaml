@@ -29,7 +29,7 @@ timestamp_list:
 severity_list:
   parse_from: str()
   preset: str(required=False)
-  mapping: list(include('mapping_list') required=False)
+  mapping: list(include('mapping_list'))
   preserve_to: str(required=False)
   if: str(required=False)
 
