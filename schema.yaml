@@ -19,7 +19,7 @@ operator:
   labels: map(str(), required=False)
   output: str(required=False) 
   regex: str(required=False)
-  timestamp: map(include('timestamp_list'), required=False)
+  timestamp: map(include('timestamp_list'), str(), required=False)
   severity: map(include('severity_list'), required=False)
 
 timestamp_list:
