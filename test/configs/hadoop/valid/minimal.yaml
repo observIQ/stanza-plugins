@@ -1,0 +1,3 @@
+pipeline:
+- type: hadoop
+- type: stdout
