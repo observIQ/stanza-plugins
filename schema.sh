@@ -1,21 +1,31 @@
 #!/usr/bin/env bash
 
-set -e
+set -eE
 
 mkdir temp/
 cd temp/
+mkdir plugins/
 git clone https://github.com/nrkno/yaml-schema-validator-github-action.git
 cd yaml-schema-validator-github-action
 docker build -t schema:latest .
 cd ../../
-rm -rf temp/
 
+clean () {
+    rm -rf temp/
+}
+trap clean ERR
 #
 # FOR EACH PLUGIN FILE
 #
 
-export INPUT_SCHEMA=./schemas/aerospike.yaml
-export INPUT_TARGET=./plugins/aerospike.yaml
+
+for f in $(ls ./plugins)
+do
+
+sed 's/{{//; s/}}//' "./plugins/$f" > "./temp/plugins/$f"
+
+export INPUT_SCHEMA=./schemas/$f
+export INPUT_TARGET=./temp/plugins/$f
 
 docker run \
      --workdir /github/workspace \
@@ -49,3 +59,6 @@ docker run \
     -e ACTIONS_CACHE_URL -e GITHUB_ACTIONS=true -e CI=true \
     -v "$(pwd)":"/github/workspace" \
     schema:latest
+done
+
+clean
