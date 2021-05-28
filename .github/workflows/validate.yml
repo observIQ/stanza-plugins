@@ -7,3 +7,5 @@ jobs:
     - uses: actions/checkout@v2
     - name: Validating Plugin Yaml
       run: ./schema.sh
+    - name: Validate Plugin Pipelines
+      run: make test
