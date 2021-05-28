@@ -1,0 +1,3 @@
+pipeline:
+- type: bindplane_agent
+- type: stdout
