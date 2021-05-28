@@ -1,0 +1,3 @@
+pipeline:
+- type: jboss
+  file_path: false

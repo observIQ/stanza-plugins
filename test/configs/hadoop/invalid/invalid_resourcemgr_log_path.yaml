@@ -1,0 +1,4 @@
+pipeline:
+- type: hadoop
+  resourcemgr_log_path: true
+- type: stdout

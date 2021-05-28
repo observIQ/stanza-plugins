@@ -1,0 +1,3 @@
+pipeline:
+- type: hbase
+- type: stdout

@@ -1,0 +1,2 @@
+pipeline:
+- type: ibm_db2
