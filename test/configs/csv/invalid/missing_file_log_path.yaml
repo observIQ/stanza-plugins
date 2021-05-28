@@ -1,0 +1,3 @@
+pipeline:
+- type: csv
+  header: "name,age,number"

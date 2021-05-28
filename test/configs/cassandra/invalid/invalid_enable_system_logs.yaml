@@ -1,0 +1,3 @@
+pipeline:
+- type: cassandra
+  enable_system_logs: "true"

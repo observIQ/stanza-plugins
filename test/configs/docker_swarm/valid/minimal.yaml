@@ -1,0 +1,2 @@
+pipeline:
+- type: docker_swarm

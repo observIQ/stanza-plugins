@@ -1,0 +1,3 @@
+pipeline:
+- type: cisco_meraki
+  listen_address: "5140"

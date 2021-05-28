@@ -1,0 +1,4 @@
+pipeline:
+- type: csv
+  file_log_path:
+  - "./in.csv"

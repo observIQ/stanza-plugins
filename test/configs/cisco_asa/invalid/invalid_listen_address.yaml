@@ -1,0 +1,3 @@
+pipeline:
+- type: cisco_asa
+  listen_address: "5140"
