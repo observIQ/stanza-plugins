@@ -1,2 +1,2 @@
 pipeline:
-- type: aerospike
+- type: zookeeper
