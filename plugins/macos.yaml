@@ -1,7 +1,9 @@
 # Plugin Info
-version: 0.0.1
+version: 0.0.2
 title: MacOS
 description: Log parser for MacOS
+supported_platforms: 
+  - macos
 parameters:
   - name: enable_system_log
     label: System Logs
