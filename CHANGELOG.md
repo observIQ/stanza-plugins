@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.59] - Unreleased
 ### Added
+- Add `supported_platforms` macos for the macos plugin ([PR258](https://github.com/observIQ/stanza-plugins/pull/258))
 
 ## [0.0.58] - 2021-05-26
 ### Added
