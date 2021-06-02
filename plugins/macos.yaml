@@ -50,7 +50,7 @@ pipeline:
       - {{ $system_log_path }}
     start_at: {{ $start_at }}
     multiline:
-      line_start_pattern: '\w{3} \d{1,2} \d{2}:\d{2}:\d{2}'
+      line_start_pattern: '\w{3}\s*\d{1,2} \d{2}:\d{2}:\d{2}'
     labels:
       log_type: macos.system
       plugin_id: {{ .id }}
@@ -58,7 +58,7 @@ pipeline:
 
   - id: system_parser
     type: regex_parser
-    regex: '^(?P<timestamp>\w{3} \d{1,2} \d{2}:\d{2}:\d{2}) (---|(?P<host>[^ ]*))? ((?P<process>[^\[]*)\[(?P<pid>[^\]]*)\])?( \((?P<subprocess>[^\[]*)(\[(?P<spid>[^\]]*)\])?\))?(: )?(?P<message>[\w\W]*)'
+    regex: '^(?P<timestamp>\w{3}\s*\d{1,2} \d{2}:\d{2}:\d{2}) (---|(?P<host>[^ ]*))? ((?P<process>[^\[]*)\[(?P<pid>[^\]]*)\])?( \((?P<subprocess>[^\[]*)(\[(?P<spid>[^\]]*)\])?\))?(: )?(?P<message>[\w\W]*)'
     timestamp:
       parse_from: timestamp
       layout_type: gotime
