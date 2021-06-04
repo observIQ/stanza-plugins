@@ -15,6 +15,9 @@ parameters:
     description: The absolute path to the System log
     type: string
     default: "/var/log/system.log"
+    relevant_if:
+      enable_system_log:
+        equals: true
   - name: enable_install_log
     label: Install Logs
     description: Enable to collect MacOS install logs
@@ -25,6 +28,9 @@ parameters:
     description: The absolute path to the Install log
     type: string
     default: "/var/log/install.log"
+    relevant_if:
+      enable_install_log:
+        equals: true
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'

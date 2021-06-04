@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update `macos` plugin 
   - Add `supported_platforms` macos ([PR258](https://github.com/observIQ/stanza-plugins/pull/258))
   - Update system regex to handle space padded dates ([PR259](https://github.com/observIQ/stanza-plugins/pull/259))
-
+  - Add `relevant_if` to `install_log_path` and `system_log_path` parameters ([PR260](https://github.com/observIQ/stanza-plugins/pull/260))
+ 
 ## [0.0.58] - 2021-05-26
 ### Added
 - Add `macos` plugin ([PR256](https://github.com/observIQ/stanza-plugins/pull/256))
