@@ -1,0 +1,110 @@
+version: 0.0.1
+title: uWSGI Log Parser
+description: Log parser uWSGI formatted logs
+parameters:
+  - name: log_format
+    label: Log Format
+    description: When choosing the 'default' option, the agent will expect and parse logs in a format that matches the default logging configuration. When choosing the 'observIQ' option, the agent will expect and parse logs in an optimized JSON format that adheres to the observIQ specification, requiring an update to the logging config. See the uWSGIr source page for more information.
+    type: enum
+    valid_values:
+      - default
+      - observiq
+      - apache-combined
+    default: default
+  - name: uwsgi_log_path
+    label: uWSGI Log Path
+    description: Path to uWSGI formatted log file
+    type: string
+    required: true
+  - name: start_at
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+     - beginning
+     - end
+    default: end
+# Set Defaults
+# {{$start_at := default "end" .start_at}}
+# {{$uwsgi_log_path := default "" .uwsgi_log_path}}
+# {{$log_format := default "default" .log_format}}
+pipeline:
+  - id: uwsgi_log_reader
+    type: file_input
+    include:
+      - {{ $uwsgi_log_path }}
+    start_at: {{ $start_at }}
+    # {{ if eq $log_format "default" }}
+    multiline:
+      line_start_pattern: '\[pid:\s*[^\|]*\s*\|app:[^\|]*\|req:[^\]]*\] '
+    # {{ end }}
+    labels:
+      log_type: 'uwsgi'
+      plugin_id: {{ .id }}
+    output: '{{ if eq $log_format "default" }}default_regex_parser{{ else if eq $log_format "observiq" }}json_parser{{ else if eq $log_format "apache-combined" }}apache_combined_regex_parser{{ end }}'
+ 
+
+  # {{ if eq $log_format "default" }}
+  - id: default_regex_parser
+    type: regex_parser
+    regex: '^\[pid:\s*(?P<pid>[^\|]*)\|app:\s*(?P<app>[^\|]*)\|req:\s*(?P<req>[^\]]*)\]\s*(?P<remote_addr>[^\s]*)\s*\((?P<remote_user>[^\)]*)\)\s*{(?P<cgi_vars>[^\s]*)\s*vars\s*in\s*(?P<packet_size_bytes>[^\s]*)\s*bytes}\s*\[(?P<ctime>[^\]]*)\]\s*(?P<method>[^\s]*)\s*(?P<path>[^\s]*)\s*=>\s*generated\s*(?P<body_size>[^\s]*)\s*bytes\s*in\s*(?P<response_time_millisseconds>[^\s]*)\s*msecs\s*\((?P<protocol>[^\s]*)\s*(?P<status>[^\)]*)\)\s*(?P<headers>[^\s]*)\s*headers\s*in\s*(?P<headers_size_bytes>[^\s]*)\s*bytes\s*\((?P<switches>[^\s]*)\s*switches\s*on\s*core\s*(?P<core>[^\)]*)\)(\s*(?P<message>[\s\S]*))?'
+    timestamp:
+      parse_from: ctime
+      layout_type: gotime
+      layout: 'Mon Jan _2 15:04:05 2006'
+    severity:
+      parse_from: status
+      preset: none
+      preserve_to: status
+      mapping:
+        info: 2xx
+        notice: 3xx
+        warning: 4xx
+        error: 5xx
+    output: protocol_parser
+  # {{ end }}
+
+  # {{ if eq $log_format "observiq" }}
+  - id: json_parser
+    type: json_parser
+    timestamp:
+      parse_from: time_local
+      layout_type: gotime
+      layout: '02/Jan/2006:15:04:05 -0700'
+    severity:
+      parse_from: status
+      preset: none
+      preserve_to: status
+      mapping:
+        info: 2xx
+        notice: 3xx
+        warning: 4xx
+        error: 5xx
+    output: protocol_parser
+  # {{ end }}
+
+  # {{ if eq $log_format "apache-combined" }}
+  - id: apache_combined_regex_parser
+    type: regex_parser
+    regex: '^(?P<remote_addr>[^ ]*) (?P<remote_host>[^ ]*) (?P<remote_user>[^ ]*) \[(?P<time>[^\]]*)\] "(?P<method>\S+) +(?P<path>[^ ]*)( (?P<protocol>[^/]*)/(?P<protocol_version>[^\"]*)|[^\"]*)?" (?P<status>[^ ]*) (?P<body_bytes_sent>[^ ]*) "(?P<http_referer>[^\"]*)" "(?P<http_user_agent>[^\"]*)"'
+    timestamp:
+      parse_from: time
+      layout_type: gotime
+      layout: '02/Jan/2006:15:04:05 -0700'
+    severity:
+      parse_from: status
+      preset: none
+      preserve_to: status
+      mapping:
+        info: 2xx
+        notice: 3xx
+        warning: 4xx
+        error: 5xx
+    output: {{ .output }}
+  # {{ end }}
+
+  - id: protocol_parser
+    type: regex_parser
+    parse_from: $record.protocol
+    regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
+    output: {{ .output }}
