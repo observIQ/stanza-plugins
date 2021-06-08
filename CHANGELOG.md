@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.59] - Unreleased
+## [0.0.60] - Unreleased
+### Changed
+
+## [0.0.59] - 2021-06-08
 ### Added
 - Add `uwsgi` plugin ([PR261](https://github.com/observIQ/stanza-plugins/pull/261))
 
