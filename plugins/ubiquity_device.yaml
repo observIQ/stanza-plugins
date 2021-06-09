@@ -1,0 +1,50 @@
+# Plugin Info
+version: 0.0.1
+title: Ubiquity Device
+description: Log parser for Ubiquity Unifi Devices
+parameters:
+  - name: listen_address
+    label: Listen Address
+    description: A network address of the form `<ip>:<udp port>`
+    type: string
+    default: "0.0.0.0:514"
+
+# Set Defaults
+# {{$listen_address := default "0.0.0.0:514" .listen_address}}
+# Pipeline Template
+pipeline:
+  - id: ubiquity_udp_input
+    type: udp_input
+    listen_address: {{ $listen_address }}
+    labels:
+      log_type: ubiquity_device
+      plugin_id: {{ .id }}
+    output: device_router
+  
+  - id: device_router
+    type: router
+    default: catch_all_parser
+    routes:
+      - expr: '$record matches "^<\\d+>\\w{3}\\s*\\d{1,2}\\s*\\d{2}:\\d{2}:\\d{2}"'
+        output: ac_lite_ap_parser
+      - expr: '$record matches "^<[^>]+>[^ ]*\\s*[^,]*,[^,]*,[^:]*:(\\s*)?[^:]*:(\\s*)?[\\s\\S]*"'
+        output: flex_mini_parser
+
+  # This pattern is known to match AC Lite access points
+  - id: ac_lite_ap_parser
+    type: regex_parser
+    regex: '^<(?P<priority>[^>]+)>(?P<timestamp>\w{3}\s*\d{1,2}\s*\d{2}:\d{2}:\d{2})\s*(?P<mac_address>[^,]*),(?P<device>[^:]*):(\s*)?(?P<process>[^:]*)(\s*)?:(?P<message>[\s\S]*)'
+    output: {{ .output }}
+
+  # This pattern is known to match Flex Mini switches
+  - id: flex_mini_parser
+    type: regex_parser
+    regex: '^<(?P<priority>[^>]+)>(?P<name>[^ ]*)\s*(?P<device>[^,]*),(?P<mac_address>[^,]*),(?P<firmware_version>[^:]*):(\s*)?(?P<service>[^:]*):(\s*)?(?P<message>[\s\S]*)'
+    output: {{ .output }}
+
+  # Catch all will parse any message that is prefixed with a priority value
+  # such as: <13>some message
+  - id: catch_all_parser
+    type: regex_parser
+    regex: '^<(?P<priority>[^>]+)>(?P<message>[\s\S]*)'
+    output: {{ .output }}
