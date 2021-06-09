@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.6
+version: 0.0.7
 title: Syslog
 description: Log parser for Syslog
 parameters:
@@ -59,42 +59,8 @@ pipeline:
     labels:
       log_type: syslog
       plugin_id: {{ .id }}
-    output: handle_new_lines
-
-  # tcp input uses \n to break messages into seperate
-  # entries, this can be a problem for Syslog if the
-  # structured_data key=value pairs or message fields contain
-  # a \n. This is unlikly, but not impossible. It has been
-  # observed with rfc5424 structured_data field.
-  # '<' can be relied on to be the first character of every
-  # syslog message for both rfc 5424 and 3164
-  - id: handle_new_lines
-    type: recombine
-    combine_field: $record
-    is_first_entry: "$record startsWith '<'"
-    output: return_router
-# {{ end }}
-
-  - id: return_router
-    type: router
-    default: syslog_parser
-    routes:
-      - expr: '$record matches ".*\\\\r.*"'
-        output: return_parser
-
-  - id: return_parser
-    type: regex_parser
-    parse_from: $record
-    regex: '(?P<message1>.*)(?P<return>\\r)(?P<message2>.*)'
-    output: return_restructurer
-
-  - id: return_restructurer
-    type: restructure
-    ops:
-      - add:
-          field: $record
-          value_expr: '$record.message1 + "\\\\r" + $record.message2'
     output: syslog_parser
+# {{ end }}
 
   - id: syslog_parser
     type: syslog_parser
