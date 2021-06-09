@@ -1,7 +1,7 @@
 # Plugin Info
 version: 0.0.1
-title: Ubiquity Device
-description: Log parser for Ubiquity Unifi Devices
+title: Ubiquiti Device
+description: Log parser for Ubiquiti Unifi Devices
 min_stanza_version: 0.14.0
 parameters:
   - name: listen_address
@@ -21,11 +21,11 @@ parameters:
 # {{$location := default "UTC" .location}}
 # Pipeline Template
 pipeline:
-  - id: ubiquity_udp_input
+  - id: ubiquiti_udp_input
     type: udp_input
     listen_address: {{ $listen_address }}
     labels:
-      log_type: ubiquity
+      log_type: ubiquiti
       plugin_id: {{ .id }}
     output: device_router
   
