@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.60] - Unreleased
+## [0.0.61] - Unreleased
+
+## [0.0.60] - 2021-06-09
+### Added
+- Added Ubiquiti plugin ([264](https://github.com/observIQ/stanza-plugins/pull/264))
+
 ### Changed
 - Fixed an issue where journald does not always include the severity parse from field ([PR263](https://github.com/observIQ/stanza-plugins/pull/263))
 
