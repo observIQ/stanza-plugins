@@ -48,6 +48,7 @@ pipeline:
 
   - type: severity_parser
     parse_from: $record.PRIORITY
+    if: '$record.PRIORITY != nil'
     mapping:
       emergency: 0
       alert: 1
