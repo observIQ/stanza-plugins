@@ -2,6 +2,7 @@
 version: 0.0.1
 title: Ubiquity Device
 description: Log parser for Ubiquity Unifi Devices
+min_stanza_version: 0.14.0
 parameters:
   - name: listen_address
     label: Listen Address
@@ -34,12 +35,25 @@ pipeline:
   - id: ac_lite_ap_parser
     type: regex_parser
     regex: '^<(?P<priority>[^>]+)>(?P<timestamp>\w{3}\s*\d{1,2}\s*\d{2}:\d{2}:\d{2})\s*(?P<mac_address>[^,]*),(?P<device>[^:]*):(\s*)?(?P<process>[^:]*)(\s*)?:(?P<message>[\s\S]*)'
-    output: {{ .output }}
+    output: promote_device
 
   # This pattern is known to match Flex Mini switches
   - id: flex_mini_parser
     type: regex_parser
     regex: '^<(?P<priority>[^>]+)>(?P<name>[^ ]*)\s*(?P<device>[^,]*),(?P<mac_address>[^,]*),(?P<firmware_version>[^:]*):(\s*)?(?P<service>[^:]*):(\s*)?(?P<message>[\s\S]*)'
+    output: promote_name
+  # promote name field to resource. name is specific to flex_mini_parser.
+  - id: promote_name
+    type: move
+    from: $record.name
+    to: '$resource["name"]'
+    output: promote_device
+
+  # promote device field to resource
+  - id: promote_device
+    type: move
+    from: $record.device
+    to: '$resource["device"]'
     output: {{ .output }}
 
   # Catch all will parse any message that is prefixed with a priority value
