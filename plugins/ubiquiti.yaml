@@ -1,6 +1,6 @@
 # Plugin Info
 version: 0.0.1
-title: Ubiquiti Device
+title: Ubiquiti
 description: Log parser for Ubiquiti Unifi Devices
 min_stanza_version: 0.14.0
 parameters:
