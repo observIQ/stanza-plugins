@@ -19,6 +19,13 @@ import (
 // value is primarily to ensure that we do not spawn 50+ containers at once.
 var maxConcurrentContainers = 10
 
+type schemaTestCase struct {
+	plugin      string
+	schema      string
+	pluginsPath string
+	schemasPath string
+}
+
 func TestSchemas(t *testing.T) {
 	path, err := os.Getwd()
 	require.NoError(t, err)
@@ -44,30 +51,36 @@ func TestSchemas(t *testing.T) {
 		t.FailNow()
 	}
 
+	// Spawn limited number of goroutines to avoid too many containers
 	wg := sync.WaitGroup{}
 	gaurd := make(chan struct{}, maxConcurrentContainers)
 	for _, plugin := range plugins {
+		tc := schemaTestCase{
+			plugin:      plugin,
+			schema:      plugin, // schema name is the same as plugin name
+			pluginsPath: pluginsPath,
+			schemasPath: schemasPath,
+		}
 
 		wg.Add(1)
 		gaurd <- struct{}{}
-
-		go func(plugin string) {
-			schema := plugin
-			t.Run(plugin, func(t *testing.T) {
-				err := schemaTest(
-					pluginsPath,
-					schemasPath,
-					plugin,
-					schema,
-				)
-				require.NoError(t, err, fmt.Sprintf("plugin: %s", plugin))
-			})
-
-			wg.Done()
-			<-gaurd
-		}(plugin)
+		go tc.test(t, &wg, gaurd)
 	}
 	wg.Wait()
+}
+
+func (tc schemaTestCase) test(t *testing.T, wg *sync.WaitGroup, gaurd chan struct{}) {
+	t.Run(tc.plugin, func(t *testing.T) {
+		err := schemaTest(
+			tc.pluginsPath,
+			tc.schemasPath,
+			tc.plugin,
+			tc.schema,
+		)
+		require.NoError(t, err, fmt.Sprintf("plugin: %s", tc.plugin))
+	})
+	wg.Done()
+	<-gaurd
 }
 
 func schemaTest(pluginDir, schemaDir, pluginFile, schemaFile string) error {
