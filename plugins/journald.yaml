@@ -46,8 +46,11 @@ pipeline:
       plugin_id: {{ .id }}
       log_type: '{{ $log_type }}'
 
+  # Journald does not gaurantee the presence of the PRIORITY
+  # Seveity parsing is skipped if PRIORITY does not exist
   - type: severity_parser
     parse_from: $record.PRIORITY
+    if: '$record.PRIORITY != nil'
     mapping:
       emergency: 0
       alert: 1

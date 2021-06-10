@@ -4,9 +4,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.59] - Unreleased
-### Added
+## [0.0.61] - Unreleased
 
+## [0.0.60] - 2021-06-09
+### Added
+- Added Ubiquiti plugin ([264](https://github.com/observIQ/stanza-plugins/pull/264))
+
+### Changed
+- Fixed an issue where journald does not always include the severity parse from field ([PR263](https://github.com/observIQ/stanza-plugins/pull/263))
+
+## [0.0.59] - 2021-06-08
+### Added
+- Add `uwsgi` plugin ([PR261](https://github.com/observIQ/stanza-plugins/pull/261))
+
+### Changed
+- Update `macos` plugin 
+  - Add `supported_platforms` macos ([PR258](https://github.com/observIQ/stanza-plugins/pull/258))
+  - Update system regex to handle space padded dates ([PR259](https://github.com/observIQ/stanza-plugins/pull/259))
+  - Add `relevant_if` to `install_log_path` and `system_log_path` parameters ([PR260](https://github.com/observIQ/stanza-plugins/pull/260))
+ 
 ## [0.0.58] - 2021-05-26
 ### Added
 - Add `macos` plugin ([PR256](https://github.com/observIQ/stanza-plugins/pull/256))

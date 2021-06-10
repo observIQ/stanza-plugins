@@ -1,7 +1,9 @@
 # Plugin Info
-version: 0.0.1
+version: 0.0.2
 title: MacOS
 description: Log parser for MacOS
+supported_platforms: 
+  - macos
 parameters:
   - name: enable_system_log
     label: System Logs
@@ -13,6 +15,9 @@ parameters:
     description: The absolute path to the System log
     type: string
     default: "/var/log/system.log"
+    relevant_if:
+      enable_system_log:
+        equals: true
   - name: enable_install_log
     label: Install Logs
     description: Enable to collect MacOS install logs
@@ -23,6 +28,9 @@ parameters:
     description: The absolute path to the Install log
     type: string
     default: "/var/log/install.log"
+    relevant_if:
+      enable_install_log:
+        equals: true
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -48,7 +56,7 @@ pipeline:
       - {{ $system_log_path }}
     start_at: {{ $start_at }}
     multiline:
-      line_start_pattern: '\w{3} \d{1,2} \d{2}:\d{2}:\d{2}'
+      line_start_pattern: '\w{3}\s*\d{1,2} \d{2}:\d{2}:\d{2}'
     labels:
       log_type: macos.system
       plugin_id: {{ .id }}
@@ -56,7 +64,7 @@ pipeline:
 
   - id: system_parser
     type: regex_parser
-    regex: '^(?P<timestamp>\w{3} \d{1,2} \d{2}:\d{2}:\d{2}) (---|(?P<host>[^ ]*))? ((?P<process>[^\[]*)\[(?P<pid>[^\]]*)\])?( \((?P<subprocess>[^\[]*)(\[(?P<spid>[^\]]*)\])?\))?(: )?(?P<message>[\w\W]*)'
+    regex: '^(?P<timestamp>\w{3}\s*\d{1,2} \d{2}:\d{2}:\d{2}) (---|(?P<host>[^ ]*))? ((?P<process>[^\[]*)\[(?P<pid>[^\]]*)\])?( \((?P<subprocess>[^\[]*)(\[(?P<spid>[^\]]*)\])?\))?(: )?(?P<message>[\w\W]*)'
     timestamp:
       parse_from: timestamp
       layout_type: gotime
