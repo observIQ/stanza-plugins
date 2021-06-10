@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.61] - Unreleased
 ### Changed
+- Update `cisco_meraki` plugin ([PR273](https://github.com/observIQ/stanza-plugins/pull/273))
+  - Fix parsing errors
 - Updated Ubiquiti plugin, added severity parsing ([267](https://github.com/observIQ/stanza-plugins/pull/267))
 
 ## [0.0.60] - 2021-06-09
