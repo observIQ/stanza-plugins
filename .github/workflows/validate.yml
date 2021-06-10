@@ -18,7 +18,6 @@ on:
       - "test/**"
     branches:
       - master
-on: [push]
 jobs:
   integration:
     runs-on: ubuntu-latest
