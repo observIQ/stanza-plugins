@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.2
+version: 0.0.3
 title: Cisco Meraki
 description: Log parser for Cisco Meraki
 parameters:
