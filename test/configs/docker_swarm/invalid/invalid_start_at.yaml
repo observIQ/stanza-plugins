@@ -1,3 +1,4 @@
 pipeline:
 - type: docker_swarm
   start_at: middle
+- type: stdout

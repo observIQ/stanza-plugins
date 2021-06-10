@@ -3,3 +3,4 @@ pipeline:
   event_hub_name: stanza_hub
   group: $Default
   connection_string: some_connection_string
+- type: stdout

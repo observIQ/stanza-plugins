@@ -1,3 +1,4 @@
 pipeline:
 - type: cassandra
   enable_system_logs: "true"
+- type: stdout

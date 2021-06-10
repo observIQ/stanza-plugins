@@ -4,3 +4,4 @@ pipeline:
   kubelet_journald_log_path: /run/journal
   cluster_name: eks_test
   start_at: beginning
+- type: stdout

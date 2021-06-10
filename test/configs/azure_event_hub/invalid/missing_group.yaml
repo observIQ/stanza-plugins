@@ -3,3 +3,4 @@ pipeline:
   namespace: stanza
   event_hub_name: stanza_hub
   connection_string: some_connection_string
+- type: stdout

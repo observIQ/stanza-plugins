@@ -5,3 +5,4 @@ pipeline:
   group: $Default
   connection_string: some_connection_string
   prefetch_count: xyz
+- type: stdout

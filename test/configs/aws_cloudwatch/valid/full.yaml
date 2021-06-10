@@ -9,3 +9,4 @@ pipeline:
   poll_interval: "10"
   start_at: end
   name: cloudwatch
+- type: stdout

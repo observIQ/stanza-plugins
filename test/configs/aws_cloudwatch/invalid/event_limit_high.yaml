@@ -3,3 +3,4 @@ pipeline:
   log_group_name: test
   region: us-east1
   event_limit: 1000000
+- type: stdout

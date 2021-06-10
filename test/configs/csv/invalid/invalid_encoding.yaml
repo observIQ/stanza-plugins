@@ -9,3 +9,4 @@ pipeline:
   encoding: utf-81
   log_type: csv_custom
   start_at: end
+- type: stdout

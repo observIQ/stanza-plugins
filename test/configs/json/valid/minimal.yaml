@@ -2,3 +2,4 @@ pipeline:
 - type: json
   file_log_path: 
   - "/var/log/json.log"
+- type: stdout

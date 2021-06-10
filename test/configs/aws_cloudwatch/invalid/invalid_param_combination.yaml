@@ -7,3 +7,4 @@ pipeline:
   log_stream_names: 
   - "james"
   - "bob"
+- type: stdout

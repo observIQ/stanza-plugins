@@ -3,3 +3,4 @@ pipeline:
   namespace: stanza
   group: $Default
   connection_string: some_connection_string
+- type: stdout
