@@ -24,4 +24,4 @@ sed-plugins: temp/plugins
 	scripts/sed.sh
 
 temp/plugins:
-	mkdir temp/plugins
+	mkdir -p temp/plugins
