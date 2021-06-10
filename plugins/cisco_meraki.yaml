@@ -20,30 +20,21 @@ pipeline:
     labels:
       log_type: cisco_meraki
       plugin_id: {{ .id }}
-    output: meraki_parser
 
   - id: regex_router
     type: router
     default: catch_all_parser
     routes:
-      - expr: '$record matches "<[^>]+>[^\\s]*\\s*[^\\s]*\\s*[^\\s]*\\s*[^\\s]*\\s*[\\s\\S]*"'
+      - expr: '$record matches ".*=[\\s\\S]*"'
         output: meraki_parser
 
   - id: meraki_parser
     type: regex_parser
-    regex: '^<(?P<priority>[^>]+)>(?P<version>[^\s]*)\s*(?P<timestamp>[^\s]*)\s*(?P<hostname>[^\s]*)\s*(?P<app_name>[^\s]*)\s*(?P<message>[\s\S]*)'
+    regex: '^<(?P<priority>[^>]+)>(?P<version>[\d]+)\s*(?P<timestamp>[^\s]*)\s*(?P<hostname>[^\s]*)\s*(?P<app_name>[^\s]*)\s*(?P<message>[\s\S]*)'
     timestamp:
       parse_from: timestamp
       layout_type: epoch
       layout: 's.ns'
-    output: severity_parser
-
-  - id: catch_all_parser
-    type: regex_parser
-    regex: '^<(?P<priority>[^>]+)>(?P<message>[\s\S]*)'
-    timestamp:
-      parse_from: timestamp
-      layout: '%b %d %H:%M:%S'
     output: severity_parser
 
   # Severity Parser using piority field to get the severity
@@ -59,3 +50,8 @@ pipeline:
       info: [6,14,22,30,38,46,54,62,70,78,86,94,102,110,118,126,134,142,150,158,166,174,182,190]
       debug: [7,15,23,31,39,47,55,63,71,79,87,95,103,111,119,127,135,143,151,159,167,175,183,191]
     output: {{ .output }}
+
+  - id: catch_all_parser
+    type: regex_parser
+    regex: '^<(?P<priority>[^>]+)>(\s*)?(?P<message>[\s\S]*)'
+    output: severity_parser
