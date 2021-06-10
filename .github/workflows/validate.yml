@@ -1,4 +1,23 @@
 name: Test
+on:
+  pull_request:
+    paths:
+      - "Makefile"
+      - ".github/**"
+      - "plugins/**"
+      - "schemas/**"
+      - "scripts/**"
+      - "test/**"
+  push:
+    paths:
+      - "Makefile"
+      - ".github/**"
+      - "plugins/**"
+      - "schemas/**"
+      - "scripts/**"
+      - "test/**"
+    branches:
+      - master
 on: [push]
 jobs:
   integration:
