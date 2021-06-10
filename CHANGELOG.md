@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Update `cisco_meraki` plugin ([PR273](https://github.com/observIQ/stanza-plugins/pull/273))
   - Fix parsing errors
-- Updated Ubiquiti plugin, added severity parsing ([267](https://github.com/observIQ/stanza-plugins/pull/267))
+- Update `ubiquiti` plugin, added severity parsing ([267](https://github.com/observIQ/stanza-plugins/pull/267))
 - Update `syslog`, removed special handling ([PR286](https://github.com/observIQ/stanza-plugins/pull/268))
 - Renamed `journald` field `$record.MESSAGE` to `$record.message` ([PR268](https://github.com/observIQ/stanza-plugins/pull/266))
 
