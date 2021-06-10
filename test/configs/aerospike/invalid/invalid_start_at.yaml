@@ -1,0 +1,4 @@
+pipeline:
+- type: aerospike
+  start_at: endf
+- type: stdout

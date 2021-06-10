@@ -1,0 +1,4 @@
+pipeline:
+- type: azure_aks
+  cluster_name: 146
+- type: stdout

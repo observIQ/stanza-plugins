@@ -62,7 +62,7 @@ parameters:
 
 # Pipeline Template
 pipeline:
-{{ if $enable_general_logs }}
+# {{ if $enable_general_logs }}
   - id: elasticsearch_input
     type: file_input
     include:
@@ -84,9 +84,9 @@ pipeline:
       mapping:
         warning: warn
     output: {{.output}}
-{{ end }}
+#{{ end }}
 
-{{ if $enable_deprecation_logs }}
+#{{ if $enable_deprecation_logs }}
   - id: elasticsearch_deprecation_input
     type: file_input
     include:
@@ -109,9 +109,9 @@ pipeline:
       mapping:
         warning: warn
     output: {{.output}}
-{{ end }}
+#{{ end }}
 
-{{ if $enable_gc_logs }}
+#{{ if $enable_gc_logs }}
   - id: elasticsearch_gc_input
     type: file_input
     include:
@@ -129,4 +129,4 @@ pipeline:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%s%z'
     output: {{.output}}
-{{ end }}
+#{{ end }}

@@ -1,0 +1,4 @@
+pipeline:
+- type: ibm_db2
+  path: true
+- type: stdout

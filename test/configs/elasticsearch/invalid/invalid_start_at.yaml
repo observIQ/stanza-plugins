@@ -1,0 +1,4 @@
+pipeline:
+- type: elasticsearch
+  start_at: true
+- type: stdout

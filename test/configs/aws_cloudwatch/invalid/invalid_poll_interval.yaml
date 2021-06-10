@@ -1,0 +1,6 @@
+pipeline:
+- type: aws_cloudwatch
+  log_group_name: test
+  region: us-east1
+  poll_interval: x
+- type: stdout

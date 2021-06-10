@@ -1,0 +1,4 @@
+pipeline:
+- type: kubernetes_cluster
+  kubelet_journald_log_path: true
+- type: stdout

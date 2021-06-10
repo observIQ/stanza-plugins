@@ -1,0 +1,3 @@
+pipeline:
+- type: aerospike
+- type: stdout

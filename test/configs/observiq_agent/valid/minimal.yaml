@@ -1,0 +1,3 @@
+pipeline:
+- type: observiq_agent
+- type: stdout

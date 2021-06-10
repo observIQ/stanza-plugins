@@ -1,0 +1,4 @@
+pipeline:
+- type: hbase
+  enable_region_log: "/path"
+- type: stdout

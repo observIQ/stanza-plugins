@@ -1,0 +1,6 @@
+pipeline:
+- type: azure_log_analytics
+  namespace: stanza
+  event_hub_name: stanza_hub
+  group: $Default
+- type: stdout

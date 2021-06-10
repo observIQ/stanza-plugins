@@ -1,0 +1,6 @@
+pipeline:
+- type: file
+  file_log_path: 
+  - ""
+  multiline_line_start_pattern: ""
+- type: stdout

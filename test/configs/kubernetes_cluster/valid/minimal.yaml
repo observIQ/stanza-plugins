@@ -1,0 +1,6 @@
+pipeline:
+- type: kubernetes_cluster
+  kubelet_journald_log_path: /test
+  cluster_name: test
+  start_at: end
+- type: stdout

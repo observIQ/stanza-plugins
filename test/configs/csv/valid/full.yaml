@@ -1,0 +1,12 @@
+pipeline:
+- type: csv
+  file_log_path:
+  - "./in.csv"
+  - "./in*.csv"
+  exclude_file_log_path:
+  - "./in-test*.csv"
+  header: "name,age,number"
+  encoding: utf-8
+  log_type: csv_custom
+  start_at: end
+- type: stdout

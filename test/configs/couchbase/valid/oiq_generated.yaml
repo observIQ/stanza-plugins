@@ -1,0 +1,24 @@
+pipeline:
+- babysitter_log_path: /opt/couchbase/var/lib/couchbase/logs/babysitter.log
+  debug_log_path: /opt/couchbase/var/lib/couchbase/logs/debug.log
+  enable_access_log: true
+  enable_babysitter_log: true
+  enable_debug_log: true
+  enable_error_log: true
+  enable_info_log: true
+  enable_internal_access_log: true
+  enable_xdcr_log: true
+  error_log_path: /opt/couchbase/var/lib/couchbase/logs/error.log
+  http_access_log_path: /opt/couchbase/var/lib/couchbase/logs/http_access.log
+  http_internal_access_log_path: /opt/couchbase/var/lib/couchbase/logs/http_access_internal.log
+  id: 51801666-38b2-4099-83b5-5c78531856c4
+  info_log_path: /opt/couchbase/var/lib/couchbase/logs/info.log
+  name: Couchbase retest
+  output:
+  - e25b3f1f-df5b-445e-a98f-ab3ac2eefe9f
+  start_at: beginning
+  type: couchbase
+  version: 0.0.3
+  xdcr_log_path: /opt/couchbase/var/lib/couchbase/logs/goxdcr.log
+- id: e25b3f1f-df5b-445e-a98f-ab3ac2eefe9f
+  type: stdout

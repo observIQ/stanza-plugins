@@ -1,0 +1,3 @@
+pipeline:
+- type: amazon_eks
+- type: stdout

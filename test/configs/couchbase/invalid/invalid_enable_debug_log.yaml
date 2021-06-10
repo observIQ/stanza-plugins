@@ -1,0 +1,4 @@
+pipeline:
+- type: couchbase
+  enable_debug_log: "yes"
+- type: stdout

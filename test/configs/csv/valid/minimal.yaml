@@ -1,0 +1,6 @@
+pipeline:
+- type: csv
+  file_log_path:
+  - "./in.csv"
+  header: "name,age,number"
+- type: stdout

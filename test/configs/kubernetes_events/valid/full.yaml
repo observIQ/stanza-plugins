@@ -1,0 +1,8 @@
+pipeline:
+- type: kubernetes_events
+  namespaces:
+  - default
+  - prod
+  - stage
+  cluster_name: gcp
+- type: stdout

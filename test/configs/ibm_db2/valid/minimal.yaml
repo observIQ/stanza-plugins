@@ -1,0 +1,3 @@
+pipeline:
+- type: ibm_db2
+- type: stdout

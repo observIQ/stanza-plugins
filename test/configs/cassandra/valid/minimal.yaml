@@ -1,0 +1,3 @@
+pipeline:
+- type: cassandra
+- type: stdout
