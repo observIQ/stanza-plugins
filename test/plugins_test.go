@@ -15,41 +15,48 @@ const pluginDir = "../plugins"
 const configBaseDir = "./configs"
 
 func TestConfigs(t *testing.T) {
-	valid, invalid := detectConfigs(t)
+	valid, invalid, err := detectConfigs()
+	if err != nil {
+		t.Error(err)
+		return
+	}
 
 	for _, config := range valid {
 		t.Run(config, func(t *testing.T) {
-			_, err := newAgent(t, config, pluginDir)
+			_, err := newAgent(config, pluginDir)
 			require.NoError(t, err)
 		})
 	}
 
 	for _, config := range invalid {
 		t.Run(config, func(t *testing.T) {
-			_, err := newAgent(t, config, pluginDir)
+			_, err := newAgent(config, pluginDir)
 			require.Error(t, err)
 		})
 	}
 }
 
-func newAgent(t *testing.T, configPath, pluginDir string) (*agent.LogAgent, error) {
-	return agent.NewBuilder(newDefaultLoggerAt(t)).
+func newAgent(configPath, pluginDir string) (*agent.LogAgent, error) {
+	l, err := newDefaultLoggerAt()
+	if err != nil {
+		return nil, err
+	}
+	return agent.NewBuilder(l).
 		WithConfigFiles([]string{configPath}).
 		WithPluginDir(pluginDir).
 		Build()
 }
 
-func newDefaultLoggerAt(t *testing.T) *zap.SugaredLogger {
+func newDefaultLoggerAt() (*zap.SugaredLogger, error) {
 	baseLogger, err := zap.NewProductionConfig().Build()
 	if err != nil {
-		t.Logf("Zap logger error: %s", err.Error())
-		t.FailNow()
+		return nil, err
 	}
-	return baseLogger.Sugar()
+	return baseLogger.Sugar(), nil
 }
 
-func detectConfigs(t *testing.T) (valid, invalid []string) {
-	err := filepath.Walk(configBaseDir,
+func detectConfigs() (valid, invalid []string, err error) {
+	err = filepath.Walk(configBaseDir,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -64,9 +71,5 @@ func detectConfigs(t *testing.T) (valid, invalid []string) {
 			}
 			return nil
 		})
-	if err != nil {
-		t.Logf("Failed to build list of config files: %s", err.Error())
-		t.FailNow()
-	}
-	return valid, invalid
+	return valid, invalid, err
 }
