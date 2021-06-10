@@ -14,7 +14,7 @@ import (
 const pluginDir = "../plugins"
 const configBaseDir = "./configs"
 
-func TestConfigs(t *testing.T) {
+func testConfigs(t *testing.T) {
 	valid, invalid, err := detectConfigs()
 	if err != nil {
 		t.Error(err)

@@ -26,7 +26,7 @@ type schemaTestCase struct {
 	schemasPath string
 }
 
-func TestSchemas(t *testing.T) {
+func testSchemas(t *testing.T) {
 	path, err := os.Getwd()
 	require.NoError(t, err)
 
