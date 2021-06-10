@@ -1,11 +1,9 @@
-name: Validate YAML
+name: Test
 on: [push]
 jobs:
-  ValidateYaml:
+  integration:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Validating Plugin Yaml
-      run: ./schema.sh
-    - name: Validate Plugin Pipelines
+    - name: go test
       run: make test

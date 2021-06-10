@@ -1,7 +1,8 @@
 ALL_MODULES := $(shell find . -type f -name "go.mod" -exec dirname {} \; | sort )
+PLUGINS := $(shell ls ./plugins)
 
 .PHONY: test
-test:
+test: sed-plugins
 	$(MAKE) for-all CMD="go clean -testcache ./..." 
 	$(MAKE) for-all CMD="go test ./..."
 
@@ -15,3 +16,12 @@ for-all:
 	@set -e; for dir in $(ALL_MODULES); do \
 	  (cd "$${dir}" && $${CMD} ); \
 	done
+
+# sed-plugins will render plugins so they can be checked
+# against their schema
+.PHONY: sed-plugins
+sed-plugins: temp/plugins
+	scripts/sed.sh
+
+temp/plugins:
+	mkdir -p temp/plugins
