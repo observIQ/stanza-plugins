@@ -1,7 +1,8 @@
 # Plugin Info
-version: 0.0.2
+version: 1.0.0
 title: Journald
 description: Journald input parser
+min_stanza_version: 0.14.0
 supported_platforms:
   - linux
 parameters:
@@ -46,8 +47,11 @@ pipeline:
       plugin_id: {{ .id }}
       log_type: '{{ $log_type }}'
 
+  # Journald does not gaurantee the presence of the PRIORITY
+  # Seveity parsing is skipped if PRIORITY does not exist
   - type: severity_parser
     parse_from: $record.PRIORITY
+    if: '$record.PRIORITY != nil'
     mapping:
       emergency: 0
       alert: 1
@@ -57,4 +61,10 @@ pipeline:
       notice: 5
       info: 6
       debug: 7
+    output: promote_message
+
+  - id: promote_message
+    type: move
+    from: '$record.MESSAGE'
+    to: '$record.message'
     output: {{ .output }}

@@ -1,0 +1,4 @@
+pipeline:
+- type: kubernetes_events
+  cluster_name: true
+- type: stdout

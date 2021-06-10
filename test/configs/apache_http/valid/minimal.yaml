@@ -1,0 +1,3 @@
+pipeline:
+- type: apache_http
+- type: stdout

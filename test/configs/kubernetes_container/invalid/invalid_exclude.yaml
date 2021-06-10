@@ -1,0 +1,4 @@
+pipeline:
+- type: kubernetes_container
+  exclude: default
+- type: stdout

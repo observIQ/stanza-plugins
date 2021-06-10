@@ -1,0 +1,4 @@
+pipeline:
+- type: kubernetes_container
+  start_at: x
+- type: stdout

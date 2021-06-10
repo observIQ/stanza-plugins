@@ -1,0 +1,4 @@
+pipeline:
+- type: amazon_eks
+  start_at: eof
+- type: stdout

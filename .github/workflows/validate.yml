@@ -1,0 +1,27 @@
+name: Test
+on:
+  pull_request:
+    paths:
+      - "Makefile"
+      - ".github/**"
+      - "plugins/**"
+      - "schemas/**"
+      - "scripts/**"
+      - "test/**"
+  push:
+    paths:
+      - "Makefile"
+      - ".github/**"
+      - "plugins/**"
+      - "schemas/**"
+      - "scripts/**"
+      - "test/**"
+    branches:
+      - master
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: go test
+      run: make test

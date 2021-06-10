@@ -1,0 +1,5 @@
+# nginx from kubernetes, default values
+pipeline:
+- type: nginx
+  source: kubernetes
+  pod_name: ""

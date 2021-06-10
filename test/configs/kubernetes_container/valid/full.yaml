@@ -1,0 +1,10 @@
+pipeline:
+- type: kubernetes_container
+  cluster_name: ci
+  pod_name: "api-*"
+  container_name: "proxy"
+  exclude:
+  - "xyz"
+  enable_nested_json_parser: true
+  start_at: end
+- type: stdout

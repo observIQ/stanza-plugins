@@ -1,0 +1,3 @@
+pipeline:
+- type: elasticsearch
+- type: stdout
