@@ -28,6 +28,9 @@ pipeline:
       log_type: 'codeigniter'
       plugin_id: {{ .id }}
 
+  - type: filter
+    expr: '$record matches "^<\\?php"'
+
   - type: regex_parser
     regex: '(?P<severity>\w+)\s+-\s+(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s+-->\s+(?P<message>[\s\S]*)'
     timestamp:
