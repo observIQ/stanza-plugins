@@ -33,8 +33,6 @@ pipeline:
     type: file_input
     include:
       - {{ $file_path }}
-    # multiline:
-    #   line_start_pattern: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}|#'
     start_at: {{ $start_at }}
     labels:
       log_type: microsoft_iis
@@ -67,24 +65,27 @@ pipeline:
     value: 'EXPR($record.message1 + $record.message2 + $record.message3)'
     output: csv_parser
 
-
   - id: csv_parser
     type: csv_parser
     delimiter: " "
     header: {{ $fields }}
 
+  # Build timestamp from date and time field if they exist
   - id: add_timestamp
     type: add
     if: '$record.date != nil and $record.time != nil'
     field: $record.timestamp
     value: EXPR($record.date + " " + $record.time)
 
+  # Confirm timestamp field exists and parse
   - id: time_parser
     type: time_parser
     if: '$record.timestamp != nil'
     parse_from: timestamp
     layout: '%Y-%m-%d %H:%M:%S'
 
+  # Confirm sc-status field exists then parse severity.
+  # If statement errors when using dot notation because of the - in the field name so use bracket notation instead.
   - type: severity_parser
     if: '$record["sc-status"] != nil'
     parse_from: $record.sc-status
