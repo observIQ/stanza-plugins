@@ -62,32 +62,35 @@ pipeline:
 
   # This will remove the first set of parsed quotes.
   - id: quote_handler_restructurer
-    type: restructure
-    ops:
-      - add:
-          field: $record
-          value_expr: '$record.message1 + $record.message2 + $record.message3'
+    type: add
+    field: $record
+    value: 'EXPR($record.message1 + $record.message2 + $record.message3)'
     output: csv_parser
+
 
   - id: csv_parser
     type: csv_parser
     delimiter: " "
     header: {{ $fields }}
-    output: {{ .output }}
 
-  # - id: microsoft_iis_parser
-  #   type: regex_parser
-  #   if: 'not ($record matches "^#")'
-  #   regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) (?P<server_ip>[\d\w\.:]+) (?P<request_method>[A-Z]+) (?P<uri_stem>[^ ]+) (?P<uri_query>[^ ]+) (?P<server_port>\d+) (?P<username>[^ ]+) (?P<client_ip>[\d\w\.:]+) (?P<user_agent>[^ ]+) (?P<referer>[^ ]+) (?P<http_status>\d+) (?P<http_sub_status>\d+) (?P<win32_status>\d+) (?P<time_taken>\d+)'
-  #   timestamp:
-  #     parse_from: timestamp
-  #     layout: '%Y-%m-%d %H:%M:%S'
-  #   severity:
-  #     parse_from: http_status
-  #     preserve_to: http_status
-  #     mapping:
-  #       info: 2xx
-  #       notice: 3xx
-  #       warning: 4xx
-  #       error: 5xx
-  #   output: {{.output}}
+  - id: add_timestamp
+    type: add
+    if: '$record.date != nil and $record.time != nil'
+    field: $record.timestamp
+    value: EXPR($record.date + " " + $record.time)
+
+  - id: time_parser
+    type: time_parser
+    if: '$record.timestamp != nil'
+    parse_from: timestamp
+    layout: '%Y-%m-%d %H:%M:%S'
+
+  - type: severity_parser
+    if: '$record["sc-status"] != nil'
+    parse_from: $record.sc-status
+    mapping:
+      info: 2xx
+      notice: 3xx
+      warning: 4xx
+      error: 5xx
+    output: {{.output}}
