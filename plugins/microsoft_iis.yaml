@@ -2,6 +2,7 @@
 version: 0.0.3
 title: Microsoft IIS
 description: Log parser for Microsoft IIS
+min_stanza_version: 0.14.0
 parameters:
   - name: file_path
     label: Log Path
@@ -76,6 +77,18 @@ pipeline:
     if: '$record.date != nil and $record.time != nil'
     field: $record.timestamp
     value: EXPR($record.date + " " + $record.time)
+
+  # Remove date field
+  - id: remove_date
+    type: remove
+    if: '$record.date != nil'
+    field: $record.date
+
+  # Remove date field
+  - id: remove_time
+    type: remove
+    if: '$record.time != nil'
+    field: $record.time
 
   # Confirm timestamp field exists and parse
   - id: time_parser
