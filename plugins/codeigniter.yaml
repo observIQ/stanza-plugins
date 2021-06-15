@@ -1,0 +1,39 @@
+version: 0.0.1
+title: CodeIgniter Log Parser
+description: Log parser for CodeIgniter formatted logs
+parameters:
+  - name: log_path
+    label: CodeIgniter Log Path
+    description: Path to CodeIgniter formatted log file
+    type: string
+    required: true
+  - name: start_at
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+     - beginning
+     - end
+    default: end
+# Set Defaults
+# {{$log_path := default "" .log_path}}
+# {{$start_at := default "end" .start_at}}
+pipeline:
+  - id: log_reader
+    type: file_input
+    include:
+      - {{ $log_path }}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: 'codeigniter'
+      plugin_id: {{ .id }}
+
+  - type: regex_parser
+    regex: '(?P<severity>\w+)\s+-\s+(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s+-->\s+(?P<message>[\s\S]*)'
+    timestamp:
+      parse_from: timestamp
+      layout_type: gotime
+      layout: '2006-01-02 15:04:05'
+    severity:
+      parse_from: severity
+    output: {{.output}}
