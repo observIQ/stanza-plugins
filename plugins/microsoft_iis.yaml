@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.2
+version: 0.0.3
 title: Microsoft IIS
 description: Log parser for Microsoft IIS
 parameters:
@@ -8,6 +8,11 @@ parameters:
     description: The absolute path to the Microsoft IIS logs
     type: string
     default: "C:/inetpub/logs/LogFiles/W3SVC*/**/*.log"
+  - name: fields
+    label: IIS Fields
+    description: 'Fields included in log. The beginning of the log file will have a log entry "#Fields: " copy everything after the ": ". Do not include leading space.'
+    type: string
+    required: true
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -19,6 +24,7 @@ parameters:
 
 # Set Defaults
 # {{$file_path := default "C:/inetpub/logs/LogFiles/W3SVC*/**/*.log" .file_path}}
+# {{$fields := .fields}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
@@ -27,27 +33,61 @@ pipeline:
     type: file_input
     include:
       - {{ $file_path }}
-    multiline:
-      line_start_pattern: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}|#'
+    # multiline:
+    #   line_start_pattern: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}|#'
     start_at: {{ $start_at }}
     labels:
       log_type: microsoft_iis
       plugin_id: {{ .id }}
-    output: microsoft_iis_parser
+    output: iis_router
 
-  - id: microsoft_iis_parser
+  - id: iis_router
+    type: router
+    routes:
+      - output: quote_handler_parser
+        expr: $record matches '.*".*".*' and not ($record matches "^#")
+      - output: csv_parser
+        expr: 'not ($record matches "^#")'
+      - output: {{ .output }}
+        expr: true
+
+  # Some example log entries have quotes. This will cause an error.
+  # This parses first set of quotes. If more than one set of quotes exist then it will still error.
+  # All examples from logs seen at time of this comment have only contained one set of quotes.
+  - id: quote_handler_parser
     type: regex_parser
-    if: 'not ($record matches "^#")'
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) (?P<server_ip>[\d\w\.:]+) (?P<request_method>[A-Z]+) (?P<uri_stem>[^ ]+) (?P<uri_query>[^ ]+) (?P<server_port>\d+) (?P<username>[^ ]+) (?P<client_ip>[\d\w\.:]+) (?P<user_agent>[^ ]+) (?P<referer>[^ ]+) (?P<http_status>\d+) (?P<http_sub_status>\d+) (?P<win32_status>\d+) (?P<time_taken>\d+)'
-    timestamp:
-      parse_from: timestamp
-      layout: '%Y-%m-%d %H:%M:%S'
-    severity:
-      parse_from: http_status
-      preserve_to: http_status
-      mapping:
-        info: 2xx
-        notice: 3xx
-        warning: 4xx
-        error: 5xx
-    output: {{.output}}
+    parse_from: $record
+    regex: '(?P<message1>[^"]*)(?P<first_quote>[\"])(?P<message2>[^"]*)(?P<second_quote>[\"])(?P<message3>.*)'
+    output: quote_handler_restructurer
+
+  # This will remove the first set of parsed quotes.
+  - id: quote_handler_restructurer
+    type: restructure
+    ops:
+      - add:
+          field: $record
+          value_expr: '$record.message1 + $record.message2 + $record.message3'
+    output: csv_parser
+
+  - id: csv_parser
+    type: csv_parser
+    delimiter: " "
+    header: {{ $fields }}
+    output: {{ .output }}
+
+  # - id: microsoft_iis_parser
+  #   type: regex_parser
+  #   if: 'not ($record matches "^#")'
+  #   regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}) (?P<server_ip>[\d\w\.:]+) (?P<request_method>[A-Z]+) (?P<uri_stem>[^ ]+) (?P<uri_query>[^ ]+) (?P<server_port>\d+) (?P<username>[^ ]+) (?P<client_ip>[\d\w\.:]+) (?P<user_agent>[^ ]+) (?P<referer>[^ ]+) (?P<http_status>\d+) (?P<http_sub_status>\d+) (?P<win32_status>\d+) (?P<time_taken>\d+)'
+  #   timestamp:
+  #     parse_from: timestamp
+  #     layout: '%Y-%m-%d %H:%M:%S'
+  #   severity:
+  #     parse_from: http_status
+  #     preserve_to: http_status
+  #     mapping:
+  #       info: 2xx
+  #       notice: 3xx
+  #       warning: 4xx
+  #       error: 5xx
+  #   output: {{.output}}
