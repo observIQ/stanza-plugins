@@ -6,8 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.62] - Unreleased
 ### Changed
-- Update `cisco_meraki` plugin ([PR275](https://github.com/observIQ/stanza-plugins/pull/272))
-  - Parse know message field formats
+- Update `cisco_meraki` plugin ([PR275](https://github.com/observIQ/stanza-plugins/pull/275))
+  - Parse known message field formats
 - Update `microsoft_iis` plugin ([PR274](https://github.com/observIQ/stanza-plugins/pull/274))
   - This changes plugin to use `csv_parser`
 
