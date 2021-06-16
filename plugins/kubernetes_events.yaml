@@ -52,6 +52,7 @@ pipeline:
     preserve_to: reason
     mapping:
       info:
+        - Completed
         - Created
         - CREATE
         - EnsuringLoadBalancer
