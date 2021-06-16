@@ -52,6 +52,7 @@ pipeline:
     preserve_to: reason
     mapping:
       info:
+        - Completed
         - Created
         - CREATE
         - EnsuringLoadBalancer
@@ -69,6 +70,7 @@ pipeline:
         - RegisteredNode
         - RELOAD
         - SandboxChanged
+        - SawCompletedJob
         - ScalingReplicaSet
         - Scheduled
         - Started
@@ -103,6 +105,7 @@ pipeline:
         - InspectFailed
         - InvalidDiskCapacity
         - NetworkNotReady
+        - NodeSysctlChange
         - Preempting
         - ProbeWarning
         - Rebooted
