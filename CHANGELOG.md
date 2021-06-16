@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.0.62] - Unreleased
+### Added
+- Add `codeigniter` plugin ([PR276](https://github.com/observIQ/stanza-plugins/pull/276))
 ### Changed
 - Update `uwsgi` plugin ([PR278](https://github.com/observIQ/stanza-plugins/pull/278))
   - Remove empty `message` fields
@@ -12,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Parse known message field formats
 - Update `microsoft_iis` plugin ([PR274](https://github.com/observIQ/stanza-plugins/pull/274))
   - This changes plugin to use `csv_parser`
+- Update `kubernetes_events` plugin ([277](https://github.com/observIQ/stanza-plugins/pull/277))
+  - Added missing severity mappings
 
 ## [0.0.61] - 2021-06-10
 ### Changed
