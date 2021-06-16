@@ -70,6 +70,7 @@ pipeline:
         - RegisteredNode
         - RELOAD
         - SandboxChanged
+        - SawCompletedJob
         - ScalingReplicaSet
         - Scheduled
         - Started
