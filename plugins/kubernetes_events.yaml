@@ -105,6 +105,7 @@ pipeline:
         - InspectFailed
         - InvalidDiskCapacity
         - NetworkNotReady
+        - NodeSysctlChange
         - Preempting
         - ProbeWarning
         - Rebooted
