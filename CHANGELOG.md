@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Parse known message field formats
 - Update `microsoft_iis` plugin ([PR274](https://github.com/observIQ/stanza-plugins/pull/274))
   - This changes plugin to use `csv_parser`
+- Update `kubernetes_events` plugin ([277](https://github.com/observIQ/stanza-plugins/pull/277))
 
 ## [0.0.61] - 2021-06-10
 ### Changed
