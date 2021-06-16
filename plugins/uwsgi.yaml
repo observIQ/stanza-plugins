@@ -1,6 +1,7 @@
-version: 0.0.1
+version: 0.0.2
 title: uWSGI Log Parser
 description: Log parser uWSGI formatted logs
+min_stanza_version: 0.14.0
 parameters:
   - name: log_format
     label: Log Format
@@ -107,4 +108,9 @@ pipeline:
     type: regex_parser
     parse_from: $record.protocol
     regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
-    output: {{ .output }}
+
+  # Remove message field if it is empty
+  - type: remove
+    if: '$record.message == ""'
+    field: $record.message
+    output: {{.output}}

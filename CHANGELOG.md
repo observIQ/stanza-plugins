@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add `codeigniter` plugin ([PR276](https://github.com/observIQ/stanza-plugins/pull/276))
 ### Changed
+- Update `uwsgi` plugin ([PR278](https://github.com/observIQ/stanza-plugins/pull/278))
+  - Remove empty `message` fields
 - Update `cisco_meraki` plugin ([PR275](https://github.com/observIQ/stanza-plugins/pull/275))
   - Parse known message field formats
 - Update `microsoft_iis` plugin ([PR274](https://github.com/observIQ/stanza-plugins/pull/274))
