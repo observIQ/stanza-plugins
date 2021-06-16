@@ -1,0 +1,5 @@
+pipeline:
+- type: sflow
+  port: 2000
+  address: 0.0.0.0
+- type: stdout

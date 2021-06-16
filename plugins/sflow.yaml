@@ -1,0 +1,30 @@
+# Plugin Info
+version: 0.0.1
+title: Sflow
+description: Log parser for Sflow
+parameters:
+  - name: listen_address
+    label: Listen Address
+    description: The IP address to bind to
+    type: string
+    default: "0.0.0.0"
+  - name: port
+    label: UDP Port
+    description: The UDP port to bind to
+    type: int
+    required: true
+
+# Set Defaults
+# {{$listen_address := default "0.0.0.0" .listen_address}}
+# {{$port := default 2056 .port}}
+
+# Pipeline Template
+pipeline:
+- type: goflow_input
+  mode: sflow
+  address: {{ $listen_address }}
+  port: {{ $port }}
+  labels:
+    log_type: sflow
+    plugin_id: {{ .id }}
+  output: {{ .output }}

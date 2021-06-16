@@ -1,0 +1,4 @@
+pipeline:
+- type: sflow
+  port: "2000/udp"
+- type: stdout
