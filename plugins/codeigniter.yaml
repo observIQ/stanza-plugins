@@ -32,6 +32,7 @@ pipeline:
     expr: '$record matches "^<\\?php"'
 
   - type: regex_parser
+    if: '$record matches "(?P<severity>\\w+)\\s+-\\s+(?P<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})\\s+-->\\s+(?P<message>[\\s\\S]*)"'
     regex: '(?P<severity>\w+)\s+-\s+(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s+-->\s+(?P<message>[\s\S]*)'
     timestamp:
       parse_from: timestamp
