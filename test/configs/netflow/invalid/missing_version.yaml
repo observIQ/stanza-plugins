@@ -1,0 +1,4 @@
+pipeline:
+- type: netflow
+  port: 3000
+- type: stdout

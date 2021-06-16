@@ -1,0 +1,5 @@
+pipeline:
+- type: sflow
+  mode: v5
+  port: 2000
+- type: stdout

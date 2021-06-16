@@ -1,0 +1,6 @@
+pipeline:
+- type: netflow
+  version: ipfix
+  port: 2055
+  address: 10.1.1.2
+- type: stdout

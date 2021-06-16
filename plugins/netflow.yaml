@@ -1,0 +1,44 @@
+# Plugin Info
+version: 0.0.1
+title: Netflow
+description: Log parser for Netflow
+parameters:
+  - name: listen_address
+    label: Listen Address
+    description: The IP address to bind to
+    type: string
+    default: "0.0.0.0"
+  - name: port
+    label: UDP Port
+    description: The UDP port to bind to
+    type: int
+    required: true
+  - name: version
+    label: Netflow Version
+    description: The netflow version (`v5`, `v9 / IPFIX`)
+    type: enum
+    valid_values:
+      - v5
+      - ipfix
+    required: true
+
+# Set Defaults
+# {{$listen_address := default "0.0.0.0" .listen_address}}
+# {{$port := default 2055 .port}}
+# {{$version := default "ipfix" .version}}
+
+# Pipeline Template
+pipeline:
+- type: goflow_input
+# {{ if eq $version "v5" }}
+  mode: netflow_v5
+# {{ else if eq $version "ipfix" }}
+  mode: netflow_ipfix
+# {{ end }}
+  address: {{ $listen_address }}
+  port: {{ $port }}
+  labels:
+    log_type: netflow
+    plugin_id: {{ .id }}
+    netflow_version: {{ $version  }}
+  output: {{ .output }}
