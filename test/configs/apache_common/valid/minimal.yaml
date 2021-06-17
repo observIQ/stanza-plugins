@@ -1,0 +1,4 @@
+pipeline:
+- type: apache_common
+  log_path: /opt/app/api.log
+- type: stdout
