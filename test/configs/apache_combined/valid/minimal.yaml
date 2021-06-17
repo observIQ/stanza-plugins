@@ -1,4 +1,4 @@
 pipeline:
-- type: "/var/log/apache_combined.log"
+- type: apache_combined
   log_path: /opt/app/api.log
 - type: stdout
