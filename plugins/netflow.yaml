@@ -2,6 +2,7 @@
 version: 0.0.1
 title: Netflow
 description: Log parser for Netflow
+min_stanza_version: 1.1.0
 parameters:
   - name: listen_address
     label: Listen Address
@@ -41,4 +42,8 @@ pipeline:
     log_type: netflow
     plugin_id: {{ .id }}
     netflow_version: {{ $version  }}
+
+# Remove goflow specific field
+- type: remove
+  field: $record.type
   output: {{ .output }}
