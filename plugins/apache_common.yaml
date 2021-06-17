@@ -1,4 +1,4 @@
-version: 0.0.8
+version: 0.0.1
 title: Apache Common
 description: Log parser for Apache common format
 parameters:
