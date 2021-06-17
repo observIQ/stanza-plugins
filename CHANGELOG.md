@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Add `apache_common` plugin ([PR281](https://github.com/observIQ/stanza-plugins/pull/281))
 ### Changed
-- Updaate `codeigniter` plugin ([PR282](https://github.com/observIQ/stanza-plugins/pull/282))
+- Update `codeigniter` plugin ([PR282](https://github.com/observIQ/stanza-plugins/pull/282))
   - Add multiline message support
   - Parse nested json in message if detected
 ## [0.0.62] - 2021-06-16
