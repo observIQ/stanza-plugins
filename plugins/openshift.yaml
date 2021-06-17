@@ -37,12 +37,18 @@ parameters:
     description: Enable collection of Openshift unit logs
     type: bool
     default: true
+  - name: enable_metadata
+    label: Enable Metadata
+    description: Attach metadata to entries https://github.com/observIQ/stanza/blob/master/docs/operators/k8s_metadata_decorator.md
+    type: bool
+    default: true
 
 # Set Defaults
 # {{ $journald_log_path := default "/var/log/journal" .journald_log_path }}
 # {{ $enable_container_logs := default true .enable_container_logs }}
 # {{ $enable_docker_logs := default true .enable_docker_logs }}
 # {{ $enable_openshift_logs := default true .enable_openshift_logs }}
+# {{ $enable_metadata := default true .enable_metadata }}
 # {{ $cluster_name := default "" .cluster_name }}
 # {{ $start_at := default "end" .start_at }}
 
@@ -101,9 +107,10 @@ pipeline:
           from: MESSAGE
           to: '$record'
 
+# {{ if $enable_metadata }}
   # Decorate entries with k8s metadata
   - type: k8s_metadata_decorator
-    output: cluster_name_restructurer
+# {{ end }}
 
   # Add kubernetes cluster name after adding metadata so it doesn't get overwritten
   - id: cluster_name_restructurer
