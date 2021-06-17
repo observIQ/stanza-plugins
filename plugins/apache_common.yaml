@@ -1,0 +1,54 @@
+version: 0.0.1
+title: Apache Common
+description: Log parser for Apache common format
+parameters:
+  - name: log_path
+    label: Log Path
+    description: Path to apache common formatted log file
+    type: string
+    default: "/var/log/apache2/access.log"
+    required: true
+  - name: start_at
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+     - beginning
+     - end
+    default: end
+# Set Defaults
+#{{$log_path := default "/var/log/apache2/access.log" .log_path}}
+#{{$start_at := default "end" .start_at}}
+pipeline:
+  - id: log_reader
+    type: file_input
+    include:
+      - {{ $log_path }}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: 'apache_common'
+      plugin_id: {{ .id }}
+    output: apache_common_regex_parser
+
+  - id: apache_common_regex_parser
+    type: regex_parser
+    regex: '^(?P<remote_addr>[^ ]*) (?P<remote_host>[^ ]*) (?P<remote_user>[^ ]*) \[(?P<time>[^\]]*)\] "(?P<method>\S+) +(?P<path>[^ ]*)( (?P<protocol>[^/]*)/(?P<protocol_version>[^\"]*)|[^\"]*)?" (?P<status>[^ ]*) (?P<body_bytes_sent>[^ ]*)(?: "(?P<http_referer>[^\"]*)" "(?P<http_user_agent>[^\"]*)"(?:\s+(?P<http_x_forwarded_for>[^ ]+))?)?'
+    timestamp:
+      parse_from: time
+      layout: '%d/%b/%Y:%H:%M:%S %z'
+    severity:
+      parse_from: status
+      preset: none
+      preserve_to: status
+      mapping:
+        info: 2xx
+        notice: 3xx
+        warning: 4xx
+        error: 5xx
+    output: {{ .output }}
+
+  - id: access_protocol_parser
+    type: regex_parser
+    parse_from: $record.protocol
+    regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
+    output: {{ .output }}

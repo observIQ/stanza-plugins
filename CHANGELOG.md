@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.0.63] - Unreleased
+### Added
+- Add `apache_common` plugin ([PR281](https://github.com/observIQ/stanza-plugins/pull/281))
 ### Changed
 
 ## [0.0.62] - 2021-06-16
