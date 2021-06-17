@@ -1,0 +1,4 @@
+pipeline:
+- type: openshift
+  enable_metadata: enable
+- type: stdout
