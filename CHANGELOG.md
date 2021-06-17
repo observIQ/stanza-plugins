@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.63] - Unreleased
 ### Added
+- Add `apache_combined` plugin ([PR284](https://github.com/observIQ/stanza-plugins/pull/284))
 - Add `apache_common` plugin ([PR281](https://github.com/observIQ/stanza-plugins/pull/281))
 ### Changed
 - Update `codeigniter` plugin ([PR282](https://github.com/observIQ/stanza-plugins/pull/282))
