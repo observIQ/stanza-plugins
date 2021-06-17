@@ -24,6 +24,8 @@ pipeline:
     include:
       - {{ $log_path }}
     start_at: {{ $start_at }}
+    multiline:
+      line_start_pattern: '^\w+\s+-\s+\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\s+-->\s+'
     labels:
       log_type: 'codeigniter'
       plugin_id: {{ .id }}
@@ -40,4 +42,17 @@ pipeline:
       layout: '2006-01-02 15:04:05'
     severity:
       parse_from: severity
+    output: json_router
+
+  - id: json_router
+    type: router
+    default: {{.output}}
+    routes:
+      # It appears to be JSON so send it to be parsed as JSON.
+      - output: nested_json_parser
+        expr: '$record.message != nil and $record.message matches "^{[\\s\\S]*}\\s*$"'
+
+  - id: nested_json_parser
+    type: json_parser
+    parse_from: $record.message
     output: {{.output}}
