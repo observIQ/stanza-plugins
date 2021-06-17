@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `apache_combined` plugin ([PR284](https://github.com/observIQ/stanza-plugins/pull/284))
 - Add `apache_common` plugin ([PR281](https://github.com/observIQ/stanza-plugins/pull/281))
 ### Changed
+- Update `microsoft_iis` plugin ([PR285](https://github.com/observIQ/stanza-plugins/pull/285))
+  - Add location as parameter and to `time_parser`
 - Update `codeigniter` plugin ([PR282](https://github.com/observIQ/stanza-plugins/pull/282))
   - Add multiline message support
   - Parse nested json in message if detected
