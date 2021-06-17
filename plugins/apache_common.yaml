@@ -19,7 +19,6 @@ parameters:
 # Set Defaults
 #{{$log_path := default "/var/log/apache2/access.log" .log_path}}
 #{{$start_at := default "end" .start_at}}
-# {{$log_format := default "default" .log_format}}
 pipeline:
   - id: log_reader
     type: file_input
