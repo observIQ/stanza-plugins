@@ -12,7 +12,6 @@ parameters:
 
 # Set Defaults
 # {{$listen_address := default "0.0.0.0" .listen_address}}
-# {{$port := default 2056 .port}}
 
 # Pipeline Template
 pipeline:
