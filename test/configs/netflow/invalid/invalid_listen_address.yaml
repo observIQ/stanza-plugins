@@ -1,6 +1,5 @@
 pipeline:
 - type: netflow
   version: ipfix
-  port: 3000
   address: 10.1.1.0/24
 - type: stdout

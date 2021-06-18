@@ -1,6 +1,6 @@
 pipeline:
 - type: netflow
   version: v5
-  port: 2055
-  address: 0.0.0.0
+  listen_address: 0.0.0.0:2055
+  workers: 15
 - type: stdout

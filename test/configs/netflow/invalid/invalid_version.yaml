@@ -1,5 +1,5 @@
 pipeline:
 - type: netflow
   version: invalid
-  port: 3000
+  listen_address: 0.0.0.0:3000
 - type: stdout

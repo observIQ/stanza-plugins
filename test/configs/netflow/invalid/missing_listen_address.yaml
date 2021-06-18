@@ -1,5 +1,4 @@
 pipeline:
 - type: netflow
   version: ipfix
-  port: "3000/udp"
 - type: stdout

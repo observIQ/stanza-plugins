@@ -8,12 +8,7 @@ parameters:
     label: Listen Address
     description: The IP address to bind to
     type: string
-    default: "0.0.0.0"
-  - name: port
-    label: UDP Port
-    description: The UDP port to bind to
-    type: int
-    required: true
+    default: "0.0.0.0:6343"
 
 # Set Defaults
 # {{$listen_address := default "0.0.0.0" .listen_address}}
@@ -23,8 +18,7 @@ parameters:
 pipeline:
 - type: goflow_input
   mode: sflow
-  address: {{ $listen_address }}
-  port: {{ $port }}
+  listen_address: {{ $listen_address }}
   labels:
     log_type: sflow
     plugin_id: {{ .id }}

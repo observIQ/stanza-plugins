@@ -1,5 +1,3 @@
 pipeline:
 - type: sflow
-  port: 2000
-  address: 10.1.1.0/24
 - type: stdout

@@ -1,5 +1,5 @@
 pipeline:
 - type: sflow
   mode: v5
-  port: 2000
+  listen_address: 0.0.0.0:2000
 - type: stdout
