@@ -9,7 +9,7 @@ parameters:
     description: The IP address to bind to
     type: string
     default: "0.0.0.0:2055"
-  - name: version
+  - name: netflow_version
     label: Netflow Version
     description: The netflow version (`v5`, `v9 / IPFIX`)
     type: enum
@@ -20,21 +20,21 @@ parameters:
 
 # Set Defaults
 # {{$listen_address := default "0.0.0.0" .listen_address}}
-# {{$version := default "ipfix" .version}}
+# {{$netflow_version := default "ipfix" .netflow_version}}
 
 # Pipeline Template
 pipeline:
 - type: goflow_input
-# {{ if eq $version "v5" }}
+# {{ if eq $netflow_version "v5" }}
   mode: netflow_v5
-# {{ else if eq $version "ipfix" }}
+# {{ else if eq $netflow_version "ipfix" }}
   mode: netflow_ipfix
 # {{ end }}
   listen_address: {{ $listen_address }}
   labels:
     log_type: netflow
     plugin_id: {{ .id }}
-    netflow_version: {{ $version  }}
+    netflow_version: {{ $netflow_version  }}
 
 # Remove goflow specific field
 - type: remove

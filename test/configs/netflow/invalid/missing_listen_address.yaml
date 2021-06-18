@@ -1,4 +1,4 @@
 pipeline:
 - type: netflow
-  version: ipfix
+  netflow_version: ipfix
 - type: stdout
