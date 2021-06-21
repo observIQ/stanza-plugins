@@ -110,6 +110,7 @@ pipeline:
   - type: severity_parser
     if: '$record["sc-status"] != nil'
     parse_from: $record.sc-status
+    preserve_to: $record.sc-status
     mapping:
       info: 2xx
       notice: 3xx
