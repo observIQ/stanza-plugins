@@ -1,0 +1,5 @@
+pipeline:
+- type: netflow
+  netflow_version: ipfix
+  address: 10.1.1.0/24
+- type: stdout

@@ -1,0 +1,4 @@
+pipeline:
+- type: netflow
+  listen_address: 0.0.0.0:3000
+- type: stdout

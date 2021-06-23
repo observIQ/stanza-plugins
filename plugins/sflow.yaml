@@ -1,0 +1,28 @@
+# Plugin Info
+version: 0.0.1
+title: Sflow
+description: Log parser for Sflow
+min_stanza_version: 1.1.0
+parameters:
+  - name: listen_address
+    label: Listen Address
+    description: The IP address to bind to
+    type: string
+    default: "0.0.0.0:6343"
+
+# Set Defaults
+# {{$listen_address := default "0.0.0.0" .listen_address}}
+
+# Pipeline Template
+pipeline:
+- type: goflow_input
+  mode: sflow
+  listen_address: {{ $listen_address }}
+  labels:
+    log_type: sflow
+    plugin_id: {{ .id }}
+
+# Remove goflow specific field
+- type: remove
+  field: $record.type
+  output: {{ .output }}

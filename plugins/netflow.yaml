@@ -1,0 +1,42 @@
+# Plugin Info
+version: 0.0.1
+title: Netflow
+description: Log parser for Netflow
+min_stanza_version: 1.1.0
+parameters:
+  - name: listen_address
+    label: Listen Address
+    description: The IP address to bind to
+    type: string
+    default: "0.0.0.0:2055"
+  - name: netflow_version
+    label: Netflow Version
+    description: The netflow version (`v5`, `v9 / IPFIX`)
+    type: enum
+    valid_values:
+      - v5
+      - ipfix
+    required: true
+
+# Set Defaults
+# {{$listen_address := default "0.0.0.0" .listen_address}}
+# {{$netflow_version := default "ipfix" .netflow_version}}
+
+# Pipeline Template
+pipeline:
+- type: goflow_input
+# {{ if eq $netflow_version "v5" }}
+  mode: netflow_v5
+# {{ else if eq $netflow_version "ipfix" }}
+  mode: netflow_ipfix
+# {{ end }}
+  listen_address: {{ $listen_address }}
+  labels:
+    log_type: netflow
+    plugin_id: {{ .id }}
+    netflow_version: {{ $netflow_version  }}
+
+# Remove goflow specific field
+- type: remove
+  field: $record.type
+  output: {{ .output }}
