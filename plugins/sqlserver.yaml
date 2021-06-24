@@ -12,7 +12,7 @@ parameters:
     label: Max Reads
     description: The maximum number of events read into memory at one time
     type: int
-    default: 1000
+    default: 100
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
