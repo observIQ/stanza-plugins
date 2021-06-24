@@ -12,7 +12,7 @@ parameters:
     label: Max Reads
     description: The maximum number of events read into memory at one time
     type: int
-    default: 1000
+    default: 100
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -24,7 +24,7 @@ parameters:
 
 # Set Defaults
 # {{$poll_interval := default "1s" .poll_interval}}
-# {{$max_reads := default 1000 .max_reads}}
+# {{$max_reads := default 100 .max_reads}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
