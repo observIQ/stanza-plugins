@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.66] - Unreleased
 
+### Changed
+- Reduced sqlserver max_reads from 1000 to 100, to combat too many open files error ([PR288](https://github.com/observIQ/stanza-plugins/pull/288))
+
 ## [0.0.65] - 2021-06-23
 
 ### Added
