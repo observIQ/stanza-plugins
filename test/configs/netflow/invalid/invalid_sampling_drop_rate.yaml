@@ -1,6 +1,7 @@
 pipeline:
 - type: sflow
+  mode: v5
   listen_address: 0.0.0.0:2000
-  workers: 10
-  sampling_enable: false
+  sampling_enable: true
+  sampling_drop_rate: "100"
 - type: stdout

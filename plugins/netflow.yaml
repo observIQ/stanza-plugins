@@ -17,10 +17,36 @@ parameters:
       - v5
       - ipfix
     required: true
+  - name: sampling_enable
+    label: Sampling
+    description: Enable Netflow sampling
+    type: bool
+    default: false
+  - name: sampling_drop_rate
+    label: Number
+    description: The probability an entry is dropped. A value of 1.0 will drop 100% of matching entries, while a value of 0.0 will drop 0%.
+    type: enum
+    valid_values:
+      - 0.0
+      - 0.1
+      - 0.2
+      - 0.3
+      - 0.4
+      - 0.5
+      - 0.6
+      - 0.7
+      - 0.8
+      - 0.9
+      - 1.0
+    relevant_if:
+      enable_internal_access_log:
+        equals: true
 
 # Set Defaults
 # {{$listen_address := default "0.0.0.0" .listen_address}}
 # {{$netflow_version := default "ipfix" .netflow_version}}
+# {{$sampling_enable := default false .sampling_enable}}
+# {{$sampling_drop_rate := default 0.0 .sampling_drop_rate}}
 
 # Pipeline Template
 pipeline:
@@ -35,6 +61,12 @@ pipeline:
     log_type: netflow
     plugin_id: {{ .id }}
     netflow_version: {{ $netflow_version  }}
+
+# {{ if $sampling_enable }}
+- type: filter
+  expr: 'true'
+  drop_ratio: {{ $sampling_drop_rate }}
+# {{ end }}
 
 # Remove goflow specific field
 - type: remove

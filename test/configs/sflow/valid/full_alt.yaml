@@ -2,4 +2,6 @@ pipeline:
 - type: sflow
   listen_address: 0.0.0.0:20001
   workers: 5
+  sampling_enable: true
+  sampling_drop_rate: "0.5"
 - type: stdout
