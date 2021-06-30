@@ -31,7 +31,7 @@ parameters:
       - 0.9
       - 1.0
     relevant_if:
-      enable_internal_access_log:
+      sampling_enable:
         equals: true
 
 # Set Defaults
