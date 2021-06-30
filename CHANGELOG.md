@@ -6,11 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.67] - Unreleased
 
-## [0.0.66] - 2021-06-29
+## [0.0.66] - 2021-06-30
 
 ### Changed
 - Openshift: Added observiq-agent and bindplane-agent filters to avoid potential circular parsing ([PR289](https://github.com/observIQ/stanza-plugins/pull/289))
 - Reduced sqlserver max_reads from 1000 to 100, to combat too many open files error ([PR288](https://github.com/observIQ/stanza-plugins/pull/288))
+- Netflow / Sflow plugins: Added sampling options, for reducing log volume ([PR290](https://github.com/observIQ/stanza-plugins/pull/290))
 
 ## [0.0.65] - 2021-06-23
 

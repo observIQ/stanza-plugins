@@ -3,4 +3,6 @@ pipeline:
   netflow_version: v5
   listen_address: 0.0.0.0:2055
   workers: 15
+  sampling_enable: true
+  sampling_drop_rate: "0.5"
 - type: stdout
