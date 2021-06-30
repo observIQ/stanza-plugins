@@ -23,7 +23,7 @@ parameters:
     type: bool
     default: false
   - name: sampling_drop_rate
-    label: Number
+    label: Sampling Drop Rate
     description: The probability an entry is dropped. A value of 1.0 will drop 100% of matching entries, while a value of 0.0 will drop 0%.
     type: enum
     valid_values:
