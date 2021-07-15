@@ -26,7 +26,7 @@ pipeline:
   # tcp input uses \n to break messages into seperate
   # entries, this can be a problem for Syslog if the
   # structured_data key=value pairs or message fields contain
-  # a \n. This is unlikly, but not impossible. It has been
+  # a \n. This is unlikely, but not impossible. It has been
   # observed with rfc5424 structured_data field.
   # '<' can be relied on to be the first character of every
   # syslog message for both rfc 5424 and 3164
