@@ -87,6 +87,18 @@ parameters:
       - beginning
       - end
     default: end
+  - name: encoding
+    label: Encoding
+    description: Specify the encoding of the file(s) being read. In most cases, you can leave the default option selected.
+    type: enum
+    valid_values:
+      - nop
+      - utf-8
+      - utf-16le
+      - utf-16be
+      - ascii
+      - big5
+    default: nop
 
 # Set Defaults
 # {{$source := default "file" .source}}
@@ -99,6 +111,7 @@ parameters:
 # {{$enable_error_log := default true .enable_error_log}}
 # {{$error_log_path := default "/var/log/nginx/error.log*" .error_log_path}}
 # {{$start_at := default "end" .start_at}}
+# {{$encoding := default "nop" .encoding}}
 
 # Pipeline Template
 pipeline:
@@ -139,6 +152,9 @@ pipeline:
     labels:
       log_type: 'nginx.access'
       plugin_id: '{{ .id }}'
+# {{ if $encoding }}
+    encoding: '{{ $encoding }}'
+# {{ end }}
     output: access_parser
   # {{ end }}
 
@@ -153,6 +169,9 @@ pipeline:
     labels:
       log_type: 'nginx.error'
       plugin_id: '{{ .id }}'
+# {{ if $encoding }}
+    encoding: '{{ $encoding }}'
+# {{ end }}
     output: error_regex_parser
   # {{ end }}
 
