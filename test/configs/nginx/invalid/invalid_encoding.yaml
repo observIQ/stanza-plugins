@@ -8,5 +8,6 @@ pipeline:
   access_log_path: "/var/log/custom/path/nginx/access.log"
   enable_error_log: true
   error_log_path: "/var/log/nginx/errors/error.log*"
-  encoding: utf-8
+  # invalid
+  encoding: us-asciii
   start_at: beginning
