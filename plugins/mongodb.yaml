@@ -39,7 +39,6 @@ pipeline:
       log_type: 'mongodb'
       plugin_id: {{ .id }}
     # {{ if $mongodb_json_log_format }}
-    write_to: log
     output: json_parser
     # {{ end }}
 
@@ -68,7 +67,7 @@ pipeline:
 
   - id: json_parser
     type: json_parser
-    parse_from: $record.log
+    parse_from: $record
     timestamp:
       parse_from: $record.t.$date
       #2020-11-03T14:24:07.436-05:00
