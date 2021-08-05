@@ -1,12 +1,52 @@
 version: 0.0.7
 title: MongoDB
 description: Log parser for MongoDB
+supported_platforms:
+  - linux
+  - windows
+  - kubernetes
 parameters:
+  - name: source
+    label: Log source
+    description: Use this field to specify where your logs are coming from. When choosing the 'file' option, the agent reads in logs from the log paths specified below.  When choosing the 'Kubernetes' options, the agent reads logs from /var/log/containers based on the Pod and Container specified below.
+    type: enum
+    valid_values:
+      - file
+      - kubernetes
+    default: file
+  - name: cluster_name
+    label: Cluster Name
+    description: 'Cluster Name to be added to a resource label'
+    type: string
+    default: ""
+    relevant_if:
+      source:
+        equals: kubernetes
+  - name: pod_name
+    label: Pod Name
+    description: The pod name (without the unique identifier on the end)
+    type: string
+    default: 'mongodb-*'
+    required: true
+    relevant_if:
+      source:
+        equals: kubernetes
+  - name: container_name
+    label: Container Name
+    description: The container name of the Nginx container
+    type: string
+    default: "*"
+    relevant_if:
+      source:
+        equals: kubernetes
   - name: log_path
     label: Path
     description: The path of the log file
     type: string
     default: "/var/log/mongodb/mongodb.log*"
+    relevant_if:
+      source:
+        equals: file
   - name: mongodb_json_log_format
     label: "MongoDB 4.4+ Log Format"
     description: Enable to parse MongoDB 4.4+ JSON log format parsing.
@@ -22,12 +62,33 @@ parameters:
     default: end
 
 # Set Defaults
+# {{$source := default "file" .source}}
+# {{$cluster_name := default "" .cluster_name}}
+# {{$pod_name := default "nginx-*" .pod_name}}
+# {{$container_name := default "*" .container_name}}
 # {{$log_path := default "/var/log/mongodb/mongodb.log*" .log_path}}
 # {{$mongodb_json_log_format := default false .mongodb_json_log_format}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
 pipeline:
+  # {{ if eq $source "kubernetes" }}
+  - id: kubernetes_input
+    type: kubernetes_container
+    pod_name: '{{ $pod_name }}'
+    container_name: '{{ $container_name }}'
+    cluster_name: '{{ $cluster_name }}'
+    start_at: '{{ $start_at }}'
+    enable_nested_json_parser: false
+    # {{ if $mongodb_json_log_format }}
+    output: json_parser
+    # {{ else }}
+    output: regex_parser
+    # {{ end }}
+  # {{ end }}
+
+
+  # {{ if eq $source "file" }}
   - id: file_input
     type: file_input
     include:
@@ -40,7 +101,10 @@ pipeline:
       plugin_id: {{ .id }}
     # {{ if $mongodb_json_log_format }}
     output: json_parser
+    # {{ else }}
+    output: regex_parser
     # {{ end }}
+  # {{ end }}
 
   - id: regex_parser
     type: regex_parser
