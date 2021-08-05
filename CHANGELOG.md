@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.67] - Unreleased
 
+### Added
+- MongoDB: Added support for kubernetes ([PR294](https://github.com/observIQ/stanza-plugins/pull/294))
+
 ### Changed
 - Nginx: Added optional encoding option ([PR292](https://github.com/observIQ/stanza-plugins/pull/292))
 
