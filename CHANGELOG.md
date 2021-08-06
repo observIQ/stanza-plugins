@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - MongoDB: Added support for kubernetes ([PR294](https://github.com/observIQ/stanza-plugins/pull/294))
+- JSON: Added support for kubernetes ([PR296](https://github.com/observIQ/stanza-plugins/pull/296))
+  - The kubernetes_container plugin can still be used to gather all pod logs, while the json plugin can be used
+    to target a single deployment / daemonset / statefulset.
 
 ### Changed
 - Nginx: Added optional encoding option ([PR292](https://github.com/observIQ/stanza-plugins/pull/292))
