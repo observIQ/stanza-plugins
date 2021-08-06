@@ -33,7 +33,7 @@ parameters:
         equals: kubernetes
   - name: container_name
     label: Container Name
-    description: The container name of the Nginx container
+    description: The container name of the Mongodb container
     type: string
     default: "*"
     relevant_if:
@@ -64,7 +64,7 @@ parameters:
 # Set Defaults
 # {{$source := default "file" .source}}
 # {{$cluster_name := default "" .cluster_name}}
-# {{$pod_name := default "nginx-*" .pod_name}}
+# {{$pod_name := default "mongodb-*" .pod_name}}
 # {{$container_name := default "*" .container_name}}
 # {{$log_path := default "/var/log/mongodb/mongodb.log*" .log_path}}
 # {{$mongodb_json_log_format := default false .mongodb_json_log_format}}
