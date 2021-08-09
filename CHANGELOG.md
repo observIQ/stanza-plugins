@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.68] - Unreleased
 
+- Changed: Set default value for json plugin's file_log_path param ([PR297](https://github.com/observIQ/stanza-plugins/pull/297))
+
 ## [0.0.67] - 2021-08-06
 
 ### Added
