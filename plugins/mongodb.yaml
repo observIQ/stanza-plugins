@@ -1,4 +1,4 @@
-version: 0.0.7
+version: 0.0.8
 title: MongoDB
 description: Log parser for MongoDB
 supported_platforms:
@@ -26,7 +26,7 @@ parameters:
     label: Pod Name
     description: The pod name (without the unique identifier on the end)
     type: string
-    default: 'mongodb-*'
+    default: 'mongodb'
     required: true
     relevant_if:
       source:
