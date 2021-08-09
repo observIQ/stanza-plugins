@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.68] - Unreleased
 
+### Changed
+- MongoDB: Default pod name, removed wildcard ([PR298](https://github.com/observIQ/stanza-plugins/pull/298))
+
 ### Fixed
 - Changed: Removed file_log_path required and added pod name required param ([PR297](https://github.com/observIQ/stanza-plugins/pull/297))
 
