@@ -46,6 +46,7 @@ parameters:
     description: Specify a single path or multiple paths to read one or many files. You may also use a wildcard (*) to read multiple files within a directory.
     type: strings
     required: true
+    default: ""
     relevant_if:
       source:
         equals: file
@@ -87,6 +88,7 @@ parameters:
 # {{$cluster_name := default "" .cluster_name}}
 # {{$pod_name := default "" .pod_name}}
 # {{$container_name := default "*" .container_name}}
+# {{$file_log_path := default "" .file_log_path}}
 # {{$encoding := default "utf-8" .encoding}}
 # {{$log_type := default "json" .log_type}}
 # {{$start_at := default "end" .start_at}}
