@@ -1,3 +1,4 @@
 pipeline:
 - type: json
+  pod_name: ""
 - type: stdout
