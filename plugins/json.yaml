@@ -30,6 +30,7 @@ parameters:
     description: The pod name (without the unique identifier on the end)
     type: string
     required: true
+    default: ""
     relevant_if:
       source:
         equals: kubernetes
