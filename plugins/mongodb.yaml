@@ -97,7 +97,6 @@ pipeline:
       - '{{ $log_path }}*.gz'
     start_at: '{{ $start_at }}'
     labels:
-      log_type: 'mongodb'
       plugin_id: {{ .id }}
     # {{ if $mongodb_json_log_format }}
     output: json_parser
@@ -150,6 +149,12 @@ pipeline:
           - D3
           - D4
           - D5
+    output: add_log_type
+
+  - id: add_log_type
+    type: add
+    field: $labels.log_type
+    value: mongodb
     output: restructure_log_entry
 
   - id: restructure_log_entry
