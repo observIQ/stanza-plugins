@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.3
+version: 0.0.4
 title: JSON
 description: File Input JSON Parser
 min_stanza_version: 0.13.12
@@ -124,8 +124,12 @@ pipeline:
     include_file_name: true
     labels:
       plugin_id: {{ .id }}
-      log_type: '{{ $log_type }}'
 # {{ end }}
+
+  - id: add_log_type
+    type: add
+    field: '$labels.log_type'
+    value: '{{ $log_type }}'
 
   - type: json_parser
     output: {{ .output }}

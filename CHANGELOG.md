@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MongoDB:
   - Promote WiredTiger message to $record.message ([PR300](https://github.com/observIQ/stanza-plugins/pull/300))
   - Set log type when running on Kubernetes ([PR302](https://github.com/observIQ/stanza-plugins/pull/302))
+- JSON: Set log type when running on kubernetes ([PR303](https://github.com/observIQ/stanza-plugins/pull/303))
 
 ## [0.0.68] - 2021-08-09
 
