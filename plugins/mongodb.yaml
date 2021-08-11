@@ -1,4 +1,4 @@
-version: 0.0.8
+version: 0.0.9
 title: MongoDB
 description: Log parser for MongoDB
 supported_platforms:
@@ -164,5 +164,19 @@ pipeline:
           to: '$record.context'
       - move:
           from: '$record.msg'
+          to: '$record.message'
+    output: promote_wiredtiger_message
+
+  # When message is 'WiredTiger message', data.attr.message
+  # always exists, and should be promoted to message
+  - id: promote_wiredtiger_message
+    type: restructure
+    if: '$record.message == "WiredTiger message"'
+    ops:
+      - move:
+          from: '$record.message'
+          to: '$record.message_type'
+      - move:
+          from: '$record.attr.message'
           to: '$record.message'
     output: {{ .output }}
