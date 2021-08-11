@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.69] - Unreleased
 
+## [0.0.70] - 2021-08-11
+
 ### Changed
 - MongoDB:
   - Promote WiredTiger message to $record.message ([PR300](https://github.com/observIQ/stanza-plugins/pull/300))
