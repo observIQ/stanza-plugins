@@ -1,4 +1,4 @@
-version: 0.0.9
+version: 0.0.10
 title: MongoDB
 description: Log parser for MongoDB
 supported_platforms:
@@ -97,7 +97,6 @@ pipeline:
       - '{{ $log_path }}*.gz'
     start_at: '{{ $start_at }}'
     labels:
-      log_type: 'mongodb'
       plugin_id: {{ .id }}
     # {{ if $mongodb_json_log_format }}
     output: json_parser
@@ -179,4 +178,10 @@ pipeline:
       - move:
           from: '$record.attr.message'
           to: '$record.message'
+    output: add_log_type
+
+  - id: add_log_type
+    type: add
+    field: '$labels.log_type'
+    value: 'mongodb'
     output: {{ .output }}
