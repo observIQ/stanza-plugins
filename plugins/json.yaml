@@ -124,8 +124,12 @@ pipeline:
     include_file_name: true
     labels:
       plugin_id: {{ .id }}
-      log_type: '{{ $log_type }}'
 # {{ end }}
+
+  - id: add_log_type
+    type: add
+    field: '$labels.log_type'
+    value: '{{ $log_type }}'
 
   - type: json_parser
     output: {{ .output }}
