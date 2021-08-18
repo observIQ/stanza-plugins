@@ -1,8 +1,8 @@
 # Plugin Info
-version: 1.0.0
+version: 1.0.1
 title: Journald
 description: Journald input parser
-min_stanza_version: 0.14.0
+min_stanza_version: 1.1.6
 supported_platforms:
   - linux
 parameters:
@@ -31,10 +31,15 @@ parameters:
     description: Adds label log_type to identify journald source.
     type: string
     default: journald
+  - name: poll_interval
+    description: How often to poll journald.
+    type: string
+    default: 200ms
 # Set Defaults
 # {{$enable_journald_log_path := default false .enable_journald_log_path}}
 # {{$start_at := default "end" .start_at}}
 # {{$log_type := default "journald" .log_type}}
+# {{$poll_interval := default "200ms" .poll_interval}}
 
 # Pipeline Template
 pipeline:
@@ -46,6 +51,7 @@ pipeline:
     labels:
       plugin_id: {{ .id }}
       log_type: '{{ $log_type }}'
+    poll_interval: '{{ $poll_interval }}'
 
   # Journald does not gaurantee the presence of the PRIORITY
   # Seveity parsing is skipped if PRIORITY does not exist

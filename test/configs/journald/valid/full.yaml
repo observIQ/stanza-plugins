@@ -4,3 +4,4 @@ pipeline:
   journald_log_path: /run/journal
   start_at: end
   log_type: journald_custom
+  poll_interval: 100ms
