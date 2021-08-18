@@ -1,5 +1,5 @@
 pipeline:
 - type: journald
   start_at: index
-  poll_interval: 10
+  poll_interval: twenty
 - type: stdout
