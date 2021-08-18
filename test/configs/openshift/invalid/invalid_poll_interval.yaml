@@ -1,4 +1,4 @@
 pipeline:
 - type: openshift
-  poll_interval: ten
+  poll_interval: 10
 - type: stdout

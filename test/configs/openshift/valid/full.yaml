@@ -7,5 +7,5 @@ pipeline:
   enable_docker_logs: false
   enable_openshift_logs: true
   enable_metadata: false
-  poll_interval: 10
+  poll_interval: "10"
 - type: stdout
