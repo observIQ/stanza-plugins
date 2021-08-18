@@ -43,6 +43,7 @@ parameters:
     type: bool
     default: true
   - name: poll_interval
+    label: Journald Poll Interval
     description: How often to poll journald.
     type: string
     default: 200ms
