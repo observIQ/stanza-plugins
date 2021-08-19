@@ -36,5 +36,5 @@ minikube-exec:
 	dev/k8s/exec.sh
 
 .PHONY: minikube-logs
-minikube-exec:
+minikube-logs:
 	dev/k8s/logs.sh
