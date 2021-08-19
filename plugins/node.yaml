@@ -2,7 +2,7 @@
 version: 0.0.1
 title: Node.js
 description: Log Parser for Node.js
-min_stanza_version: 0.13.12
+min_stanza_version: 1.1.7
 supported_platforms:
   - linux
   - windows
@@ -126,13 +126,17 @@ pipeline:
 
   - type: json_parser
 
-  - id: flatten_node
-    type: restructure
-    if: '$record.meta != nil and $record.meta.req != nil and $record.meta.res != nil'
-    ops:
-      - flatten: meta.req
-      - flatten: meta.res
-      - flatten: meta
+  - type: flatten
+    if: '$record.req != nil'
+    field: meta.req
+
+  - type: flatten
+    if: '$record.res != nil'
+    field: meta.res
+
+  - type: flatten
+    if: '$record.meta != nil'
+    field: meta
 
   - type: add
     if: '$record.httpVersion != nill'
