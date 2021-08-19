@@ -1,6 +1,7 @@
 pipeline:
 - type: journald
   enable_journald_log_path: true
-  journald_log_path: /run/journal
+  # omit because ci may not have journald
+  #kubelet_journald_log_path:
   start_at: end
   log_type: journald_custom
