@@ -77,6 +77,8 @@ spec:
               name: plugin
             - mountPath: /var/log
               name: varlog
+            - mountPath: /var/lib/docker/containers
+              name: dockerlogs
             - mountPath: /stanza_home/database/
               name: database
               readOnly: false
@@ -86,6 +88,9 @@ spec:
         - name: varlog
           hostPath:
             path: /var/log
+        - name: dockerlogs
+          hostPath:
+            path: /var/lib/docker/containers
         - name: config
           configMap:
             name: stanza-config
