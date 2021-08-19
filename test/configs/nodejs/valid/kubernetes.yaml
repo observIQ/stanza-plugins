@@ -1,5 +1,5 @@
 pipeline:
-  - type: json
+  - type: nodejs
     source: kubernetes
     cluster_name: stanza_example
     pod_name: 'currencyservice'

@@ -1,5 +1,5 @@
 pipeline:
-- type: node
+- type: nodejs
   file_log_path: 
-  - "/var/log/json.log"
+  - "/var/log/nodejs.log"
 - type: stdout

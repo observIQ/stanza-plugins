@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.70] - Unreleased
 
 ### Added
-- Added Node plugin ([305](https://github.com/observIQ/stanza-plugins/pull/305))
+- Added Nodejs plugin ([305](https://github.com/observIQ/stanza-plugins/pull/305))
 
 ## [0.0.69] - 2021-08-11
 

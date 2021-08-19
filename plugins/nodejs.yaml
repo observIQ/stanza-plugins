@@ -1,7 +1,7 @@
 # Plugin Info
 version: 0.0.1
 title: Node.js
-description: Log Parser for Node.js
+description: Log Parser for Node.js using Winston logging library
 min_stanza_version: 1.1.7
 supported_platforms:
   - linux
