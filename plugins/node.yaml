@@ -126,15 +126,18 @@ pipeline:
 
   - type: json_parser
 
-  - type: flatten
-    if: '$record.req != nil'
+  - id: flatten_meta_req
+    type: flatten
+    if: '$record.meta.req != nil'
     field: meta.req
 
-  - type: flatten
-    if: '$record.res != nil'
+  - id: flatten_meta_res
+    type: flatten
+    if: '$record.meta.res != nil'
     field: meta.res
 
-  - type: flatten
+  - id: flatten_meta
+    type: flatten
     if: '$record.meta != nil'
     field: meta
 
