@@ -134,6 +134,16 @@ pipeline:
       - flatten: meta.res
       - flatten: meta
 
+  - type: add
+    if: '$record.httpVersion != nill'
+    field: "protocol"
+    value: "http"
+
+  - type: move
+    if: '$record.httpVersion != nill'
+    from: httpVersion
+    to: protocol_version
+
   - type: severity_parser
     parse_from: $record.statusCode
     preset: none
@@ -144,9 +154,3 @@ pipeline:
       warning: 4xx
       error: 5xx
     output: {{ .output }}
-
-  # - type: flatten
-  #   field: meta.req
-
-  # - type: flatten
-  #   field: meta
