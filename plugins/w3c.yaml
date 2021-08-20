@@ -130,4 +130,7 @@ pipeline:
     delimiter: '{{ $delimiter }}'
     header_delimiter: '{{ $header_delimiter }}'
     header_label: '{{ $fields_header }}'
+
+  - type: remove
+    field: '$labels.{{ $fields_header }}'
     output: {{ .output }}
