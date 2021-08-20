@@ -1,0 +1,5 @@
+pipeline:
+- type: nodejs
+  file_log_path: 
+  - "/var/log/nodejs.log"
+- type: stdout

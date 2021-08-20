@@ -1,10 +1,14 @@
 pipeline:
-  - type: kubernetes_container
-    cluster_name: stanza_example
+  - type: nodejs
+    source: kubernetes
+    pod_name: express
     # avoid parsing stanza's log output
     exclude:
       - /var/log/containers/stanza-*_*-*.log
     start_at: end
+
+    file_log_path:
+      - ""
 
   # watch stanza's output with 'kubectl logs -f <pod name> | jq .'
   - type: stdout

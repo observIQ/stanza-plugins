@@ -1,0 +1,11 @@
+pipeline:
+  - type: nodejs
+    source: kubernetes
+    cluster_name: stanza_example
+    pod_name: 'currencyservice'
+    container_name: '*'
+    start_at: end
+
+    # required but not used when source is kubernetes
+    file_log_path: 
+      - ""
