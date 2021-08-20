@@ -25,3 +25,16 @@ sed-plugins: temp/plugins
 
 temp/plugins:
 	mkdir -p temp/plugins
+
+.PHONY: minikube
+minikube:
+	minikube start
+	dev/k8s/deploy.sh
+
+.PHONY: minikube-exec
+minikube-exec:
+	dev/k8s/exec.sh
+
+.PHONY: minikube-logs
+minikube-logs:
+	dev/k8s/logs.sh

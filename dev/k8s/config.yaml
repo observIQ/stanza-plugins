@@ -1,0 +1,10 @@
+pipeline:
+  - type: kubernetes_container
+    cluster_name: stanza_example
+    # avoid parsing stanza's log output
+    exclude:
+      - /var/log/containers/stanza-*_*-*.log
+    start_at: end
+
+  # watch stanza's output with 'kubectl logs -f <pod name> | jq .'
+  - type: stdout
