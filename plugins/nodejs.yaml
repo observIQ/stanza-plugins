@@ -124,34 +124,49 @@ pipeline:
     field: '$labels.log_type'
     value: 'nodejs'
 
-  - type: json_parser
+  - id: nodejs_json_parser
+    type: json_parser
 
   - id: flatten_meta_req
     type: flatten
-    if: '$record.meta.req != nil'
+    if: '$record.meta != nil and $record.meta.req != nil'
     field: meta.req
 
   - id: flatten_meta_res
     type: flatten
-    if: '$record.meta.res != nil'
+    if: '$record.meta != nil and $record.meta.res != nil'
     field: meta.res
 
   - id: flatten_meta
-    type: flatten
     if: '$record.meta != nil'
+    type: flatten
     field: meta
 
   - type: add
-    if: '$record.httpVersion != nill'
+    if: '$record.httpVersion != nil'
     field: "protocol"
     value: "http"
 
-  - type: move
-    if: '$record.httpVersion != nill'
+  - id: httpVersion_move
+    type: move
+    if: '$record.httpVersion != nil'
     from: httpVersion
     to: protocol_version
 
+  - id: originalUrl_move
+    type: move
+    if: '$record.originalUrl != nil'
+    from: originalUrl
+    to: original_url
+
+  - id: responseTime_move
+    type: move
+    if: '$record.responseTime != nil'
+    from: responseTime
+    to: response_time
+
   - type: severity_parser
+    if: '$record.statusCode != nil'
     parse_from: $record.statusCode
     preset: none
     preserve_to: status
