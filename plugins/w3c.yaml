@@ -91,10 +91,10 @@ pipeline:
   - type: file_input
     start_at: '{{ $start_at }}'
     label_regex: '^#(?P<key>.*?): (?P<value>.*)'
-    include_file_name: '{{ $include_file_name }}'
-    include_file_path: '{{ $include_file_path }}'
-    include_file_name_resolved: '{{ $include_file_name_resolved }}'
-    include_file_path_resolved: '{{ $include_file_path_resolved }}'
+    include_file_name: {{ $include_file_name }}
+    include_file_path: {{ $include_file_path }}
+    include_file_name_resolved: {{ $include_file_name_resolved }}
+    include_file_path_resolved: {{ $include_file_path_resolved }}
     include:
 # {{ range $i, $fp := .file_log_path  }}
       - '{{ $fp }}'
