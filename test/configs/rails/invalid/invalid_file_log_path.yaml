@@ -1,6 +1,4 @@
 pipeline:
-- type: file
+- type: rails
   file_log_path: ""
-  enable_multiline: "multiline"
-  multiline_line_start_pattern: ""
 - type: stdout

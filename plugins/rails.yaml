@@ -61,7 +61,8 @@ pipeline:
   - type: json_parser
     if: '$record != nil and $record matches "^{.*}\\s*$"'
 
-  - type: severity_parser
+  - id: status_severity_parser
+    type: severity_parser
     if: '$record.status != nil'
     parse_from: $record.status
     preset: none
@@ -71,6 +72,16 @@ pipeline:
       notice: 3xx
       warning: 4xx
       error: 5xx
+
+  - id: error_severity_parser
+    type: severity_parser
+    if: '$record.severity != nil'
+    parse_from: $record.severity
+    preserve_to: $record.severity
+    mapping:
+      critical: fatal
+      warning: warn
+    output: {{ .output }}
 # {{ end }}
 
 # {{ if (eq $parse_format "Logger") }}
