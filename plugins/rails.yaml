@@ -1,0 +1,90 @@
+# Plugin Info
+version: 0.0.1
+title: Ruby on Rails
+description: Ruby on Rails log parser. This parser handles json output from lograge.
+min_stanza_version: 0.13.12
+parameters:
+  - name: file_log_path
+    label: File Log Path
+    description: An array of file log path glob patterns.
+    type: strings
+    required: true
+  - name: exclude_file_log_path
+    label: Exclude File Log Path
+    description: An array of file log path glob patterns to be excluded.
+    type: strings
+    default: []
+  - name: parse_format
+    label: Format
+    description: The log format to parse.
+    type: enum
+    valid_values:
+      - JSON
+      - Logger
+    default: JSON
+  - name: start_at
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+# Set Defaults
+# {{$parse_format := default "JSON" .parse_format}}
+# {{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+  - type: file_input
+    start_at: '{{ $start_at }}'
+    include:
+# {{ range $i, $fp := .file_log_path  }}
+      - '{{ $fp }}'
+# {{ end }}
+# {{ if .exclude_file_log_path }}
+    exclude:
+  # {{ range $i, $efp := .exclude_file_log_path  }}
+      - '{{ $efp }}'
+  # {{ end }}
+# {{ end }}
+# {{ if (eq $parse_format "Logger") }}
+    multiline:
+      line_start_pattern: '([\w]+),\s+\[([^\]\s]+)\s+#([^\]]+)\]'
+# {{ end }}
+    include_file_name: true
+    labels:
+      plugin_id: {{ .id }}
+      log_type: 'rails'
+
+# {{ if (eq $parse_format "JSON") }}
+  - type: json_parser
+    if: '$record != nil and $record matches "^{.*}\\s*$"'
+
+  - type: severity_parser
+    if: '$record.status != nil'
+    parse_from: $record.status
+    preset: none
+    preserve_to: status
+    mapping:
+      info: 2xx
+      notice: 3xx
+      warning: 4xx
+      error: 5xx
+# {{ end }}
+
+# {{ if (eq $parse_format "Logger") }}
+  - type: regex_parser
+    regex: '(?P<severity_id>[\w]+),\s+\[(?P<timestamp>[^\]\s]+)\s+#(?P<pid>[^\]]+)\]\s+(?P<severity_text>\w+)\s+--\s+(?P<app>\w+)?:\s+(?P<message>.[\w\W]*)'
+    timestamp:
+      parse_from: timestamp
+      layout_type: gotime
+      layout: '2006-01-02T15:04:05.000000'
+    severity:
+      parse_from: severity_text
+      preserve_to: severity_text
+      mapping:
+        critical: fatal
+        warning: warn
+    output: {{ .output }}
+# {{ end }}
