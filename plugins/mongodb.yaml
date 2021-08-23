@@ -96,8 +96,6 @@ pipeline:
     exclude:
       - '{{ $log_path }}*.gz'
     start_at: '{{ $start_at }}'
-    labels:
-      plugin_id: {{ .id }}
     # {{ if $mongodb_json_log_format }}
     output: json_parser
     # {{ else }}
@@ -179,6 +177,11 @@ pipeline:
           from: '$record.attr.message'
           to: '$record.message'
     output: add_log_type
+    
+  - id: add_plugin_id
+    type: add
+    field: '$labels.plugin_id'
+    value: {{ .id }}
 
   - id: add_log_type
     type: add
