@@ -168,7 +168,7 @@ pipeline:
     from: responseTime
     to: response_time
 
-  - type: severity_parser
+  - type: statuscode_parser
     if: '$record.statusCode != nil'
     parse_from: $record.statusCode
     preset: none
@@ -178,4 +178,9 @@ pipeline:
       notice: 3xx
       warning: 4xx
       error: 5xx
+
+  - type: level_parser
+    if: '$record.level != nil'
+    parse_from: $record.level
+    preserve_to: $record.level
     output: {{ .output }}
