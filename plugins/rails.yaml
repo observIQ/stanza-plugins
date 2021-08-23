@@ -77,7 +77,7 @@ pipeline:
     type: severity_parser
     if: '$record.severity != nil'
     parse_from: $record.severity
-    preserve_to: $record.severity
+    preserve_to: $record.rails_severity
     mapping:
       critical: fatal
       warning: warn
