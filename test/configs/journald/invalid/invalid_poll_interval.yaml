@@ -1,0 +1,5 @@
+pipeline:
+- type: journald
+  start_at: index
+  poll_interval: twenty
+- type: stdout

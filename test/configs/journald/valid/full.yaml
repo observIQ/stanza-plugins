@@ -5,3 +5,4 @@ pipeline:
   #kubelet_journald_log_path:
   start_at: end
   log_type: journald_custom
+  poll_interval: 100ms

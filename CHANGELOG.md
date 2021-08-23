@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Added Nodejs plugin ([305](https://github.com/observIQ/stanza-plugins/pull/305))
 
+### Changed
+- Journald: Added optional poll interval parameter ([PR304](https://github.com/observIQ/stanza-plugins/pull/304))
+- OpenShift: Added optional poll interval parameter ([PR304](https://github.com/observIQ/stanza-plugins/pull/304))
+
 ## [0.0.69] - 2021-08-11
 
 ### Changed

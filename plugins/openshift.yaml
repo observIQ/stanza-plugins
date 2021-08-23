@@ -1,7 +1,8 @@
 ---
-version: 0.0.8
+version: 0.0.9
 title: Openshift
 description: Log parser for Openshift
+min_stanza_version: 1.1.6
 supported_platforms:
   - openshift
 parameters:
@@ -42,6 +43,11 @@ parameters:
     description: Attach metadata to entries https://github.com/observIQ/stanza/blob/master/docs/operators/k8s_metadata_decorator.md
     type: bool
     default: true
+  - name: poll_interval
+    label: Journald Poll Interval
+    description: How often to poll journald.
+    type: string
+    default: 200ms
 
 # Set Defaults
 # {{ $journald_log_path := default "/var/log/journal" .journald_log_path }}
@@ -51,6 +57,7 @@ parameters:
 # {{ $enable_metadata := default true .enable_metadata }}
 # {{ $cluster_name := default "" .cluster_name }}
 # {{ $start_at := default "end" .start_at }}
+# {{$poll_interval := default "200ms" .poll_interval}}
 
 pipeline:
   - type: journald_input
@@ -58,6 +65,7 @@ pipeline:
     start_at: '{{ $start_at }}'
     labels:
       plugin_id: '{{ .id }}'
+    poll_interval: '{{ $poll_interval }}'
 
   - type: router
     routes:

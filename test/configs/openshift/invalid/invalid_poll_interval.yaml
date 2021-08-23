@@ -1,0 +1,4 @@
+pipeline:
+- type: openshift
+  poll_interval: 10
+- type: stdout
