@@ -115,14 +115,17 @@ pipeline:
     encoding: '{{ $encoding }}'
 # {{ end }}
     include_file_name: true
-    labels:
-      plugin_id: {{ .id }}
 # {{ end }}
 
   - id: add_log_type
     type: add
     field: '$labels.log_type'
     value: 'nodejs'
+
+  - id: add_plugin_id
+    type: add
+    field: '$labels.plugin_id'
+    value: {{ .id }} 
 
   - id: nodejs_json_parser
     type: json_parser
