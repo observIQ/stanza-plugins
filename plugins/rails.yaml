@@ -14,14 +14,6 @@ parameters:
     description: An array of file log path glob patterns to be excluded.
     type: strings
     default: []
-  - name: parse_format
-    label: Format
-    description: The log format to parse.
-    type: enum
-    valid_values:
-      - JSON
-      - Logger
-    default: JSON
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -31,7 +23,6 @@ parameters:
       - end
     default: end
 # Set Defaults
-# {{$parse_format := default "JSON" .parse_format}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
@@ -48,18 +39,19 @@ pipeline:
       - '{{ $efp }}'
   # {{ end }}
 # {{ end }}
-# {{ if (eq $parse_format "Logger") }}
-    multiline:
-      line_start_pattern: '([\w]+),\s+\[([^\]\s]+)\s+#([^\]]+)\]'
-# {{ end }}
     include_file_name: true
     labels:
       plugin_id: {{ .id }}
       log_type: 'rails'
 
-# {{ if (eq $parse_format "JSON") }}
+  - id: json_router
+    type: router
+    default: error_regex_parser
+    routes:
+      - output: json_parser
+        expr: '$record matches "^{.*}\\s*$"'
+
   - type: json_parser
-    if: '$record != nil and $record matches "^{.*}\\s*$"'
 
   - id: status_severity_parser
     type: severity_parser
@@ -73,6 +65,11 @@ pipeline:
       warning: 4xx
       error: 5xx
 
+  - id: pid_regex_parser
+    type: regex_parser
+    if: '$record.pid != nil and $record.pid matches "#\\d+"'
+    regex: '#(?P<pid>[\d]+)'
+
   - id: error_severity_parser
     type: severity_parser
     if: '$record.severity != nil'
@@ -82,10 +79,10 @@ pipeline:
       critical: fatal
       warning: warn
     output: {{ .output }}
-# {{ end }}
 
-# {{ if (eq $parse_format "Logger") }}
-  - type: regex_parser
+  - id: error_regex_parser
+    type: regex_parser
+    if: '$record matches "([\\w]+),\\s+\\[([^\\]\\s]+)\\s+#([^\\]]+)\\]\\s+(\\w+)\\s+--\\s+"'
     regex: '(?P<severity_id>[\w]+),\s+\[(?P<timestamp>[^\]\s]+)\s+#(?P<pid>[^\]]+)\]\s+(?P<severity_text>\w+)\s+--\s+(?P<app>\w+)?:\s+(?P<message>.[\w\W]*)'
     timestamp:
       parse_from: timestamp
@@ -98,4 +95,3 @@ pipeline:
         critical: fatal
         warning: warn
     output: {{ .output }}
-# {{ end }}
