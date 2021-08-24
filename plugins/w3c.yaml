@@ -41,7 +41,7 @@ parameters:
     default: end
   - name: include_file_name
     label: Include File Name
-    description: Include File Nath as a label
+    description: Include File Name as a label
     type: bool
     default: true
   - name: include_file_path
