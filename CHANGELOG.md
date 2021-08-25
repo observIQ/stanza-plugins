@@ -10,6 +10,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed an issue with label.plugin_id was not set correctly for nodejs plugin on K8s ([PR309](https://github.com/observIQ/stanza-plugins/pull/309))
 - OpenShift test case ([PR310](https://github.com/observIQ/stanza-plugins/pull/310))
 
+### Changed
+- Update `syslog` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
+  - Added `listen_ip` as parameter
+  - Added `listen_port` as parameter
+  - Added parameter `advanced` set to true on `listen_ip`. This is to be used in UI to hide `listen_ip` behind an advanced option
+  - Added parameter `hidden` set to true on `listen_address`. This is to be used in UI to hide `listen_address`. The parameter `listen_address` is being maintained for backwards compatibility.
+  - Added fall back regex parser incase syslog parser fails. This will attempt to parse severity from priority. The unparsed portion will be put in message.
+
 ## [0.0.70] - 2021-08-23
 
 ### Added
