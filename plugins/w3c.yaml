@@ -2,7 +2,7 @@
 version: 0.0.1
 title: W3C
 description: File Input W3C Parser
-min_stanza_version: v1.1.9
+min_stanza_version: 1.2.0
 parameters:
   - name: file_log_path
     label: File Path
