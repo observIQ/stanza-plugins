@@ -108,7 +108,6 @@ pipeline:
 # {{ if $encoding }}
     encoding: '{{ $encoding }}'
 # {{ end }}
-    include_file_name: true
     labels:
       plugin_id: {{ .id }}
       log_type: '{{ $log_type }}'
