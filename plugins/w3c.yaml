@@ -1,0 +1,135 @@
+# Plugin Info
+version: 0.0.1
+title: W3C
+description: File Input W3C Parser
+min_stanza_version: 1.2.0
+parameters:
+  - name: file_log_path
+    label: File Path
+    description: Specify a single path or multiple paths to read one or many files. You may also use a wildcard (*) to read multiple files within a directory.
+    type: strings
+    required: true
+  - name: exclude_file_log_path
+    label: Exclude File Path
+    description: Specify a single path or multiple paths to exclude one or many files from being read. You may also use a wildcard (*) to exclude multiple files from being read within a directory.
+    type: strings
+    default: []
+  - name: encoding
+    label: Encoding
+    description: Specify the encoding of the file(s) being read. In most cases, you can leave the default option selected.
+    type: enum
+    valid_values:
+      - nop
+      - utf-8
+      - utf-16le
+      - utf-16be
+      - ascii
+      - big5
+    default: nop
+  - name: log_type
+    label: Type
+    description: Adds the specified 'Type' as a label to each log message.
+    type: string
+    default: w3c
+  - name: start_at
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+  - name: include_file_name
+    label: Include File Name
+    description: Include File Name as a label
+    type: bool
+    default: true
+  - name: include_file_path
+    label: Include File Path
+    description: Include File Path as a label
+    type: bool
+    default: false
+  - name: include_file_name_resolved
+    label: Include Resolved File Name
+    description: Same as include_file_name, however, if file name is a symlink, the underlying file's name will be set as a label
+    type: bool
+    default: false
+  - name: include_file_path_resolved
+    label: Include Resolved File Path
+    description: Same as include_file_path, however, if file path is a symlink, the underlying file's path will be set as a label
+    type: bool
+    default: false
+  - name: fields_header
+    label: W3C Fields Header
+    description: The W3C header which specifies the field names
+    type: string
+    default: Fields
+  - name: delimiter
+    label: Delimiter
+    description: Delimiter character used between fields (Defaults to a tab character)
+    type: string
+    default: "\t"
+  - name: header_delimiter
+    label: Header Delimiter
+    description: Header Delimiter character used between values in a header (Defaults to a tab character)
+    type: string
+    default: "\t"
+# Set Defaults
+# {{$encoding := default "nop" .encoding}}
+# {{$log_type := default "w3c" .log_type}}
+# {{$start_at := default "end" .start_at}}
+# {{$include_file_name := default true .include_file_name}}
+# {{$include_file_path := default false .include_file_path}}
+# {{$include_file_name_resolved := default false .include_file_name_resolved}}
+# {{$include_file_path_resolved := default false .include_file_path_resolved}}
+# {{$fields_header := default "Fields" .fields_header}}
+# {{$delimiter := default "\t" .delimiter}}
+# {{$header_delimiter := default "\t" .header_delimiter}}
+
+# Pipeline Template
+pipeline:
+  - type: file_input
+    start_at: '{{ $start_at }}'
+    label_regex: '^#(?P<key>.*?): (?P<value>.*)'
+    include_file_name: {{ $include_file_name }}
+    include_file_path: {{ $include_file_path }}
+    include_file_name_resolved: {{ $include_file_name_resolved }}
+    include_file_path_resolved: {{ $include_file_path_resolved }}
+    include:
+# {{ range $i, $fp := .file_log_path  }}
+      - '{{ $fp }}'
+# {{ end }}
+# {{ if .exclude_file_log_path }}
+    exclude:
+  # {{ range $i, $efp := .exclude_file_log_path  }}
+      - '{{ $efp }}'
+  # {{ end }}
+# {{ end }}
+# {{ if $encoding }}
+    encoding: '{{ $encoding }}'
+# {{ end }}
+    labels:
+      plugin_id: {{ .id }}
+      log_type: '{{ $log_type }}'
+
+  # Ignore header lines that may exists in the file periodically
+  # or at the end. File input has already read the headers at the top
+  # of the file, and attached them as labels to each entry.
+  # For example, some w3c logs may have these two fields at th end of a file:
+  #
+  # #End-Date: 2021-07-21 14:40:00
+  # #X-Records: 41373
+  #
+  - type: filter
+    expr: '$record matches "^#"'
+
+  # Leverage CSV parser's dynamic field name detection by specifying
+  # delimiter, header_delimiter, and header_label
+  - type: csv_parser
+    delimiter: '{{ $delimiter }}'
+    header_delimiter: '{{ $header_delimiter }}'
+    header_label: '{{ $fields_header }}'
+
+  - type: remove
+    field: '$labels.{{ $fields_header }}'
+    output: {{ .output }}
