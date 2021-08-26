@@ -36,7 +36,6 @@ parameters:
   - name: listen_ip
     label: Listen Address
     description: A syslog ip address of the form `<ip>`
-    advanced: true
     type: string
     default: "0.0.0.0"
   - name: listen_address
@@ -44,22 +43,23 @@ parameters:
     description: A syslog address of the form `<ip>:<port>`
     hidden: true
     type: string
-    default: "0.0.0.0:514"
+    default: ""
 
 # Set Defaults
-# {{$listen_address := default "0.0.0.0:514" .listen_address}}
+# {{$listen_address := default "" .listen_address}}
 # {{$listen_ip := default "0.0.0.0" .listen_ip}}
 # {{$listen_port := default 514 .listen_port}}
 # {{$connection_type := default "udp" .connection_type}}
 # {{$protocol := default "rfc5424 (IETF)" .protocol}}
 # {{$location := default "UTC" .location}}
+# {{$length := len $listen_address}}
 
 # Pipeline Template
 pipeline:
 # {{ if eq $connection_type "udp" }}
   - id: syslog_input
     type: udp_input
-    listen_address: '{{ if ne $listen_address "0.0.0.0:514" }}{{ $listen_address }}{{ else }}{{ $listen_ip }}:{{ $listen_port }}{{ end }}'
+    listen_address: '{{ if eq $length 0 }}{{ $listen_ip }}:{{ $listen_port }}{{ else }}{{ $listen_address }}{{ end }}'
     labels:
       log_type: syslog
       plugin_id: {{ .id }}
@@ -69,7 +69,7 @@ pipeline:
 # {{ if eq $connection_type "tcp" }}
   - id: syslog_input
     type: tcp_input
-    listen_address: '{{ if ne $listen_address "0.0.0.0:514" }}{{ $listen_address }}{{ else }}{{ $listen_ip }}:{{ $listen_port }}{{ end }}'
+    listen_address: '{{ if eq $length 0 }}{{ $listen_ip }}:{{ $listen_port }}{{ else }}{{ $listen_address }}{{ end }}'
     labels:
       log_type: syslog
       plugin_id: {{ .id }}
