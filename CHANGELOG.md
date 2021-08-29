@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Update `syslog`, `rsyslog` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
+- Update `syslog`, `rsyslog`, `syslogng` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
   - Added `listen_ip` as parameter
   - Added `listen_port` as parameter
   - Added parameter `advanced_config` set to true on `listen_ip` and `location`. This is to be used in UI to hide `listen_ip` behind an advanced option
