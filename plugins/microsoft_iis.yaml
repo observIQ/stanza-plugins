@@ -77,9 +77,16 @@ pipeline:
     include_file_name_resolved: {{ $include_file_name_resolved }}
     include_file_path_resolved: {{ $include_file_path_resolved }}
     start_at: {{ $start_at }}
-    labels:
-      log_type: microsoft_iis
-      plugin_id: {{ .id }}
+
+  - id: add_log_type
+    type: add
+    field: '$labels.log_type'
+    value: 'microsoft_iis'
+
+  - id: add_plugin_id
+    type: add
+    field: '$labels.plugin_id'
+    value: '{{.id}}'
 
   # Build timestamp from date and time field if they exist
   - id: add_timestamp
