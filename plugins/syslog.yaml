@@ -33,12 +33,13 @@ parameters:
     relevant_if:
       protocol:
         equals: "rfc3164 (BSD)"
+    advanced_config: true
   - name: listen_ip
     label: Listen Address
     description: A syslog ip address of the form `<ip>`
     type: string
-    advanced_config: true
     default: "0.0.0.0"
+    advanced_config: true
   - name: listen_address
     label: Listen Address
     description: Parameter Deprecated Use `listen_ip` and `listen_port` instead.
@@ -47,17 +48,17 @@ parameters:
 
 # Set Defaults
 # {{$listen_address := default "" .listen_address}}
+# {{$length := len $listen_address}}
 # {{$listen_ip := default "0.0.0.0" .listen_ip}}
 # {{$listen_port := default 514 .listen_port}}
 # {{$connection_type := default "udp" .connection_type}}
 # {{$protocol := default "rfc5424 (IETF)" .protocol}}
 # {{$location := default "UTC" .location}}
-# {{$length := len $listen_address}}
 
 # Pipeline Template
 pipeline:
 # {{ if eq $connection_type "udp" }}
-  - id: syslog_input
+  - id: syslog_upd_input
     type: udp_input
     listen_address: '{{ if eq $length 0 }}{{ $listen_ip }}:{{ $listen_port }}{{ else }}{{ $listen_address }}{{ end }}'
     labels:
@@ -67,7 +68,7 @@ pipeline:
 # {{ end }}
 
 # {{ if eq $connection_type "tcp" }}
-  - id: syslog_input
+  - id: syslog_tcp_input
     type: tcp_input
     listen_address: '{{ if eq $length 0 }}{{ $listen_ip }}:{{ $listen_port }}{{ else }}{{ $listen_address }}{{ end }}'
     labels:
