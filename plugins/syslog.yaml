@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.7
+version: 0.0.8
 title: Syslog
 description: Log parser for Syslog
 parameters:
@@ -37,11 +37,11 @@ parameters:
     label: Listen Address
     description: A syslog ip address of the form `<ip>`
     type: string
+    advanced_config: true
     default: "0.0.0.0"
   - name: listen_address
     label: Listen Address
-    description: A syslog address of the form `<ip>:<port>`
-    hidden: true
+    description: Parameter Deprecated Use `listen_ip` and `listen_port` instead.
     type: string
     default: ""
 

@@ -4,10 +4,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.72] - Unreleased
+
+### Changed
+
+- Update `syslog` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
+  - Added `listen_ip` as parameter
+  - Added `listen_port` as parameter
+  - Added parameter `advanced_config` set to true on `listen_ip`. This is to be used in UI to hide `listen_ip` behind an advanced option
+    description: Parameter Deprecated Use `listen_ip` and `listen_port` instead.
+  - Changed description of `listen_address` to "Parameter Deprecated Use `listen_ip` and `listen_port` instead."
+  - Added fall back regex parser incase syslog parser fails. This will attempt to parse severity from priority. The unparsed portion will be put in message.
 
 ## [0.0.72] - 2021-08-25
 
 ### Added
+
 - Added W3C plugin ([PR307](https://github.com/observIQ/stanza-plugins/pull/307))
 
 ## [0.0.71] - 2021-08-23
@@ -15,14 +27,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Fixed an issue with label.plugin_id was not set correctly for nodejs plugin on K8s ([PR309](https://github.com/observIQ/stanza-plugins/pull/309))
 - OpenShift test case ([PR310](https://github.com/observIQ/stanza-plugins/pull/310))
-
-### Changed
-- Update `syslog` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
-  - Added `listen_ip` as parameter
-  - Added `listen_port` as parameter
-  - Added parameter `advanced` set to true on `listen_ip`. This is to be used in UI to hide `listen_ip` behind an advanced option
-  - Added parameter `hidden` set to true on `listen_address`. This is to be used in UI to hide `listen_address`. The parameter `listen_address` is being maintained for backwards compatibility.
-  - Added fall back regex parser incase syslog parser fails. This will attempt to parse severity from priority. The unparsed portion will be put in message.
 
 ## [0.0.70] - 2021-08-23
 
