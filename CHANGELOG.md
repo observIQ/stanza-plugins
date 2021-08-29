@@ -8,8 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Updated microsoft_iis plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
+- Updated `microsoft_iis` and `w3c` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
   - Update plugin to use new w3c plugin.
+
 
 ## [0.0.72] - 2021-08-25
 
