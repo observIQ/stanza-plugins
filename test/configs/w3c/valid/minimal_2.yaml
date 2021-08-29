@@ -1,0 +1,6 @@
+pipeline:
+- type: w3c
+  file_log_path:
+  - "/tmp/in.log"
+  - "/var/log/w3c/*"
+- type: stdout
