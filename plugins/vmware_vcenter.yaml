@@ -8,7 +8,7 @@ parameters:
     label: Listen Port
     description: A port which the agent will listen for syslog messages
     type: int
-    default: 514
+    default: 5140
   - name: listen_ip
     label: Listen Address
     description: A syslog ip address of the form `<ip>`
@@ -54,7 +54,7 @@ parameters:
 # {{$listen_address := default "0.0.0.0:5140" .listen_address}}
 # {{$length := len $listen_address}}
 # {{$listen_ip := default "0.0.0.0" .listen_ip}}
-# {{$listen_port := default 514 .listen_port}}
+# {{$listen_port := default 5140 .listen_port}}
 # {{$max_buffer_size := default "1024kib" .max_buffer_size}}
 # {{$enable_tls := default true .enable_tls}}
 # {{$certificate_file := default "" .certificate_file}}

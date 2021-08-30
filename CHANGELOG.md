@@ -8,6 +8,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Update `netflow` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
+  - Added `listen_ip` as parameter
+  - Added `listen_port` as parameter
+  - Changed description of `listen_address` to "Parameter Deprecated Use `listen_ip` and `listen_port` instead."
+- Update `sflow` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
+  - Added `listen_ip` as parameter
+  - Added `listen_port` as parameter
+  - Changed description of `listen_address` to "Parameter Deprecated Use `listen_ip` and `listen_port` instead."
+- Update `vmware_esxi` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
+  - Added `listen_ip` as parameter
+  - Added `listen_port` as parameter
+  - Changed description of `listen_address` to "Parameter Deprecated Use `listen_ip` and `listen_port` instead."
 - Update `vmware_vcenter` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
   - Added `listen_ip` as parameter
   - Added `listen_port` as parameter

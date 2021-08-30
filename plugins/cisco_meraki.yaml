@@ -7,7 +7,7 @@ parameters:
     label: Listen Port
     description: A port which the agent will listen for syslog messages
     type: int
-    default: 514
+    default: 5140
   - name: listen_ip
     label: Listen Address
     description: A syslog ip address of the form `<ip>`
