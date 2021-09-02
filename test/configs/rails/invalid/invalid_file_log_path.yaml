@@ -1,0 +1,4 @@
+pipeline:
+- type: rails
+  file_log_path: ""
+- type: stdout
