@@ -24,7 +24,7 @@ parameters:
 # {{$listen_address := default "" .listen_address}}
 # {{$length := len $listen_address}}
 # {{$listen_ip := default "0.0.0.0" .listen_ip}}
-# {{$listen_port := default 514 .listen_port}}
+# {{$listen_port := default 5140 .listen_port}}
 
 # Pipeline Template
 pipeline:
