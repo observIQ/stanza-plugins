@@ -1,5 +1,5 @@
 # Plugin Info
-version: 1.0.1
+version: 1.0.2
 title: Journald
 description: Journald input parser
 min_stanza_version: 1.1.6
@@ -46,7 +46,7 @@ parameters:
 pipeline:
   - type: journald_input
     # {{ if $enable_journald_log_path }}
-    directory: '{{ $enable_journald_log_path }}'
+    directory: '{{ $journald_log_path }}'
     # {{ end }}
     start_at: {{ $start_at }}
     labels:
