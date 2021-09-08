@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.74] - Unreleased
 
+## Changed
+
+- Added net.transport, net.peer.ip, net.peer.port, net.host.ip and net.host.port labels to all tcp / udp plugins ([PR320](https://github.com/observIQ/stanza-plugins/pull/320))
+  - cisco_asa, cisco_meraki, rsyslog, syslog, syslogng, ubiquiti, vmware_esxi, vmware_vcenter
+
 ## Fixed 
 
 - Issue #[314](https://github.com/observIQ/stanza-plugins/issues/314) for nodejs  ([PR315](https://github.com/observIQ/stanza-plugins/pull/315))
