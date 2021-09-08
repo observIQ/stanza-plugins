@@ -1,16 +1,24 @@
 # Changelog
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.72] - Unreleased
+## [0.0.74] - Unreleased
 
 ### Changed
 
 - Updated `microsoft_iis` and `w3c` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
   - Update plugin to use new w3c plugin.
 
+## [0.0.73] - 2021-09-02
+
+### Added
+- Added Rails plugin ([308](https://github.com/observIQ/stanza-plugins/pull/308))
+
+### Changed
+- Added plugin ID to json, mongo plugins
 
 ## [0.0.72] - 2021-08-25
 
@@ -26,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.0.70] - 2021-08-23
 
 ### Added
+
 - Added Nodejs plugin ([305](https://github.com/observIQ/stanza-plugins/pull/305))
 
 ### Changed
