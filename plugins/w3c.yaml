@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 0.0.2
 title: W3C
 description: File Input W3C Parser
 min_stanza_version: 1.2.0
@@ -122,6 +122,28 @@ pipeline:
   #
   - type: filter
     expr: '$record matches "^#"'
+
+  - type: router
+    default: csv_parser
+    routes:
+      - output: quote_handler_parser
+        expr: $record matches '.*".*".*' and not ($record matches "^#")
+
+  # Some example log entries have quotes. This will cause an error.
+  # This parses first set of quotes. If more than one set of quotes exist then it will still error.
+  # All examples from logs seen at time of this comment have only contained one set of quotes.
+  - id: quote_handler_parser
+    type: regex_parser
+    parse_from: $record
+    regex: '(?P<message1>[^"]*)(?P<first_quote>[\"])(?P<message2>[^"]*)(?P<second_quote>[\"])(?P<message3>.*)'
+    output: quote_handler_restructurer
+
+  # This will remove the first set of parsed quotes.
+  - id: quote_handler_restructurer
+    type: add
+    field: $record
+    value: 'EXPR($record.message1 + $record.message2 + $record.message3)'
+    output: csv_parser
 
   # Leverage CSV parser's dynamic field name detection by specifying
   # delimiter, header_delimiter, and header_label
