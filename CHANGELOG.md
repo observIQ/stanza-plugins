@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Updated `w3c` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
+- Updated `w3c` plugin ([PR318](https://github.com/observIQ/stanza-plugins/pull/318))
   - Add quote parsing from iis to handle when a pair of single quotes are in the log entry.
 
 ## [0.0.73] - 2021-09-02
