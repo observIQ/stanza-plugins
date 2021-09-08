@@ -49,6 +49,7 @@ pipeline:
     labels:
       log_type: syslog
       plugin_id: {{ .id }}
+    add_labels: true
     output: syslog_parser
 # {{ end }}
 
@@ -59,6 +60,7 @@ pipeline:
     labels:
       log_type: syslog
       plugin_id: {{ .id }}
+    add_labels: true
     output: syslog_parser
 # {{ end }}
 

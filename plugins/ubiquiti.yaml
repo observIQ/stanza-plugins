@@ -27,6 +27,7 @@ pipeline:
     labels:
       log_type: ubiquiti
       plugin_id: {{ .id }}
+    add_labels: true
     output: device_router
   
   - id: device_router
