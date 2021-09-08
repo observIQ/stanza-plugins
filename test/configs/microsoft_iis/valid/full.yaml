@@ -1,7 +1,6 @@
 pipeline:
 - type: microsoft_iis
-  file_log_path: 
-    - "C:/inetpub/logs/W3SVC*/**/*.log"
+  file_path: "C:/inetpub/logs/W3SVC*/**/*.log"
   exclude_file_log_path:
     - " "
   location: "America/Detroit"

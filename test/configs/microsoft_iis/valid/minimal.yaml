@@ -1,5 +1,4 @@
 pipeline:
 - type: microsoft_iis
-  file_log_path: 
-    - " "
+  file_path: " "
 - type: stdout
