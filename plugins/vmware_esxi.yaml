@@ -9,7 +9,7 @@ parameters:
     type: int
     default: 5140
   - name: listen_ip
-    label: Listen Address
+    label: Listen IP
     description: A syslog ip address of the form `<ip>`
     type: string
     default: "0.0.0.0"
@@ -19,6 +19,7 @@ parameters:
     description: Parameter Deprecated Use 'listen_ip' and 'listen_port' instead.
     type: string
     default: ""
+    advanced_config: true
   - name: enable_tls
     label: Enable TLS
     description: Enable TLS for the TCP listener

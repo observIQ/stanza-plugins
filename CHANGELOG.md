@@ -8,37 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Update `netflow` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
+- Update `netflow`, `sflow`, `vmware_esxi`, `ubiquiti`, `cisco_meraki`, `syslog`, `rsyslog`, `syslogng`, and `vmware_vcenter` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
   - Added `listen_ip` as parameter
   - Added `listen_port` as parameter
+  - Added parameter `advanced_config` set to true on `listen_address`, `listen_ip` and `location`. This is to be used in UI to hide `listen_ip` behind an advanced option
   - Changed description of `listen_address` to "Parameter Deprecated Use `listen_ip` and `listen_port` instead."
-- Update `sflow` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
-  - Added `listen_ip` as parameter
-  - Added `listen_port` as parameter
-  - Changed description of `listen_address` to "Parameter Deprecated Use `listen_ip` and `listen_port` instead."
-- Update `vmware_esxi` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
-  - Added `listen_ip` as parameter
-  - Added `listen_port` as parameter
-  - Changed description of `listen_address` to "Parameter Deprecated Use `listen_ip` and `listen_port` instead."
-- Update `vmware_vcenter` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
-  - Added `listen_ip` as parameter
-  - Added `listen_port` as parameter
-  - Changed description of `listen_address` to "Parameter Deprecated Use `listen_ip` and `listen_port` instead."
-  - Added fall back regex parser incase syslog parser fails. This will attempt to parse severity from priority. The unparsed portion will be put in message.
-- Update `ubiquiti` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
-  - Added `listen_ip` as parameter
-  - Added `listen_port` as parameter
-  - Changed description of `listen_address` to "Parameter Deprecated Use `listen_ip` and `listen_port` instead."
-- Update `cisco_meraki` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
-  - Added `listen_ip` as parameter
-  - Added `listen_port` as parameter
-  - Changed description of `listen_address` to "Parameter Deprecated Use `listen_ip` and `listen_port` instead."
-- Update `syslog`, `rsyslog`, `syslogng` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
-  - Added `listen_ip` as parameter
-  - Added `listen_port` as parameter
-  - Added parameter `advanced_config` set to true on `listen_ip` and `location`. This is to be used in UI to hide `listen_ip` behind an advanced option
-  - Changed description of `listen_address` to "Parameter Deprecated Use `listen_ip` and `listen_port` instead."
-  - Added fall back regex parser incase syslog parser fails. This will attempt to parse severity from priority. The unparsed portion will be put in message.
+  - Added fall back regex parser in case syslog parser fails to `syslog`, `rsyslog`, `syslogng`, and `vmware_vcenter` plugins. This will attempt to parse severity from priority. The unparsed portion will be put in message.
 
 ## [0.0.72] - 2021-08-25
 

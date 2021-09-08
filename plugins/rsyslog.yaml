@@ -35,7 +35,7 @@ parameters:
         equals: "rfc3164 (BSD)"
     advanced_config: true
   - name: listen_ip
-    label: Listen Address
+    label: Listen IP
     description: A syslog ip address of the form `<ip>`
     type: string
     default: "0.0.0.0"
@@ -45,6 +45,7 @@ parameters:
     description: Parameter Deprecated Use `listen_ip` and `listen_port` instead.
     type: string
     default: ""
+    advanced_config: true
 
 # Set Defaults
 # {{$listen_address := default "" .listen_address}}
