@@ -57,7 +57,7 @@ parameters:
 # {{$listen_address := default "" .listen_address}}
 # {{$length := len $listen_address}}
 # {{$listen_ip := default "0.0.0.0" .listen_ip}}
-# {{$listen_port := default 514 .listen_port}}
+# {{$listen_port := default 2055 .listen_port}}
 # {{$netflow_version := default "ipfix" .netflow_version}}
 # {{$sampling_enable := default false .sampling_enable}}
 # {{$sampling_drop_rate := default 0.0 .sampling_drop_rate}}
