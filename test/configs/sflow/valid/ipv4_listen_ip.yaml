@@ -1,3 +1,4 @@
 pipeline:
 - type: sflow
+  listen_ip: 10.1.1.1
 - type: stdout
