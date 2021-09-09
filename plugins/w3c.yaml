@@ -108,20 +108,20 @@ pipeline:
 # {{ if $encoding }}
     encoding: '{{ $encoding }}'
 # {{ end }}
-    labels:
+    attributes:
       plugin_id: {{ .id }}
       log_type: '{{ $log_type }}'
 
   # Ignore header lines that may exists in the file periodically
   # or at the end. File input has already read the headers at the top
-  # of the file, and attached them as labels to each entry.
+  # of the file, and attached them as attributes to each entry.
   # For example, some w3c logs may have these two fields at th end of a file:
   #
   # #End-Date: 2021-07-21 14:40:00
   # #X-Records: 41373
   #
   - type: filter
-    expr: '$record matches "^#"'
+    expr: '$body matches "^#"'
 
   # Leverage CSV parser's dynamic field name detection by specifying
   # delimiter, header_delimiter, and header_label
@@ -131,5 +131,5 @@ pipeline:
     header_label: '{{ $fields_header }}'
 
   - type: remove
-    field: '$labels.{{ $fields_header }}'
+    field: '$attributes.{{ $fields_header }}'
     output: {{ .output }}

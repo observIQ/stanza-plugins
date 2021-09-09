@@ -35,7 +35,7 @@ pipeline:
     poll_interval: {{ $poll_interval }}
     max_reads: {{ $max_reads }}
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       plugin_id: {{ .id }}
     output: sql_server_router
 
@@ -44,5 +44,5 @@ pipeline:
     routes:
       - output: {{ .output }}
         expr: '$.provider.name matches "SQLSERVER"'
-        labels:
+        attributes:
           log_type: sql_server

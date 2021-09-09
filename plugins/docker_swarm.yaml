@@ -28,7 +28,7 @@ pipeline:
     include:
       - {{ $message_log_path }}
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       plugin_id: {{ .id }}
     output: docker_swarm_parser
 
@@ -45,19 +45,19 @@ pipeline:
     routes:
       - output: dockerd_parser
         expr: '$.type matches "dockerd"'
-        labels:
+        attributes:
           log_type: docker_swarm.dockerd
       - output: containerd_parser
         expr: '$.type matches "containerd"'
-        labels:
+        attributes:
           log_type: docker_swarm.containerd
       - output: type_parser
         expr: '$.type matches "kernel"'
-        labels:
+        attributes:
           log_type: docker_swarm.kernel
       - output: type_parser
         expr: '$.type matches "NetworkManager"'
-        labels:
+        attributes:
           log_type: docker_swarm.network_manager
 
   - id: dockerd_parser
@@ -88,7 +88,7 @@ pipeline:
 
   - id: type_parser
     type: regex_parser
-    parse_from: $record.type
-    if: '$record.type matches ".*\\[[^\\]]*\\]"'
+    parse_from: $body.type
+    if: '$body.type matches ".*\\[[^\\]]*\\]"'
     regex: '(?P<type>.*)\[(?P<pid>[^\]]*)\]'
     output: {{ .output }}

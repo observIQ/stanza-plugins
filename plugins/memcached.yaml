@@ -35,16 +35,16 @@ pipeline:
     directory: '{{ .memcached_journald_log_path }}'
     # {{ end }}
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: memcached
       plugin_id: {{ .id }}
 
   - id: memcached_filter
     type: filter
-    expr: '$record._SYSTEMD_UNIT != "memcached.service"'
+    expr: '$body._SYSTEMD_UNIT != "memcached.service"'
 
   - type: severity_parser
-    parse_from: $record.PRIORITY
+    parse_from: $body.PRIORITY
     mapping:
       emergency: 0
       alert: 1

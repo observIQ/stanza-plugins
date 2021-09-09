@@ -64,7 +64,7 @@ pipeline:
     connection_string: '{{ $connection_string }}'
     start_at: '{{ $start_at }}'
     prefetch_count: {{ $prefetch_count }}
-    labels:
+    attributes:
       plugin_id: {{ .id }}
       log_type: '{{ $log_type }}'
     output: {{ .output }}

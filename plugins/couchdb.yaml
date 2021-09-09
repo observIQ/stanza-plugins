@@ -30,7 +30,7 @@ pipeline:
     multiline:
       line_start_pattern: \[\w*\] [\d\-\.:TZ]+.*
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: couchdb
       plugin_id: {{ .id }}
 

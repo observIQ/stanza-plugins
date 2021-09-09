@@ -52,7 +52,7 @@ pipeline:
     type: tcp_input
     listen_address: {{ $listen_address }}
     max_buffer_size: {{ $max_buffer_size }}
-    labels:
+    attributes:
       log_type: vmware_vcenter
       plugin_id: {{ .id }}
     tls:
@@ -67,7 +67,7 @@ pipeline:
   - id: prefix_router
     type: router
     routes:
-      - expr: '$record matches "^\\d* "'
+      - expr: '$body matches "^\\d* "'
         output: pre_parser
     default: vcenter_parser
 
@@ -79,10 +79,10 @@ pipeline:
   - id: pre_parser_restructure
     type: restructure
     ops:
-      - remove: "$record.drop"
+      - remove: "$body.drop"
       - move:
-          from: "$record.syslog_message"
-          to: "$record"
+          from: "$body.syslog_message"
+          to: "$body"
     output: vcenter_parser
 
   - id: vcenter_parser

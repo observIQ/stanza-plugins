@@ -30,7 +30,7 @@ pipeline:
     multiline:
       line_start_pattern: '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}'
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: rabbitmq
       plugin_id: {{ .id }}
     output: rabbitmq_parser

@@ -51,7 +51,7 @@ pipeline:
     directory: '{{ $journald_log_path }}'
     # {{ end }}
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       plugin_id: {{ .id }}
       log_type: '{{ $log_type }}'
     poll_interval: '{{ $poll_interval }}'
@@ -59,8 +59,8 @@ pipeline:
   # Journald does not gaurantee the presence of the PRIORITY
   # Seveity parsing is skipped if PRIORITY does not exist
   - type: severity_parser
-    parse_from: $record.PRIORITY
-    if: '$record.PRIORITY != nil'
+    parse_from: $body.PRIORITY
+    if: '$body.PRIORITY != nil'
     mapping:
       emergency: 0
       alert: 1
@@ -74,6 +74,6 @@ pipeline:
 
   - id: promote_message
     type: move
-    from: '$record.MESSAGE'
-    to: '$record.message'
+    from: '$body.MESSAGE'
+    to: '$body.message'
     output: {{ .output }}

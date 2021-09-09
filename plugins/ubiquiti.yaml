@@ -24,7 +24,7 @@ pipeline:
   - id: ubiquiti_udp_input
     type: udp_input
     listen_address: {{ $listen_address }}
-    labels:
+    attributes:
       log_type: ubiquiti
       plugin_id: {{ .id }}
     output: device_router
@@ -33,9 +33,9 @@ pipeline:
     type: router
     default: catch_all_parser
     routes:
-      - expr: '$record matches "^<\\d+>\\w{3}\\s*\\d{1,2}\\s*\\d{2}:\\d{2}:\\d{2}"'
+      - expr: '$body matches "^<\\d+>\\w{3}\\s*\\d{1,2}\\s*\\d{2}:\\d{2}:\\d{2}"'
         output: ac_lite_ap_parser
-      - expr: '$record matches "^<[^>]+>[^ ]*\\s*[^,]*,[^,]*,[^:]*:(\\s*)?[^:]*:(\\s*)?[\\s\\S]*"'
+      - expr: '$body matches "^<[^>]+>[^ ]*\\s*[^,]*,[^,]*,[^:]*:(\\s*)?[^:]*:(\\s*)?[\\s\\S]*"'
         output: flex_mini_parser
 
   # This pattern is known to match AC Lite access points
@@ -56,14 +56,14 @@ pipeline:
   # promote name field to resource. name is specific to flex_mini_parser.
   - id: promote_name
     type: move
-    from: $record.name
+    from: $body.name
     to: '$resource["name"]'
     output: promote_device
 
   # promote device field to resource
   - id: promote_device
     type: move
-    from: $record.device
+    from: $body.device
     to: '$resource["device"]'
     output: severity_parser
 
@@ -75,8 +75,8 @@ pipeline:
     output: severity_parser
 
   - type: severity_parser
-    parse_from: $record.priority
-    preserve_to: $record.priority
+    parse_from: $body.priority
+    preserve_to: $body.priority
     mapping:
       emergency: [0,8,16,24,32,40,48,56,64,72,80,88,96,104,112,120,128,136,144,152,160,168,176,184]
       alert: [1,9,17,25,33,41,49,57,65,73,81,89,97,105,113,121,129,137,145,153,161,169,177,185]

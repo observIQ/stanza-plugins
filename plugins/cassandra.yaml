@@ -68,7 +68,7 @@ pipeline:
     multiline:
       line_start_pattern: '[A-Z]+\s+\[[^\]]+\]'
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: 'cassandra.system'
       plugin_id: {{ .id }}
     output: regex_parser
@@ -82,7 +82,7 @@ pipeline:
     multiline:
       line_start_pattern: '^[A-Z]+\s+\[[a-z]+\]\s\d{4}-\d{2}-\d{2}'
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: 'cassandra.debug'
       plugin_id: {{ .id }}
     output: regex_parser
@@ -96,13 +96,13 @@ pipeline:
     multiline:
       line_start_pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}[+-]\d{4}|^OpenJDK|^Memory:|^CommandLine|^Heap'
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: 'cassandra.gc'
       plugin_id: {{ .id }}
 
   - id: gc_rex_parser
     type: regex_parser
-    if: '$record matches "[0-9]{4}-[0-9]{2}-[0-9]{2}T"' 
+    if: '$body matches "[0-9]{4}-[0-9]{2}-[0-9]{2}T"' 
     regex: '(?P<timestamp>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}[+-]\d{4}):\s+.*stopped: (?P<total_stopped_seconds>[\d\.]+).* took: (?P<stopping_threads_seconds>[\d\.]+)'
     timestamp:
       parse_from: timestamp
@@ -123,7 +123,7 @@ pipeline:
     ops:
       - add:
           field: timestamp
-          value_expr: '$record.time1 + "." + $record.time2'
+          value_expr: '$body.time1 + "." + $body.time2'
       - remove: time1
       - remove: time2
 

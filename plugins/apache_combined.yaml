@@ -25,7 +25,7 @@ pipeline:
     include:
       - {{ $log_path }}
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: 'apache_combined'
       plugin_id: {{ .id }}
     output: apache_combined_regex_parser

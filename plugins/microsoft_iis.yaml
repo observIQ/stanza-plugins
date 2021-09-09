@@ -42,7 +42,7 @@ pipeline:
     include:
       - {{ $file_path }}
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: microsoft_iis
       plugin_id: {{ .id }}
     output: iis_router
@@ -51,9 +51,9 @@ pipeline:
     type: router
     routes:
       - output: quote_handler_parser
-        expr: $record matches '.*".*".*' and not ($record matches "^#")
+        expr: $body matches '.*".*".*' and not ($body matches "^#")
       - output: csv_parser
-        expr: 'not ($record matches "^#")'
+        expr: 'not ($body matches "^#")'
       - output: {{ .output }}
         expr: true
 
@@ -62,15 +62,15 @@ pipeline:
   # All examples from logs seen at time of this comment have only contained one set of quotes.
   - id: quote_handler_parser
     type: regex_parser
-    parse_from: $record
+    parse_from: $body
     regex: '(?P<message1>[^"]*)(?P<first_quote>[\"])(?P<message2>[^"]*)(?P<second_quote>[\"])(?P<message3>.*)'
     output: quote_handler_restructurer
 
   # This will remove the first set of parsed quotes.
   - id: quote_handler_restructurer
     type: add
-    field: $record
-    value: 'EXPR($record.message1 + $record.message2 + $record.message3)'
+    field: $body
+    value: 'EXPR($body.message1 + $body.message2 + $body.message3)'
     output: csv_parser
 
   - id: csv_parser
@@ -81,26 +81,26 @@ pipeline:
   # Build timestamp from date and time field if they exist
   - id: add_timestamp
     type: add
-    if: '$record.date != nil and $record.time != nil'
-    field: $record.timestamp
-    value: EXPR($record.date + " " + $record.time)
+    if: '$body.date != nil and $body.time != nil'
+    field: $body.timestamp
+    value: EXPR($body.date + " " + $body.time)
 
   # Remove date field
   - id: remove_date
     type: remove
-    if: '$record.date != nil'
-    field: $record.date
+    if: '$body.date != nil'
+    field: $body.date
 
   # Remove date field
   - id: remove_time
     type: remove
-    if: '$record.time != nil'
-    field: $record.time
+    if: '$body.time != nil'
+    field: $body.time
 
   # Confirm timestamp field exists and parse
   - id: time_parser
     type: time_parser
-    if: '$record.timestamp != nil'
+    if: '$body.timestamp != nil'
     parse_from: timestamp
     layout: '%Y-%m-%d %H:%M:%S'
     location: {{$location}}
@@ -108,9 +108,9 @@ pipeline:
   # Confirm sc-status field exists then parse severity.
   # If statement errors when using dot notation because of the - in the field name so use bracket notation instead.
   - type: severity_parser
-    if: '$record["sc-status"] != nil'
-    parse_from: $record.sc-status
-    preserve_to: $record.sc-status
+    if: '$body["sc-status"] != nil'
+    parse_from: $body.sc-status
+    preserve_to: $body.sc-status
     mapping:
       info: 2xx
       notice: 3xx

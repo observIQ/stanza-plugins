@@ -28,7 +28,7 @@ pipeline:
     start_at: {{ $start_at }}
     multiline:
       line_start_pattern: '\d{4}-\d{2}-\d{2}-\d{2}.\d{2}.\d{2}.\d+\s\w{3}\n|\d{4}-\d{2}-\d{2}-\d{2}.\d{2}.\d{2}.\d{6}([-+][\d\w]{3}|[\d\w]{4})\s'
-    labels:
+    attributes:
       log_type: ibm_db2
       plugin_id: {{ .id }}
     output: ibm_db2_router

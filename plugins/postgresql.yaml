@@ -29,7 +29,7 @@ pipeline:
       line_start_pattern: '^t=\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}'
     write_to: log_entry
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: 'postgresql.general'
       plugin_id: {{ .id }}
 
@@ -45,26 +45,26 @@ pipeline:
     default: client_address_regex_parser
     routes:
       - output: client_address_regex_parser
-        expr: '$record.duration != ""'
-        labels:
+        expr: '$body.duration != ""'
+        attributes:
           log_type: 'postgresql.slow_query'
 
   - id: client_address_regex_parser
-    if: '$record.client_address matches "[\\w\\.]*\\([\\d]*\\)"'
+    if: '$body.client_address matches "[\\w\\.]*\\([\\d]*\\)"'
     type: regex_parser
-    parse_from: $record.client_address
+    parse_from: $body.client_address
     regex: '(?P<client_address>[^\(]*)\((?P<client_address_port>[^\)]*)\)'
     output: statement_regex_parser
 
   - id: statement_regex_parser
-    if: '$record.message matches "^STATEMENT:|^statement:"'
+    if: '$body.message matches "^STATEMENT:|^statement:"'
     type: regex_parser
-    parse_from: $record.message
+    parse_from: $body.message
     regex: '(^STATEMENT:\s*|^statement:\s*)(?P<statement>[\w\W]+)'
 
   - id: sql_command_alter
     type: restructure
-    if: '$record.statement != nil and $record.statement matches "^ALTER"'
+    if: '$body.statement != nil and $body.statement matches "^ALTER"'
     ops:
       - add:
           field: "sql_command"
@@ -72,7 +72,7 @@ pipeline:
 
   - id: sql_command_commit
     type: restructure
-    if: '$record.statement != nil and $record.statement matches "^COMMIT"'
+    if: '$body.statement != nil and $body.statement matches "^COMMIT"'
     ops:
       - add:
           field: "sql_command"
@@ -80,7 +80,7 @@ pipeline:
 
   - id: sql_command_copy
     type: restructure
-    if: '$record.statement != nil and $record.statement matches "^COPY"'
+    if: '$body.statement != nil and $body.statement matches "^COPY"'
     ops:
       - add:
           field: "sql_command"
@@ -88,7 +88,7 @@ pipeline:
 
   - id: sql_command_create
     type: restructure
-    if: '$record.statement != nil and $record.statement matches "^CREATE"'
+    if: '$body.statement != nil and $body.statement matches "^CREATE"'
     ops:
       - add:
           field: "sql_command"
@@ -96,7 +96,7 @@ pipeline:
 
   - id: sql_command_delete
     type: restructure
-    if: '$record.statement != nil and $record.statement matches "^DELETE"'
+    if: '$body.statement != nil and $body.statement matches "^DELETE"'
     ops:
       - add:
           field: "sql_command"
@@ -104,7 +104,7 @@ pipeline:
 
   - id: sql_command_drop
     type: restructure
-    if: '$record.statement != nil and $record.statement matches "^DROP"'
+    if: '$body.statement != nil and $body.statement matches "^DROP"'
     ops:
       - add:
           field: "sql_command"
@@ -112,7 +112,7 @@ pipeline:
 
   - id: sql_command_grant
     type: restructure
-    if: '$record.statement != nil and $record.statement matches "^GRANT"'
+    if: '$body.statement != nil and $body.statement matches "^GRANT"'
     ops:
       - add:
           field: "sql_command"
@@ -120,7 +120,7 @@ pipeline:
 
   - id: sql_command_insert
     type: restructure
-    if: '$record.statement != nil and $record.statement matches "^INSERT"'
+    if: '$body.statement != nil and $body.statement matches "^INSERT"'
     ops:
       - add:
           field: "sql_command"
@@ -128,7 +128,7 @@ pipeline:
 
   - id: sql_command_revoke
     type: restructure
-    if: '$record.statement != nil and $record.statement matches "^REVOKE"'
+    if: '$body.statement != nil and $body.statement matches "^REVOKE"'
     ops:
       - add:
           field: "sql_command"
@@ -136,7 +136,7 @@ pipeline:
 
   - id: sql_command_rollback
     type: restructure
-    if: '$record.statement != nil and $record.statement matches "^ROLLBACK"'
+    if: '$body.statement != nil and $body.statement matches "^ROLLBACK"'
     ops:
       - add:
           field: "sql_command"
@@ -144,7 +144,7 @@ pipeline:
 
   - id: sql_command_select
     type: restructure
-    if: '$record.statement != nil and $record.statement matches "^SELECT"'
+    if: '$body.statement != nil and $body.statement matches "^SELECT"'
     ops:
       - add:
           field: "sql_command"
@@ -152,7 +152,7 @@ pipeline:
 
   - id: sql_command_truncate
     type: restructure
-    if: '$record.statement != nil and $record.statement matches "^TRUNCATE"'
+    if: '$body.statement != nil and $body.statement matches "^TRUNCATE"'
     ops:
       - add:
           field: "sql_command"
@@ -160,7 +160,7 @@ pipeline:
 
   - id: sql_command_update
     type: restructure
-    if: '$record.statement != nil and $record.statement matches "^UPDATE"'
+    if: '$body.statement != nil and $body.statement matches "^UPDATE"'
     ops:
       - add:
           field: "sql_command"
@@ -168,7 +168,7 @@ pipeline:
 
   - id: sql_command_vacuum
     type: restructure
-    if: '$record.statement != nil and $record.statement matches "^VACUUM"'
+    if: '$body.statement != nil and $body.statement matches "^VACUUM"'
     ops:
       - add:
           field: "sql_command"

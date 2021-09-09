@@ -39,7 +39,7 @@ pipeline:
     multiline:
       line_start_pattern: '\[pid:\s*[^\|]*\s*\|app:[^\|]*\|req:[^\]]*\] '
     # {{ end }}
-    labels:
+    attributes:
       log_type: 'uwsgi'
       plugin_id: {{ .id }}
     output: '{{ if eq $log_format "default" }}default_regex_parser{{ else if eq $log_format "observiq" }}json_parser{{ else if eq $log_format "apache-combined" }}apache_combined_regex_parser{{ end }}'
@@ -106,11 +106,11 @@ pipeline:
 
   - id: protocol_parser
     type: regex_parser
-    parse_from: $record.protocol
+    parse_from: $body.protocol
     regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
 
   # Remove message field if it is empty
   - type: remove
-    if: '$record.message == ""'
-    field: $record.message
+    if: '$body.message == ""'
+    field: $body.message
     output: {{.output}}

@@ -40,7 +40,7 @@ pipeline:
   # {{ end }}
 # {{ end }}
     include_file_name: true
-    labels:
+    attributes:
       plugin_id: {{ .id }}
       log_type: 'rails'
 
@@ -49,14 +49,14 @@ pipeline:
     default: error_regex_parser
     routes:
       - output: json_parser
-        expr: '$record matches "^{.*}\\s*$"'
+        expr: '$body matches "^{.*}\\s*$"'
 
   - type: json_parser
 
   - id: status_severity_parser
     type: severity_parser
-    if: '$record.status != nil'
-    parse_from: $record.status
+    if: '$body.status != nil'
+    parse_from: $body.status
     preset: none
     preserve_to: status
     mapping:
@@ -67,14 +67,14 @@ pipeline:
 
   - id: pid_regex_parser
     type: regex_parser
-    if: '$record.pid != nil and $record.pid matches "#\\d+"'
+    if: '$body.pid != nil and $body.pid matches "#\\d+"'
     regex: '#(?P<pid>[\d]+)'
 
   - id: error_severity_parser
     type: severity_parser
-    if: '$record.severity != nil'
-    parse_from: $record.severity
-    preserve_to: $record.rails_severity
+    if: '$body.severity != nil'
+    parse_from: $body.severity
+    preserve_to: $body.rails_severity
     mapping:
       critical: fatal
       warning: warn
@@ -82,7 +82,7 @@ pipeline:
 
   - id: error_regex_parser
     type: regex_parser
-    if: '$record matches "([\\w]+),\\s+\\[([^\\]\\s]+)\\s+#([^\\]]+)\\]\\s+(\\w+)\\s+--\\s+"'
+    if: '$body matches "([\\w]+),\\s+\\[([^\\]\\s]+)\\s+#([^\\]]+)\\]\\s+(\\w+)\\s+--\\s+"'
     regex: '(?P<severity_id>[\w]+),\s+\[(?P<timestamp>[^\]\s]+)\s+#(?P<pid>[^\]]+)\]\s+(?P<severity_text>\w+)\s+--\s+(?P<app>\w+)?:\s+(?P<message>.[\w\W]*)'
     timestamp:
       parse_from: timestamp

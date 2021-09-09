@@ -24,7 +24,7 @@ pipeline:
 # {{ range $i, $ns := .namespaces  }}
       - {{ $ns }}
 # {{ end }}
-    labels:
+    attributes:
       plugin_id: '{{ .id }}'
       log_type: "k8s.events"
     resource:

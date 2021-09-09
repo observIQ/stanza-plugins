@@ -128,16 +128,16 @@ pipeline:
     type: router
     routes:
       # {{ if $enable_access_log }}
-      - expr: "$labels.stream == 'stdout'"
+      - expr: "$attributes.stream == 'stdout'"
         output: access_parser
-        labels:
+        attributes:
           log_type: 'nginx.access'
           plugin_id: '{{ .id }}'
       # {{ end }}
       # {{ if $enable_error_log }}
-      - expr: '$labels.stream == "stderr" and $record.message matches "\\d{4}\\/\\d{2}\\/\\d{2} \\d{2}:\\d{2}:\\d{2} \\[\\w+\\] \\d+\\.\\d+: "'
+      - expr: '$attributes.stream == "stderr" and $body.message matches "\\d{4}\\/\\d{2}\\/\\d{2} \\d{2}:\\d{2}:\\d{2} \\[\\w+\\] \\d+\\.\\d+: "'
         output: error_regex_parser
-        labels:
+        attributes:
           log_type: 'nginx.error'
           plugin_id: '{{ .id }}'
       # {{ end }}
@@ -149,7 +149,7 @@ pipeline:
     include:
       - '{{ $access_log_path }}'
     start_at: '{{ $start_at }}'
-    labels:
+    attributes:
       log_type: 'nginx.access'
       plugin_id: '{{ .id }}'
 # {{ if $encoding }}
@@ -166,7 +166,7 @@ pipeline:
     start_at: '{{ $start_at }}'
     multiline:
       line_start_pattern: '^\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2} \[\w+\] (?P<pid>\d+).(?P<tid>\d+): '
-    labels:
+    attributes:
       log_type: 'nginx.error'
       plugin_id: '{{ .id }}'
 # {{ if $encoding }}
@@ -210,9 +210,9 @@ pipeline:
 
   - id: request_parser
     type: regex_parser
-    parse_from: $record.request
-    preserve_to: $record.request
-    if: '$record.request != nil and $record.request matches "\\S+ +[^ ]* "'
+    parse_from: $body.request
+    preserve_to: $body.request
+    if: '$body.request != nil and $body.request matches "\\S+ +[^ ]* "'
     regex: '(?P<method>\S+) +(?P<path>[^ ]*) ((?P<protocol>[^/]*)/(?P<protocol_version>.*)|.*)?'
     output: {{ .output }}
   # {{ end }}

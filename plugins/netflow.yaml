@@ -57,7 +57,7 @@ pipeline:
   mode: netflow_ipfix
 # {{ end }}
   listen_address: {{ $listen_address }}
-  labels:
+  attributes:
     log_type: netflow
     plugin_id: {{ .id }}
     netflow_version: {{ $netflow_version  }}
@@ -70,5 +70,5 @@ pipeline:
 
 # Remove goflow specific field
 - type: remove
-  field: $record.type
+  field: $body.type
   output: {{ .output }}

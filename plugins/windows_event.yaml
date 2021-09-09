@@ -71,7 +71,7 @@ pipeline:
     channel: system
     max_reads: {{ $max_reads }}
     poll_interval: {{ $poll_interval }}
-    labels:
+    attributes:
       log_type: "windows_event.system"
       plugin_id: {{ .id }}
     start_at: {{ $start_at }}
@@ -84,7 +84,7 @@ pipeline:
     channel: application
     max_reads: {{ $max_reads }}
     poll_interval: {{ $poll_interval }}
-    labels:
+    attributes:
       log_type: "windows_event.application"
       plugin_id: {{ .id }}
     start_at: {{ $start_at }}
@@ -97,7 +97,7 @@ pipeline:
     channel: security
     max_reads: {{ $max_reads }}
     poll_interval: {{ $poll_interval }}
-    labels:
+    attributes:
       log_type: "windows_event.security"
       plugin_id: {{ .id }}
     start_at: {{ $start_at }}
@@ -113,7 +113,7 @@ pipeline:
     channel: {{$element}}
     max_reads: {{$max_reads}}
     poll_interval: {{$poll_interval}}
-    labels:
+    attributes:
       log_type: "windows_event.custom"
       plugin_id: {{$id}}
     start_at: beginning

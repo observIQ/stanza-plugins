@@ -17,7 +17,7 @@ pipeline:
   - id: meraki_input
     type: udp_input
     listen_address: {{ $listen_address }}
-    labels:
+    attributes:
       log_type: cisco_meraki
       plugin_id: {{ .id }}
 
@@ -25,7 +25,7 @@ pipeline:
     type: router
     default: catch_all_parser
     routes:
-      - expr: '$record matches ".*=[\\s\\S]*"'
+      - expr: '$body matches ".*=[\\s\\S]*"'
         output: meraki_parser
 
   - id: meraki_parser
@@ -39,7 +39,7 @@ pipeline:
 
   # Severity Parser using piority field to get the severity
   - type: severity_parser
-    parse_from: $record.priority
+    parse_from: $body.priority
     mapping:
       emergency: [0,8,16,24,32,40,48,56,64,72,80,88,96,104,112,120,128,136,144,152,160,168,176,184]
       alert: [1,9,17,25,33,41,49,57,65,73,81,89,97,105,113,121,129,137,145,153,161,169,177,185]
@@ -56,28 +56,28 @@ pipeline:
     type: router
     default: {{.output}}
     routes:
-      - expr: '$record.message matches "^src=.*\\s*dst=.*\\s*protocol=.*\\s*sport=.*\\s*dport=.*\\s*translated_src_ip=.*\\s*translated_port=.*\\s*"'
+      - expr: '$body.message matches "^src=.*\\s*dst=.*\\s*protocol=.*\\s*sport=.*\\s*dport=.*\\s*translated_src_ip=.*\\s*translated_port=.*\\s*"'
         output: message_1_parser
-      - expr: '$record.message matches "^src=.*\\s*dst=.*\\s*mac=.*\\s*protocol=.*\\s*sport=.*\\s*dport=.*"'
+      - expr: '$body.message matches "^src=.*\\s*dst=.*\\s*mac=.*\\s*protocol=.*\\s*sport=.*\\s*dport=.*"'
         output: message_2_parser
-      - expr: '$record.message matches "^src=.*\\s*dst=.*\\s*mac=.*\\s*user=.*\\s*"'
+      - expr: '$body.message matches "^src=.*\\s*dst=.*\\s*mac=.*\\s*user=.*\\s*"'
         output: message_3_parser
 
   - id: message_1_parser
     type: regex_parser
-    parse_from: $record.message
+    parse_from: $body.message
     regex: '^src=(?P<src>[^\s]*)\s*dst=(?P<dst>[^\s]*)\s*protocol=(?P<protocol>[^\s]*)\s*sport=(?P<sport>[^\s]*)\s*dport=(?P<dport>[^\s]*)\s*translated_src_ip=(?P<translated_src_ip>[^\s]*)\s*translated_port=(?P<translated_port>[^\s]*)\s*(?P<message>[\s\S]*)'
     output: {{.output}}
 
   - id: message_2_parser
     type: regex_parser
-    parse_from: $record.message
+    parse_from: $body.message
     regex: '^src=(?P<src>[^\s]*)\s*dst=(?P<dst>[^\s]*)\s*mac=(?P<mac>[^\s]*)\s*protocol=(?P<protocol>[^\s]*)\s*sport=(?P<sport>[^\s]*)\s*dport=(?P<dport>[^\s]*)\s*(?P<message>[\s\S]*)'
     output: {{.output}}
 
   - id: message_3_parser
     type: regex_parser
-    parse_from: $record.message
+    parse_from: $body.message
     regex: '^src=(?P<src>[^\s]*)\s*dst=(?P<dst>[^\s]*)\s*mac=(?P<mac>[^\s]*)\s*user=(?P<user>[^\s]*)\s*(?P<message>[\s\S]*)'
     output: {{.output}}
 

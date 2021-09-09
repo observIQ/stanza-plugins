@@ -57,7 +57,7 @@ pipeline:
     start_at: {{ $start_at }}
     multiline:
       line_start_pattern: '\w{3}\s*\d{1,2} \d{2}:\d{2}:\d{2}'
-    labels:
+    attributes:
       log_type: macos.system
       plugin_id: {{ .id }}
     output: system_parser
@@ -80,7 +80,7 @@ pipeline:
     start_at: {{ $start_at }}
     multiline:
       line_start_pattern: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}[+-]\d{2}|^\w{3}\s*\d{1,2} \d{2}:\d{2}:\d{2}'
-    labels:
+    attributes:
       log_type: macos.install
       plugin_id: {{ .id }}
     output: install_parser
@@ -97,20 +97,20 @@ pipeline:
     default: {{ .output }}
     routes:
       - output: time_parser_with_timezone
-        expr: '$record.timestamp != nil and $record.timestamp matches "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}[+-]\\d{2}"'
+        expr: '$body.timestamp != nil and $body.timestamp matches "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}[+-]\\d{2}"'
       - output: time_parser_without_timezone
-        expr: '$record.timestamp != nil and $record.timestamp matches "^\\w{3}\\s*\\d{1,2} \\d{2}:\\d{2}:\\d{2}"'
+        expr: '$body.timestamp != nil and $body.timestamp matches "^\\w{3}\\s*\\d{1,2} \\d{2}:\\d{2}:\\d{2}"'
 
   - id: time_parser_with_timezone
     type: time_parser
-    parse_from: $record.timestamp
+    parse_from: $body.timestamp
     layout_type: gotime
     layout: '2006-01-02 15:04:05-07'
     output: {{ .output }}
 
   - id: time_parser_without_timezone
     type: time_parser
-    parse_from: $record.timestamp
+    parse_from: $body.timestamp
     layout_type: gotime
     layout: 'Jan _2 15:04:05'
     output: {{ .output }}

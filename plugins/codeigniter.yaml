@@ -26,15 +26,15 @@ pipeline:
     start_at: {{ $start_at }}
     multiline:
       line_start_pattern: '^\w+\s+-\s+\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\s+-->\s+'
-    labels:
+    attributes:
       log_type: 'codeigniter'
       plugin_id: {{ .id }}
 
   - type: filter
-    expr: '$record matches "^<\\?php"'
+    expr: '$body matches "^<\\?php"'
 
   - type: regex_parser
-    if: '$record matches "(?P<severity>\\w+)\\s+-\\s+(?P<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})\\s+-->\\s+(?P<message>[\\s\\S]*)"'
+    if: '$body matches "(?P<severity>\\w+)\\s+-\\s+(?P<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})\\s+-->\\s+(?P<message>[\\s\\S]*)"'
     regex: '(?P<severity>\w+)\s+-\s+(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s+-->\s+(?P<message>[\s\S]*)'
     timestamp:
       parse_from: timestamp
@@ -50,9 +50,9 @@ pipeline:
     routes:
       # It appears to be JSON so send it to be parsed as JSON.
       - output: nested_json_parser
-        expr: '$record.message != nil and $record.message matches "^{[\\s\\S]*}\\s*$"'
+        expr: '$body.message != nil and $body.message matches "^{[\\s\\S]*}\\s*$"'
 
   - id: nested_json_parser
     type: json_parser
-    parse_from: $record.message
+    parse_from: $body.message
     output: {{.output}}

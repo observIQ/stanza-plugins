@@ -30,7 +30,7 @@ pipeline:
     include:
       - {{ $general_log_path }}
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: aerospike
       plugin_id: {{ .id }}
     output: aerospike_general_parser
@@ -50,14 +50,14 @@ pipeline:
 
   - id: config_filter
     type: filter
-    expr: '$record.context == "config"'
+    expr: '$body.context == "config"'
 
   - id: namespace_router
     type: router
     routes:
       # Remove empty name space field
       - output: namespace_restructure
-        expr: '$record.namespace == ""'
+        expr: '$body.namespace == ""'
       # namespace not empty
       - output: {{.output}}
         expr: true

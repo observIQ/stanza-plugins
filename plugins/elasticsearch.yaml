@@ -68,7 +68,7 @@ pipeline:
     include:
       - {{ $general_log_path }}
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: elasticsearch.general
       plugin_id: {{ .id }}
     output: elasticsearch_parser
@@ -92,7 +92,7 @@ pipeline:
     include:
       - {{ $deprecation_log_path }}
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: elasticsearch.deprecation
       plugin_id: {{ .id }}
     output: elasticsearch_deprecation_parser
@@ -117,7 +117,7 @@ pipeline:
     include:
       - {{ $gc_log_path }}
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: elasticsearch.gc
       plugin_id: {{ .id }}
     output: elasticsearch_gc_parser

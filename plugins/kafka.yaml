@@ -85,7 +85,7 @@ pipeline:
       line_start_pattern: '\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\]'
     write_to: log_entry
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       plugin_id: {{ .id }}
       log_type: 'kafka.server'
     output: regex_parser
@@ -100,7 +100,7 @@ pipeline:
       line_start_pattern: '\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\]'
     write_to: log_entry
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       plugin_id: {{ .id }}
       log_type: 'kafka.controller'
     output: regex_parser
@@ -115,7 +115,7 @@ pipeline:
       line_start_pattern: '\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\]'
     write_to: log_entry
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       plugin_id: {{ .id }}
       log_type: 'kafka.state_change'
     output: regex_parser
@@ -130,7 +130,7 @@ pipeline:
       line_start_pattern: '\[\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\]'
     write_to: log_entry
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       plugin_id: {{ .id }}
       log_type: 'kafka.log_cleaner'
     output: regex_parser
@@ -154,7 +154,7 @@ pipeline:
     ops:
       - add:
           field: timestamp
-          value_expr: '$record.date_time + "." + $record.milliseconds'
+          value_expr: '$body.date_time + "." + $body.milliseconds'
       - remove: date_time
       - remove: milliseconds
 

@@ -43,7 +43,7 @@ pipeline:
   - id: esxi_input
     type: tcp_input
     listen_address: {{ $listen_address }}
-    labels:
+    attributes:
       log_type: vmware_esxi
       plugin_id: {{ .id }}
     tls:
@@ -55,15 +55,15 @@ pipeline:
     type: router
     default: {{ .output }}
     routes:
-      - expr: '$record matches "^(<(?P<priority>[\\d]*)>)?(?P<timestamp>[a-zA-z]+ \\d{2} \\d{2}:\\d{2}:\\d{2}).*"'
+      - expr: '$body matches "^(<(?P<priority>[\\d]*)>)?(?P<timestamp>[a-zA-z]+ \\d{2} \\d{2}:\\d{2}:\\d{2}).*"'
         output: esxi_parser_1
-      - expr: '$record matches "^(<(?P<priority>[\\d]*)>)?(?P<timestamp>\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d+Z) (?P<hostname>[^ ]+) (?P<service>[^:]+):.*"'
+      - expr: '$body matches "^(<(?P<priority>[\\d]*)>)?(?P<timestamp>\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d+Z) (?P<hostname>[^ ]+) (?P<service>[^:]+):.*"'
         output: esxi_parser_2
-      - expr: '$record matches "^(<(?P<priority>[\\d]*)>)?(?P<timestamp>\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z) (?P<hostname>[^ ]+) (?P<service>[^\\[]*)\\[(?P<pid>[^\\]]*)\\]:.*"'
+      - expr: '$body matches "^(<(?P<priority>[\\d]*)>)?(?P<timestamp>\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z) (?P<hostname>[^ ]+) (?P<service>[^\\[]*)\\[(?P<pid>[^\\]]*)\\]:.*"'
         output: esxi_parser_3
-      - expr: '$record matches "^(<(?P<priority>[\\d]*)>)?(?P<timestamp>\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z) (?P<hostname>[^ ]+) (?P<service>[^:]*):.*"'
+      - expr: '$body matches "^(<(?P<priority>[\\d]*)>)?(?P<timestamp>\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z) (?P<hostname>[^ ]+) (?P<service>[^:]*):.*"'
         output: esxi_parser_4
-      - expr: '$record matches "^(<(?P<priority>[\\d]*)>)?(?P<timestamp>\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d+[+-]\\d{2}:\\d{2}) (?P<hostname>[^ ]+) (?P<service>[^:]*)(\\[(?P<pid>[^\\]]*)\\]:)?.*"'
+      - expr: '$body matches "^(<(?P<priority>[\\d]*)>)?(?P<timestamp>\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d+[+-]\\d{2}:\\d{2}) (?P<hostname>[^ ]+) (?P<service>[^:]*)(\\[(?P<pid>[^\\]]*)\\]:)?.*"'
         output: esxi_parser_5
 
   - id: esxi_parser_1
@@ -108,7 +108,7 @@ pipeline:
     output: severity_parser
 
   - type: severity_parser
-    parse_from: $record.priority
+    parse_from: $body.priority
     mapping:
       emergency: [0,8,16,24,32,40,48,56,64,72,80,88,96,104,112,120,128,136,144,152,160,168,176,184]
       alert: [1,9,17,25,33,41,49,57,65,73,81,89,97,105,113,121,129,137,145,153,161,169,177,185]

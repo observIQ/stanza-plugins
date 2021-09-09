@@ -82,7 +82,7 @@ pipeline:
     encoding: '{{ $encoding }}'
 # {{ end }}
     include_file_name: true
-    labels:
+    attributes:
       plugin_id: {{ .id }}
       log_type: '{{ $log_type }}'
     output: {{ .output }}

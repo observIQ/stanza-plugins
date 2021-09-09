@@ -28,7 +28,7 @@ pipeline:
     include:
       - {{ $file_path }}
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: zookeeper
       plugin_id: {{ .id }}
     output: zookeeper_parser

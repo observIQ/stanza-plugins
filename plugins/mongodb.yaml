@@ -128,9 +128,9 @@ pipeline:
 
   - id: json_parser
     type: json_parser
-    parse_from: $record
+    parse_from: $body
     timestamp:
-      parse_from: $record.t.$date
+      parse_from: $body.t.$date
       #2020-11-03T14:24:07.436-05:00
       layout: '%Y-%m-%dT%H:%M:%S.%f%j'
     severity:
@@ -152,39 +152,39 @@ pipeline:
   - id: restructure_log_entry
     type: restructure
     ops:
-      - remove: $record.t
+      - remove: $body.t
       - move:
-          from: '$record.c'
-          to: '$record.component'
+          from: '$body.c'
+          to: '$body.component'
       - move:
-          from: '$record.ctx'
-          to: '$record.context'
+          from: '$body.ctx'
+          to: '$body.context'
       - move:
-          from: '$record.msg'
-          to: '$record.message'
+          from: '$body.msg'
+          to: '$body.message'
     output: promote_wiredtiger_message
 
   # When message is 'WiredTiger message', data.attr.message
   # always exists, and should be promoted to message
   - id: promote_wiredtiger_message
     type: restructure
-    if: '$record.message == "WiredTiger message"'
+    if: '$body.message == "WiredTiger message"'
     ops:
       - move:
-          from: '$record.message'
-          to: '$record.message_type'
+          from: '$body.message'
+          to: '$body.message_type'
       - move:
-          from: '$record.attr.message'
-          to: '$record.message'
+          from: '$body.attr.message'
+          to: '$body.message'
     output: add_log_type
     
   - id: add_plugin_id
     type: add
-    field: '$labels.plugin_id'
+    field: '$attributes.plugin_id'
     value: {{ .id }}
 
   - id: add_log_type
     type: add
-    field: '$labels.log_type'
+    field: '$attributes.log_type'
     value: 'mongodb'
     output: {{ .output }}

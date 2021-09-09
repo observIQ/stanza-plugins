@@ -46,7 +46,7 @@ pipeline:
   - id: syslogng_udp_input
     type: udp_input
     listen_address: {{ $listen_address }}
-    labels:
+    attributes:
       log_type: syslogng
       plugin_id: {{ .id }}
     output: syslogng_parser
@@ -56,7 +56,7 @@ pipeline:
   - id: syslogng_tcp_input
     type: tcp_input
     listen_address: {{ $listen_address }}
-    labels:
+    attributes:
       log_type: syslogng
       plugin_id: {{ .id }}
     output: syslogng_parser

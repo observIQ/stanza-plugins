@@ -16,7 +16,7 @@ operator:
   type: str()
   include: list(required=False)
   start_at: str(required=False)
-  labels: map(str(), required=False)
+  attributes: map(str(), required=False)
   output: str(required=False) 
   regex: str(required=False)
   timestamp: map(include('timestamp_list'), str(), map(), required=False)
