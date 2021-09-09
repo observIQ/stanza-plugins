@@ -1,0 +1,4 @@
+pipeline:
+- type: cisco_meraki
+  listen_ip: 10.1.1.1
+- type: stdout
