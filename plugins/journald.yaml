@@ -1,5 +1,5 @@
 # Plugin Info
-version: 1.0.1
+version: 1.0.2
 title: Journald
 description: Journald input parser
 min_stanza_version: 1.1.6
@@ -15,6 +15,7 @@ parameters:
     label: Custom Journald Log Path
     description: 'Custom Journald Log path.'
     type: string
+    default: /var/log/journal
     relevant_if:
       enable_journald_log_path:
         equals: true
@@ -38,6 +39,7 @@ parameters:
     default: 200ms
 # Set Defaults
 # {{$enable_journald_log_path := default false .enable_journald_log_path}}
+# {{$journald_log_path := default "/var/log/journal" .journald_log_path}}
 # {{$start_at := default "end" .start_at}}
 # {{$log_type := default "journald" .log_type}}
 # {{$poll_interval := default "200ms" .poll_interval}}
@@ -46,7 +48,7 @@ parameters:
 pipeline:
   - type: journald_input
     # {{ if $enable_journald_log_path }}
-    directory: '{{ $enable_journald_log_path }}'
+    directory: '{{ $journald_log_path }}'
     # {{ end }}
     start_at: {{ $start_at }}
     labels:

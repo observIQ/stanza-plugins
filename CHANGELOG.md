@@ -16,6 +16,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Changed description of `listen_address` to "Parameter Deprecated Use `listen_ip` and `listen_port` instead."
   - Added fall back regex parser in case syslog parser fails to `syslog`, `rsyslog`, `syslogng`, and `vmware_vcenter` plugins. This will attempt to parse severity from priority. The unparsed portion will be put in message.
 
+## Fixed 
+
+- Issue #[314](https://github.com/observIQ/stanza-plugins/issues/314) for nodejs  ([PR315](https://github.com/observIQ/stanza-plugins/pull/315))
+- Journald: Fixed default value for `journald_log_path` when `enable_journald_log_path` is set ([PR319](https://github.com/observIQ/stanza-plugins/pull/319))
+
+
 ## [0.0.73] - 2021-09-02
 
 ### Added
