@@ -7,8 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.74] - Unreleased
 
+### Added
+
+- Added Asterisk plugin ([322](https://github.com/observIQ/stanza-plugins/pull/322))
+
 ### Changed
 
+- Updated `w3c` plugin ([PR318](https://github.com/observIQ/stanza-plugins/pull/318))
+  - Add quote parsing from iis to handle when a pair of single quotes are in the log entry.
+- Updated `microsoft_iis` and `w3c` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
+  - Update plugin to use new w3c plugin.
 - Update `netflow`, `sflow`, `vmware_esxi`, `ubiquiti`, `cisco_meraki`, `syslog`, `rsyslog`, `syslogng`, and `vmware_vcenter` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
   - Added `listen_ip` as parameter
   - Added `listen_port` as parameter
@@ -16,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Changed description of `listen_address` to "Parameter Deprecated Use `listen_ip` and `listen_port` instead."
   - Added fall back regex parser in case syslog parser fails to `syslog`, `rsyslog`, `syslogng`, and `vmware_vcenter` plugins. This will attempt to parse severity from priority. The unparsed portion will be put in message.
 
-## Fixed 
+### Fixed 
 
 - Issue #[314](https://github.com/observIQ/stanza-plugins/issues/314) for nodejs  ([PR315](https://github.com/observIQ/stanza-plugins/pull/315))
 - Journald: Fixed default value for `journald_log_path` when `enable_journald_log_path` is set ([PR319](https://github.com/observIQ/stanza-plugins/pull/319))

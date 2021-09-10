@@ -1,0 +1,4 @@
+pipeline:
+- type: asterisk
+  file_log_path: "some path"
+- type: stdout
