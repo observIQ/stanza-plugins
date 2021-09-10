@@ -87,7 +87,7 @@ parameters:
 
 # Pipeline Template
 pipeline:
-# {{ if eq $source "kubernetes" }}
+  # {{ if eq $source "kubernetes" }}
   - type: kubernetes_container
     pod_name: '{{ $pod_name }}'
     container_name: '{{ $container_name }}'
@@ -96,26 +96,26 @@ pipeline:
     enable_nested_json_parser: false
     exclude:
       - '/var/log/containers/stanza*'
-# {{ end }}
-
-# {{ if eq $source "file" }}
-  - type: file_input
-    start_at: '{{ $start_at }}'
-    include:
-# {{ range $i, $fp := .file_log_path  }}
-      - '{{ $fp }}'
-# {{ end }}
-# {{ if .exclude_file_log_path }}
-    exclude:
-  # {{ range $i, $efp := .exclude_file_log_path  }}
-      - '{{ $efp }}'
   # {{ end }}
-# {{ end }}
-# {{ if $encoding }}
+
+  # {{ if eq $source "file" }}
+  - type: file_input
+    start_at: "{{ $start_at }}"
+    include:
+      # {{ range $i, $fp := .file_log_path  }}
+      - "{{ $fp }}"
+      # {{ end }}
+    # {{ if .exclude_file_log_path }}
+    exclude:
+      # {{ range $i, $efp := .exclude_file_log_path  }}
+      - "{{ $efp }}"
+      # {{ end }}
+    # {{ end }}
+    # {{ if $encoding }}
     encoding: '{{ $encoding }}'
-# {{ end }}
+    # {{ end }}
     include_file_name: true
-# {{ end }}
+  # {{ end }}
 
   - id: add_log_type
     type: add
@@ -125,7 +125,7 @@ pipeline:
   - id: add_plugin_id
     type: add
     field: '$labels.plugin_id'
-    value: {{ .id }} 
+    value: '{{ .id }}'
 
   - id: nodejs_json_parser
     type: json_parser
@@ -147,8 +147,8 @@ pipeline:
 
   - type: add
     if: '$record.httpVersion != nil'
-    field: "protocol"
-    value: "http"
+    field: 'protocol'
+    value: 'http'
 
   - id: httpVersion_move
     type: move
@@ -168,7 +168,8 @@ pipeline:
     from: responseTime
     to: response_time
 
-  - type: severity_parser
+  - id: statuscode_parser
+    type: severity_parser
     if: '$record.statusCode != nil'
     parse_from: $record.statusCode
     preset: none
@@ -178,4 +179,12 @@ pipeline:
       notice: 3xx
       warning: 4xx
       error: 5xx
+
+  # Kubernetes plugin sets most things to info. Parse level if present
+  # Check if status doesn't exist we don't want to overwrite severity if we parsed statusCode field.
+  - id: level_parser
+    type: severity_parser
+    if: '$record.level != nil and $record.status == nil'
+    parse_from: $record.level
+    preserve_to: $record.level
     output: {{ .output }}
