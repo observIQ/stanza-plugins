@@ -92,8 +92,9 @@ pipeline:
       preset: none
       preserve_to: status
       mapping:
-        info: 2xx
-        notice: 3xx
+        info:
+          - 2xx
+          - 3xx
         warning: 4xx
         error: 5xx
     output: {{ .output }}
@@ -107,9 +108,9 @@ pipeline:
     severity:
       parse_from: log_level
       mapping:
-        critical: crit
-        emergency: emerg
-        warning: warn
+        fatal:
+          - crit
+          - emerg
         trace:
           - trace1
           - trace2
@@ -133,8 +134,9 @@ pipeline:
       preset: none
       preserve_to: status
       mapping:
-        info: 2xx
-        notice: 3xx
+        info:
+          - 2xx
+          - 3xx
         warning: 4xx
         error: 5xx
     output: access_protocol_parser

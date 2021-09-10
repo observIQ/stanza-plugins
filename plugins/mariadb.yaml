@@ -235,7 +235,7 @@ pipeline:
     severity:
       parse_from: mariadb_severity
       mapping:
-        notice:
+        info:
           - note
     output: {{ .output }}
 
@@ -248,7 +248,7 @@ pipeline:
     severity:
       parse_from: mariadb_severity
       mapping:
-        notice:
+        info:
           - note
     output: {{ .output }}
   # {{ end }}

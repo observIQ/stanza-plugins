@@ -228,7 +228,7 @@ pipeline:
     severity:
       parse_from: mysql_severity
       mapping:
-        notice:
+        info:
           - note
     output: {{ .output }}
   # {{ end }}

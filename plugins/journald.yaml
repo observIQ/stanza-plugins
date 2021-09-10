@@ -62,12 +62,12 @@ pipeline:
     parse_from: $body.PRIORITY
     if: '$body.PRIORITY != nil'
     mapping:
-      emergency: 0
-      alert: 1
-      critical: 2
+      fatal3: 0
+      fatal2: 1
+      fatal: 2
       error: 3
       warning: 4
-      notice: 5
+      info2: 5
       info: 6
       debug: 7
     output: promote_message

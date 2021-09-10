@@ -180,7 +180,7 @@ pipeline:
         info: i
         warning: w
         error: e
-        critical: c
+        fatal: c
     timestamp:
       parse_from: timestamp
       layout: '%m%d %H:%M:%S.%s'
@@ -228,12 +228,12 @@ pipeline:
   - type: severity_parser
     parse_from: $body.PRIORITY
     mapping:
-      emergency: 0
-      alert: 1
-      critical: 2
+      fatal3: 0
+      fatal2: 1
+      fatal: 2
       error: 3
       warning: 4
-      notice: 5
+      info2: 5
       info: 6
       debug: 7
     output: {{ .output }}
@@ -254,7 +254,7 @@ pipeline:
         info: i
         warning: w
         error: e
-        critical: c
+        fatal: c
     output: drop_time
 
   - id: drop_time

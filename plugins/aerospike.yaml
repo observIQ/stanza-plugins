@@ -45,7 +45,7 @@ pipeline:
       parse_from: aerospike_severity
       mapping:
         info: detail
-        critical: 'failed assertion'
+        fatal: 'failed assertion'
     output: config_filter
 
   - id: config_filter

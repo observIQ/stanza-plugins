@@ -57,7 +57,7 @@ pipeline:
       mapping:
         debug: d
         info: i
-        warning: w
+        warn: w
         error: e
-        alert: f
+        fatal: f
     output: {{.output}}

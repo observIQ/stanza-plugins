@@ -186,8 +186,9 @@ pipeline:
       parse_from: status
       preserve_to: status
       mapping:
-        info: 2xx
-        notice: 3xx
+        info:
+          - 2xx
+          - 3xx
         warning: 4xx
         error: 5xx
     output: {{ .output }}
@@ -203,8 +204,9 @@ pipeline:
       parse_from: status
       preserve_to: status
       mapping:
-        info: 2xx
-        notice: 3xx
+        info:
+          - 2xx
+          - 3xx
         warning: 4xx
         error: 5xx
 
@@ -227,7 +229,8 @@ pipeline:
     severity:
       parse_from: log_level
       mapping:
-        critical: crit
-        emergency: emerg
+        fatal:
+          - crit
+          - emerg
     output: {{ .output }}
   # {{ end }}

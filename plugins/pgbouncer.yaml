@@ -39,9 +39,9 @@ pipeline:
     severity:
       parse_from: severity
       mapping:
-        critical: fatal
-        info: log
-        notice: stats
+        info:
+          - log
+          - stats
         debug: noise
     output: time_parser_router
 

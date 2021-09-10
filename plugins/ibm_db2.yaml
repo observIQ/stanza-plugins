@@ -50,18 +50,16 @@ pipeline:
     severity:
       parse_from: db2_severity
       mapping:
-        emergency: fatal
-        alert: severe
+        fatal: severe
         error:
           - error
         warning:
           - 'Warning (OS)'
-        notice:
-          - config
-          - detail
         info:
           - audit
           - event
+          - config
+          - detail
         debug:
           - fine
           - finer

@@ -83,9 +83,6 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hbase_severity
-      mapping:
-        warning: warn
-        emergency: fatal
     output: {{.output}}
 
   - id: master_startup_regex_parser
@@ -119,9 +116,6 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hbase_severity
-      mapping:
-        warning: warn
-        emergency: fatal
     output: {{.output}}
 
   - id: region_startup_regex_parser
@@ -155,9 +149,6 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: hbase_severity
-      mapping:
-        warning: warn
-        emergency: fatal
     output: {{.output}}
 
   - id: zookeeper_startup_regex_parser

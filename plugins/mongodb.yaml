@@ -113,7 +113,7 @@ pipeline:
     severity:
       parse_from: severity
       mapping:
-        critical: F
+        fatal: F
         error: E
         warning: W
         info: I
@@ -136,7 +136,7 @@ pipeline:
     severity:
       parse_from: s
       mapping:
-        critical: F
+        fatal: F
         error: E
         warning: W
         info: I

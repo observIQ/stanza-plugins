@@ -167,8 +167,6 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
-      mapping:
-        warning: warn
     output: {{.output}}
 # {{ end }}
 
@@ -193,8 +191,6 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
-      mapping:
-        warning: warn
     output: {{.output}}
 # {{ end }}
 
@@ -220,9 +216,10 @@ pipeline:
       preset: none
       preserve_to: status
       mapping:
-        info: 2xx
-        notice: 3xx
-        warning: 4xx
+        info: 
+          - 2xx
+          - 3xx
+        warn: 4xx
         error: 5xx
     output: {{.output}}
 # {{ end }}
@@ -249,9 +246,10 @@ pipeline:
       preset: none
       preserve_to: status
       mapping:
-        info: 2xx
-        notice: 3xx
-        warning: 4xx
+        info:
+          - 2xx
+          - 3xx
+        warn: 4xx
         error: 5xx
     output: {{.output}}
 # {{ end }}

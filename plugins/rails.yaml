@@ -60,8 +60,9 @@ pipeline:
     preset: none
     preserve_to: status
     mapping:
-      info: 2xx
-      notice: 3xx
+      info:
+        - 2xx
+        - 3xx
       warning: 4xx
       error: 5xx
 
@@ -75,9 +76,6 @@ pipeline:
     if: '$body.severity != nil'
     parse_from: $body.severity
     preserve_to: $body.rails_severity
-    mapping:
-      critical: fatal
-      warning: warn
     output: {{ .output }}
 
   - id: error_regex_parser
@@ -91,7 +89,4 @@ pipeline:
     severity:
       parse_from: severity_text
       preserve_to: severity_text
-      mapping:
-        critical: fatal
-        warning: warn
     output: {{ .output }}

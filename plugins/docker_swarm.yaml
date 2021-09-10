@@ -66,8 +66,6 @@ pipeline:
     regex: '^time="(?P<timestamp>[^"]*)" level=(?P<dockerd_severity>[^ ]*) msg=(?P<message>.*)'
     severity:
       parse_from: dockerd_severity
-      mapping:
-        warning: warn
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%s%j'
@@ -79,8 +77,6 @@ pipeline:
     regex: '^time="(?P<timestamp>[^"]*)" level=(?P<containerd_severity>[^ ]*) msg=(?P<message>.*)'
     severity:
       parse_from: containerd_severity
-      mapping:
-        warning: warn
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%s%j'

@@ -43,7 +43,4 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S'
     severity:
       parse_from: jboss_severity
-      mapping:
-        emergency: fatal
-        warning: warn
     output: {{ .output }}
