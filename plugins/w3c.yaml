@@ -39,6 +39,14 @@ parameters:
       - beginning
       - end
     default: end
+  - name: delete_after_read
+    label: Delete After Read
+    description: 'Delete files after reading all entries, requires start_at: beginning'
+    type: bool
+    default: false
+    relevant_if:
+      start_at:
+        equals: "beginning"
   - name: include_file_name
     label: Include File Name
     description: Include File Name as a label
@@ -78,6 +86,7 @@ parameters:
 # {{$encoding := default "nop" .encoding}}
 # {{$log_type := default "w3c" .log_type}}
 # {{$start_at := default "end" .start_at}}
+# {{$delete_after_read := default false .delete_after_read}}
 # {{$include_file_name := default true .include_file_name}}
 # {{$include_file_path := default false .include_file_path}}
 # {{$include_file_name_resolved := default false .include_file_name_resolved}}
@@ -90,6 +99,7 @@ parameters:
 pipeline:
   - type: file_input
     start_at: '{{ $start_at }}'
+    delete_after_read: '{{ $delete_after_read }}'
     label_regex: '^#(?P<key>.*?): (?P<value>.*)'
     include_file_name: {{ $include_file_name }}
     include_file_path: {{ $include_file_path }}
