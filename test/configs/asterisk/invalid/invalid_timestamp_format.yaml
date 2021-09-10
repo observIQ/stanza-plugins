@@ -1,0 +1,6 @@
+pipeline:
+- type: asterisk
+  file_log_path: 
+  - "some path"
+  timestamp_format: 'ISO 8505 with Seconds'
+- type: stdout

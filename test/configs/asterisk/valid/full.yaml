@@ -1,0 +1,10 @@
+pipeline:
+- type: asterisk
+  file_log_path: 
+  - "some path"
+  exclude_file_log_path:
+  - "log.gz"
+  encoding: utf-8
+  timestamp_format: 'ISO 8501 with Milliseconds'
+  start_at: beginning
+- type: stdout
