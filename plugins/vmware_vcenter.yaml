@@ -21,6 +21,7 @@ parameters:
     type: string
     default: ""
     advanced_config: true
+    hidden: true
   - name: max_buffer_size
     label: Max Buffer Size
     description: Maximum size of buffer that may be allocated while reading TCP input

@@ -20,6 +20,7 @@ parameters:
     type: string
     default: ""
     advanced_config: true
+    hidden: true
 
 # Set Defaults
 # {{$listen_address := default "" .listen_address}}

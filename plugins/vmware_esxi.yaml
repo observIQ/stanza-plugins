@@ -20,6 +20,7 @@ parameters:
     type: string
     default: ""
     advanced_config: true
+    hidden: true
   - name: enable_tls
     label: Enable TLS
     description: Enable TLS for the TCP listener

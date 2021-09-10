@@ -46,6 +46,7 @@ parameters:
     type: string
     default: ""
     advanced_config: true
+    hidden: true
 
 # Set Defaults
 # {{$listen_address := default "0.0.0.0:514" .listen_address}}
