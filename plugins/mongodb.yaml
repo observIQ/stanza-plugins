@@ -176,7 +176,7 @@ pipeline:
       - move:
           from: '$record.attr.message'
           to: '$record.message'
-    output: add_log_type
+    output: add_plugin_id
     
   - id: add_plugin_id
     type: add
