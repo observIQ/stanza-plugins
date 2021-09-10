@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 1.0.0
 title: Syslog-ng
 description: Log parser for Syslog-ng
 parameters:

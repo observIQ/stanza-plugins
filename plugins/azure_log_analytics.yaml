@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 1.0.0
 title: Azure Log Analytics
 description: Azure Log Analytics input
 min_stanza_version: 0.13.20

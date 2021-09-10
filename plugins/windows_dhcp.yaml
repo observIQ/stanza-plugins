@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.7
+version: 1.0.0
 title: Windows DHCP
 description: Log parser for Windows DHCP
 supported_platforms: 

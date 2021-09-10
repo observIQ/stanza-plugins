@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.4
+version: 1.0.0
 title: JBoss
 description: 'Log parser for JBoss. This plugin expects the following starting format: %d{yyyy-MM-dd HH\:mm\:ss,SSS} %-5p [%c] (%t)'
 parameters:

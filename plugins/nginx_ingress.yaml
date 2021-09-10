@@ -1,4 +1,4 @@
-version: 0.0.6
+version: 1.0.0
 title: Nginx Ingress
 description: Log parser for Nginx Ingress for Kubernetes
 supported_platforms:

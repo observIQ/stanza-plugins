@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 1.0.0
 title: Azure Event Hub
 description: Azure Event Hub input parser
 min_stanza_version: 0.13.20

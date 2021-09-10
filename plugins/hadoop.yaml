@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.3
+version: 1.0.0
 title: Apache Hadoop
 description: Log parser for Apache Hadoop
 parameters:

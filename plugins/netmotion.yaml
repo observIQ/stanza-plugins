@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 1.0.0
 title: Netmotion
 description: Log parser for Netmotion Syslog
 min_stanza_version: 0.13.19

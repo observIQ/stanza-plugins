@@ -1,4 +1,4 @@
-version: 0.0.7
+version: 1.0.0
 title: IBM Db2
 description: Log parser for IBM Db2
 parameters:

@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.5
+version: 1.0.0
 title: Windows Event Log
 description: Windows Event Log Parser
 supported_platforms: 

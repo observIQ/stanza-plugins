@@ -1,4 +1,4 @@
-version: 0.0.2
+version: 1.0.0
 title: uWSGI Log Parser
 description: Log parser uWSGI formatted logs
 min_stanza_version: 0.14.0

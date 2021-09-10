@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 1.0.0
 title: W3C
 description: File Input W3C Parser
 min_stanza_version: 1.2.0

@@ -1,4 +1,4 @@
-version: 0.0.13
+version: 1.0.0
 title: Kubernetes Node
 description: Log parser for Kubernetes Node
 supported_platforms:

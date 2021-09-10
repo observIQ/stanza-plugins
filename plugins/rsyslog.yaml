@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 1.0.0
 title: Rsyslog
 description: Log parser for Rsyslog
 parameters:

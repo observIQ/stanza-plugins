@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 1.0.0
 title: Ruby on Rails
 description: Ruby on Rails log parser. This parser handles json output from lograge.
 min_stanza_version: 0.13.12

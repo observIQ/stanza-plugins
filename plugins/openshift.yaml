@@ -1,5 +1,5 @@
 ---
-version: 0.0.9
+version: 1.0.0
 title: Openshift
 description: Log parser for Openshift
 min_stanza_version: 1.1.6

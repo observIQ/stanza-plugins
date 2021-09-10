@@ -1,4 +1,4 @@
-version: 0.0.1
+version: 1.0.0
 title: CodeIgniter Log Parser
 description: Log parser for CodeIgniter formatted logs
 parameters:

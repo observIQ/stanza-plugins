@@ -1,4 +1,4 @@
-version: 0.0.13
+version: 1.0.0
 title: Nginx
 description: Log parser for Nginx
 min_stanza_version: 0.13.12

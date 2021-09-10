@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.3
+version: 1.0.0
 title: CouchDB
 description: Log parser for CouchDB
 parameters:

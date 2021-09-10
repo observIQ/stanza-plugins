@@ -1,4 +1,4 @@
-version: 0.0.1
+version: 1.0.0
 title: MariaDB
 description: Log parser for MariaDB
 min_stanza_version: 0.13.17

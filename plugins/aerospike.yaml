@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.6
+version: 1.0.0
 title: Aerospike
 description: Log parser for Aerospike
 parameters:

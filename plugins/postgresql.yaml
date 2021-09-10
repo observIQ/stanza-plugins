@@ -1,4 +1,4 @@
-version: 0.0.7
+version: 1.0.0
 title: PostgreSQL
 description: 'Log parser for PostgreSQL. This plugin expects the custom settings in postgresql.conf. See our help documentation for setup requirements.'
 parameters:

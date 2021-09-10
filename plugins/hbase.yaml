@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.5
+version: 1.0.0
 title: Apache HBase
 description: Log parser for Apache HBase
 parameters:

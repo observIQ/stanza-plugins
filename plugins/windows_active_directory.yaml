@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.3
+version: 1.0.0
 title: Microsoft Active Directory
 description: Log parser for Microsoft Active Directory
 supported_platforms: 
