@@ -125,7 +125,7 @@ pipeline:
   - id: add_plugin_id
     type: add
     field: '$labels.plugin_id'
-    value: '{{ .id }}'
+    value: 'nodejs'
 
   - id: nodejs_json_parser
     type: json_parser
