@@ -65,6 +65,7 @@ pipeline:
     labels:
       log_type: rsyslog
       plugin_id: {{ .id }}
+    add_labels: true
     output: rsyslog_parser
 # {{ end }}
 
@@ -75,6 +76,7 @@ pipeline:
     labels:
       log_type: rsyslog
       plugin_id: {{ .id }}
+    add_labels: true
     output: rsyslog_parser
 # {{ end }}
 
