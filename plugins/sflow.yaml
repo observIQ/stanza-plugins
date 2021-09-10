@@ -1,14 +1,14 @@
 # Plugin Info
-version: 0.0.1
+version: 0.0.2
 title: Sflow
 description: Log parser for Sflow
 min_stanza_version: 1.1.0
 parameters:
-  - name: listen_address
-    label: Listen Address
-    description: The IP address to bind to
-    type: string
-    default: "0.0.0.0:6343"
+  - name: listen_port
+    label: Listen Port
+    description: A port which the agent will listen for syslog messages
+    type: int
+    default: 6343
   - name: sampling_enable
     label: Sampling
     description: Enable Netflow sampling
@@ -33,9 +33,25 @@ parameters:
     relevant_if:
       sampling_enable:
         equals: true
+  - name: listen_ip
+    label: Listen IP
+    description: A syslog ip address of the form `<ip>`
+    type: string
+    default: "0.0.0.0"
+    advanced_config: true
+  - name: listen_address
+    label: Listen Address
+    description: Parameter Deprecated Use 'listen_ip' and 'listen_port' instead.
+    type: string
+    default: ""
+    advanced_config: true
+    hidden: true
 
 # Set Defaults
-# {{$listen_address := default "0.0.0.0" .listen_address}}
+# {{$listen_address := default "" .listen_address}}
+# {{$length := len $listen_address}}
+# {{$listen_ip := default "0.0.0.0" .listen_ip}}
+# {{$listen_port := default 6343 .listen_port}}
 # {{$sampling_enable := default false .sampling_enable}}
 # {{$sampling_drop_rate := default 0.0 .sampling_drop_rate}}
 
@@ -43,7 +59,7 @@ parameters:
 pipeline:
 - type: goflow_input
   mode: sflow
-  listen_address: {{ $listen_address }}
+  listen_address: '{{ if eq $length 0 }}{{ $listen_ip }}:{{ $listen_port }}{{ else }}{{ $listen_address }}{{ end }}'
   labels:
     log_type: sflow
     plugin_id: {{ .id }}

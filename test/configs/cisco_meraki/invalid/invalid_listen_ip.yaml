@@ -1,0 +1,4 @@
+pipeline:
+- type: cisco_meraki
+  listen_ip: 5140
+- type: stdout

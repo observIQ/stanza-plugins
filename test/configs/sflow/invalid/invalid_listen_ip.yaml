@@ -1,4 +1,4 @@
 pipeline:
 - type: sflow
-  mode: v5
+  listen_ip: 5140
 - type: stdout
