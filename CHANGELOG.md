@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Add quote parsing from iis to handle when a pair of single quotes are in the log entry.
 - Added net.transport, net.peer.ip, net.peer.port, net.host.ip and net.host.port labels to all tcp / udp plugins ([PR320](https://github.com/observIQ/stanza-plugins/pull/320))
   - cisco_asa, cisco_meraki, rsyslog, syslog, syslogng, ubiquiti, vmware_esxi, vmware_vcenter
+- Updated `microsoft_iis` and `w3c` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
+  - Update plugin to use new w3c plugin.
 
 ### Fixed 
 
