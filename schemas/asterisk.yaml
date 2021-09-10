@@ -43,3 +43,4 @@ mapping_list:
   alert: str(required=False)
   emergency: str(required=False)
   catastrophe: str(required=False)
+  fatal: str(required=False)
