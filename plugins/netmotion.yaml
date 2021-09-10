@@ -21,6 +21,7 @@ pipeline:
     attributes:
       log_type: netmotion
       plugin_id: {{ .id }}
+    add_labels: true
     output: handle_new_lines
 
   # tcp input uses \n to break messages into seperate

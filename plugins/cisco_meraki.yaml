@@ -3,23 +3,40 @@ version: 1.0.0
 title: Cisco Meraki
 description: Log parser for Cisco Meraki
 parameters:
+  - name: listen_port
+    label: Listen Port
+    description: A port which the agent will listen for syslog messages
+    type: int
+    default: 5140
+  - name: listen_ip
+    label: Listen IP
+    description: A syslog ip address of the form `<ip>`
+    type: string
+    default: "0.0.0.0"
+    advanced_config: true
   - name: listen_address
     label: Listen Address
-    description: A syslog address of the form `<ip>:<port>`
+    description: Parameter Deprecated Use `listen_ip` and `listen_port` instead.
     type: string
-    default: "0.0.0.0:5140"
+    default: ""
+    advanced_config: true
+    hidden: true
 
 # Set Defaults
-# {{$listen_address := default "0.0.0.0:5140" .listen_address}}
+# {{$listen_address := default "" .listen_address}}
+# {{$length := len $listen_address}}
+# {{$listen_ip := default "0.0.0.0" .listen_ip}}
+# {{$listen_port := default 5140 .listen_port}}
 
 # Pipeline Template
 pipeline:
   - id: meraki_input
     type: udp_input
-    listen_address: {{ $listen_address }}
+    listen_address: '{{ if eq $length 0 }}{{ $listen_ip }}:{{ $listen_port }}{{ else }}{{ $listen_address }}{{ end }}'
     attributes:
       log_type: cisco_meraki
       plugin_id: {{ .id }}
+    add_labels: true
 
   - id: regex_router
     type: router
@@ -80,7 +97,6 @@ pipeline:
     parse_from: $body.message
     regex: '^src=(?P<src>[^\s]*)\s*dst=(?P<dst>[^\s]*)\s*mac=(?P<mac>[^\s]*)\s*user=(?P<user>[^\s]*)\s*(?P<message>[\s\S]*)'
     output: {{.output}}
-
 
   - id: catch_all_parser
     type: regex_parser

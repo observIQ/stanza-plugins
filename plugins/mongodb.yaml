@@ -124,7 +124,7 @@ pipeline:
           - D3
           - D4
           - D5
-    output: {{ .output }}
+    output: add_plugin_id
 
   - id: json_parser
     type: json_parser

@@ -3,11 +3,11 @@ version: 1.0.0
 title: Rsyslog
 description: Log parser for Rsyslog
 parameters:
-  - name: listen_address
-    label: Listen Address
-    description: An rsyslog address of the form `<ip>:<port>`
-    type: string
-    default: "0.0.0.0:514"
+  - name: listen_port
+    label: Listen Port
+    description: A port which the agent will listen for syslog messages
+    type: int
+    default: 514
   - name: connection_type
     label: Connection Type
     description: The type of Rsyslog connection (`udp` or `tcp`)
@@ -33,9 +33,26 @@ parameters:
     relevant_if:
       protocol:
         equals: "rfc3164 (BSD)"
+    advanced_config: true
+  - name: listen_ip
+    label: Listen IP
+    description: A syslog ip address of the form `<ip>`
+    type: string
+    default: "0.0.0.0"
+    advanced_config: true
+  - name: listen_address
+    label: Listen Address
+    description: Parameter Deprecated Use `listen_ip` and `listen_port` instead.
+    type: string
+    default: ""
+    advanced_config: true
+    hidden: true
 
 # Set Defaults
-# {{$listen_address := default "0.0.0.0:514" .listen_address}}
+# {{$listen_address := default "" .listen_address}}
+# {{$length := len $listen_address}}
+# {{$listen_ip := default "0.0.0.0" .listen_ip}}
+# {{$listen_port := default 514 .listen_port}}
 # {{$connection_type := default "udp" .connection_type}}
 # {{$protocol := default "rfc5424 (IETF)" .protocol}}
 # {{$location := default "UTC" .location}}
@@ -45,20 +62,22 @@ pipeline:
 # {{ if eq $connection_type "udp" }}
   - id: rsyslog_udp_input
     type: udp_input
-    listen_address: {{ $listen_address }}
+    listen_address: '{{ if eq $length 0 }}{{ $listen_ip }}:{{ $listen_port }}{{ else }}{{ $listen_address }}{{ end }}'
     attributes:
       log_type: rsyslog
       plugin_id: {{ .id }}
+    add_labels: true
     output: rsyslog_parser
 # {{ end }}
 
 # {{ if eq $connection_type "tcp" }}
   - id: rsyslog_tcp_input
     type: tcp_input
-    listen_address: {{ $listen_address }}
+    listen_address: '{{ if eq $length 0 }}{{ $listen_ip }}:{{ $listen_port }}{{ else }}{{ $listen_address }}{{ end }}'
     attributes:
       log_type: rsyslog
       plugin_id: {{ .id }}
+    add_labels: true
     output: rsyslog_parser
 # {{ end }}
 

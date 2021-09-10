@@ -1,5 +1,5 @@
 pipeline:
-- type: sflow
+- type: netflow
   mode: v5
   listen_address: 0.0.0.0:2000
   sampling_enable: true

@@ -1,0 +1,5 @@
+pipeline:
+- type: netflow
+  netflow_version: ipfix
+  listen_port: "5140"
+- type: stdout

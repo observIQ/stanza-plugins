@@ -5,12 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.74] - Unreleased
+## [0.0.74] - 2021-09-10
 
-## Fixed 
+### Added
+
+- Added Asterisk plugin ([322](https://github.com/observIQ/stanza-plugins/pull/322))
+
+### Changed
+
+- Updated `w3c` plugin ([PR318](https://github.com/observIQ/stanza-plugins/pull/318))
+  - Add quote parsing from iis to handle when a pair of single quotes are in the log entry.
+- Added net.transport, net.peer.ip, net.peer.port, net.host.ip and net.host.port labels to all tcp / udp plugins ([PR320](https://github.com/observIQ/stanza-plugins/pull/320))
+  - cisco_asa, cisco_meraki, rsyslog, syslog, syslogng, ubiquiti, vmware_esxi, vmware_vcenter
+- Updated `microsoft_iis` and `w3c` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
+  - Update plugin to use new w3c plugin.
+- Update `netflow`, `sflow`, `vmware_esxi`, `ubiquiti`, `cisco_meraki`, `syslog`, `rsyslog`, `syslogng`, and `vmware_vcenter` plugin ([PR316](https://github.com/observIQ/stanza-plugins/pull/316))
+  - Added `listen_ip` as parameter
+  - Added `listen_port` as parameter
+  - Added parameter `advanced_config` set to true on `listen_address`, `listen_ip` and `location`. This is to be used in UI to hide `listen_ip` behind an advanced option
+  - Changed description of `listen_address` to "Parameter Deprecated Use `listen_ip` and `listen_port` instead."
+  - Added fall back regex parser in case syslog parser fails to `syslog`, `rsyslog`, `syslogng`, and `vmware_vcenter` plugins. This will attempt to parse severity from priority. The unparsed portion will be put in message.
+
+### Fixed 
 
 - Issue #[314](https://github.com/observIQ/stanza-plugins/issues/314) for nodejs  ([PR315](https://github.com/observIQ/stanza-plugins/pull/315))
 - Journald: Fixed default value for `journald_log_path` when `enable_journald_log_path` is set ([PR319](https://github.com/observIQ/stanza-plugins/pull/319))
+- Mongodb: Fixed missing plugin_id label
 
 ## [0.0.73] - 2021-09-02
 
@@ -18,11 +38,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added Rails plugin ([308](https://github.com/observIQ/stanza-plugins/pull/308))
 
 ### Changed
+
 - Added plugin ID to json, mongo plugins
 
 ## [0.0.72] - 2021-08-25
 
 ### Added
+
 - Added W3C plugin ([PR307](https://github.com/observIQ/stanza-plugins/pull/307))
 
 ## [0.0.71] - 2021-08-23

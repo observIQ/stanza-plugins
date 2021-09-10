@@ -3,23 +3,40 @@ version: 1.0.0
 title: Cisco ASA
 description: Log parser for Cisco ASA
 parameters:
+  - name: listen_port
+    label: Listen Port
+    description: A port which the agent will listen for syslog messages
+    type: int
+    default: 5140
+  - name: listen_ip
+    label: Listen IP
+    description: A syslog ip address of the form `<ip>`
+    type: string
+    default: "0.0.0.0"
+    advanced_config: true
   - name: listen_address
     label: Listen Address
-    description: A syslog address of the form `<ip>:<port>`
+    description: Parameter Deprecated Use `listen_ip` and `listen_port` instead.
     type: string
-    default: "0.0.0.0:5140"
+    default: ""
+    advanced_config: true
+    hidden: true
 
 # Set Defaults
-# {{$listen_address := default "0.0.0.0:5140" .listen_address}}
+# {{$listen_address := default "" .listen_address}}
+# {{$length := len $listen_address}}
+# {{$listen_ip := default "0.0.0.0" .listen_ip}}
+# {{$listen_port := default 5140 .listen_port}}
 
 # Pipeline Template
 pipeline:
   - id: cisco_input
     type: tcp_input
-    listen_address: {{ $listen_address }}
+    listen_address: '{{ if eq $length 0 }}{{ $listen_ip }}:{{ $listen_port }}{{ else }}{{ $listen_address }}{{ end }}'
     attributes:
       log_type: cisco_asa
       plugin_id: {{ .id }}
+    add_labels: true
     output: cisco_parser
 
   - id: cisco_parser
