@@ -55,6 +55,7 @@ pipeline:
     labels:
       log_type: vmware_vcenter
       plugin_id: {{ .id }}
+    add_labels: true
     tls:
       enable: {{ $enable_tls }}
       certificate: {{ $certificate_file }}

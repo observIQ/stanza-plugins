@@ -20,6 +20,7 @@ pipeline:
     labels:
       log_type: cisco_asa
       plugin_id: {{ .id }}
+    add_labels: true
     output: cisco_parser
 
   - id: cisco_parser
