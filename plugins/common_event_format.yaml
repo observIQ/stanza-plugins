@@ -1,0 +1,132 @@
+# Plugin Info
+version: 0.0.1
+title: Common Event Format Log Parser
+description: File Input Common Event Format Parser
+min_stanza_version: 1.2.3
+supported_platforms:
+  - linux
+  - windows
+  - kubernetes
+  - macos
+parameters:
+  - name: file_log_path
+    label: File Path
+    description: Specify a single path or multiple paths to read one or many files. You may also use a wildcard (*) to read multiple files within a directory.
+    type: strings
+  - name: exclude_file_log_path
+    label: Exclude File Path
+    description: Specify a single path or multiple paths to exclude one or many files from being read. You may also use a wildcard (*) to exclude multiple files from being read within a directory.
+    type: strings
+    default: []
+  - name: log_type
+    label: Type
+    description: Adds the specified 'Type' as a label to each log message.
+    type: string
+    default: json
+  - name: start_at
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+# Set Defaults
+# {{$log_type := default "cef" .log_type}}
+# {{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+  - type: file_input
+    start_at: '{{ $start_at }}'
+    include:
+# {{ range $i, $fp := .file_log_path  }}
+      - '{{ $fp }}'
+# {{ end }}
+# {{ if .exclude_file_log_path }}
+    exclude:
+  # {{ range $i, $efp := .exclude_file_log_path  }}
+      - '{{ $efp }}'
+  # {{ end }}
+# {{ end }}
+    encoding: 'utf-8'
+    include_file_name: true
+
+  - id: add_plugin_id
+    type: add
+    field: '$labels.plugin_id'
+    value: 'common_event_format'
+
+  - id: add_log_type
+    type: add
+    field: '$labels.log_type'
+    value: '{{ $log_type }}'
+
+  # Router to check for syslog prefix
+  - id: timestamp
+    type: router
+    default: cef_parser_no_syslog_prefix
+    routes:
+      - expr: '$record matches "^\\w{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2}"'
+        output: timestamp_parser
+  
+  # Timestamp Jan 02 15:04:05 - Parse syslog prefix. 
+  # If more than one timestamp parser is required then it will need to be move to a stand alone timestamp_parser
+  - id: timestamp_parser
+    type: regex_parser
+    parse_from: $record
+    regex: '^(?P<timestamp>\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2})\s+((?P<hostname>[^\s]+)\s+)?(?P<cef_headers>[\d\D]+)'
+    timestamp:
+      parse_from: timestamp
+      layout_type: gotime
+      layout: 'Jan 02 15:04:05'
+
+  # Parse CEF log entry with syslog prefix
+  # CEF:<Version>|<Device Vendor>|<Device Product>|<Device Version>|<Signature ID>|<Name>|<Severity>|<Extensions>
+  - id: cef_parser_syslog_prefix
+    type: csv_parser
+    if: '$record.cef_headers != nil'
+    parse_from: $record.cef_headers
+    header: 'version|device_vendor|device_product|device_version|signature_id|name|severity|extensions'
+    header_delimiter: "|"
+    delimiter: "|"
+    output: version_parser
+  
+  # Parse CEF log entry without syslog prefix
+  - id: cef_parser_no_syslog_prefix
+    type: csv_parser
+    header: 'version|device_vendor|device_product|device_version|signature_id|name|severity|extensions'
+    header_delimiter: "|"
+    delimiter: "|"
+    output: version_parser
+
+  # Parse version as integer from version field.
+  - id: version_parser
+    type: regex_parser
+    regex: 'CEF:(?P<version>[^\|]*)'
+    parse_from: $record.version
+
+  # Parse severity using CEF severity standards.
+  # Currently not putting unknown which is in standard in parser so it will be assigned default.
+  - type: severity_parser
+    if: '$record.severity != nil'
+    parse_from: $record.severity
+    preset: none
+    mapping:
+      info:
+        - min: 1
+          max: 3
+        - low
+      warning:
+        - min: 4
+          max: 6
+        - medium
+      error:
+        - min: 7
+          max: 8
+        - high
+      critical:
+        - min: 9
+          max: 10
+        - very-high
+    output: {{ .output }}
