@@ -46,9 +46,9 @@ pipeline:
   - type: severity_parser
     parse_from: $body.PRIORITY
     mapping:
-      fatal3: 0
-      fatal2: 1
-      fatal: 2
+      fatal2: 0
+      error3: 1
+      error2: 2
       error: 3
       warning: 4
       info2: 5

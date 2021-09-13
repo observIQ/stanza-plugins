@@ -143,6 +143,12 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
+      mapping:
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{.output}}
 # {{ end }}
 
@@ -167,6 +173,12 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
+      mapping:
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{.output}}
 # {{ end }}
 
@@ -191,6 +203,12 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
+      mapping:
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{.output}}
 # {{ end }}
 
@@ -216,9 +234,8 @@ pipeline:
       preset: none
       preserve_to: status
       mapping:
-        info: 
-          - 2xx
-          - 3xx
+        info: 2xx
+        info2: 3xx
         warn: 4xx
         error: 5xx
     output: {{.output}}
@@ -246,9 +263,8 @@ pipeline:
       preset: none
       preserve_to: status
       mapping:
-        info:
-          - 2xx
-          - 3xx
+        info: 2xx
+        info2: 3xx
         warn: 4xx
         error: 5xx
     output: {{.output}}
@@ -275,6 +291,12 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
+      mapping:
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{.output}}
 # {{ end }}
 
@@ -299,5 +321,11 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
+      mapping:
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{.output}}
 # {{ end }}

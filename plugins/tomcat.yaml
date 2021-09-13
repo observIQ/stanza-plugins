@@ -152,9 +152,8 @@ pipeline:
       parse_from: status
       preserve_to: status
       mapping:
-        info:
-          - 2xx
-          - 3xx
+        info: 2xx
+        info2: 3xx
         warning: 4xx
         error: 5xx
     output: {{ .output }}
@@ -170,9 +169,8 @@ pipeline:
       preset: none
       preserve_to: status
       mapping:
-        info:
-          - 2xx
-          - 3xx
+        info: 2xx
+        info2: 3xx
         warning: 4xx
         error: 5xx
     output: access_protocol_parser
@@ -210,7 +208,7 @@ pipeline:
       parse_from: tomcat_severity
       mapping:
         info: config
-        fatal: severe
+        fatal2: severe
         debug:
           - fine
           - finer

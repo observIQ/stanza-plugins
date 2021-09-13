@@ -99,9 +99,8 @@ pipeline:
       parse_from: status
       preserve_to: status
       mapping:
-        info:
-          - 2xx
-          - 3xx
+        info: 2xx
+        info2: 3xx
         warning: 4xx
         error: 5xx
     output: {{ .output }}
@@ -117,9 +116,8 @@ pipeline:
       parse_from: status
       preserve_to: status
       mapping:
-        info:
-          - 2xx
-          - 3xx
+        info: 2xx
+        info2: 3xx
         warning: 4xx
         error: 5xx
 
@@ -145,7 +143,7 @@ pipeline:
         debug: d
         error: e
         warning: w
-        fatal: c
+        error2: c
       parse_from: severity
     timestamp:
       layout: "%m%d %H:%M:%S.%s"
@@ -161,8 +159,7 @@ pipeline:
     severity:
       parse_from: log_level
       mapping:
-        fatal:
-          - crit
-          - emerg
+        error2: crit
+        fatal2: emerg
     output: {{ .output }}
   # {{ end }}

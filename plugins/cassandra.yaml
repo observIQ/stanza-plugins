@@ -115,6 +115,12 @@ pipeline:
     regex: '(?P<cassandra_severity>[A-Z]+)\s+\[(?P<type>[^\]]+)\]\s+(?P<time1>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}),(?P<time2>\d+)\s+(?P<message>.*\S)'
     severity:
       parse_from: cassandra_severity
+      mapping:
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
 
   # Due to limitations in golang time we cannot have a comma in our timestamp we split timestamp into two fields 'time1' and 'time2'.
   # This will combine and remove 'time1' and 'time2' fields into a timestamp field.

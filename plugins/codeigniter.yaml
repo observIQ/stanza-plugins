@@ -42,6 +42,12 @@ pipeline:
       layout: '2006-01-02 15:04:05'
     severity:
       parse_from: severity
+      mapping:
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: json_router
 
   - id: json_router

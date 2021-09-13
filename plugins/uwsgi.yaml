@@ -58,9 +58,8 @@ pipeline:
       preset: none
       preserve_to: status
       mapping:
-        info:
-          - 2xx
-          - 3xx
+        info: 2xx
+        info2: 3xx
         warning: 4xx
         error: 5xx
     output: protocol_parser
@@ -78,9 +77,8 @@ pipeline:
       preset: none
       preserve_to: status
       mapping:
-        info:
-          - 2xx
-          - 3xx
+        info: 2xx
+        info2: 3xx
         warning: 4xx
         error: 5xx
     output: protocol_parser
@@ -99,9 +97,8 @@ pipeline:
       preset: none
       preserve_to: status
       mapping:
-        info:
-          - 2xx
-          - 3xx
+        info: 2xx
+        info2: 3xx
         warning: 4xx
         error: 5xx
     output: {{ .output }}

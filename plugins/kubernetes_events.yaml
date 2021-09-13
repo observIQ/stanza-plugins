@@ -121,7 +121,7 @@ pipeline:
         - KubeletSetupFailed
         - OOMKilling
         - VolumeResizeFailed
-      fatal:
+      error2:
         - ErrImageNeverPull
         - ErrImagePull
         - Failed

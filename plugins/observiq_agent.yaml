@@ -28,6 +28,12 @@ pipeline:
     type: json_parser
     severity:
       parse_from: level
+      mapping:
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     timestamp:
       parse_from: ts
       layout_type: gotime

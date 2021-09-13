@@ -190,7 +190,7 @@ pipeline:
         info: i
         warn: w
         error: e
-        fatal: c
+        error2: c
     timestamp:
       parse_from: timestamp
       layout: '%m%d %H:%M:%S.%s'

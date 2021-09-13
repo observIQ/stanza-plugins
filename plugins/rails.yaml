@@ -60,9 +60,8 @@ pipeline:
     preset: none
     preserve_to: status
     mapping:
-      info:
-        - 2xx
-        - 3xx
+      info: 2xx
+      info2: 3xx
       warning: 4xx
       error: 5xx
 
@@ -88,5 +87,11 @@ pipeline:
       layout: '2006-01-02T15:04:05.000000'
     severity:
       parse_from: severity_text
+      mapping:
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
       preserve_to: severity_text
     output: {{ .output }}

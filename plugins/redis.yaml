@@ -45,8 +45,7 @@ pipeline:
       parse_from: redis_severity
       mapping:
         warning: ' # '
-        info:
-          - ' - '
-          - ' * '
+        info: ' - '
+        info2: ' * '
         debug: ' . '
     output: {{.output}}

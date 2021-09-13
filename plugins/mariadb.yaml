@@ -235,8 +235,11 @@ pipeline:
     severity:
       parse_from: mariadb_severity
       mapping:
-        info:
-          - note
+        info2: note
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{ .output }}
 
   - id: error_10_1_5_plus_regex_parser
@@ -248,8 +251,11 @@ pipeline:
     severity:
       parse_from: mariadb_severity
       mapping:
-        info:
-          - note
+        info2: note
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{ .output }}
   # {{ end }}
 

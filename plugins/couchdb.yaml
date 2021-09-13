@@ -43,9 +43,8 @@ pipeline:
     severity:
       parse_from: couchdb_severity
       mapping:
-        info: notice
+        info2: notice
         error: err
-        fatal:
-          - crit
-          - emerg
+        error2: crit
+        fatal2: emerg
     output: {{.output}}

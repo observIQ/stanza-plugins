@@ -192,7 +192,7 @@ pipeline:
         info: i
         warning: w
         error: e
-        fatal: c
+        error2: c
     timestamp:
       parse_from: timestamp
       layout: '%m%d %H:%M:%S.%s'

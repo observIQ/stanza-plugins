@@ -143,6 +143,12 @@ pipeline:
     regex: '^\[(?P<date_time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),(?P<milliseconds>\d{3})\] (?P<severity>[^ ]+) (?P<message>.*)'
     severity:
       parse_from: severity
+      mapping:
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
 
   # Due to limitations in golang time we cannot have a comma in our timestamp we split timestamp into two fields 'date_time' and 'milliseconds'.
   # This will combine and remove 'date_time' and 'milliseconds' fields into a timestamp field.

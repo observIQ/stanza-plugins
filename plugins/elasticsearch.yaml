@@ -81,6 +81,12 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S'
     severity:
       parse_from: elasticsearch_severity
+      mapping:
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{.output}}
 #{{ end }}
 
@@ -103,6 +109,12 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S'
     severity:
       parse_from: elasticsearch_severity
+      mapping:
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
       preserve_to: elasticsearch_severity
     output: {{.output}}
 #{{ end }}
