@@ -99,7 +99,7 @@ parameters:
 pipeline:
   - type: file_input
     start_at: '{{ $start_at }}'
-    delete_after_read: '{{ $delete_after_read }}'
+    delete_after_read: {{ $delete_after_read }}
     label_regex: '^#(?P<key>.*?): (?P<value>.*)'
     include_file_name: {{ $include_file_name }}
     include_file_path: {{ $include_file_path }}
