@@ -176,7 +176,7 @@ pipeline:
       - move:
           from: '$body.attr.message'
           to: '$body.message'
-    output: add_log_type
+    output: add_plugin_id
     
   - id: add_plugin_id
     type: add

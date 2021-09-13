@@ -80,7 +80,7 @@ pipeline:
 
   - id: asterisk_regex_parser
     type: regex_parser
-    regex: '^\[(?P<timestamp>[^\]]+)\] (?P<level>[^\[]+)\[(?P<pid>[^\]]+)\](\[C(-)?(?P<call_id>[^\]]+)\])? (?P<source_file>[^:]*): (?P<message>.*)$'
+    regex: '^\[(?P<timestamp>[^\]]+)\] (?P<level>[^\[]+)\[(?P<pid>[^\]]+)\](\[?(?P<call_id>[^\]]+)\])? (?P<source_file>[^:]*): (?P<message>.*)$'
     timestamp:
       parse_from: timestamp
       # 2006-01-02 15:04:05.000 - milliseconds
