@@ -94,7 +94,7 @@ pipeline:
       mapping:
         info: 2xx
         info2: 3xx
-        warning: 4xx
+        warn: 4xx
         error: 5xx
     output: {{ .output }}
 
@@ -136,7 +136,7 @@ pipeline:
       mapping:
         info: 2xx
         info2: 3xx
-        warning: 4xx
+        warn: 4xx
         error: 5xx
     output: access_protocol_parser
 

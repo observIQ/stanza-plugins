@@ -188,7 +188,7 @@ pipeline:
       mapping:
         debug: d
         info: i
-        warning: w
+        warn: w
         error: e
         error2: c
     timestamp:

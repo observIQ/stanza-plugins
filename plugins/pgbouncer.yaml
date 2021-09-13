@@ -39,9 +39,8 @@ pipeline:
     severity:
       parse_from: severity
       mapping:
-        info:
-          - log
-          - stats
+        info: log
+        info2: stats
         debug: noise
     output: time_parser_router
 

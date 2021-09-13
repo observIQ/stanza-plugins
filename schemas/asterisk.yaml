@@ -36,7 +36,7 @@ severity_list:
 mapping_list:
   info: str(required=False)
   error: str(required=False)
-  warning: str(required=False)
+  warn: str(required=False)
   critical: str(required=False)
   debug: str(required=False)
   trace: str(required=False)

@@ -86,7 +86,7 @@ pipeline:
         - ProvisioningSucceeded
         - UPDATE
         - VolumeResizeSuccessful
-      warning:
+      warn:
         - AlreadyMountedVolume
         - ContainerGCFailed
         - Evicted

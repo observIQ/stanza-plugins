@@ -178,7 +178,7 @@ pipeline:
       mapping:
         debug: d
         info: i
-        warning: w
+        warn: w
         error: e
         error2: c
     timestamp:
@@ -232,7 +232,7 @@ pipeline:
       error3: 1
       error2: 2
       error: 3
-      warning: 4
+      warn: 4
       info2: 5
       info: 6
       debug: 7
@@ -252,7 +252,7 @@ pipeline:
       mapping:
         debug: d
         info: i
-        warning: w
+        warn: w
         error: e
         error2: c
     output: drop_time

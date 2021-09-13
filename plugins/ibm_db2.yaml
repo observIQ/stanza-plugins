@@ -53,11 +53,12 @@ pipeline:
         fatal: severe
         error:
           - error
-        warning:
+        warn:
           - 'Warning (OS)'
         info:
           - audit
           - event
+        info2:
           - config
           - detail
         debug:

@@ -101,7 +101,7 @@ pipeline:
       mapping:
         info: 2xx
         info2: 3xx
-        warning: 4xx
+        warn: 4xx
         error: 5xx
     output: {{ .output }}
     # {{ end }}
@@ -118,7 +118,7 @@ pipeline:
       mapping:
         info: 2xx
         info2: 3xx
-        warning: 4xx
+        warn: 4xx
         error: 5xx
 
   - id: request_parser
@@ -142,7 +142,7 @@ pipeline:
         info: i
         debug: d
         error: e
-        warning: w
+        warn: w
         error2: c
       parse_from: severity
     timestamp:
