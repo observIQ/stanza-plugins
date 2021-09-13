@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 1.0.0
 title: Asterisk
 description: Log Parser for Asterisk
 min_stanza_version: 1.2.3
