@@ -47,6 +47,12 @@ parameters:
     relevant_if:
       start_at:
         equals: "beginning"
+  - name: max_concurrent_files
+    label: Max Concurrent File
+    description: Max number of W3C files that will be open during a polling cycle
+    type: int
+    default: 512
+    advanced_config: true
   - name: include_file_name
     label: Include File Name
     description: Include File Name as a label
@@ -87,6 +93,7 @@ parameters:
 # {{$log_type := default "w3c" .log_type}}
 # {{$start_at := default "end" .start_at}}
 # {{$delete_after_read := default false .delete_after_read}}
+# {{$max_concurrent_files := default 512 .max_concurrent_files}}
 # {{$include_file_name := default true .include_file_name}}
 # {{$include_file_path := default false .include_file_path}}
 # {{$include_file_name_resolved := default false .include_file_name_resolved}}
@@ -100,6 +107,7 @@ pipeline:
   - type: file_input
     start_at: '{{ $start_at }}'
     delete_after_read: {{ $delete_after_read }}
+    max_concurrent_files: {{ $max_concurrent_files }}
     label_regex: '^#(?P<key>.*?): (?P<value>.*)'
     include_file_name: {{ $include_file_name }}
     include_file_path: {{ $include_file_path }}
