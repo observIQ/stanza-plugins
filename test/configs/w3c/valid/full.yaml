@@ -16,4 +16,5 @@ pipeline:
   fields_header: LogFields
   delimiter: "-"
   header_delimiter: ":"
+  max_concurrent_files: 1000
 - type: stdout
