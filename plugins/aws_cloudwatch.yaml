@@ -6,10 +6,21 @@ min_stanza_version: 0.14.1
 parameters:
   - name: log_group_name
     label: Log Group Name
-    description: The Cloudwatch Logs Log Group Name.
+    description: The Cloudwatch Logs Log Group Name. Deprecated, use log_group_names or log_group_prefix.
     type: string
     default: ''
-    required: true
+    hidden: true
+  - name: log_group_names
+    label: Log Groups
+    description: List of Cloudwatch Log Group Names.
+    type: strings
+    default:
+    - ''
+  - name: log_group_prefix
+    label: Log Group Name Prefix
+    description: The log group name prefix to use, when auto detecting log group names.
+    type: string
+    default: ''
   - name: region
     label: Region
     description: The AWS Region to be used
@@ -18,12 +29,12 @@ parameters:
     required: true
   - name: log_stream_name_prefix
     label: Log Stream Name Prefix
-    description: The log stream name prefix to use.
+    description: The log stream name prefix to use, valid only when targeting a single log group.
     type: string
     default: ''
   - name: log_stream_names
     label: Log Stream Names
-    description: Log stream names from which to get events.
+    description: Log stream names from which to get events, valid only when targeting a single log group.
     type: strings
   - name: profile
     label: Profile
@@ -55,6 +66,7 @@ parameters:
     default: aws_cloudwatch
 # Set Defaults
 # {{$log_group_name := default "" .log_group_name}}
+# {{$log_group_prefix := default "" .log_group_prefix}}
 # {{$region := default "" .region}}
 # {{$log_stream_name_prefix := default "" .log_stream_name_prefix}}
 # {{$profile := default "" .profile}}
@@ -67,6 +79,13 @@ parameters:
 pipeline:
 - type: aws_cloudwatch_input
   log_group_name: {{ $log_group_name }}
+  # {{ if .log_group_names }}
+  log_groups:
+    # {{ range $i, $lsn := .log_group_names }}
+    - '{{ $lsn }}'
+    # {{ end }}
+  # {{ end }}
+  log_group_prefix: '{{ $log_group_prefix }}'
   log_stream_name_prefix: '{{ $log_stream_name_prefix }}'
   # {{ if .log_stream_names }}
   log_stream_names: 
