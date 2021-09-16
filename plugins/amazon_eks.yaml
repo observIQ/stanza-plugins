@@ -45,7 +45,7 @@ pipeline:
   # Filter out agent logs. Check if file_name field starts with stanza or bindplane-agent.
   - id: filename_filter
     type: filter
-    expr: '$attributes.file.name != nil and ($attributes.file.name contains "stanza" or $attributes.file.name contains "bindplane-agent")'
+    expr: '$attributes["file.name"] != nil and ($attributes["file.name"] contains "stanza" or $attributes["file.name"] contains "bindplane-agent")'
 
   # Initial log entry should be safe to parse as JSON
   - id: container_json_parser
@@ -72,7 +72,7 @@ pipeline:
   # Log field has been parsed if possible and now we can parse the file name field for container information.
   - id: container_regex_parser
     type: regex_parser
-    parse_from: $attributes.file.name
+    parse_from: $attributes["file.name"]
     regex: '^(?P<pod_name>[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?P<namespace>[^_]+)_(?P<container_name>.+)-(?P<container_id>[a-z0-9]{64})\.log$'
     severity:
       parse_from: stream
