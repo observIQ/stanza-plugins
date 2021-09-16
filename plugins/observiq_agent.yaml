@@ -44,11 +44,11 @@ pipeline:
     default: log_restructure
     routes:
       - output: log_restructure
-        expr: '$attributes.file_name == "manager.log"'
+        expr: '$attributes.file.name == "manager.log"'
         attributes:
           log_type: observiq.agent.manager
       - output: log_restructure
-        expr: '$attributes.file_name == "launcher.log"'
+        expr: '$attributes.file.name == "launcher.log"'
         attributes:
           log_type: observiq.agent.launcher
 
