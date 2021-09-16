@@ -2,7 +2,7 @@
 version: 1.0.0
 title: AWS Cloudwatch Logs
 description: AWS Cloudwatch Logs Input
-min_stanza_version: 0.14.1
+min_stanza_version: 1.2.6
 parameters:
   - name: log_group_name
     label: Log Group Name

@@ -64,6 +64,7 @@ pipeline:
       parse_from: timestamp_field
       layout_type: gotime
       layout: 'Jan 2 15:04:05'
+      location: {{ $location }}
     output: promote_device
 
   # This pattern is known to match Flex Mini switches
