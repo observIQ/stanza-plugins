@@ -1,6 +1,9 @@
 version: 0.0.1
 title: HAProxy
 description: Log parser for HAProxy
+supported_platforms:
+  - linux
+min_stanza_version: 0.14.0
 parameters:
   - name: file_log_path
     label: File Path
