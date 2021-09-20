@@ -1,0 +1,112 @@
+version: 0.0.1
+title: HAProxy
+description: Log parser for HAProxy
+parameters:
+  - name: file_log_path
+    label: File Path
+    description: Specify a single path or multiple paths to read one or many files. You may also use a wildcard (*) to read multiple files within a directory.
+    type: strings
+    required: true
+  - name: log_format
+    label: Log Format
+    description: When choosing the 'default' option, the agent will expect and parse logs in a format of HTTP or TCP as well as any log entries that matches the default logging configuration. HAProxy uses default logging format when no specific option is set. When choosing the 'observIQ' option, the agent will expect and parse logs in an optimized JSON format that adheres to the observIQ specification, requiring an update to the Log-Format for each mode. See the HAProxy source page for more information.
+    type: enum
+    valid_values:
+      - http
+      - tcp
+      - observiq
+    default: http
+  - name: start_at
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+     - beginning
+     - end
+    default: end
+# Set Defaults
+#{{$start_at := default "end" .start_at}}
+# {{$log_format := default "default" .log_format}}
+pipeline:
+  - id: log_reader
+    type: file_input
+    include:
+    # {{ range $i, $fp := .file_log_path  }}
+      - '{{ $fp }}'
+    # {{ end }}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: 'haproxy'
+      plugin_id: {{ .id }}
+    write_to: message
+
+  # Parse timestamp, host, and message.
+  - id: default_parser
+    if: '$record.message != nil and $record.message matches "^\\w{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2}\\s+[^\\s]+\\s+[^\\[]+\\[[^\\]]+\\]:"'
+    type: regex_parser
+    parse_from: $record.message
+    regex: '^(?P<timestamp>\w{3}\s+\d{2}\s+\d{2}:\d{2}:\d{2})\s+(?P<host>[^\s]+)\s+(?P<process_name>[^\[]+)\[(?P<pid>[^\]]+)\]:(\s)?(?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout_type: gotime
+      layout: 'Jan 02 15:04:05'
+
+  # Parse http format log message
+  # {{ if eq $log_format "http" }}
+  - id: httplog_parser
+    if: '$record.message != nill and $record.message matches "^(\\s)?[^:]+:[^\\s]+\\s+\\[[^\\]]+\\]\\s+[^\\s]+\\s+[^/]+/[^\\s]+\\s+[^/]+/[^/]+/[^/]+/[^/]+/[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[\\w-]{4}\\s+[^/]+/[^/]+/[^/]+/[^/]+/[^\\s]+\\s+[^/]+/[^\\s]+\\s+"'
+    type: regex_parser
+    parse_from: $record.message
+    regex: '^(\s)?(?P<client_ip>[^:]+):(?P<client_port>[^\s]+)\s+\[(?P<accept_date>[^\]]+)\]\s+(?P<frontend_name>[^\s]+)\s+(?P<backend_name>[^/]+)/(?P<server_name>[^\s]+)\s+(?P<client_request_send_time>[^/]+)/(?P<queue_wait_time>[^/]+)/(?P<server_response_time>[^/]+)/(?P<server_response_send_time>[^/]+)/(?P<client_request_active_time>[^\s]+)\s+(?P<status>[^\s]+)\s+(?P<bytes_read>[^\s]+)\s+(?P<captured_request_cookie>[^\s]+)\s+(?P<captured_response_cookie>[^\s]+)\s+(?P<termination_state>[\w-]{4})\s+(?P<process_concurrent_connections>[^/]+)/(?P<frontend_concurrent_connections>[^/]+)/(?P<backend_concurrent_connections>[^/]+)/(?P<server_concurrent_connections>[^/]+)/(?P<server_connection_retries>[^\s]+)\s+(?P<server_queue>[^/]+)/(?P<backend_queue>[^\s]+)\s+"(?P<method>\S+) +(?P<path>[^ ]*)( (?P<protocol>[^/]*)/(?P<protocol_version>[^\"]*)|[^\"]*)?"'
+  
+  - id: add_label_http
+    type: add
+    field: $labels.log_type
+    value: 'haproxy.http'
+  # {{ end }}
+
+  # Parse tcp format log message
+  # {{ if eq $log_format "tcp" }}
+  - id: tcplog_parser
+    if: '$record.message != nil and $record.message matches "^(\\s)?[^:]+:[^\\s]+\\s+\\[[^\\]]+\\]\\s+[^\\s]+\\s+[^/]+/[^\\s]+\\s+[^/]+/[^/]+/[^\\s]+\\s+[^\\s]+\\s+[\\w-]{2}\\s+[^/]+/[^/]+/[^/]+/[^/]+/[^\\s]+\\s+[^/]+/[\\d]+"'
+    type: regex_parser
+    parse_from: $record.message
+    regex: '^(\s)?(?P<client_ip>[^:]+):(?P<client_port>[^\s]+)\s+\[(?P<accept_date>[^\]]+)\]\s+(?P<frontend_name>[^\s]+)\s+(?P<backend_name>[^/]+)/(?P<server_name>[^\s]+)\s+(?P<queue_wait_time>[^/]+)/(?P<server_response_time>[^/]+)/(?P<session_duration>[^\s]+)\s+(?P<bytes_read>[^\s]+)\s+(?P<termination_state>[\w-]{2})\s+(?P<process_concurrent_connections>[^/]+)/(?P<frontend_concurrent_connections>[^/]+)/(?P<backend_concurrent_connections>[^/]+)/(?P<server_concurrent_connections>[^/]+)/(?P<server_connection_retries>[^\s]+)\s+(?P<server_queue>[^/]+)/(?P<backend_queue>[\d]+)'
+
+  - id: add_label_tcp
+    type: add
+    field: $labels.log_type
+    value: 'haproxy.tcp'
+  # {{ end }}
+
+  # Parse observiq format log message
+  # {{ if eq $log_format "observiq" }}
+  - id: json_parser
+    type: json_parser
+    if: '$record.message != nil and $record.message matches "^{.*}$|^{.*}\\n$"'
+    parse_from: $record.message
+
+  - id: add_label_observiq
+    type: add
+    field: $labels.log_type
+    value: 'haproxy.observiq'
+  # {{ end }}
+
+  # Parse status if it exists
+  - type: severity_parser
+    if: '$record.status != nil'
+    parse_from: $record.status
+    preserve_to: $record.status
+    preset: none
+    mapping:
+      info: 2xx
+      notice: 3xx
+      warning: 4xx
+      error: 5xx
+
+  # If $record.message still exists and $record.host doesn't that means we were unable to parse and just need to promote to $record
+  - type: move
+    if: $record.message != nil and $record.host == nil
+    from: $record.message
+    to: $record
+    output: {{ .output }}
