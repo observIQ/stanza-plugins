@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.78] - Unreleased
 
+### Added
+
+- Added haproxy plugin ([334](https://github.com/observIQ/stanza-plugins/pull/334))
+
 ### Changed
 
 - W3C: Added max_concurrent_files parameter ([PR332](https://github.com/observIQ/stanza-plugins/pull/332))
