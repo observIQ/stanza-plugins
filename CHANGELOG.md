@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Oracle Database: ([PR 334](https://github.com/observIQ/stanza-plugins/pull/334))
   - Resolved issue where ipv6 values caused a parse failure
   - Resolved issue where default listener path is not correct
+- Oracle Database: ([PR 331](https://github.com/observIQ/stanza-plugins/pull/331))
+  - Resolves issue where regex fails to parse audit file dbid
 
 ## [0.0.78] - 2021-09-16
 
