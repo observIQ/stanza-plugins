@@ -61,12 +61,8 @@ pipeline:
     routes:
       - output: httplog_parser
         expr: '$record.message != nill and $record.message matches "^(\\s)?[^:]+:[^\\s]+\\s+\\[[^\\]]+\\]\\s+[^\\s]+\\s+[^/]+/[^\\s]+\\s+[^/]+/[^/]+/[^/]+/[^/]+/[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[\\w-]{4}\\s+[^/]+/[^/]+/[^/]+/[^/]+/[^\\s]+\\s+[^/]+/[^\\s]+\\s+"'
-        labels:
-          log_type: 'haproxy.http'
       - output: tcplog_parser
         expr: '$record.message != nil and $record.message matches "^(\\s)?[^:]+:[^\\s]+\\s+\\[[^\\]]+\\]\\s+[^\\s]+\\s+[^/]+/[^\\s]+\\s+[^/]+/[^/]+/[^\\s]+\\s+[^\\s]+\\s+[\\w-]{2}\\s+[^/]+/[^/]+/[^/]+/[^/]+/[^\\s]+\\s+[^/]+/[\\d]+"'
-        labels:
-          log_type: 'haproxy.tcp'
       - output: error_parser
         expr: '$record.message != nil and $record.message matches "^\\s*\\[[^\\]]+\\]\\s*.*"'
         labels:
@@ -114,8 +110,6 @@ pipeline:
     routes:
       - output: observiq_parser
         expr: '$record.message != nil and $record.message matches "^{.*}$|^{.*}\\n$"'
-        labels:
-          log_type: 'haproxy.observiq'
       - output: error_parser
         expr: '$record.message != nil and $record.message matches "^\\s*\\[[^\\]]+\\]\\s*.*"'
         labels:
@@ -184,14 +178,17 @@ pipeline:
     to: '$labels["frontend_ssl_ciphers"]'
   - id: method_move
     type: move
+    if: '$record.method != nil'
     from: '$record.method'
     to: '$labels["method"]'
   - id: protocol_move
     type: move
+    if: '$record.protocol != nil'
     from: '$record.protocol'
     to: '$labels["protocol"]'
   - id: protocol_version_move
     type: move
+    if: '$record.protocol_version != nil'
     from: '$record.protocol_version'
     to: '$labels["protocol_version"]'
   - id: referer_move
@@ -203,10 +200,12 @@ pipeline:
   # Promote fields to resources
   - id: frontend_type_move
     type: move
+    if: '$record.frontend_type != nil'
     from: '$record.frontend_type'
     to: '$resource["frontend_type"]'
   - id: frontend_ip_move
     type: move
+    if: '$record.frontend_ip != nil'
     from: '$record.frontend_ip'
     to: '$resource["frontend_ip"]'
   - id: path_move
@@ -226,15 +225,17 @@ pipeline:
     to: '$resource["frontend_name"]'
   - id: backend_name_move
     type: move
+    if: '$record.backend_name != nil'
     from: '$record.backend_name'
     to: '$resource["backend_name"]'
   - id: server_name_move
     type: move
+    if: '$record.server_name != nil'
     from: '$record.server_name'
     to: '$resource["server_name"]'
   - id: host_move
     type: move
-    # if: $record.message != nil and $record.host == nil
+    if: '$record.host != nil'
     from: '$record.host'
     to: '$resource["host"]'
     output: {{ .output }}
