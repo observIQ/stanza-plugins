@@ -94,7 +94,11 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%a %h %g %H:%M:%S %Y %j'
-    output: '{{ if $enable_truncate_audit_action }}audit_action_restructurer{{ else }}{{ .output }}{{ end }}'
+    # {{ if $enable_truncate_audit_action }}
+    output: audit_action_restructurer
+    # {{ else }}
+    output: {{ .output }}
+    # {{ end }}
 
   - id: server_start_regex_parser
     type: regex_parser
