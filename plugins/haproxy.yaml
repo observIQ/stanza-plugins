@@ -60,7 +60,7 @@ pipeline:
     default: message_move
     routes:
       - output: httplog_parser
-        expr: '$record.message != nill and $record.message matches "^(\\s)?[^:]+:[^\\s]+\\s+\\[[^\\]]+\\]\\s+[^\\s]+\\s+[^/]+/[^\\s]+\\s+[^/]+/[^/]+/[^/]+/[^/]+/[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[\\w-]{4}\\s+[^/]+/[^/]+/[^/]+/[^/]+/[^\\s]+\\s+[^/]+/[^\\s]+\\s+"'
+        expr: '$record.message != nil and $record.message matches "^(\\s)?[^:]+:[^\\s]+\\s+\\[[^\\]]+\\]\\s+[^\\s]+\\s+[^/]+/[^\\s]+\\s+[^/]+/[^/]+/[^/]+/[^/]+/[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[\\w-]{4}\\s+[^/]+/[^/]+/[^/]+/[^/]+/[^\\s]+\\s+[^/]+/[^\\s]+\\s+"'
       - output: tcplog_parser
         expr: '$record.message != nil and $record.message matches "^(\\s)?[^:]+:[^\\s]+\\s+\\[[^\\]]+\\]\\s+[^\\s]+\\s+[^/]+/[^\\s]+\\s+[^/]+/[^/]+/[^\\s]+\\s+[^\\s]+\\s+[\\w-]{2}\\s+[^/]+/[^/]+/[^/]+/[^/]+/[^\\s]+\\s+[^/]+/[\\d]+"'
       - output: error_parser
