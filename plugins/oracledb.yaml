@@ -74,7 +74,7 @@ pipeline:
       - {{ $audit_log_path }}
     start_at: {{ $start_at }}
     multiline:
-      line_start_pattern: '^[a-zA-z]+ [a-zA-Z]+\s{1,2}\d{1,2} \d{2}:\d{2}:\d{2} \d{4} [-+]\d{2}:\d{2}\n|^Audit File '
+      line_start_pattern: '\w+\s+\w+\s{1,2}\d{1,2}\s+\d{2}:\d{2}:\d{2}\s+\d{4}\s+[-+]\d{2}:\d{2}\n|^Audit [fF]ile '
     labels:
       log_type: 'oracledb.audit'
       plugin_id: {{ .id }}
@@ -90,11 +90,15 @@ pipeline:
 
   - id: audit_regex_parser
     type: regex_parser
-    regex: '(?P<timestamp>\w+ \w+\s{1,2}\d{1,2} \d{2}:\d{2}:\d{2} \d{4} [-+]\d{2}:\d{2})\nLENGTH : \D(?P<length>\d*)\D\nACTION :\[\d+\]\s+\D(?P<action>[\d\w[:ascii:]]+)\D\nDATABASE USER:\[\d+\]\s+\D(?P<database_user>[^\s]+)\D\n(PRIVILEGE :\[\d+\]\s+\D(?P<privilege>[^\s]+)\D\n)?(CLIENT USER:\[\d+\]\s+\D(?P<client_user>[^\s]+|)\D\n)?(CLIENT TERMINAL:\[\d+\]\s+\D(?P<client_terminal>[^\s]+|)\D\n)?(STATUS:\[\d+\]\s+\D(?P<status_code>[^\s]+|)\D\n)?(DBID:\[\d+\]\s\D(?P<dbid>\d+)\D\n)?(SESSIONID:\[\d+\]\s+\D(?P<sessionid>[^\s]+|)\D\n)?(USERHOST:\[\d+\]\s+\D(?P<userhost>[^\s]+|)\D\n)?(CLIENT ADDRESS:\[\d+\]\s+\D(?P<client_address>[^\s]+|)\D\n)?(ACTION NUMBER:\[\d+\]\s+\D(?P<action_number>[^\s]+|)\D)?'
+    regex: '(?P<timestamp>\w+ \w+\s{1,2}\d{1,2} \d{2}:\d{2}:\d{2} \d{4} [-+]\d{2}:\d{2})\nLENGTH : \D(?P<length>\d*)\D\nACTION :\[\d+\]\s+\D(?P<action>[\d\w[:ascii:]]+)\D\nDATABASE USER:\[\d+\]\s+\D(?P<database_user>[^\s]+)\D\n(PRIVILEGE :\[\d+\]\s+\D(?P<privilege>[^\s]+)\D\n)?(CLIENT USER:\[\d+\]\s+\D(?P<client_user>[^\s]+|)\D\n)?(CLIENT TERMINAL:\[\d+\]\s+\D(?P<client_terminal>[^\s]+|)\D\n)?(STATUS:\[\d+\]\s+\D(?P<status_code>[^\s]+|)\D\n)?(DBID:\[\d+\]\s\D(?P<dbid>\d+|)\D\n)?(SESSIONID:\[\d+\]\s+\D(?P<sessionid>[^\s]+|)\D\n)?(USERHOST:\[\d+\]\s+\D(?P<userhost>[^\s]+|)\D\n)?(CLIENT ADDRESS:\[\d+\]\s+\D(?P<client_address>[^\s]+|)\D\n)?(ACTION NUMBER:\[\d+\]\s+\D(?P<action_number>[^\s]+|)\D)?'
     timestamp:
       parse_from: timestamp
       layout: '%a %h %g %H:%M:%S %Y %j'
-    output: '{{ if $enable_truncate_audit_action }}audit_action_restructurer{{ else }}{{ .output }}{{ end }}'
+    # {{ if $enable_truncate_audit_action }}
+    output: audit_action_restructurer
+    # {{ else }}
+    output: {{ .output }}
+    # {{ end }}
 
   - id: server_start_regex_parser
     type: regex_parser
