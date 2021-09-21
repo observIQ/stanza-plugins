@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.8
+version: 0.0.9
 title: Syslog
 description: Log parser for Syslog
 parameters:

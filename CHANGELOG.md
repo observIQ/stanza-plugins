@@ -5,11 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.76] - Unreleased
+## [0.0.78] - Unreleased
 
 ### Added
 
-- Added `common_event_format` plugin ([328](https://github.com/observIQ/stanza-plugins/pull/328))
+- Added `haproxy` plugin ([334](https://github.com/observIQ/stanza-plugins/pull/334))
+
+### Changed
+
+- W3C: Added max_concurrent_files parameter ([PR332](https://github.com/observIQ/stanza-plugins/pull/332))
+
+### Fixed
+
+- Ubiquiti: Fixed time parsing issue when timezones are mismatched ([PR333](https://github.com/observIQ/stanza-plugins/pull/333))
+
+## [0.0.77] - 2021-09-14
+
+### Changed
+
+- Cloudwatch Logs: Added log_groups and log_group_prefix parameters ([PR330](https://github.com/observIQ/stanza-plugins/pull/330))
+
+## [0.0.76] - 2021-09-13
+
+### Changed
+
+- W3C: Added optional delete_at_end parameter ([PR327](https://github.com/observIQ/stanza-plugins/pull/327))
 
 ## [0.0.75] - 2021-09-10
 
