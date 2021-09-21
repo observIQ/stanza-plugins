@@ -2,7 +2,7 @@
 version: 0.0.1
 title: Common Event Format Log Parser
 description: File Input Common Event Format Parser
-min_stanza_version: 1.2.3
+min_stanza_version: 1.2.7
 supported_platforms:
   - linux
   - windows
@@ -105,6 +105,13 @@ pipeline:
     type: regex_parser
     regex: 'CEF:(?P<version>[^\|]*)'
     parse_from: $record.version
+
+  # Parse extensions as key value pairs
+  - id: extensions_parser
+    type: key_value_parser
+    if: '$record.extensions != nil'
+    parse_from: $record.extensions
+    parse_to: $record.extensions
 
   # Parse severity using CEF severity standards.
   # Currently not putting unknown which is in standard in parser so it will be assigned default.
