@@ -1,5 +1,5 @@
 # Plugin Info
-version: 1.1.0
+version: 2.0.0
 title: Microsoft IIS
 description: Log parser for Microsoft IIS
 min_stanza_version: 1.2.1
@@ -90,26 +90,26 @@ pipeline:
   # Build timestamp from date and time field if they exist
   - id: add_timestamp
     type: add
-    if: '$record.date != nil and $record.time != nil'
-    field: $record.timestamp
-    value: EXPR($record.date + " " + $record.time)
+    if: '$body.date != nil and $body.time != nil'
+    field: $body.timestamp
+    value: EXPR($body.date + " " + $body.time)
 
   # Remove date field
   - id: remove_date
     type: remove
-    if: '$record.date != nil'
-    field: $record.date
+    if: '$body.date != nil'
+    field: $body.date
 
   # Remove date field
   - id: remove_time
     type: remove
-    if: '$record.time != nil'
-    field: $record.time
+    if: '$body.time != nil'
+    field: $body.time
 
   # Confirm timestamp field exists and parse
   - id: time_parser
     type: time_parser
-    if: '$record.timestamp != nil'
+    if: '$body.timestamp != nil'
     parse_from: timestamp
     layout: '%Y-%m-%d %H:%M:%S'
     location: {{$location}}
@@ -117,12 +117,12 @@ pipeline:
   # Confirm sc-status field exists then parse severity.
   # If statement errors when using dot notation because of the - in the field name so use bracket notation instead.
   - type: severity_parser
-    if: '$record["sc-status"] != nil'
-    parse_from: $record.sc-status
-    preserve_to: $record.sc-status
+    if: '$body["sc-status"] != nil'
+    parse_from: $body.sc-status
+    preserve_to: $body.sc-status
     mapping:
       info: 2xx
-      notice: 3xx
-      warning: 4xx
+      info2: 3xx
+      warn: 4xx
       error: 5xx
     output: {{.output}}

@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.3
+version: 1.0.0
 title: CouchDB
 description: Log parser for CouchDB
 parameters:
@@ -30,7 +30,7 @@ pipeline:
     multiline:
       line_start_pattern: \[\w*\] [\d\-\.:TZ]+.*
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: couchdb
       plugin_id: {{ .id }}
 
@@ -43,9 +43,8 @@ pipeline:
     severity:
       parse_from: couchdb_severity
       mapping:
-        info: notice
-        warning: warn
+        info2: notice
         error: err
-        critical: crit
-        emergency: emerg
+        error2: crit
+        fatal2: emerg
     output: {{.output}}

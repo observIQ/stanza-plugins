@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.3
+version: 1.0.0
 title: Netflow
 description: Log parser for Netflow
 min_stanza_version: 1.1.0
@@ -69,7 +69,7 @@ pipeline:
 - type: goflow_input
   mode: '{{ if eq $netflow_version "v5" }}netflow_v5{{ else if eq $netflow_version "ipfix" }}netflow_ipfix{{ end }}'
   listen_address: '{{ if eq $length 0 }}{{ $listen_ip }}:{{ $listen_port }}{{ else }}{{ $listen_address }}{{ end }}'
-  labels:
+  attributes:
     log_type: netflow
     plugin_id: {{ .id }}
     netflow_version: {{ $netflow_version  }}
@@ -82,5 +82,5 @@ pipeline:
 
 # Remove goflow specific field
 - type: remove
-  field: $record.type
+  field: $body.type
   output: {{ .output }}

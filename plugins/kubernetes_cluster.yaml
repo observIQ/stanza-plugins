@@ -1,4 +1,4 @@
-version: 0.0.13
+version: 1.0.0
 title: Kubernetes Node
 description: Log parser for Kubernetes Node
 supported_platforms:
@@ -32,7 +32,7 @@ pipeline:
     include:
       - '/var/log/containers/kube*'
     start_at: '{{ $start_at }}'
-    labels:
+    attributes:
       plugin_id: '{{ .id }}'
     resource:
       k8s.node.name: "EXPR(env('NODE_NAME'))"
@@ -42,11 +42,11 @@ pipeline:
     type: router
     routes:
       # Route to containerd parser if it matches containerd log format
-      - expr: '$record matches "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,9}([\\+-]\\d{2}:\\d{2}|Z) std(?:out|err) [FP] .*"'
+      - expr: '$body matches "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,9}([\\+-]\\d{2}:\\d{2}|Z) std(?:out|err) [FP] .*"'
         output: containerd_parser
     default: docker_json_parser
 
-  # Parse containerd log from $record
+  # Parse containerd log from $body
   - id: containerd_parser
     type: regex_parser
     regex: '^(?P<time>[^\s]+) (?P<stream>\w+) (?P<partial>\w) (?P<log>.*)'
@@ -55,28 +55,28 @@ pipeline:
   - id: containerd_recombine
     type: recombine
     combine_field: log
-    is_last_entry: "$record.partial == 'F'"
+    is_last_entry: "$body.partial == 'F'"
 
   # Route Containerd time formats
   - id: time_parser_router
     type: router
     routes:
       - output: local_containerd_timestamp_parser
-        expr: '$record.time != nil and $record.time matches "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,9}[\\+-]\\d{2}:\\d{2}"'
+        expr: '$body.time != nil and $body.time matches "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,9}[\\+-]\\d{2}:\\d{2}"'
       - output: utc_containerd_timestamp_parser
-        expr: '$record.time != nil and $record.time matches "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,9}Z"'
+        expr: '$body.time != nil and $body.time matches "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,9}Z"'
 
   # Containerd can have a couple timestamp formats depending if the node has local time set
   - id: local_containerd_timestamp_parser
     type: time_parser
-    parse_from: $record.time
+    parse_from: $body.time
     layout: '%Y-%m-%dT%H:%M:%S.%s%j'
     output: sev_parser
 
   # Containerd can have a couple timestamp formats depending if the node has local time set
   - id: utc_containerd_timestamp_parser
     type: time_parser
-    parse_from: $record.time
+    parse_from: $body.time
     layout: '%Y-%m-%dT%H:%M:%S.%sZ'
     output: sev_parser
 
@@ -90,11 +90,11 @@ pipeline:
     parse_from: time
     layout: '%Y-%m-%dT%H:%M:%S.%sZ'
 
-  # $record.stream should exist now so parse it.
+  # $body.stream should exist now so parse it.
   - id: sev_parser
     type: severity_parser
     parse_from: stream
-    preserve_to: '$labels.stream'
+    preserve_to: '$attributes.stream'
     mapping:
       error: stderr
       info: stdout
@@ -102,24 +102,24 @@ pipeline:
   # Parse file name to grab resource information
   - id: file_name_parser
     type: regex_parser
-    parse_from: $labels.file_name
+    parse_from: $attributes["file.name"]
     regex: '^(?P<pod_name>[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?P<namespace>[^_]+)_(?P<container_name>.+)-(?P<container_id>[a-z0-9]{64})\.log$'
 
-  # Move resource information from $record to $resource
+  # Move resource information from $body to $resource
   - id: resource_restructurer
     type: restructure
     ops:
       - move:
-          from: '$record.pod_name'
+          from: '$body.pod_name'
           to: '$resource["k8s.pod.name"]'
       - move:
-          from: '$record.namespace'
+          from: '$body.namespace'
           to: '$resource["k8s.namespace.name"]'
       - move:
-          from: '$record.container_name'
+          from: '$body.container_name'
           to: '$resource["k8s.container.name"]'
       - move:
-          from: '$record.container_id'
+          from: '$body.container_id'
           to: '$resource["k8s.container.id"]'
 
   # Add kubernetes metadata
@@ -127,37 +127,37 @@ pipeline:
     type: k8s_metadata_decorator
 
   # Add label log_type
-  - id: add_labels_router
+  - id: add_attributes_router
     type: router
     routes:
       - output: log_restructure
-        expr: '$labels["k8s-pod/component"] == "kube-controller-manager"'
-        labels:
+        expr: '$attributes["k8s-pod/component"] == "kube-controller-manager"'
+        attributes:
           log_type: 'k8s.controller'
       - output: log_restructure
-        expr: '$labels["k8s-pod/component"]  == "kube-scheduler"'
-        labels:
+        expr: '$attributes["k8s-pod/component"]  == "kube-scheduler"'
+        attributes:
           log_type: 'k8s.scheduler'
       - output: log_restructure
-        expr: '$labels["k8s-pod/component"] == "kube-apiserver"'
-        labels:
+        expr: '$attributes["k8s-pod/component"] == "kube-apiserver"'
+        attributes:
           log_type: 'k8s.apiserver'
       - output: log_restructure
-        expr: '$labels["k8s-pod/component"] startsWith "kube-proxy"'
-        labels:
+        expr: '$attributes["k8s-pod/component"] startsWith "kube-proxy"'
+        attributes:
           log_type: 'k8s.proxy'
       - output: log_restructure
         expr: true
-        labels:
+        attributes:
           log_type: 'k8s.node'
 
-  # Move message from log field to $record
+  # Move message from log field to $body
   - id: log_restructure
     type: restructure
     ops:
       - move:
-          from: '$record.log'
-          to: '$record.message'
+          from: '$body.log'
+          to: '$body.message'
     output: glogs_parser_router
 
   # Check if message matches glog format and send to parser if it does
@@ -166,7 +166,7 @@ pipeline:
     default: {{ .output }}
     routes:
       - output: message_regex_parser
-        expr: '$record.message matches "^\\w\\d{4}"'
+        expr: '$body.message matches "^\\w\\d{4}"'
 
   # message field seems to match expected format.
   - id: message_regex_parser
@@ -178,9 +178,9 @@ pipeline:
       mapping:
         debug: d
         info: i
-        warning: w
+        warn: w
         error: e
-        critical: c
+        error2: c
     timestamp:
       parse_from: timestamp
       layout: '%m%d %H:%M:%S.%s'
@@ -192,7 +192,7 @@ pipeline:
     # {{ if .kubelet_journald_log_path }}
     directory: '{{ .kubelet_journald_log_path }}'
     # {{ end }}
-    labels:
+    attributes:
       log_type: 'k8s.kubelet'
       plugin_id: '{{ .id }}'
     output: kubelet_filter
@@ -200,14 +200,14 @@ pipeline:
   # Only grab entry if it is the kubelet.service
   - id: kubelet_filter
     type: filter
-    expr: '$record._SYSTEMD_UNIT != "kubelet.service"'
+    expr: '$body._SYSTEMD_UNIT != "kubelet.service"'
 
   # Move hostname to k8s node resource
   - id: kubelet_resource
     type: restructure
     ops:
       - move:
-          from: "$record._HOSTNAME"
+          from: "$body._HOSTNAME"
           to: "$resource['host.name']"
       - move:
           from: "MESSAGE"
@@ -222,18 +222,18 @@ pipeline:
     default: severity_parser
     routes:
       - output: message_regex_parser_kubelet
-        expr: '$record.message matches "^\\w\\d{4}"'
+        expr: '$body.message matches "^\\w\\d{4}"'
 
   # Severity parser for journald
   - type: severity_parser
-    parse_from: $record.PRIORITY
+    parse_from: $body.PRIORITY
     mapping:
-      emergency: 0
-      alert: 1
-      critical: 2
+      fatal2: 0
+      error3: 1
+      error2: 2
       error: 3
-      warning: 4
-      notice: 5
+      warn: 4
+      info2: 5
       info: 6
       debug: 7
     output: {{ .output }}
@@ -252,13 +252,13 @@ pipeline:
       mapping:
         debug: d
         info: i
-        warning: w
+        warn: w
         error: e
-        critical: c
+        error2: c
     output: drop_time
 
   - id: drop_time
     type: restructure
     ops:
-      - remove: '$record.drop_time'
+      - remove: '$body.drop_time'
     output: {{ .output }}

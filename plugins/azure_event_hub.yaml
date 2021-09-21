@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 1.0.0
 title: Azure Event Hub
 description: Azure Event Hub input parser
 min_stanza_version: 0.13.20
@@ -64,7 +64,7 @@ pipeline:
     connection_string: '{{ $connection_string }}'
     start_at: '{{ $start_at }}'
     prefetch_count: {{ $prefetch_count }}
-    labels:
+    attributes:
       plugin_id: {{ .id }}
       log_type: '{{ $log_type }}'
     output: {{ .output }}

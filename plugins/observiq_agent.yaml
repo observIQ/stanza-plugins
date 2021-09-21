@@ -1,4 +1,4 @@
-version: 0.0.3
+version: 1.0.0
 title: observIQ Agent
 description: Agent logs for the observIQ Agent
 parameters:
@@ -20,7 +20,7 @@ pipeline:
       - log/manager.log
       - log/launcher.log
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: observiq.agent
       plugin_id: {{ .id }}
 
@@ -28,6 +28,12 @@ pipeline:
     type: json_parser
     severity:
       parse_from: level
+      mapping:
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     timestamp:
       parse_from: ts
       layout_type: gotime
@@ -38,12 +44,12 @@ pipeline:
     default: log_restructure
     routes:
       - output: log_restructure
-        expr: '$labels.file_name == "manager.log"'
-        labels:
+        expr: '$attributes["file.name"] == "manager.log"'
+        attributes:
           log_type: observiq.agent.manager
       - output: log_restructure
-        expr: '$labels.file_name == "launcher.log"'
-        labels:
+        expr: '$attributes["file.name"] == "launcher.log"'
+        attributes:
           log_type: observiq.agent.launcher
 
   - id: log_restructure
@@ -51,13 +57,13 @@ pipeline:
     ops:
       - move:
           from: logger
-          to: $labels.logger
+          to: $attributes.logger
     output: {{ .output }}
 
   - id: stanza_log
     type: stanza_input
 
   - type: metadata
-    labels:
+    attributes:
       log_type: observiq.agent.logagent
     output: {{ .output }}

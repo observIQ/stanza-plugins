@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.5
+version: 1.0.0
 title: Apache HBase
 description: Log parser for Apache HBase
 parameters:
@@ -70,13 +70,13 @@ pipeline:
     multiline:
       line_start_pattern: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\s+|^\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \w+ \d{4}'
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: hbase.master
       plugin_id: {{ .id }}
 
   - id: master_standard_regex_parser
     type: regex_parser
-    if:  '$record matches "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}\\s+"'
+    if:  '$body matches "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}\\s+"'
     regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d{3}\s+(?P<hbase_severity>[A-Z]*)\s*?\[(?P<thread>[^\]]*)\]\s(?P<hbase_source>[^:]*):\s(?P<message>(?s).*)\n'
     timestamp:
       parse_from: timestamp
@@ -84,13 +84,16 @@ pipeline:
     severity:
       parse_from: hbase_severity
       mapping:
-        warning: warn
-        emergency: fatal
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{.output}}
 
   - id: master_startup_regex_parser
     type: regex_parser
-    if: '$record matches "^\\w+ \\w+ \\d{2} \\d{2}:\\d{2}:\\d{2} \\w+ \\d{4}"'
+    if: '$body matches "^\\w+ \\w+ \\d{2} \\d{2}:\\d{2}:\\d{2} \\w+ \\d{4}"'
     regex: '^(?P<timestamp>\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \w+ \d{4}) (?P<message>(?s).*)\n'
     timestamp:
       parse_from: timestamp
@@ -106,13 +109,13 @@ pipeline:
     multiline:
       line_start_pattern: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\s+|^\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \w+ \d{4}'
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: hbase.region
       plugin_id: {{ .id }}
 
   - id: region_standard_regex_parser
     type: regex_parser
-    if:  '$record matches "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}\\s+"'
+    if:  '$body matches "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}\\s+"'
     regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d{3}\s+(?P<hbase_severity>[A-Z]*)\s*?\[(?P<thread>[^\]]*)\]\s(?P<hbase_source>[^:]*):\s(?P<message>(?s).*)\n'
     timestamp:
       parse_from: timestamp
@@ -120,13 +123,16 @@ pipeline:
     severity:
       parse_from: hbase_severity
       mapping:
-        warning: warn
-        emergency: fatal
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{.output}}
 
   - id: region_startup_regex_parser
     type: regex_parser
-    if: '$record matches "^\\w+ \\w+ \\d{2} \\d{2}:\\d{2}:\\d{2} \\w+ \\d{4}"'
+    if: '$body matches "^\\w+ \\w+ \\d{2} \\d{2}:\\d{2}:\\d{2} \\w+ \\d{4}"'
     regex: '^(?P<timestamp>\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \w+ \d{4}) (?P<message>(?s).*)\n'
     timestamp:
       parse_from: timestamp
@@ -142,13 +148,13 @@ pipeline:
     multiline:
       line_start_pattern: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\s+|^\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \w+ \d{4}'
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: hbase.zookeeper
       plugin_id: {{ .id }}
 
   - id: zookeeper_standard_regex_parser
     type: regex_parser
-    if:  '$record matches "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}\\s+"'
+    if:  '$body matches "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}\\s+"'
     regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d{3}\s+(?P<hbase_severity>[A-Z]*)\s*?\[(?P<thread>[^\]]*)\]\s(?P<hbase_source>[^:]*):\s(?P<message>(?s).*)\n'
     timestamp:
       parse_from: timestamp
@@ -156,13 +162,16 @@ pipeline:
     severity:
       parse_from: hbase_severity
       mapping:
-        warning: warn
-        emergency: fatal
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{.output}}
 
   - id: zookeeper_startup_regex_parser
     type: regex_parser
-    if: '$record matches "^\\w+ \\w+ \\d{2} \\d{2}:\\d{2}:\\d{2} \\w+ \\d{4}"'
+    if: '$body matches "^\\w+ \\w+ \\d{2} \\d{2}:\\d{2}:\\d{2} \\w+ \\d{4}"'
     regex: '^(?P<timestamp>\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \w+ \d{4}) (?P<message>(?s).*)\n'
     timestamp:
       parse_from: timestamp

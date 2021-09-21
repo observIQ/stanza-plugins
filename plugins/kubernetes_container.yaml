@@ -1,4 +1,4 @@
-version: 0.0.16
+version: 1.0.0
 title: Kubernetes Container
 description: Log parser for Kubernetes
 min_stanza_version: 0.9.8
@@ -57,7 +57,7 @@ pipeline:
       - {{ $element }}
     # {{ end }}
     start_at: '{{ $start_at }}'
-    labels:
+    attributes:
       log_type: 'k8s.container'
       plugin_id: '{{ .id }}'
     resource:
@@ -68,11 +68,11 @@ pipeline:
     type: router
     routes:
       # Route to containerd parser if it matches containerd log format
-      - expr: '$record matches "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,9}([\\+-]\\d{2}:\\d{2}|Z) std(?:out|err) [FP] .*"'
+      - expr: '$body matches "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,9}([\\+-]\\d{2}:\\d{2}|Z) std(?:out|err) [FP] .*"'
         output: containerd_parser
     default: docker_json_parser
 
-  # Parse containerd log from $record
+  # Parse containerd log from $body
   - id: containerd_parser
     type: regex_parser 
     regex: '^(?P<time>[^\s]+) (?P<stream>\w+) (?P<partial>\w) (?P<log>.*)'
@@ -81,16 +81,16 @@ pipeline:
   - id: containerd_recombine
     type: recombine
     combine_field: log
-    is_last_entry: "$record.partial == 'F'"
+    is_last_entry: "$body.partial == 'F'"
 
   # Route Containerd time formats
   - id: time_parser_router
     type: router
     routes:
       - output: local_containerd_timestamp_parser
-        expr: '$record.time != nil and $record.time matches "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,9}[\\+-]\\d{2}:\\d{2}"'
+        expr: '$body.time != nil and $body.time matches "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,9}[\\+-]\\d{2}:\\d{2}"'
       - output: utc_containerd_timestamp_parser
-        expr: '$record.time != nil and $record.time matches "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,9}Z"'
+        expr: '$body.time != nil and $body.time matches "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3,9}Z"'
 
   # Containerd can have a couple timestamp formats depending if the node has local time set
   - id: local_containerd_timestamp_parser
@@ -116,11 +116,11 @@ pipeline:
     parse_from: time
     layout: '%Y-%m-%dT%H:%M:%S.%sZ'
 
-  # $record.stream should exist now so parse it.
+  # $body.stream should exist now so parse it.
   - id: sev_parser
     type: severity_parser
     parse_from: stream
-    preserve_to: '$labels.stream'
+    preserve_to: '$attributes.stream'
     mapping:
       error: stderr
       info: stdout
@@ -128,24 +128,24 @@ pipeline:
   # Parse file name to grab resource information
   - id: file_name_parser
     type: regex_parser
-    parse_from: $labels.file_name
+    parse_from: $attributes["file.name"]
     regex: '^(?P<pod_name>[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*)_(?P<namespace>[^_]+)_(?P<container_name>.+)-(?P<container_id>[a-z0-9]{64})\.log$'
 
-  # Move resource information from $record to $resource
+  # Move resource information from $body to $resource
   - id: resource_restructurer
     type: restructure
     ops:
       - move:
-          from: '$record.pod_name'
+          from: '$body.pod_name'
           to: '$resource["k8s.pod.name"]'
       - move:
-          from: '$record.namespace'
+          from: '$body.namespace'
           to: '$resource["k8s.namespace.name"]'
       - move:
-          from: '$record.container_name'
+          from: '$body.container_name'
           to: '$resource["k8s.container.name"]'
       - move:
-          from: '$record.container_id'
+          from: '$body.container_id'
           to: '$resource["k8s.container.id"]'
 
 # {{ if $enable_nested_json_parser }}
@@ -156,22 +156,22 @@ pipeline:
     routes:
       # It appears to be JSON so send it to be parsed as JSON.
       - output: nested_json_parser
-        expr: '$record.log != nil and $record.log matches "^{.*}\\s*$"'
+        expr: '$body.log != nil and $body.log matches "^{.*}\\s*$"'
 
   # Attempt to parse nested JSON since the log appears to be JSON
   - id: nested_json_parser
     type: json_parser
-    parse_from: $record.log
+    parse_from: $body.log
     output: add_kubernetes_metadata
 # {{ end }}
 
-  # Move message from log field to $record
+  # Move message from log field to $body
   - id: move_log_to_record
     type: restructure
     ops:
       - move:
           from: log
-          to: '$record'
+          to: '$body'
 
   # Add kubernetes metadata
   - id: add_kubernetes_metadata

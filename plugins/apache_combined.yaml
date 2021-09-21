@@ -1,4 +1,4 @@
-version: 0.0.1
+version: 1.0.0
 title: Apache Combined
 description: Log parser for Apache combined format
 parameters:
@@ -25,7 +25,7 @@ pipeline:
     include:
       - {{ $log_path }}
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: 'apache_combined'
       plugin_id: {{ .id }}
     output: apache_combined_regex_parser
@@ -42,7 +42,7 @@ pipeline:
       preserve_to: status
       mapping:
         info: 2xx
-        notice: 3xx
-        warning: 4xx
+        info2: 3xx
+        warn: 4xx
         error: 5xx
     output: {{ .output }}

@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.2
+version: 1.0.0
 title: AWS Cloudwatch Logs
 description: AWS Cloudwatch Logs Input
 min_stanza_version: 1.2.6
@@ -98,7 +98,7 @@ pipeline:
   event_limit: {{ $event_limit }}
   poll_interval: {{ $poll_interval }}
   start_at: {{ $start_at }}
-  labels:
+  attributes:
     plugin_id: {{ .id }}
     log_type: '{{ $log_type }}'
   output: {{ .output }}

@@ -1,4 +1,4 @@
-version: 0.0.2
+version: 1.0.0
 title: uWSGI Log Parser
 description: Log parser uWSGI formatted logs
 min_stanza_version: 0.14.0
@@ -39,7 +39,7 @@ pipeline:
     multiline:
       line_start_pattern: '\[pid:\s*[^\|]*\s*\|app:[^\|]*\|req:[^\]]*\] '
     # {{ end }}
-    labels:
+    attributes:
       log_type: 'uwsgi'
       plugin_id: {{ .id }}
     output: '{{ if eq $log_format "default" }}default_regex_parser{{ else if eq $log_format "observiq" }}json_parser{{ else if eq $log_format "apache-combined" }}apache_combined_regex_parser{{ end }}'
@@ -59,8 +59,8 @@ pipeline:
       preserve_to: status
       mapping:
         info: 2xx
-        notice: 3xx
-        warning: 4xx
+        info2: 3xx
+        warn: 4xx
         error: 5xx
     output: protocol_parser
   # {{ end }}
@@ -78,8 +78,8 @@ pipeline:
       preserve_to: status
       mapping:
         info: 2xx
-        notice: 3xx
-        warning: 4xx
+        info2: 3xx
+        warn: 4xx
         error: 5xx
     output: protocol_parser
   # {{ end }}
@@ -98,19 +98,19 @@ pipeline:
       preserve_to: status
       mapping:
         info: 2xx
-        notice: 3xx
-        warning: 4xx
+        info2: 3xx
+        warn: 4xx
         error: 5xx
     output: {{ .output }}
   # {{ end }}
 
   - id: protocol_parser
     type: regex_parser
-    parse_from: $record.protocol
+    parse_from: $body.protocol
     regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
 
   # Remove message field if it is empty
   - type: remove
-    if: '$record.message == ""'
-    field: $record.message
+    if: '$body.message == ""'
+    field: $body.message
     output: {{.output}}

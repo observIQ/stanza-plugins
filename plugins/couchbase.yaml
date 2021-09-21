@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.4
+version: 1.0.0
 title: Couchbase
 description: Log parser for Couchbase
 parameters:
@@ -130,7 +130,7 @@ pipeline:
     multiline:
       line_start_pattern: '^\[[^:]*:[^,]*,\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2},[^@]*@[^:]*:'
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: couchbase.error
       plugin_id: {{ .id }}
     output: couchbase_error_parser
@@ -143,6 +143,12 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
+      mapping:
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{.output}}
 # {{ end }}
 
@@ -154,7 +160,7 @@ pipeline:
     multiline:
       line_start_pattern: '^\[[^:]*:[^,]*,\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2},[^@]*@[^:]*:'
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: couchbase.debug
       plugin_id: {{ .id }}
     output: couchbase_debug_parser
@@ -168,7 +174,11 @@ pipeline:
     severity:
       parse_from: couchbase_severity
       mapping:
-        warning: warn
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{.output}}
 # {{ end }}
 
@@ -180,7 +190,7 @@ pipeline:
     multiline:
       line_start_pattern: '^\[[^:]*:[^,]*,\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+-\d{2}:\d{2},[^@]*@[^:]*:'
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: couchbase.info
       plugin_id: {{ .id }}
     output: couchbase_info_parser
@@ -194,7 +204,11 @@ pipeline:
     severity:
       parse_from: couchbase_severity
       mapping:
-        warning: warn
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{.output}}
 # {{ end }}
 
@@ -204,7 +218,7 @@ pipeline:
     include:
       - {{ $http_access_log_path }}
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: couchbase.http.access
       plugin_id: {{ .id }}
     output: couchbase_http_access_parser
@@ -221,8 +235,8 @@ pipeline:
       preserve_to: status
       mapping:
         info: 2xx
-        notice: 3xx
-        warning: 4xx
+        info2: 3xx
+        warn: 4xx
         error: 5xx
     output: {{.output}}
 # {{ end }}
@@ -233,7 +247,7 @@ pipeline:
     include:
       - {{ $http_internal_access_log_path }}
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: couchbase.http.access.internal
       plugin_id: {{ .id }}
     output: couchbase_http_access_internal_parser
@@ -250,8 +264,8 @@ pipeline:
       preserve_to: status
       mapping:
         info: 2xx
-        notice: 3xx
-        warning: 4xx
+        info2: 3xx
+        warn: 4xx
         error: 5xx
     output: {{.output}}
 # {{ end }}
@@ -264,7 +278,7 @@ pipeline:
     multiline:
       line_start_pattern: '\[[a-zA-Z_]+:'
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: couchbase.babysitter
       plugin_id: {{ .id }}
     output: couchbase_babysitter_parser
@@ -277,6 +291,12 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
+      mapping:
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{.output}}
 # {{ end }}
 
@@ -288,7 +308,7 @@ pipeline:
     start_at: {{ $start_at }}
     multiline:
       line_start_pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}'
-    labels:
+    attributes:
       log_type: couchbase.xdcr
       plugin_id: {{ .id }}
     output: couchbase_xdcr_parser
@@ -301,5 +321,11 @@ pipeline:
       layout: '%Y-%m-%dT%H:%M:%S.%L%j'
     severity:
       parse_from: couchbase_severity
+      mapping:
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{.output}}
 # {{ end }}

@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 1.0.0
 title: Ruby on Rails
 description: Ruby on Rails log parser. This parser handles json output from lograge.
 min_stanza_version: 0.13.12
@@ -40,7 +40,7 @@ pipeline:
   # {{ end }}
 # {{ end }}
     include_file_name: true
-    labels:
+    attributes:
       plugin_id: {{ .id }}
       log_type: 'rails'
 
@@ -49,40 +49,37 @@ pipeline:
     default: error_regex_parser
     routes:
       - output: json_parser
-        expr: '$record matches "^{.*}\\s*$"'
+        expr: '$body matches "^{.*}\\s*$"'
 
   - type: json_parser
 
   - id: status_severity_parser
     type: severity_parser
-    if: '$record.status != nil'
-    parse_from: $record.status
+    if: '$body.status != nil'
+    parse_from: $body.status
     preset: none
     preserve_to: status
     mapping:
       info: 2xx
-      notice: 3xx
-      warning: 4xx
+      info2: 3xx
+      warn: 4xx
       error: 5xx
 
   - id: pid_regex_parser
     type: regex_parser
-    if: '$record.pid != nil and $record.pid matches "#\\d+"'
+    if: '$body.pid != nil and $body.pid matches "#\\d+"'
     regex: '#(?P<pid>[\d]+)'
 
   - id: error_severity_parser
     type: severity_parser
-    if: '$record.severity != nil'
-    parse_from: $record.severity
-    preserve_to: $record.rails_severity
-    mapping:
-      critical: fatal
-      warning: warn
+    if: '$body.severity != nil'
+    parse_from: $body.severity
+    preserve_to: $body.rails_severity
     output: {{ .output }}
 
   - id: error_regex_parser
     type: regex_parser
-    if: '$record matches "([\\w]+),\\s+\\[([^\\]\\s]+)\\s+#([^\\]]+)\\]\\s+(\\w+)\\s+--\\s+"'
+    if: '$body matches "([\\w]+),\\s+\\[([^\\]\\s]+)\\s+#([^\\]]+)\\]\\s+(\\w+)\\s+--\\s+"'
     regex: '(?P<severity_id>[\w]+),\s+\[(?P<timestamp>[^\]\s]+)\s+#(?P<pid>[^\]]+)\]\s+(?P<severity_text>\w+)\s+--\s+(?P<app>\w+)?:\s+(?P<message>.[\w\W]*)'
     timestamp:
       parse_from: timestamp
@@ -90,8 +87,11 @@ pipeline:
       layout: '2006-01-02T15:04:05.000000'
     severity:
       parse_from: severity_text
-      preserve_to: severity_text
       mapping:
-        critical: fatal
-        warning: warn
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
+      preserve_to: severity_text
     output: {{ .output }}

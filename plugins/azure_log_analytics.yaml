@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 1.0.0
 title: Azure Log Analytics
 description: Azure Log Analytics input
 min_stanza_version: 0.13.20
@@ -64,7 +64,7 @@ pipeline:
     connection_string: '{{ $connection_string }}'
     start_at: '{{ $start_at }}'
     prefetch_count: {{ $prefetch_count }}
-    labels:
+    attributes:
       plugin_id: {{ .id }}
       log_type: '{{ $log_type }}'
     output: resource_router
@@ -73,18 +73,18 @@ pipeline:
     type: router
     routes:
       - output: aks_router
-        expr: '$labels.azure_log_analytics_table == "containerlog"'
+        expr: '$attributes.azure_log_analytics_table == "containerlog"'
     default: {{ .output }}
   
   - id: aks_router
     type: router
     routes:
       - output: aks_nested_parser
-        expr: '$record.containerlog.logentry != nil and $record.containerlog.logentry matches "^{.*}\\s*$"'
+        expr: '$body.containerlog.logentry != nil and $body.containerlog.logentry matches "^{.*}\\s*$"'
     default: {{ .output }}
     
   - id: aks_nested_parser
     type: json_parser
-    parse_from: $record.containerlog.logentry
-    parse_to: $record.containerlog.logentry_json
+    parse_from: $body.containerlog.logentry
+    parse_to: $body.containerlog.logentry_json
     output: {{ .output }}

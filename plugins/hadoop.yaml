@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.3
+version: 1.0.0
 title: Apache Hadoop
 description: Log parser for Apache Hadoop
 parameters:
@@ -70,7 +70,7 @@ pipeline:
     multiline:
       line_start_pattern: '^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+'
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: hadoop.datanode
       plugin_id: {{ .id }}
     output: hadoop_datanode_parser
@@ -84,8 +84,11 @@ pipeline:
     severity:
       parse_from: hadoop_severity
       mapping:
-        warning: warn
-        critical: fatal
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{.output}}
   # {{ end }}
 
@@ -97,7 +100,7 @@ pipeline:
     multiline:
       line_start_pattern: '^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+'
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: hadoop.resourcemgr
       plugin_id: {{ .id }}
     output: hadoop_resourcemgr_parser
@@ -111,8 +114,11 @@ pipeline:
     severity:
       parse_from: hadoop_severity
       mapping:
-        warning: warn
-        critical: fatal
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{.output}}
   # {{ end }}
 
@@ -124,7 +130,7 @@ pipeline:
     multiline:
       line_start_pattern: '^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+'
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: hadoop.namenode
       plugin_id: {{ .id }}
     output: hadoop_namenode_parser
@@ -138,7 +144,10 @@ pipeline:
     severity:
       parse_from: hadoop_severity
       mapping:
-        warning: warn
-        critical: fatal
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{.output}}
   # {{ end }}

@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.2
+version: 1.0.0
 title: RabbitMQ
 description: Log parser for RabbitMQ
 parameters:
@@ -30,7 +30,7 @@ pipeline:
     multiline:
       line_start_pattern: '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3}'
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: rabbitmq
       plugin_id: {{ .id }}
     output: rabbitmq_parser
@@ -43,4 +43,10 @@ pipeline:
       layout: '%Y-%m-%d %H:%M:%S.%s'
     severity:
       parse_from: rabbitmq_severity
+      mapping:
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: {{.output}}

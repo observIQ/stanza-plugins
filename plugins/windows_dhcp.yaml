@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.7
+version: 1.0.0
 title: Windows DHCP
 description: Log parser for Windows DHCP
 supported_platforms: 
@@ -31,7 +31,7 @@ pipeline:
     include:
       - {{ $file_path }}
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: windows_dhcp
       plugin_id: {{ .id }}
     output: filter_router
@@ -40,17 +40,17 @@ pipeline:
     type: router
     routes:
       - output: log_start_filter
-        expr: '$record matches "^\\t\\tMicrosoft DHCP"'
+        expr: '$body matches "^\\t\\tMicrosoft DHCP"'
       - output: log_start_filter
-        expr: '$record matches "^Event ID  Meaning"'
+        expr: '$body matches "^Event ID  Meaning"'
       - output: log_start_filter
-        expr: '$record matches "^\\d*\tThe log was started"'
+        expr: '$body matches "^\\d*\tThe log was started"'
       - output: log_start_filter
-        expr: '$record matches "^QResult: "'
+        expr: '$body matches "^QResult: "'
       - output: log_start_filter
-        expr: '$record matches "^ID,Date,Time,Description,"'
+        expr: '$body matches "^ID,Date,Time,Description,"'
       - output: windows_dhcp_parser
-        expr: '$record matches "^\\d+,\\d{2}\\/\\d{2}\\/\\d{2},\\d{2}:\\d{2}:\\d{2}"'
+        expr: '$body matches "^\\d+,\\d{2}\\/\\d{2}\\/\\d{2},\\d{2}:\\d{2}:\\d{2}"'
 
   # This section filters out log description entries gathered from start of log file
   - id: log_start_filter

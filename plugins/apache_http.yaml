@@ -1,4 +1,4 @@
-version: 0.0.8
+version: 1.0.0
 title: Apache HTTP Server
 description: Log parser for Apache HTTP Server
 parameters:
@@ -58,7 +58,7 @@ pipeline:
     include:
       - {{ $access_log_path }}
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: 'apache_http.access'
       plugin_id: {{ .id }}
     output: '{{ if eq $log_format "default" }}access_regex_parser{{ else if eq $log_format "observiq" }}access_json_parser{{ end }}'
@@ -74,7 +74,7 @@ pipeline:
     multiline:
       line_start_pattern: '\[(?P<time>\w+ \w+ \d{2} \d{2}:\d{2}:\d{2}\.\d+ \d+)\] '
     # {{ end }}
-    labels:
+    attributes:
       log_type: 'apache_http.error'
       plugin_id: {{ .id }}
     output: '{{ if eq $log_format "default" }}error_regex_parser{{ else if eq $log_format "observiq" }}error_json_parser{{ end }}'
@@ -93,8 +93,8 @@ pipeline:
       preserve_to: status
       mapping:
         info: 2xx
-        notice: 3xx
-        warning: 4xx
+        info2: 3xx
+        warn: 4xx
         error: 5xx
     output: {{ .output }}
 
@@ -107,9 +107,10 @@ pipeline:
     severity:
       parse_from: log_level
       mapping:
-        critical: crit
-        emergency: emerg
-        warning: warn
+        info2: notice
+        error2: crit
+        error3: alert
+        fatal2: emerg
         trace:
           - trace1
           - trace2
@@ -134,14 +135,14 @@ pipeline:
       preserve_to: status
       mapping:
         info: 2xx
-        notice: 3xx
-        warning: 4xx
+        info2: 3xx
+        warn: 4xx
         error: 5xx
     output: access_protocol_parser
 
   - id: access_protocol_parser
     type: regex_parser
-    parse_from: $record.protocol
+    parse_from: $body.protocol
     regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
     output: {{ .output }}
 
@@ -153,9 +154,10 @@ pipeline:
     severity:
       parse_from: log_level
       mapping:
-        critical: crit
-        emergency: emerg
-        warning: warn
+        info2: notice
+        error2: crit
+        error3: alert
+        fatal2: emerg
         trace:
           - trace1
           - trace2
@@ -169,7 +171,7 @@ pipeline:
 
   - id: error_message_parser
     type: regex_parser
-    parse_from: $record.message
+    parse_from: $body.message
     regex: '(?P<error_code>[^:]*):(?P<message>.*)'
     output: {{ .output }}
   # {{ end }}
