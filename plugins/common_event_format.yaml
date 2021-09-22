@@ -122,10 +122,10 @@ pipeline:
     from: $record.version
     to: '$labels["version"]'
 
-  - id: promote_device
+  - id: promote_device_product
     type: move
-    if: '$record.device != nil'
-    from: $record.device
+    if: '$record.device_product != nil'
+    from: $record.device_product
     to: '$labels["device"]'
 
   - id: promote_hostname
