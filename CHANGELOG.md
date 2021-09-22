@@ -5,11 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.78] - Unreleased
+## [0.0.79] - 2021-09-21
 
 ### Added
 
-- Added haproxy plugin ([334](https://github.com/observIQ/stanza-plugins/pull/334))
+- Added haproxy plugin ([PR 335](https://github.com/observIQ/stanza-plugins/pull/335))
+
+### Fixed
+
+- Oracle Database: ([PR 334](https://github.com/observIQ/stanza-plugins/pull/334))
+  - Resolved issue where ipv6 values caused a parse failure
+  - Resolved issue where default listener path is not correct
+- Oracle Database: ([PR 331](https://github.com/observIQ/stanza-plugins/pull/331))
+  - Resolves issue where regex fails to parse audit file dbid
+
+## [0.0.78] - 2021-09-16
 
 ### Changed
 
