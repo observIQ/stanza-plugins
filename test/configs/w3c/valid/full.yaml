@@ -8,6 +8,7 @@ pipeline:
   encoding: "ascii"
   log_type: "custom_w3c"
   stat_at: "beginning"
+  delete_after_read: true
   include_file_name: false
   include_file_path: true
   include_file_name_resolved: true
@@ -15,4 +16,5 @@ pipeline:
   fields_header: LogFields
   delimiter: "-"
   header_delimiter: ":"
+  max_concurrent_files: 1000
 - type: stdout
