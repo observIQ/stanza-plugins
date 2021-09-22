@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Updated ubiquiti plugin ([337](https://github.com/observIQ/stanza-plugins/pull/337))
+  - Updated `ac_lite_ap_parser` expression check to be more inline with expected format.
   - Moved catchall from default to a route with pattern matching and set default to output in router.
   - Added if checks to determine if fields exist before doing operation `promote_name`, `promote_device`, and `severity_parser`. This will stop errors in log file if fields do not exist.
 
