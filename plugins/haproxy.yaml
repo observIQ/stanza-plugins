@@ -208,6 +208,11 @@ pipeline:
     if: '$record.frontend_ip != nil'
     from: '$record.frontend_ip'
     to: '$resource["frontend_ip"]'
+  - id: frontend_port_move
+    type: move
+    if: '$record.frontend_port != nil'
+    from: '$record.frontend_port'
+    to: '$resource["frontend_port"]'
   - id: path_move
     type: move
     if: '$record.move != nil'
