@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.80] 2021-09-23
+
+### Fixed
+- HAProxy: Promote frontend_port as a resources ([PR338](https://github.com/observIQ/stanza-plugins/pull/338))
+- Updated ubiquiti plugin ([337](https://github.com/observIQ/stanza-plugins/pull/337))
+  - Updated `ac_lite_ap_parser` expression check to be more inline with expected format.
+  - Moved catchall from default to a route with pattern matching and set default to output in router.
+  - Added if checks to determine if fields exist before doing operation `promote_name`, `promote_device`, and `severity_parser`. This will stop errors in log file if fields do not exist.
+
 ## [0.0.79] - 2021-09-22
 
 ### Added
@@ -19,7 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Oracle Database: ([PR 331](https://github.com/observIQ/stanza-plugins/pull/331))
   - Resolves issue where regex fails to parse audit file dbid
 
-## [0.0.78] - 2021-09-16
+## [0.0.78] - 2021-09-15
 
 ### Changed
 
