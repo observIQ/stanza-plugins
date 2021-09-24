@@ -37,7 +37,7 @@ pipeline:
       - '{{ $fp }}'
     # {{ end }}
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: 'haproxy'
       plugin_id: {{ .id }}
     write_to: message
