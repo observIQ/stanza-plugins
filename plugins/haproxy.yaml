@@ -1,0 +1,272 @@
+version: 0.0.1
+title: HAProxy
+description: Log parser for HAProxy
+supported_platforms:
+  - linux
+min_stanza_version: 1.2.6
+parameters:
+  - name: file_log_path
+    label: File Path
+    description: Specify a single path or multiple paths to read one or many files. You may also use a wildcard (*) to read multiple files within a directory.
+    type: strings
+    required: true
+  - name: log_format
+    label: Log Format
+    description: When choosing the 'default' option, the agent will expect and parse logs in a format of HTTP or TCP as well as any log entries that matches the default or error logging configuration. HAProxy uses default logging format when no specific option is set. When choosing the 'observIQ' option, the agent will expect and parse logs in an optimized JSON format that adheres to the observIQ specification, requiring an update to the Log-Format for each mode. See the HAProxy source page for more information.
+    type: enum
+    valid_values:
+      - default
+      - observiq
+    default: default
+  - name: start_at
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+     - beginning
+     - end
+    default: end
+# Set Defaults
+# {{$start_at := default "end" .start_at}}
+# {{$log_format := default "default" .log_format}}
+pipeline:
+  - id: log_reader
+    type: file_input
+    include:
+    # {{ range $i, $fp := .file_log_path  }}
+      - '{{ $fp }}'
+    # {{ end }}
+    start_at: {{ $start_at }}
+    attributes:
+      log_type: 'haproxy'
+      plugin_id: {{ .id }}
+    write_to: message
+
+  # Parse timestamp, host, and message.
+  - id: default_parser
+    if: '$body.message != nil and $body.message matches "^\\w{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2}\\s+[^\\s]+\\s+[^\\[]+\\[[^\\]]+\\]:"'
+    type: regex_parser
+    parse_from: $body.message
+    regex: '^(?P<timestamp>\w{3}\s+\d{2}\s+\d{2}:\d{2}:\d{2})\s+(?P<host>[^\s]+)\s+(?P<process_name>[^\[]+)\[(?P<pid>[^\]]+)\]:(\s)?(?P<message>.*)'
+    timestamp:
+      parse_from: timestamp
+      layout_type: gotime
+      layout: 'Jan 02 15:04:05'
+
+  # {{ if eq $log_format "default" }}
+  # Route to correct parser
+  - id: message_router
+    type: router
+    default: message_move
+    routes:
+      - output: httplog_parser
+        expr: '$body.message != nil and $body.message matches "^(\\s)?[^:]+:[^\\s]+\\s+\\[[^\\]]+\\]\\s+[^\\s]+\\s+[^/]+/[^\\s]+\\s+[^/]+/[^/]+/[^/]+/[^/]+/[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[^\\s]+\\s+[\\w-]{4}\\s+[^/]+/[^/]+/[^/]+/[^/]+/[^\\s]+\\s+[^/]+/[^\\s]+\\s+"'
+      - output: tcplog_parser
+        expr: '$body.message != nil and $body.message matches "^(\\s)?[^:]+:[^\\s]+\\s+\\[[^\\]]+\\]\\s+[^\\s]+\\s+[^/]+/[^\\s]+\\s+[^/]+/[^/]+/[^\\s]+\\s+[^\\s]+\\s+[\\w-]{2}\\s+[^/]+/[^/]+/[^/]+/[^/]+/[^\\s]+\\s+[^/]+/[\\d]+"'
+      - output: error_parser
+        expr: '$body.message != nil and $body.message matches "^\\s*\\[[^\\]]+\\]\\s*.*"'
+        attributes:
+          log_type: 'haproxy.error'
+
+  # Parse http format log message
+  - id: httplog_parser
+    type: regex_parser
+    parse_from: $body.message
+    regex: '^(\s)?(?P<frontend_ip>[^:]+):(?P<frontend_port>[^\s]+)\s+\[(?P<accept_date>[^\]]+)\]\s+(?P<frontend_name_transport>[^\s]+)\s+(?P<backend_name>[^/]+)/(?P<server_name>[^\s]+)\s+(?P<client_request_send_time>[^/]+)/(?P<queue_wait_time>[^/]+)/(?P<response_time>[^/]+)/(?P<response_send_time>[^/]+)/(?P<client_request_active_time>[^\s]+)\s+(?P<status>[^\s]+)\s+(?P<bytes_read>[^\s]+)\s+(?P<captured_request_cookie>[^\s]+)\s+(?P<captured_response_cookie>[^\s]+)\s+(?P<termination_state>[\w-]{4})\s+(?P<process_concurrent_connections>[^/]+)/(?P<frontend_concurrent_connections>[^/]+)/(?P<backend_concurrent_connections>[^/]+)/(?P<server_concurrent_connections>[^/]+)/(?P<retries>[^\s]+)\s+(?P<server_queue>[^/]+)/(?P<backend_queue>[^\s]+)\s+"(?P<method>\S+) +(?P<uri>[^ ]*)( (?P<protocol>[^/]*)/(?P<protocol_version>[^\"]*)|[^\"]*)?"'
+    output: frontend_type_http_add
+
+  - id: frontend_type_http_add
+    type: add
+    field: frontend_type
+    value: http
+    output: status_severity_parser
+
+  # Parse tcp format log message
+  - id: tcplog_parser
+    type: regex_parser
+    parse_from: $body.message
+    regex: '^(\s)?(?P<frontend_ip>[^:]+):(?P<frontend_port>[^\s]+)\s+\[(?P<accept_date>[^\]]+)\]\s+(?P<frontend_name_transport>[^\s]+)\s+(?P<backend_name>[^/]+)/(?P<server_name>[^\s]+)\s+(?P<queue_wait_time>[^/]+)/(?P<server_response_time>[^/]+)/(?P<session_duration>[^\s]+)\s+(?P<bytes_read>[^\s]+)\s+(?P<termination_state>[\w-]{2})\s+(?P<process_concurrent_connections>[^/]+)/(?P<frontend_concurrent_connections>[^/]+)/(?P<backend_concurrent_connections>[^/]+)/(?P<server_concurrent_connections>[^/]+)/(?P<retries>[^\s]+)\s+(?P<server_queue>[^/]+)/(?P<backend_queue>[\d]+)'
+    output: frontend_type_tcp_add
+
+  - id: frontend_type_tcp_add
+    type: add
+    field: frontend_type
+    value: tcp
+    output: add_info_severity
+
+  # Default severity to info
+  - id: add_info_severity
+    type: add
+    field: $body.severity
+    value: 'info'
+    output: error_severity_parser # Use error parser to parse our added info severity
+  # {{ end }}
+
+  # {{ if eq $log_format "observiq" }}
+  # Route to correct parser
+  - id: message_router
+    type: router
+    default: message_move
+    routes:
+      - output: observiq_parser
+        expr: '$body.message != nil and $body.message matches "^{.*}$|^{.*}\\n$"'
+      - output: error_parser
+        expr: '$body.message != nil and $body.message matches "^\\s*\\[[^\\]]+\\]\\s*.*"'
+        attributes:
+          log_type: 'haproxy.error'
+
+  # Parse observiq format log message
+  - id: observiq_parser
+    type: json_parser
+    if: '$body.message != nil and $body.message matches "^{.*}$|^{.*}\\n$"'
+    parse_from: $body.message
+    output: status_severity_parser
+  # {{ end }}
+
+  # Group of parsers and restructure operators
+  # Parse status if it exists
+  - id: status_severity_parser
+    type: severity_parser
+    if: '$body.status != nil'
+    parse_from: $body.status
+    preserve_to: $body.status
+    preset: none
+    mapping:
+      info: 2xx
+      notice: 3xx
+      warning: 4xx
+      error: 5xx
+    output: uri_parser
+
+  # Parse uri if it exists
+  - type: uri_parser
+    if: '$body.uri != nil'
+    parse_from: $body.uri
+    output: query_move
+
+  # Rename query to query_parameter
+  - id: query_move
+    type: move
+    if: '$body.query != nil'
+    from: $body.query
+    to: $body.query_parameter
+    output: protocol_parser
+
+  # Normalize protocol/version in JSON http_version to match regex http parser
+  - id: protocol_parser
+    type: regex_parser
+    if: '$body.http_version != nil'
+    parse_from: $body.http_version
+    regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
+
+# frontend_ssl_version
+# frontend_ssl_ciphers
+# method
+# protocol
+# protocol_version
+# referer
+  # Promote fields to attributes
+  - id: frontend_ssl_version_move
+    type: move
+    if: '$body.frontend_ssl_version != nil'
+    from: '$body.frontend_ssl_version'
+    to: '$attributes["frontend_ssl_version"]'
+  - id: frontend_ssl_ciphers_move
+    type: move
+    if: '$body.frontend_ssl_ciphers != nil'
+    from: '$body.frontend_ssl_ciphers'
+    to: '$attributes["frontend_ssl_ciphers"]'
+  - id: method_move
+    type: move
+    if: '$attributes.method != nil'
+    from: '$attributes.method'
+    to: '$attributes["method"]'
+  - id: protocol_move
+    type: move
+    if: '$body.protocol != nil'
+    from: '$body.protocol'
+    to: '$attributes["protocol"]'
+  - id: protocol_version_move
+    type: move
+    if: '$body.protocol_version != nil'
+    from: '$body.protocol_version'
+    to: '$attributes["protocol_version"]'
+  - id: referer_move
+    type: move
+    if: '$body.referer != nil'
+    from: '$body.referer'
+    to: '$attributes["referer"]'
+
+  # Promote fields to resources
+  - id: frontend_type_move
+    type: move
+    if: '$body.frontend_type != nil'
+    from: '$body.frontend_type'
+    to: '$resource["frontend_type"]'
+  - id: frontend_ip_move
+    type: move
+    if: '$body.frontend_ip != nil'
+    from: '$body.frontend_ip'
+    to: '$resource["frontend_ip"]'
+  - id: frontend_port_move
+    type: move
+    if: '$body.frontend_port != nil'
+    from: '$body.frontend_port'
+    to: '$resource["frontend_port"]'
+  - id: path_move
+    type: move
+    if: '$body.move != nil'
+    from: '$body.path'
+    to: '$resource["path"]'
+  - id: query_parameters_move
+    type: move
+    if: '$body.query_parameters != nil'
+    from: '$body.query_parameters'
+    to: '$resource["query_parameters"]'
+  - id: frontend_name_move
+    type: move
+    if: '$body.frontend_name != nil'
+    from: '$body.frontend_name'
+    to: '$resource["frontend_name"]'
+  - id: backend_name_move
+    type: move
+    if: '$body.backend_name != nil'
+    from: '$body.backend_name'
+    to: '$resource["backend_name"]'
+  - id: server_name_move
+    type: move
+    if: '$body.server_name != nil'
+    from: '$body.server_name'
+    to: '$resource["server_name"]'
+  - id: host_move
+    type: move
+    if: '$body.host != nil'
+    from: '$body.host'
+    to: '$resource["host"]'
+    output: {{ .output }}
+
+  # Parser error logs
+  # Severities: emerg alert crit err warning notice info debug
+  - id: error_parser
+    type: regex_parser
+    parse_from: $body.message
+    regex: ^\s*\[(?P<severity>[^\]]+)\]\s*(?P<message>.*)
+    output: error_severity_parser
+
+  - id: error_severity_parser
+    type: severity_parser
+    if: '$body.severity != nil'
+    parse_from: $body.severity
+    mapping:
+      critical: crit
+      emergency: emerg
+      error: err
+    output: {{ .output }}
+
+  # If $body.message still exists and $body.host doesn't that means we were unable to parse and just need to promote to $body
+  - id: message_move
+    type: move
+    if: $body.message != nil and $body.host == nil
+    from: $body.message
+    to: $body
+    output: {{ .output }}
