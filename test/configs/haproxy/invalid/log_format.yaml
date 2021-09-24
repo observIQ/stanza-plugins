@@ -1,0 +1,6 @@
+pipeline:
+- type: haproxy
+  file_log_path: 
+    - "/var/log/custom/path/haproxy/default.log"
+  log_format: "invalid"
+- type: stdout
