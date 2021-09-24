@@ -55,7 +55,7 @@ pipeline:
         output: ac_lite_ap_parser
       - expr: '$body matches "^<[^>]+>[^ ]*\\s*[^,]*,[^,]*,[^:]*:(\\s*)?[^:]*:(\\s*)?[\\s\\S]*"'
         output: flex_mini_parser
-      - expr: '$record matches "^<\\d+>[\\s\\S]*"'
+      - expr: '$body matches "^<\\d+>[\\s\\S]*"'
         output: catch_all_parser
 
   # This pattern is known to match AC Lite access points
