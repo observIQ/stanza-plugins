@@ -127,9 +127,9 @@ pipeline:
   # Parse status if it exists
   - id: status_severity_parser
     type: severity_parser
-    if: '$record.status != nil'
-    parse_from: $record.status
-    preserve_to: $record.status
+    if: '$body.status != nil'
+    parse_from: $body.status
+    preserve_to: $body.status
     preset: none
     mapping:
       info: 2xx
@@ -140,23 +140,23 @@ pipeline:
 
   # Parse uri if it exists
   - type: uri_parser
-    if: '$record.uri != nil'
-    parse_from: $record.uri
+    if: '$body.uri != nil'
+    parse_from: $body.uri
     output: query_move
 
   # Rename query to query_parameter
   - id: query_move
     type: move
-    if: '$record.query != nil'
-    from: $record.query
-    to: $record.query_parameter
+    if: '$body.query != nil'
+    from: $body.query
+    to: $body.query_parameter
     output: protocol_parser
 
   # Normalize protocol/version in JSON http_version to match regex http parser
   - id: protocol_parser
     type: regex_parser
-    if: '$record.http_version != nil'
-    parse_from: $record.http_version
+    if: '$body.http_version != nil'
+    parse_from: $body.http_version
     regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
 
 # frontend_ssl_version
@@ -168,80 +168,80 @@ pipeline:
   # Promote fields to labels
   - id: frontend_ssl_version_move
     type: move
-    if: '$record.frontend_ssl_version != nil'
-    from: '$record.frontend_ssl_version'
+    if: '$body.frontend_ssl_version != nil'
+    from: '$body.frontend_ssl_version'
     to: '$labels["frontend_ssl_version"]'
   - id: frontend_ssl_ciphers_move
     type: move
-    if: '$record.frontend_ssl_ciphers != nil'
-    from: '$record.frontend_ssl_ciphers'
-    to: '$labels["frontend_ssl_ciphers"]'
+    if: '$body.frontend_ssl_ciphers != nil'
+    from: '$body.frontend_ssl_ciphers'
+    to: '$attributes["frontend_ssl_ciphers"]'
   - id: method_move
     type: move
-    if: '$record.method != nil'
-    from: '$record.method'
+    if: '$attributes.method != nil'
+    from: '$attributes.method'
     to: '$labels["method"]'
   - id: protocol_move
     type: move
-    if: '$record.protocol != nil'
-    from: '$record.protocol'
+    if: '$body.protocol != nil'
+    from: '$body.protocol'
     to: '$labels["protocol"]'
   - id: protocol_version_move
     type: move
-    if: '$record.protocol_version != nil'
-    from: '$record.protocol_version'
-    to: '$labels["protocol_version"]'
+    if: '$body.protocol_version != nil'
+    from: '$body.protocol_version'
+    to: '$attributes["protocol_version"]'
   - id: referer_move
     type: move
-    if: '$record.referer != nil'
-    from: '$record.referer'
-    to: '$labels["referer"]'
+    if: '$body.referer != nil'
+    from: '$body.referer'
+    to: '$attributes["referer"]'
 
   # Promote fields to resources
   - id: frontend_type_move
     type: move
-    if: '$record.frontend_type != nil'
-    from: '$record.frontend_type'
+    if: '$body.frontend_type != nil'
+    from: '$body.frontend_type'
     to: '$resource["frontend_type"]'
   - id: frontend_ip_move
     type: move
-    if: '$record.frontend_ip != nil'
-    from: '$record.frontend_ip'
+    if: '$body.frontend_ip != nil'
+    from: '$body.frontend_ip'
     to: '$resource["frontend_ip"]'
   - id: frontend_port_move
     type: move
-    if: '$record.frontend_port != nil'
-    from: '$record.frontend_port'
+    if: '$body.frontend_port != nil'
+    from: '$body.frontend_port'
     to: '$resource["frontend_port"]'
   - id: path_move
     type: move
-    if: '$record.move != nil'
-    from: '$record.path'
+    if: '$body.move != nil'
+    from: '$body.path'
     to: '$resource["path"]'
   - id: query_parameters_move
     type: move
-    if: '$record.query_parameters != nil'
-    from: '$record.query_parameters'
+    if: '$body.query_parameters != nil'
+    from: '$body.query_parameters'
     to: '$resource["query_parameters"]'
   - id: frontend_name_move
     type: move
-    if: '$record.frontend_name != nil'
-    from: '$record.frontend_name'
+    if: '$body.frontend_name != nil'
+    from: '$body.frontend_name'
     to: '$resource["frontend_name"]'
   - id: backend_name_move
     type: move
-    if: '$record.backend_name != nil'
-    from: '$record.backend_name'
+    if: '$body.backend_name != nil'
+    from: '$body.backend_name'
     to: '$resource["backend_name"]'
   - id: server_name_move
     type: move
-    if: '$record.server_name != nil'
-    from: '$record.server_name'
+    if: '$body.server_name != nil'
+    from: '$body.server_name'
     to: '$resource["server_name"]'
   - id: host_move
     type: move
-    if: '$record.host != nil'
-    from: '$record.host'
+    if: '$body.host != nil'
+    from: '$body.host'
     to: '$resource["host"]'
     output: {{ .output }}
 
@@ -255,18 +255,18 @@ pipeline:
 
   - id: error_severity_parser
     type: severity_parser
-    if: '$record.severity != nil'
-    parse_from: $record.severity
+    if: '$body.severity != nil'
+    parse_from: $body.severity
     mapping:
       critical: crit
       emergency: emerg
       error: err
     output: {{ .output }}
 
-  # If $body.message still exists and $record.host doesn't that means we were unable to parse and just need to promote to $record
+  # If $body.message still exists and $body.host doesn't that means we were unable to parse and just need to promote to $body
   - id: message_move
     type: move
-    if: $body.message != nil and $record.host == nil
+    if: $body.message != nil and $body.host == nil
     from: $body.message
-    to: $record
+    to: $body
     output: {{ .output }}
