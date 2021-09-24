@@ -65,7 +65,7 @@ pipeline:
         expr: '$body.message != nil and $body.message matches "^(\\s)?[^:]+:[^\\s]+\\s+\\[[^\\]]+\\]\\s+[^\\s]+\\s+[^/]+/[^\\s]+\\s+[^/]+/[^/]+/[^\\s]+\\s+[^\\s]+\\s+[\\w-]{2}\\s+[^/]+/[^/]+/[^/]+/[^/]+/[^\\s]+\\s+[^/]+/[\\d]+"'
       - output: error_parser
         expr: '$body.message != nil and $body.message matches "^\\s*\\[[^\\]]+\\]\\s*.*"'
-        labels:
+        attributes:
           log_type: 'haproxy.error'
 
   # Parse http format log message
@@ -112,7 +112,7 @@ pipeline:
         expr: '$body.message != nil and $body.message matches "^{.*}$|^{.*}\\n$"'
       - output: error_parser
         expr: '$body.message != nil and $body.message matches "^\\s*\\[[^\\]]+\\]\\s*.*"'
-        labels:
+        attributes:
           log_type: 'haproxy.error'
 
   # Parse observiq format log message
@@ -165,12 +165,12 @@ pipeline:
 # protocol
 # protocol_version
 # referer
-  # Promote fields to labels
+  # Promote fields to attributes
   - id: frontend_ssl_version_move
     type: move
     if: '$body.frontend_ssl_version != nil'
     from: '$body.frontend_ssl_version'
-    to: '$labels["frontend_ssl_version"]'
+    to: '$attributes["frontend_ssl_version"]'
   - id: frontend_ssl_ciphers_move
     type: move
     if: '$body.frontend_ssl_ciphers != nil'
@@ -180,12 +180,12 @@ pipeline:
     type: move
     if: '$attributes.method != nil'
     from: '$attributes.method'
-    to: '$labels["method"]'
+    to: '$attributes["method"]'
   - id: protocol_move
     type: move
     if: '$body.protocol != nil'
     from: '$body.protocol'
-    to: '$labels["protocol"]'
+    to: '$attributes["protocol"]'
   - id: protocol_version_move
     type: move
     if: '$body.protocol_version != nil'
