@@ -1,0 +1,5 @@
+pipeline:
+- type: sonicwall
+  file_log_path: "/tmp/in.log"
+  start_at: endf
+- type: stdout

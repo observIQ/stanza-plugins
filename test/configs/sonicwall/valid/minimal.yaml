@@ -1,0 +1,5 @@
+pipeline:
+- type: sonicwall
+  file_log_path: 
+  - "/tmp/in.log"
+- type: stdout

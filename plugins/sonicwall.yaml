@@ -1,0 +1,144 @@
+version: 0.0.1
+title: Sonicwall
+description: Log parser for Sonicwall
+supported_platforms:
+  - linux
+  - windows
+  - macos
+min_stanza_version: 1.2.7
+parameters:
+  - name: file_log_path
+    label: File Path
+    description: Specify a single path or multiple paths to read one or many files. You may also use a wildcard (*) to read multiple files within a directory.
+    type: strings
+    required: true
+  - name: start_at
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+     - beginning
+     - end
+    default: end
+  - name: exclude_file_log_path
+    label: Exclude File Path
+    description: Specify a single path or multiple paths to exclude one or many files from being read. You may also use a wildcard (*) to exclude multiple files from being read within a directory.
+    type: strings
+    default: []
+    advanced_config: true
+  - name: include_file_name
+    label: Include File Name
+    description: Include File Name as a label
+    type: bool
+    default: true
+    advanced_config: true
+  - name: include_file_path
+    label: Include File Path
+    description: Include File Path as a label
+    type: bool
+    default: false
+    advanced_config: true
+  - name: include_file_name_resolved
+    label: Include Resolved File Name
+    description: Same as include_file_name, however, if file name is a symlink, the underlying file's name will be set as a label
+    type: bool
+    default: false
+    advanced_config: true
+  - name: include_file_path_resolved
+    label: Include Resolved File Path
+    description: Same as include_file_path, however, if file path is a symlink, the underlying file's path will be set as a label
+    type: bool
+    default: false
+    advanced_config: true
+# Set Defaults
+# {{$start_at := default "end" .start_at}}
+# {{$include_file_name := default true .include_file_name}}
+# {{$include_file_path := default false .include_file_path}}
+# {{$include_file_name_resolved := default false .include_file_name_resolved}}
+# {{$include_file_path_resolved := default false .include_file_path_resolved}}
+pipeline:
+  - id: log_reader
+    type: file_input
+    include:
+    # {{ range $i, $fp := .file_log_path  }}
+      - '{{ $fp }}'
+    # {{ end }}
+    exclude:
+    # {{ range $i, $efp := .exclude_file_log_path  }}
+        - '{{ $efp }}'
+    # {{ end }}
+    start_at: {{ $start_at }}
+    include_file_name: {{ $include_file_name }}
+    include_file_path: {{ $include_file_path }}
+    include_file_name_resolved: {{ $include_file_name_resolved }}
+    include_file_path_resolved: {{ $include_file_path_resolved }}
+    labels:
+      log_type: 'sonicwall'
+      plugin_id: {{ .id }}
+    write_to: log
+
+  - id: message_router
+    type: router
+    # Default to just move log entry to $record because it doesn't match known format
+    default: message_move 
+    routes:
+      # Check if log starts with a syslog priority.
+      # Example: <12>
+      - output: beginning_priority_parser
+        expr: '$record.log matches "^<[^>]+>\\s*"'
+      # Check if log starts with timestamp and ip address.
+      # Example Jan  3 13:45:50 192.168.5.1
+      - output: beginning_timestamp_parser
+        expr: '$record.log matches "^\\w{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2}\\s+[:a-fA-F\\d\\.]+\\s+"'
+
+  # Parse priority, and message.
+  - id: beginning_priority_parser
+    if: '$record.log matches "^<[^>]+>\\s*[\\d\\D]*"'
+    type: regex_parser
+    parse_from: $record.log
+    regex: '^<(?P<priority>[^>]+)>\s*(?P<message>[\d\D]*)'
+    output: severity_parser
+
+  - id: beginning_timestamp_parser
+    if: '$record.log matches "^\\w{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2}\\s+"'
+    type: regex_parser
+    parse_from: $record.log
+    regex: '^(?P<timestamp>\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2})\s+(?P<host>[:a-fA-F\d\.]+)\s+(?P<message>[\d\D]*)'
+    timestamp:
+      parse_from: $record.timestamp
+      layout_type: gotime
+      layout: 'Jan _2 15:04:05'
+    output: key_value_parser
+
+
+  - type: severity_parser
+    if: '$record.priority != nil'
+    parse_from: $record.priority
+    preserve_to: $record.priority
+    mapping:
+      emergency: [0,8,16,24,32,40,48,56,64,72,80,88,96,104,112,120,128,136,144,152,160,168,176,184]
+      alert: [1,9,17,25,33,41,49,57,65,73,81,89,97,105,113,121,129,137,145,153,161,169,177,185]
+      critical: [2,10,18,26,34,42,50,58,66,74,82,90,98,106,114,122,130,138,146,154,162,170,178,186]
+      error: [3,11,19,27,35,43,51,59,67,75,83,91,99,107,115,123,131,139,147,155,163,171,179,187]
+      warning: [4,12,20,28,36,44,52,60,68,76,84,92,100,108,116,124,132,140,148,156,164,172,180,188]
+      notice: [5,13,21,29,37,45,53,61,69,77,85,93,101,109,117,125,133,141,149,157,165,173,181,189]
+      info: [6,14,22,30,38,46,54,62,70,78,86,94,102,110,118,126,134,142,150,158,166,174,182,190]
+      debug: [7,15,23,31,39,47,55,63,71,79,87,95,103,111,119,127,135,143,151,159,167,175,183,191]
+    output: key_value_parser
+
+  - type: key_value_parser
+    if: '$record.message != nil'
+    parse_from: message
+    timestamp:
+      parse_from: time
+      layout_type: gotime
+      layout: '2006-01-02 15:04:05'
+    output: {{ .output }}
+  
+  # If $record.log still exists that means we were unable to parse and just need to promote to $record
+  - id: message_move
+    type: move
+    if: $record.log != nil
+    from: $record.log
+    to: $record
+    output: {{ .output }}
