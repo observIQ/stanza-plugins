@@ -140,13 +140,6 @@ pipeline:
     from: $record.name
     to: $record.message
 
-  # Parse extensions as key value pairs
-  - id: extensions_parser
-    type: key_value_parser
-    if: '$record.extensions != nil'
-    parse_from: $record.extensions
-    parse_to: $record.extensions
-
   # Parse severity using CEF severity standards.
   # Currently not putting unknown which is in standard in parser so it will be assigned default.
   - type: severity_parser
