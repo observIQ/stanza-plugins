@@ -1,0 +1,104 @@
+# Plugin Info
+version: 0.0.1
+title: TCP/UDP
+description: TCP/UDP Input Parser
+min_stanza_version: 1.2.7
+parameters:
+  - name: listen_port
+    label: Listen Port
+    description: A port which the agent will listen for syslog messages
+    type: int
+    default: 5140
+  - name: connection_type
+    label: Connection Type
+    description: The type of syslog connection (`udp` or `tcp`)
+    type: enum
+    valid_values:
+      - udp
+      - tcp
+    default: udp
+  - name: log_type
+    label: Type
+    description: Adds the specified 'Type' as a label to each log message.
+    type: string
+    default: tcpudp
+  - name: listen_ip
+    label: Listen IP
+    description: A syslog ip address of the form `<ip>`
+    type: string
+    default: "0.0.0.0"
+    advanced_config: true
+  - name: add_labels
+    label: Labels
+    description: Adds net.transport, net.peer.ip, net.peer.port, net.host.ip and net.host.port labels.
+    type: bool
+    default: true
+    advanced_config: true
+  - name: enable_tls
+    label: Enable TLS
+    description: Enable TLS for the TCP listener
+    type: bool
+    default: false
+    advanced_config: true
+  - name: certificate_file
+    label: TLS certificate path
+    description: File path for the X509 TLS certificate chain
+    type: string
+    default: "/opt/cert"
+    relevant_if:
+      enable_tls:
+        equals: true
+    advanced_config: true
+  - name: private_key_file
+    label: TLS private key path
+    description: File path for the X509 TLS certificate chain
+    type: string
+    default: "/opt/key"
+    relevant_if:
+      enable_tls:
+        equals: true
+    advanced_config: true
+# Set Defaults
+# {{$listen_ip := default "0.0.0.0" .listen_ip}}
+# {{$listen_port := default 514 .listen_port}}
+# {{$connection_type := default "udp" .connection_type}}
+# {{$log_type := default "tcpudp" .log_type}}
+# {{$add_labels := default true .add_labels}}
+# {{$enable_tls := default false .enable_tls}}
+# {{$certificate_file := default "" .certificate_file}}
+# {{$private_key_file := default "" .private_key_file}}
+# Pipeline Template
+pipeline:
+# {{ if eq $connection_type "udp" }}
+  - id: upd_input
+    type: udp_input
+    listen_address: '{{ $listen_ip }}:{{ $listen_port }}'
+    labels:
+      log_type: syslog
+      plugin_id: {{ .id }}
+    add_labels: {{$add_labels}}
+    # {{ if $enable_tls}}
+    tls:
+      enable: {{ $enable_tls }}
+      certificate: {{ $certificate_file }}
+      private_key: {{ $private_key_file }}
+    # {{ end }}
+    output: {{.output}}
+# {{ end }}
+
+# {{ if eq $connection_type "tcp" }}
+  - id: tcp_input
+    type: tcp_input
+    listen_address: '{{ $listen_ip }}:{{ $listen_port }}'
+    labels:
+      log_type: syslog
+      plugin_id: {{ .id }}
+    add_labels: {{$add_labels}}
+    # {{ if $enable_tls }}
+    tls:
+      enable: {{ $enable_tls }}
+      certificate: {{ $certificate_file }}
+      private_key: {{ $private_key_file }}
+    # {{ end }}
+    output: {{.output}}
+# {{ end }}
