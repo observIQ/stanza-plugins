@@ -1,0 +1,4 @@
+pipeline:
+- type: tcpudp
+  listen_ip: 5140
+- type: stdout
