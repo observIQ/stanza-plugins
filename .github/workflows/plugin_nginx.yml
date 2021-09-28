@@ -84,6 +84,9 @@ jobs:
     - name: Stop Stanza
       run: docker kill stanza
 
+    - name: Dump Stanza Logs
+      run: docker logs stanza
+
     - name: Check output
       run: |
         if sudo diff output/out log-library/cases/nginx/observiq/expect/expect.json; then
