@@ -83,14 +83,28 @@ pipeline:
   - id: audit_router
     type: router
     routes:
-      - output: audit_regex_parser
-        expr: $ matches '\\w+ \\w+\\s{1,2}\\d{1,2} \\d{2}:\\d{2}:\\d{2} \\d{4} [-+]\\d{2}:\\d{2}'
+      - output: audit_regex_parser_action
+        expr: $ matches '\\w+ \\w+\\s{1,2}\\d{1,2} \\d{2}:\\d{2}:\\d{2} \\d{4} [-+]\\d{2}:\\d{2}\\nLENGTH\\s:\\s\\D\\d+\\D\\nACTION'
+      - output: audit_regex_parser_session
+        expr: $ matches '\\w+ \\w+\\s{1,2}\\d{1,2} \\d{2}:\\d{2}:\\d{2} \\d{4} [-+]\\d{2}:\\d{2}\\nLENGTH:\\s\\D\\d+\\D\\nSESSION'
       - output: server_start_regex_parser
         expr: $ startsWith 'Audit file '
 
-  - id: audit_regex_parser
+  - id: audit_regex_parser_action
     type: regex_parser
-    regex: '(?P<timestamp>\w+ \w+\s{1,2}\d{1,2} \d{2}:\d{2}:\d{2} \d{4} [-+]\d{2}:\d{2})\nLENGTH : \D(?P<length>\d*)\D\nACTION :\[\d+\]\s+\D(?P<action>[\d\w[:ascii:]]+)\D\nDATABASE USER:\[\d+\]\s+\D(?P<database_user>[^\s]+)\D\n(PRIVILEGE :\[\d+\]\s+\D(?P<privilege>[^\s]+)\D\n)?(CLIENT USER:\[\d+\]\s+\D(?P<client_user>[^\s]+|)\D\n)?(CLIENT TERMINAL:\[\d+\]\s+\D(?P<client_terminal>[^\s]+|)\D\n)?(STATUS:\[\d+\]\s+\D(?P<status_code>[^\s]+|)\D\n)?(DBID:\[\d+\]\s\D(?P<dbid>\d+|)\D\n)?(SESSIONID:\[\d+\]\s+\D(?P<sessionid>[^\s]+|)\D\n)?(USERHOST:\[\d+\]\s+\D(?P<userhost>[^\s]+|)\D\n)?(CLIENT ADDRESS:\[\d+\]\s+\D(?P<client_address>[^\s]+|)\D\n)?(ACTION NUMBER:\[\d+\]\s+\D(?P<action_number>[^\s]+|)\D)?'
+    regex: '^(?P<timestamp>\w+ \w+\s{1,2}\d{1,2} \d{2}:\d{2}:\d{2} \d{4} [-+]\d{2}:\d{2})\nLENGTH : \D(?P<length>\d*)\D\nACTION :\[\d+\]\s+\D(?P<action>[\d\w[:ascii:]]+?)\D\nDATABASE USER:\[\d+\]\s+\D(?P<database_user>[^\s]+)\D\n(PRIVILEGE :\[\d+\]\s+\D(?P<privilege>[^\s]+)\D\n)?(CLIENT USER:\[\d+\]\s+\D(?P<client_user>[^\s]+|)\D\n)?(CLIENT TERMINAL:\[\d+\]\s+\D(?P<client_terminal>[^\s]+|)\D\n)?(STATUS:\[\d+\]\s+\D(?P<status_code>[^\s]+|)\D\n)?(DBID:\[\d+\]\s\D(?P<dbid>[^\s]+|)\D\n)?(SESSIONID:\[\d+\]\s+\D(?P<sessionid>[^\s]+|)\D\n)?(USERHOST:\[\d+\]\s+\D(?P<userhost>[^\s]+|)\D\n)?(CLIENT ADDRESS:\[\d+\]\s+\D(?P<client_address>[^\s]+|)\D\n)?(ACTION NUMBER:\[\d+\]\s+\D(?P<action_number>[^\s]+|)\D\n)?'
+    timestamp:
+      parse_from: timestamp
+      layout: '%a %h %g %H:%M:%S %Y %j'
+    # {{ if $enable_truncate_audit_action }}
+    output: audit_action_restructurer
+    # {{ else }}
+    output: {{ .output }}
+    # {{ end }}
+
+  - id: audit_regex_parser_session
+    type: regex_parser
+    regex: '^(?P<timestamp>\w+ \w+\s{1,2}\d{1,2} \d{2}:\d{2}:\d{2} \d{4} [-+]\d{2}:\d{2})\nLENGTH: \D(?P<length>\d*)\D\n(SESSIONID:\[\d+\]\s+\D(?P<sessionid>[^\s]+|)\D[\n\s]+)?(ENTRYID:\[\d+\]\s+\D(?P<entryid>[^\s]+|)\D[\n\s]+)?(STATEMENT:\[\d+\]\s+\D(?P<statement>[^\s]+|)\D[\n\s]+)?(USERID:\[\d+\]\s+\D(?P<userid>[^\s]+|)\D[\n\s]+)?(USERHOST:\[\d+\]\s+\D(?P<userhost>[^\s]+|)\D[\n\s]+)?(TERMINAL:\[\d+\]\s+\D(?P<terminal>[\d\w[:ascii:]]+?|)\D[\n\s]+)?ACTION:\[\d+\]\s+\D(?P<action>[\d\w[:ascii:]]+?|)\D[\n\s]+(RETURNCODE:\[\d+\]\s+\D(?P<returncode>[^\s]+|)\D[\n\s]+)?(COMMENT\$TEXT:\[\d+\]\s+\D(?P<comment_text>[^"]+|)\D[\n\s]+)?(LOGOFF\$PREAD:\[\d+\]\s+\D(?P<logoff_pread>[^"]+|)\D[\n\s]+)?(LOGOFF\$LREAD:\[\d+\]\s+\D(?P<logoff_lread>[^"]+|)\D[\n\s]+)?(LOGOFF\$LWRITE:\[\d+\]\s+\D(?P<logoff_lwrite>[^"]+|)\D[\n\s]+)?(LOGOFF\$DEAD:\[\d+\]\s+\D(?P<logoff_dead>[^"]+|)\D[\n\s]+)?(OBJ\$CREATOR:\[\d+\]\s+\D(?P<obj_creator>[^"]+|)\D[\n\s]+)?(OBJ\$NAME:\[\d+\]\s+\D(?P<obj_name>[^"]+|)\D[\n\s]+)?(OBJ\$PRIVILEGES:\[\d+\]\s+\D(?P<obj_privileges>[^"]+|)\D[\n\s]+)?(AUTH\$GRANTEE:\[\d+\]\s+\D(?P<auth_grantee>[^"]+|)\D[\n\s]+)?(OS\$USERID:\[\d+\]\s+\D(?P<os_userid>[^\s]+|)\D[\n\s]+)?(DBID:\[\d+\]\s+\D(?P<dbid>[^\s]+|)\D[\n\s]+)?(SESSIONCPU:\[\d+\]\s+\D(?P<sessioncpu>\d+|)\D[\n\s]+)?(PRIV\$USED:\[\d+\]\s+\D(?P<priv_user>[^\s]+|)\D[\n\s]+)?'
     timestamp:
       parse_from: timestamp
       layout: '%a %h %g %H:%M:%S %Y %j'
