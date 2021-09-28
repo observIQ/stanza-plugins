@@ -21,6 +21,9 @@ jobs:
         path: log-library
         token: ${{ secrets.LOG_LIBRARY_ACCESS_TOKEN }}
 
+    - name: Create Output Directory
+      run: mkdir output
+
     - name: Run Stanza
       run: |
         docker run -d \
@@ -39,7 +42,7 @@ jobs:
 
     - name: Check output
       run: |
-        if sudo diff stanza/expect/expect.json stanza/output/out; then
+        if sudo diff output/out log-library/cases/nginx/default/expect/expect.json; then
           echo "pass"
         else
           echo "fail"
