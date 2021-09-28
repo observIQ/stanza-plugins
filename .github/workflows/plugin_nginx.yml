@@ -43,6 +43,15 @@ jobs:
     - name: Stop Stanza
       run: docker kill stanza
 
+    - name: Pause
+      run: sleep 2
+
+    - name: Cat output
+      run: cat output/out
+
+    - name: Cat expect
+      run: cat log-library/cases/nginx/observiq/expect/expect.json
+
     - name: Check output
       run: |
         if sudo diff output/out log-library/cases/nginx/observiq/expect/expect.json; then
@@ -83,6 +92,15 @@ jobs:
 
     - name: Stop Stanza
       run: docker kill stanza
+
+    - name: Pause
+      run: sleep 2
+
+    - name: Cat output
+      run: cat output/out
+
+    - name: Cat expect
+      run: cat log-library/cases/nginx/observiq/expect/expect.json
 
     - name: Dump Stanza Logs
       run: docker logs stanza
