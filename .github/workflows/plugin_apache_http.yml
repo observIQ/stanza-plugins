@@ -78,6 +78,9 @@ jobs:
     - name: Pause 5 seconds
       run: sleep 5
 
+    - name: Dump Stanza Logs
+      run: docker logs stanza
+
     - name: Stop Stanza
       run: docker kill stanza
 
