@@ -55,7 +55,7 @@ jobs:
     - name: Check output
       run: |
         sudo cat output/out > output/out.sorted
-        sudo cat log-library/cases/apache_http/default/expect/expect.json output/expect.json.sorted
+        sudo cat log-library/cases/apache_http/default/expect/expect.json > output/expect.json.sorted
         if sudo diff output/out.sorted output/expect.json.sorted; then
           echo "pass"
         else
@@ -110,7 +110,7 @@ jobs:
     - name: Check output
       run: |
         sudo cat output/out > output/out.sorted
-        sudo cat log-library/cases/apache_http/observiq/expect/expect.json output/expect.json.sorted
+        sudo cat log-library/cases/apache_http/observiq/expect/expect.json > output/expect.json.sorted
         if sudo diff output/out.sorted output/expect.json.sorted; then
           echo "pass"
         else
