@@ -8,7 +8,7 @@ on:
     branches:
       - master
 jobs:
-  plugin_nginx:
+  default_format:
     runs-on: ubuntu-latest
     steps:
     - name: Clone stanza-plugins
@@ -34,8 +34,8 @@ jobs:
           observiq/stanza:1.2.7 \
           --config /input/config/config.yaml
 
-    - name: Pause 3 seconds
-      run: sleep 3
+    - name: Pause 5 seconds
+      run: sleep 5
 
     - name: Stop Stanza
       run: docker kill stanza
@@ -43,6 +43,47 @@ jobs:
     - name: Check output
       run: |
         if sudo diff output/out log-library/cases/nginx/default/expect/expect.json; then
+          echo "pass"
+        else
+          echo "fail"
+          exit 1
+        fi
+
+  observiq_format:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Clone stanza-plugins
+      uses: actions/checkout@v2
+
+    - name: Clone Log Library
+      uses: actions/checkout@v2
+      with:
+        repository: 'observIQ/log-library'
+        path: log-library
+        token: ${{ secrets.LOG_LIBRARY_ACCESS_TOKEN }}
+
+    - name: Create Output Directory
+      run: mkdir output
+
+    - name: Run Stanza
+      run: |
+        docker run -d \
+          --name stanza \
+          --entrypoint /stanza_home/stanza \
+          -v $(pwd)/log-library/cases/nginx/observiq:/input \
+          -v $(pwd)/output:/output \
+          observiq/stanza:1.2.7 \
+          --config /input/config/config.yaml
+
+    - name: Pause 5 seconds
+      run: sleep 5
+
+    - name: Stop Stanza
+      run: docker kill stanza
+
+    - name: Check output
+      run: |
+        if sudo diff output/out log-library/cases/nginx/observiq/expect/expect.json; then
           echo "pass"
         else
           echo "fail"
