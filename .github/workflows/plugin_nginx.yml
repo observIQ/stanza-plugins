@@ -55,10 +55,17 @@ jobs:
     - name: Run Stanza
       run: |
         docker run -d \
+          --name stanza \
           --entrypoint /stanza_home/stanza \
           -v $(pwd)/stanza:/ci \
           observiq/stanza:1.2.7 \
           --config /ci/config.yaml
+
+    - name: Pause 3 seconds
+      run: sleep 3
+
+    - name: Stop Stanza
+      run: docker kill stanza
 
     - name: Check output
       run: |
