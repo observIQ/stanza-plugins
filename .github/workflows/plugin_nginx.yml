@@ -50,11 +50,11 @@ jobs:
       run: sudo cat output/out
 
     - name: Cat expect
-      run: sudo cat log-library/cases/nginx/observiq/expect/expect.json
+      run: sudo cat log-library/cases/nginx/default/expect/expect.json
 
     - name: Check output
       run: |
-        if sudo diff output/out log-library/cases/nginx/observiq/expect/expect.json; then
+        if sudo diff output/out log-library/cases/nginx/default/expect/expect.json; then
           echo "pass"
         else
           echo "fail"
