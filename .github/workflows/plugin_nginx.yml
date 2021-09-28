@@ -45,9 +45,7 @@ jobs:
 
     - name: Check output
       run: |
-        sudo jq . output/out > output/a.json
-        sudo jq . log-library/cases/nginx/observiq/expect/expect.json > output/expect.json
-        if sudo diff output/a.json output/expect.json; then
+        if sudo diff output/out log-library/cases/nginx/observiq/expect/expect.json; then
           echo "pass"
         else
           echo "fail"
@@ -91,9 +89,7 @@ jobs:
 
     - name: Check output
       run: |
-        sudo jq . output/out > output/a.json
-        sudo jq . log-library/cases/nginx/observiq/expect/expect.json > output/expect.json
-        if sudo diff output/a.json output/expect.json; then
+        if sudo diff output/out log-library/cases/nginx/observiq/expect/expect.json; then
           echo "pass"
         else
           echo "fail"
