@@ -34,8 +34,8 @@ jobs:
           observiq/stanza:1.2.7 \
           --config /input/config/config.yaml
 
-    - name: Pause 5 seconds
-      run: sleep 5
+    - name: Pause
+      run: sleep 10
 
     - name: Dump Stanza Logs
       run: docker logs stanza
@@ -78,8 +78,8 @@ jobs:
           observiq/stanza:1.2.7 \
           --config /input/config/config.yaml
 
-    - name: Pause 5 seconds
-      run: sleep 5
+    - name: Pause
+      run: sleep 10
 
     - name: Dump Stanza Logs
       run: docker logs stanza
