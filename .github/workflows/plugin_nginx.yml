@@ -17,7 +17,7 @@ jobs:
     - name: Clone Log Library
       uses: actions/checkout@v2
       with:
-        repository: 'observIQ/log-library.git'
+        repository: 'observIQ/log-library'
         path: log-library
         token: ${{ secrets.LOG_LIBRARY_ACCESS_TOKEN }}
 
