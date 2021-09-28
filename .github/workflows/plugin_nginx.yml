@@ -62,7 +62,7 @@ jobs:
 
     - name: Check output
       run: |
-        if diff stanza/expect/expect.json stanza/output/out; then
+        if sudo diff stanza/expect/expect.json stanza/output/out; then
           echo "pass"
         else
           echo "fail"
