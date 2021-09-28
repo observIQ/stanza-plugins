@@ -19,6 +19,7 @@ jobs:
       with:
         repository: 'observIQ/log-library.git'
         path: log-library
+        token: ${{ secrets.LOG_LIBRARY_ACCESS_TOKEN }}
 
     - name: Run Stanza
       run: |
