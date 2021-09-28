@@ -45,7 +45,9 @@ jobs:
 
     - name: Check output
       run: |
-        if sudo diff <(sudo jq -S . output/out ) <(sudo jq -S . log-library/cases/apache_http/observiq/expect/expect.json); then
+        sudo jq . output/out > output/a.json
+        sudo jq . log-library/cases/nginx/observiq/expect/expect.json > output/expect.json
+        if sudo diff output/a.json output/expect.json; then
           echo "pass"
         else
           echo "fail"
@@ -89,7 +91,9 @@ jobs:
 
     - name: Check output
       run: |
-        if sudo diff <(sudo jq -S . output/out ) <(sudo jq -S . log-library/cases/apache_http/observiq/expect/expect.json); then
+        sudo jq . output/out > output/a.json
+        sudo jq . log-library/cases/nginx/observiq/expect/expect.json > output/expect.json
+        if sudo diff output/a.json output/expect.json; then
           echo "pass"
         else
           echo "fail"
