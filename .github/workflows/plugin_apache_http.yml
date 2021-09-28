@@ -47,10 +47,10 @@ jobs:
       run: sleep 2
 
     - name: Cat output
-      run: cat output/out
+      run: sudo cat output/out
 
     - name: Cat expect
-      run: cat log-library/cases/nginx/observiq/expect/expect.json
+      run: sudo cat log-library/cases/nginx/observiq/expect/expect.json
 
     - name: Check output
       run: |
@@ -100,10 +100,10 @@ jobs:
       run: sleep 2
 
     - name: Cat output
-      run: cat output/out
+      run: sudo cat output/out
 
     - name: Cat expect
-      run: cat log-library/cases/nginx/observiq/expect/expect.json
+      run: sudo cat log-library/cases/nginx/observiq/expect/expect.json
 
     - name: Check output
       run: |
