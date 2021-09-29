@@ -58,7 +58,8 @@ jobs:
 
     - name: Check output
       run: |
-        if sudo diff output/out.sorted output/expect.json.sorted; then
+        wget https://github.com/jsirianni/jtool/releases/download/v0.0.1/jtool-linux-amd64
+        if sudo jtool-linux-amd64 --actual-file output/out.sorted --expect-file output/expect.json.sorted; then
           echo "pass"
         else
           echo "fail"
@@ -115,7 +116,8 @@ jobs:
 
     - name: Check output
       run: |
-        if sudo diff output/out.sorted output/expect.json.sorted; then
+        wget https://github.com/jsirianni/jtool/releases/download/v0.0.1/jtool-linux-amd64
+        if sudo jtool-linux-amd64 --actual-file output/out.sorted --expect-file output/expect.json.sorted; then
           echo "pass"
         else
           echo "fail"
