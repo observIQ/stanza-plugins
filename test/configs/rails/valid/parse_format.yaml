@@ -1,6 +1,0 @@
-pipeline:
-- type: rails
-  file_log_path: 
-  - ""
-  parse_format: Logger
-- type: stdout

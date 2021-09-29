@@ -1,8 +1,0 @@
-pipeline:
-- type: amazon_eks
-  container_log_path: /var/lib/containers/logs
-  # omit because ci may not have journald
-  #kubelet_journald_log_path:
-  cluster_name: eks_test
-  start_at: beginning
-- type: stdout

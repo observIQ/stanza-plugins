@@ -1,6 +1,0 @@
-# TODO: Update tests to know to only run config tests on proper environment.
-# This fails when not tested in a windows environment.
-pipeline:
-- type: windows_event
-  custom_channels: 
-    - ''

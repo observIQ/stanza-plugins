@@ -1,4 +1,0 @@
-pipeline:
-- type: cisco_asa
-  listen_ip: 5140
-- type: stdout

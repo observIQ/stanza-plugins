@@ -1,4 +1,0 @@
-pipeline:
-  - type: sflow
-    listen_address: "2000/udp"
-  - type: stdout

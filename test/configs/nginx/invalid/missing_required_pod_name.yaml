@@ -1,4 +1,0 @@
-# missing required value: pod_name
-pipeline:
-- type: nginx
-  source: file

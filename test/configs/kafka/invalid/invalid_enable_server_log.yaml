@@ -1,4 +1,0 @@
-pipeline:
-- type: kafka
-  enable_server_log: "1"
-- type: stdout

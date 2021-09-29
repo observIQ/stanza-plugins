@@ -1,6 +1,0 @@
-pipeline:
-- type: haproxy
-  file_log_path:
-    - "/var/log/custom/path/haproxy/default.log"
-  start_at: start
-- type: stdout

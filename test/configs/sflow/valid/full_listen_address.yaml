@@ -1,6 +1,0 @@
-pipeline:
-- type: sflow
-  listen_address: "0.0.0.0:20001"
-  workers: 5
-  sampling_enable: false
-- type: stdout

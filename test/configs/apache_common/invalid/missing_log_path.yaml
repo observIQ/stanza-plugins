@@ -1,3 +1,0 @@
-pipeline:
-- type: apache_common
-- type: stdout

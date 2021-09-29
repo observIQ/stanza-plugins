@@ -1,3 +1,0 @@
-pipeline:
-- type: zookeeper
-  start_at: eof

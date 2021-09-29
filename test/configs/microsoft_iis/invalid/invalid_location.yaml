@@ -1,5 +1,0 @@
-pipeline:
-- type: microsoft_iis
-  file_path: " "
-  location: "Detroit"
-- type: stdout
