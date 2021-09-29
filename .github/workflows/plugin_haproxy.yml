@@ -105,6 +105,9 @@ jobs:
     - name: Stop Stanza
       run: docker kill stanza
 
+    - name: Dump Stanza Logs
+      run: docker logs stanza
+
     - name: Pause
       run: sleep 2
 
@@ -117,9 +120,6 @@ jobs:
       run: |
         sudo cat log-library/cases/haproxy/observiq/expect/expect.json > output/expect.json.sorted
         sudo cat output/expect.json.sorted
-
-    - name: Dump Stanza Logs
-      run: docker logs stanza
 
     - name: Install Json Parser 'jtool'
       run: |
