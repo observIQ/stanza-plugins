@@ -7,11 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.83] Unreleased
 
-### Changed
+### Added
 
-- HAProxy: Handle issue where http logs might fail if extra field is present [PR346](https://github.com/observIQ/stanza-plugins/pull/346)
+- Add `tcp` and `udp` plugin ([PR341](https://github.com/observIQ/stanza-plugins/pull/341))
 
 ### Fixed
+
+- HAProxy: Handle issue where http logs might fail if extra field is present [PR346](https://github.com/observIQ/stanza-plugins/pull/346)
 
 ## [0.0.82] 2021-09-28
 
