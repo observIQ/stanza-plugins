@@ -13,7 +13,7 @@ parameters:
     label: Type
     description: Adds the specified 'Type' as a label to each log message.
     type: string
-    default: tcpudp
+    default: tcp
   - name: listen_ip
     label: Listen IP
     description: A ip address of the form `<ip>`
