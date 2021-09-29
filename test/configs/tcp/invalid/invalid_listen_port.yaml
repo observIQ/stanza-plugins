@@ -1,5 +1,4 @@
 pipeline:
 - type: tcp
-  listen_port: 6543
   listen_port: "5140"
 - type: stdout
