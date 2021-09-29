@@ -46,3 +46,4 @@ pipeline:
     from: $record
     to: $record.message
     output: {{.output}}
+
