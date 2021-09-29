@@ -24,7 +24,7 @@ parameters:
     label: Labels
     description: Adds net.transport, net.peer.ip, net.peer.port, net.host.ip and net.host.port labels.
     type: bool
-    default: tcp
+    default: true
     advanced_config: true
   - name: enable_tls
     label: Enable TLS
