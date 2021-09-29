@@ -95,7 +95,7 @@ jobs:
           --config /input/config/config.yaml
 
     - name: Pause
-      run: sleep 10
+      run: sleep 20
 
     - name: Stop Stanza
       run: docker kill stanza
