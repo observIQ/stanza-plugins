@@ -30,7 +30,7 @@ parameters:
 # Set Defaults
 # {{$listen_port := .listen_port}}
 # {{$listen_ip := default "0.0.0.0" .listen_ip}}
-# {{$log_type := default "tcpudp" .log_type}}
+# {{$log_type := default "udp" .log_type}}
 # {{$add_labels := default true .add_labels}}
 
 # Pipeline Template
