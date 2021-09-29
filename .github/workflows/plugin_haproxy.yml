@@ -60,7 +60,7 @@ jobs:
 
     - name: Install Json Parser 'jtool'
       run: |
-        wget https://github.com/jsirianni/jtool/releases/download/v0.0.2/jtool-linux-amd64
+        wget https://github.com/jsirianni/jtool/releases/download/v0.0.3/jtool-linux-amd64
         chmod +x jtool-linux-amd64
 
     - name: Check output
@@ -123,7 +123,7 @@ jobs:
 
     - name: Install Json Parser 'jtool'
       run: |
-        wget https://github.com/jsirianni/jtool/releases/download/v0.0.2/jtool-linux-amd64
+        wget https://github.com/jsirianni/jtool/releases/download/v0.0.3/jtool-linux-amd64
         chmod +x jtool-linux-amd64
 
     - name: Check output
