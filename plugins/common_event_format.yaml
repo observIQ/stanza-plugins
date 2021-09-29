@@ -134,6 +134,18 @@ pipeline:
     from: $record.hostname
     to: '$resource["hostname"]'
 
+  - id: promote_device_vendor
+    type: move
+    if: '$record.device_vendor != nil'
+    from: $record.device_vendor
+    to: '$resource["device_vendor"]'
+
+  - id: promote_device_version
+    type: move
+    if: '$record.device_version != nil'
+    from: $record.device_version
+    to: '$resource["device_version"]'
+
   - id: move_name
     type: move
     if: '$record.name != nil'
