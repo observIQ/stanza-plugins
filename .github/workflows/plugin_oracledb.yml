@@ -8,7 +8,7 @@ on:
     branches:
       - master
 jobs:
-  default_format:
+  alert_format:
     runs-on: ubuntu-latest
     steps:
     - name: Clone stanza-plugins
@@ -29,7 +29,7 @@ jobs:
         docker run -d \
           --name stanza \
           --entrypoint /stanza_home/stanza \
-          -v $(pwd)/log-library/cases/oracledb/default:/input \
+          -v $(pwd)/log-library/cases/oracledb/alert:/input \
           -v $(pwd)/output:/output \
           -v $(pwd)/plugins:/plugins \
           observiq/stanza:1.2.7 \
@@ -54,7 +54,7 @@ jobs:
 
     - name: Sort expect
       run: |
-        sudo cat log-library/cases/oracledb/default/expect/expect.json > output/expect.json.sorted
+        sudo cat log-library/cases/oracledb/alert/expect/expect.json > output/expect.json.sorted
         sudo cat output/expect.json.sorted
 
     - name: Install Json Parser 'jtool'
