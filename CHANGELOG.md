@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.83] Unreleased
+
+### Changed
+
+- HAProxy: Handle issue where http logs might fail if extra field is present [PR346](https://github.com/observIQ/stanza-plugins/pull/346)
+
+### Fixed
+
 ## [0.0.82] 2021-09-28
 
 ### Fixed
