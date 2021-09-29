@@ -65,7 +65,7 @@ pipeline:
         expr: '$body.message != nil and $body.message matches "^(\\s)?[^:]+:[^\\s]+\\s+\\[[^\\]]+\\]\\s+[^\\s]+\\s+[^/]+/[^\\s]+\\s+[^/]+/[^/]+/[^\\s]+\\s+[^\\s]+\\s+[\\w-]{2}\\s+[^/]+/[^/]+/[^/]+/[^/]+/[^\\s]+\\s+[^/]+/[\\d]+"'
       - output: error_parser
         expr: '$body.message != nil and $body.message matches "^\\s*\\[[^\\]]+\\]\\s*.*"'
-        labels:
+        attributes:
           log_type: 'haproxy.error'
 
   # Parse http format log message
