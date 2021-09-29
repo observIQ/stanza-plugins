@@ -1,0 +1,132 @@
+name: plugin_apache_http
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/plugin_apache_http.yml"
+      - "plugins/apache_http.yaml"
+  push:
+    branches:
+      - master
+jobs:
+  default_format:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Clone stanza-plugins
+      uses: actions/checkout@v2
+
+    - name: Clone Log Library
+      uses: actions/checkout@v2
+      with:
+        repository: 'observIQ/log-library'
+        path: log-library
+        token: ${{ secrets.LOG_LIBRARY_ACCESS_TOKEN }}
+
+    - name: Create Output Directory
+      run: mkdir output
+
+    - name: Run Stanza
+      run: |
+        docker run -d \
+          --name stanza \
+          --entrypoint /stanza_home/stanza \
+          -v $(pwd)/log-library/cases/apache_http/default:/input \
+          -v $(pwd)/output:/output \
+          -v $(pwd)/plugins:/plugins \
+          observiq/stanza:1.2.7 \
+          --config /input/config/config.yaml --plugin_dir /plugins
+
+    - name: Pause
+      run: sleep 10
+
+    - name: Stop Stanza
+      run: docker kill stanza
+
+    - name: Dump Stanza Logs
+      run: docker logs stanza
+
+    - name: Pause
+      run: sleep 2
+
+    - name: Sort output
+      run: |
+        sudo cat output/out > output/out.sorted
+        sudo cat output/out.sorted
+
+    - name: Sort expect
+      run: |
+        sudo cat log-library/cases/apache_http/default/expect/expect.json > output/expect.json.sorted
+        sudo cat output/expect.json.sorted
+
+    - name: Check output
+      run: |
+        wget https://github.com/jsirianni/jtool/releases/download/v0.0.4/jtool-linux-amd64
+        chmod +x jtool-linux-amd64
+        if sudo ./jtool-linux-amd64 --actual-file output/out.sorted --expect-file output/expect.json.sorted; then
+          echo "pass"
+        else
+          echo "fail"
+          exit 1
+        fi
+
+  observiq_format:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Clone stanza-plugins
+      uses: actions/checkout@v2
+
+    - name: Clone Log Library
+      uses: actions/checkout@v2
+      with:
+        repository: 'observIQ/log-library'
+        path: log-library
+        token: ${{ secrets.LOG_LIBRARY_ACCESS_TOKEN }}
+
+    - name: Create Output Directory
+      run: mkdir output
+
+    - name: Run Stanza
+      run: |
+        docker run -d \
+          --name stanza \
+          --entrypoint /stanza_home/stanza \
+          -v $(pwd)/log-library/cases/apache_http/default:/input \
+          -v $(pwd)/output:/output \
+          -v $(pwd)/plugins:/plugins \
+          observiq/stanza:1.2.7 \
+          --config /input/config/config.yaml --plugin_dir /plugins
+
+    - name: Pause
+      run: sleep 20
+
+    - name: Stop Stanza
+      run: docker kill stanza
+
+    - name: Dump Stanza Logs
+      run: docker logs stanza
+
+    - name: Pause
+      run: sleep 2
+
+    - name: Sort output
+      run: |
+        sudo cat output/out > output/out.sorted
+        sudo cat output/out.sorted
+
+    - name: Sort expect
+      run: |
+        sudo cat log-library/cases/apache_http/observiq/expect/expect.json > output/expect.json.sorted
+        sudo cat output/expect.json.sorted
+
+    - name: Install Json Parser 'jtool'
+      run: |
+        wget https://github.com/jsirianni/jtool/releases/download/v0.0.4/jtool-linux-amd64
+        chmod +x jtool-linux-amd64
+
+    - name: Check output
+      run: |
+        if sudo ./jtool-linux-amd64 --actual-file output/out.sorted --expect-file output/expect.json.sorted; then
+          echo "pass"
+        else
+          echo "fail"
+          exit 1
+        fi
