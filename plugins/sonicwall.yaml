@@ -134,6 +134,14 @@ pipeline:
       parse_from: time
       layout_type: gotime
       layout: '2006-01-02 15:04:05'
+    output: msg_move
+
+  - id: msg_move
+    type: move
+    if: $record.msg != nil
+    from: $record.msg
+    to: $record.message
+    output: pri_severity_parser
 
   # If priority field doesn't exist and pri field does, use pri field.
   - id: pri_severity_parser
