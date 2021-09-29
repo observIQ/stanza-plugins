@@ -38,11 +38,11 @@ jobs:
     - name: Pause
       run: sleep 10
 
-    - name: Dump Stanza Logs
-      run: docker logs stanza
-
     - name: Stop Stanza
       run: docker kill stanza
+
+    - name: Dump Stanza Logs
+      run: docker logs stanza
 
     - name: Pause
       run: sleep 2
