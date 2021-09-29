@@ -1,7 +1,7 @@
 # Plugin Info
 version: 0.0.1
 title: TCP/UDP
-description: TCP/UDP Input Parser
+description: UDP Input
 min_stanza_version: 1.2.7
 parameters:
   - name: listen_port
