@@ -31,8 +31,9 @@ jobs:
           --entrypoint /stanza_home/stanza \
           -v $(pwd)/log-library/cases/apache_http/default:/input \
           -v $(pwd)/output:/output \
+          -v $(pwd)/plugins:/plugins \
           observiq/stanza:1.2.7 \
-          --config /input/config/config.yaml
+          --config /input/config/config.yaml --plugin_dir /plugins
 
     - name: Pause
       run: sleep 10
@@ -90,9 +91,9 @@ jobs:
           --entrypoint /stanza_home/stanza \
           -v $(pwd)/log-library/cases/apache_http/default:/input \
           -v $(pwd)/output:/output \
-          -v $(pwd)/plugins:/stanza_home/plugins \
+          -v $(pwd)/plugins:/plugins \
           observiq/stanza:1.2.7 \
-          --config /input/config/config.yaml
+          --config /input/config/config.yaml --plugin_dir /plugins
 
     - name: Pause
       run: sleep 20
