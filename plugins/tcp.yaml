@@ -73,4 +73,8 @@ pipeline:
       certificate: {{ $certificate_file }}
       private_key: {{ $private_key_file }}
     # {{ end }}
+
+  - type: move
+    from: $record
+    to: $record.message
     output: {{.output}}

@@ -41,4 +41,8 @@ pipeline:
       log_type: {{$log_type}}
       plugin_id: {{ .id }}
     add_labels: {{$add_labels}}
+
+  - type: move
+    from: $record
+    to: $record.message
     output: {{.output}}
