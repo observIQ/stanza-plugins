@@ -1,0 +1,80 @@
+# Plugin Info
+version: 1.0.0
+title: TCP
+description: TCP Input
+min_stanza_version: 1.2.7
+parameters:
+  - name: listen_port
+    label: Listen Port
+    description: A port which the agent will listen for tcp messages
+    type: int
+    required: true
+  - name: log_type
+    label: Type
+    description: Adds the specified 'Type' as a label to each log message.
+    type: string
+    default: tcp
+  - name: listen_ip
+    label: Listen IP
+    description: A ip address of the form `<ip>`
+    type: string
+    default: "0.0.0.0"
+    advanced_config: true
+  - name: add_labels
+    label: Labels
+    description: Adds net.transport, net.peer.ip, net.peer.port, net.host.ip and net.host.port labels.
+    type: bool
+    default: true
+    advanced_config: true
+  - name: enable_tls
+    label: Enable TLS
+    description: Enable TLS for the TCP listener
+    type: bool
+    default: false
+    advanced_config: true
+  - name: certificate_file
+    label: TLS certificate path
+    description: File path for the X509 TLS certificate chain
+    type: string
+    default: "/opt/cert"
+    relevant_if:
+      enable_tls:
+        equals: true
+    advanced_config: true
+  - name: private_key_file
+    label: TLS private key path
+    description: File path for the X509 TLS certificate chain
+    type: string
+    default: "/opt/key"
+    relevant_if:
+      enable_tls:
+        equals: true
+    advanced_config: true
+
+# Set Defaults
+# {{$listen_ip := default "0.0.0.0" .listen_ip}}
+# {{$listen_port := .listen_port}}
+# {{$log_type := default "tcp" .log_type}}
+# {{$add_labels := default true .add_labels}}
+# {{$enable_tls := default false .enable_tls}}
+# {{$certificate_file := default "" .certificate_file}}
+# {{$private_key_file := default "" .private_key_file}}
+# Pipeline Template
+pipeline:
+  - type: tcp_input
+    listen_address: '{{ $listen_ip }}:{{ $listen_port }}'
+    attributes:
+      log_type: {{$log_type}}
+      plugin_id: {{ .id }}
+    add_attributes: {{$add_labels}}
+    # {{ if $enable_tls }}
+    tls:
+      enable: {{ $enable_tls }}
+      certificate: {{ $certificate_file }}
+      private_key: {{ $private_key_file }}
+    # {{ end }}
+
+  - type: move
+    from: $body
+    to: $body.message
+    output: {{.output}}

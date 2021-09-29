@@ -1,4 +1,4 @@
-version: 0.0.1
+version: 1.0.0
 title: HAProxy
 description: Log parser for HAProxy
 supported_platforms:
@@ -65,14 +65,14 @@ pipeline:
         expr: '$body.message != nil and $body.message matches "^(\\s)?[^:]+:[^\\s]+\\s+\\[[^\\]]+\\]\\s+[^\\s]+\\s+[^/]+/[^\\s]+\\s+[^/]+/[^/]+/[^\\s]+\\s+[^\\s]+\\s+[\\w-]{2}\\s+[^/]+/[^/]+/[^/]+/[^/]+/[^\\s]+\\s+[^/]+/[\\d]+"'
       - output: error_parser
         expr: '$body.message != nil and $body.message matches "^\\s*\\[[^\\]]+\\]\\s*.*"'
-        attributes:
+        labels:
           log_type: 'haproxy.error'
 
   # Parse http format log message
   - id: httplog_parser
     type: regex_parser
     parse_from: $body.message
-    regex: '^(\s)?(?P<frontend_ip>[^:]+):(?P<frontend_port>[^\s]+)\s+\[(?P<accept_date>[^\]]+)\]\s+(?P<frontend_name_transport>[^\s]+)\s+(?P<backend_name>[^/]+)/(?P<server_name>[^\s]+)\s+(?P<client_request_send_time>[^/]+)/(?P<queue_wait_time>[^/]+)/(?P<response_time>[^/]+)/(?P<response_send_time>[^/]+)/(?P<client_request_active_time>[^\s]+)\s+(?P<status>[^\s]+)\s+(?P<bytes_read>[^\s]+)\s+(?P<captured_request_cookie>[^\s]+)\s+(?P<captured_response_cookie>[^\s]+)\s+(?P<termination_state>[\w-]{4})\s+(?P<process_concurrent_connections>[^/]+)/(?P<frontend_concurrent_connections>[^/]+)/(?P<backend_concurrent_connections>[^/]+)/(?P<server_concurrent_connections>[^/]+)/(?P<retries>[^\s]+)\s+(?P<server_queue>[^/]+)/(?P<backend_queue>[^\s]+) ({[\w\d[:ascii:]]+?}\s)?"(?P<method>\S+) +(?P<uri>[^ ]*)( (?P<protocol>[^/]*)/(?P<protocol_version>[^\"]*)|[^\"]*)?"'
+    regex: '^(\s)?(?P<frontend_ip>[^:]+):(?P<frontend_port>[^\s]+)\s+\[(?P<accept_date>[^\]]+)\]\s+(?P<frontend_name_transport>[^\s]+)\s+(?P<backend_name>[^/]+)/(?P<server_name>[^\s]+)\s+(?P<client_request_send_time>[^/]+)/(?P<queue_wait_time>[^/]+)/(?P<response_time>[^/]+)/(?P<response_send_time>[^/]+)/(?P<client_request_active_time>[^\s]+)\s+(?P<status>[^\s]+)\s+(?P<bytes_read>[^\s]+)\s+(?P<captured_request_cookie>[^\s]+)\s+(?P<captured_response_cookie>[^\s]+)\s+(?P<termination_state>[\w-]{4})\s+(?P<process_concurrent_connections>[^/]+)/(?P<frontend_concurrent_connections>[^/]+)/(?P<backend_concurrent_connections>[^/]+)/(?P<server_concurrent_connections>[^/]+)/(?P<retries>[^\s]+)\s+(?P<server_queue>[^/]+)/(?P<backend_queue>[^\s]+) ({[\w\d[:ascii:]]+}\s)?({[\w\d[:ascii:]]+}\s)?"(?P<method>\S+) +(?P<uri>[^ ]*)( (?P<protocol>[^/]*)/(?P<protocol_version>[^\"]*)|[^\"]*)?"'
     output: frontend_type_http_add
 
   - id: frontend_type_http_add
@@ -112,7 +112,7 @@ pipeline:
         expr: '$body.message != nil and $body.message matches "^{.*}$|^{.*}\\n$"'
       - output: error_parser
         expr: '$body.message != nil and $body.message matches "^\\s*\\[[^\\]]+\\]\\s*.*"'
-        attributes:
+        labels:
           log_type: 'haproxy.error'
 
   # Parse observiq format log message
@@ -165,7 +165,7 @@ pipeline:
 # protocol
 # protocol_version
 # referer
-  # Promote fields to attributes
+  # Promote fields to labels
   - id: frontend_ssl_version_move
     type: move
     if: '$body.frontend_ssl_version != nil'
@@ -178,8 +178,8 @@ pipeline:
     to: '$attributes["frontend_ssl_ciphers"]'
   - id: method_move
     type: move
-    if: '$attributes.method != nil'
-    from: '$attributes.method'
+    if: '$body.method != nil'
+    from: '$body.method'
     to: '$attributes["method"]'
   - id: protocol_move
     type: move

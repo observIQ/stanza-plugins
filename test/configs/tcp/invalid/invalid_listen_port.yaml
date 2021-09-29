@@ -1,0 +1,4 @@
+pipeline:
+- type: tcp
+  listen_port: "5140"
+- type: stdout
