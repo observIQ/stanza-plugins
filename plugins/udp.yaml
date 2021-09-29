@@ -1,0 +1,44 @@
+# Plugin Info
+version: 0.0.1
+title: TCP/UDP
+description: TCP/UDP Input Parser
+min_stanza_version: 1.2.7
+parameters:
+  - name: listen_port
+    label: Listen Port
+    description: A port which the agent will listen for udp messages
+    type: int
+    required: true
+  - name: log_type
+    label: Type
+    description: Adds the specified 'Type' as a label to each log message.
+    type: string
+    default: udp
+  - name: listen_ip
+    label: Listen IP
+    description: A UDP ip address of the form `<ip>`
+    type: string
+    default: "0.0.0.0"
+    advanced_config: true
+  - name: add_labels
+    label: Labels
+    description: Adds net.transport, net.peer.ip, net.peer.port, net.host.ip and net.host.port labels.
+    type: bool
+    default: true
+    advanced_config: true
+
+# Set Defaults
+# {{$listen_port := .listen_port}}
+# {{$listen_ip := default "0.0.0.0" .listen_ip}}
+# {{$log_type := default "tcpudp" .log_type}}
+# {{$add_labels := default true .add_labels}}
+
+# Pipeline Template
+pipeline:
+  - type: udp_input
+    listen_address: '{{ $listen_ip }}:{{ $listen_port }}'
+    labels:
+      log_type: {{$log_type}}
+      plugin_id: {{ .id }}
+    add_labels: {{$add_labels}}
+    output: {{.output}}

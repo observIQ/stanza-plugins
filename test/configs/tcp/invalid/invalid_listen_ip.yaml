@@ -1,4 +1,5 @@
 pipeline:
-- type: tcpudp
+- type: tcp
+  listen_port: 6543
   listen_ip: 5140
 - type: stdout
