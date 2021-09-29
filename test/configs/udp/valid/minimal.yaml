@@ -1,0 +1,4 @@
+pipeline:
+- type: udp
+  listen_port: 5432
+- type: stdout

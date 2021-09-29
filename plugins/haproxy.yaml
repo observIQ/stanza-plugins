@@ -1,4 +1,4 @@
-version: 0.0.1
+version: 0.0.2
 title: HAProxy
 description: Log parser for HAProxy
 supported_platforms:
@@ -72,7 +72,7 @@ pipeline:
   - id: httplog_parser
     type: regex_parser
     parse_from: $record.message
-    regex: '^(\s)?(?P<frontend_ip>[^:]+):(?P<frontend_port>[^\s]+)\s+\[(?P<accept_date>[^\]]+)\]\s+(?P<frontend_name_transport>[^\s]+)\s+(?P<backend_name>[^/]+)/(?P<server_name>[^\s]+)\s+(?P<client_request_send_time>[^/]+)/(?P<queue_wait_time>[^/]+)/(?P<response_time>[^/]+)/(?P<response_send_time>[^/]+)/(?P<client_request_active_time>[^\s]+)\s+(?P<status>[^\s]+)\s+(?P<bytes_read>[^\s]+)\s+(?P<captured_request_cookie>[^\s]+)\s+(?P<captured_response_cookie>[^\s]+)\s+(?P<termination_state>[\w-]{4})\s+(?P<process_concurrent_connections>[^/]+)/(?P<frontend_concurrent_connections>[^/]+)/(?P<backend_concurrent_connections>[^/]+)/(?P<server_concurrent_connections>[^/]+)/(?P<retries>[^\s]+)\s+(?P<server_queue>[^/]+)/(?P<backend_queue>[^\s]+) ({[\w\d[:ascii:]]+?}\s)?"(?P<method>\S+) +(?P<uri>[^ ]*)( (?P<protocol>[^/]*)/(?P<protocol_version>[^\"]*)|[^\"]*)?"'
+    regex: '^(\s)?(?P<frontend_ip>[^:]+):(?P<frontend_port>[^\s]+)\s+\[(?P<accept_date>[^\]]+)\]\s+(?P<frontend_name_transport>[^\s]+)\s+(?P<backend_name>[^/]+)/(?P<server_name>[^\s]+)\s+(?P<client_request_send_time>[^/]+)/(?P<queue_wait_time>[^/]+)/(?P<response_time>[^/]+)/(?P<response_send_time>[^/]+)/(?P<client_request_active_time>[^\s]+)\s+(?P<status>[^\s]+)\s+(?P<bytes_read>[^\s]+)\s+(?P<captured_request_cookie>[^\s]+)\s+(?P<captured_response_cookie>[^\s]+)\s+(?P<termination_state>[\w-]{4})\s+(?P<process_concurrent_connections>[^/]+)/(?P<frontend_concurrent_connections>[^/]+)/(?P<backend_concurrent_connections>[^/]+)/(?P<server_concurrent_connections>[^/]+)/(?P<retries>[^\s]+)\s+(?P<server_queue>[^/]+)/(?P<backend_queue>[^\s]+) ({[\w\d[:ascii:]]+}\s)?({[\w\d[:ascii:]]+}\s)?"(?P<method>\S+) +(?P<uri>[^ ]*)( (?P<protocol>[^/]*)/(?P<protocol_version>[^\"]*)|[^\"]*)?"'
     output: frontend_type_http_add
 
   - id: frontend_type_http_add
