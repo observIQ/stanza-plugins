@@ -116,10 +116,13 @@ jobs:
         sudo cat log-library/cases/apache_http/observiq/expect/expect.json > output/expect.json.sorted
         sudo cat output/expect.json.sorted
 
-    - name: Check output
+    - name: Install Json Parser 'jtool'
       run: |
         wget https://github.com/jsirianni/jtool/releases/download/v0.0.1/jtool-linux-amd64
         chmod +x jtool-linux-amd64
+
+    - name: Check output
+      run: |
         if sudo ./jtool-linux-amd64 --actual-file output/out.sorted --expect-file output/expect.json.sorted; then
           echo "pass"
         else
