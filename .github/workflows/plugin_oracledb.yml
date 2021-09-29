@@ -29,8 +29,9 @@ jobs:
         docker run -d \
           --name stanza \
           --entrypoint /stanza_home/stanza \
-          -v $(pwd)/log-library/cases/oracledb/default:/input \
+          -v $(pwd)/log-library/cases/nginx/default:/input \
           -v $(pwd)/output:/output \
+          -v $(pwd)/plugins:/stanza_home/plugins \
           observiq/stanza:1.2.7 \
           --config /input/config/config.yaml
 
