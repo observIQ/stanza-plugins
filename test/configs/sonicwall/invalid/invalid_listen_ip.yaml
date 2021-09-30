@@ -1,4 +1,5 @@
 pipeline:
 - type: sonicwall
-  start_at: endf
+  listen_port: 5432
+  listen_ip: 5140
 - type: stdout
