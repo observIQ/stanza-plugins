@@ -112,7 +112,7 @@ pipeline:
         expr: '$body.message != nil and $body.message matches "^{.*}$|^{.*}\\n$"'
       - output: error_parser
         expr: '$body.message != nil and $body.message matches "^\\s*\\[[^\\]]+\\]\\s*.*"'
-        labels:
+        attributes:
           log_type: 'haproxy.error'
 
   # Parse observiq format log message
