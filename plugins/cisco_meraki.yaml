@@ -1,7 +1,12 @@
 # Plugin Info
-version: 0.0.7
+version: 0.0.8
 title: Cisco Meraki
 description: Log parser for Cisco Meraki
+min_stanza_version: 1.2.7
+supported_platforms:
+  - linux
+  - windows
+  - macos
 parameters:
   - name: listen_port
     label: Listen Port
@@ -42,12 +47,12 @@ pipeline:
     type: router
     default: catch_all_parser
     routes:
-      - expr: '$record matches ".*=[\\s\\S]*"'
+      - expr: '$record matches "^<[^>]+>[\\d]+\\s+[\\d\\.]+\\s+[^\\s]+\\s+[^\\s]+\\s+[\\s\\S]*"'
         output: meraki_parser
 
   - id: meraki_parser
     type: regex_parser
-    regex: '^<(?P<priority>[^>]+)>(?P<version>[\d]+)\s*(?P<timestamp>[^\s]*)\s*(?P<hostname>[^\s]*)\s*(?P<app_name>[^\s]*)\s*(?P<message>[\s\S]*)'
+    regex: '^<(?P<priority>[^>]+)>(?P<version>[\d]+)\s*(?P<timestamp>[\d\.]*)\s*(?P<hostname>[^\s]*)\s*(?P<app_name>[^\s]*)\s*(?P<message>[\s\S]*)'
     timestamp:
       parse_from: timestamp
       layout_type: epoch
@@ -56,6 +61,7 @@ pipeline:
 
   # Severity Parser using piority field to get the severity
   - type: severity_parser
+    if: '$record.priority != nil'
     parse_from: $record.priority
     mapping:
       emergency: [0,8,16,24,32,40,48,56,64,72,80,88,96,104,112,120,128,136,144,152,160,168,176,184]
@@ -66,39 +72,15 @@ pipeline:
       notice: [5,13,21,29,37,45,53,61,69,77,85,93,101,109,117,125,133,141,149,157,165,173,181,189]
       info: [6,14,22,30,38,46,54,62,70,78,86,94,102,110,118,126,134,142,150,158,166,174,182,190]
       debug: [7,15,23,31,39,47,55,63,71,79,87,95,103,111,119,127,135,143,151,159,167,175,183,191]
-    output: message_router
+    output: key_value_parser
 
-  # Route messages to different regex's for further parsing. If a regex match is not found then don't parse message.
-  - id: message_router
-    type: router
-    default: {{.output}}
-    routes:
-      - expr: '$record.message matches "^src=.*\\s*dst=.*\\s*protocol=.*\\s*sport=.*\\s*dport=.*\\s*translated_src_ip=.*\\s*translated_port=.*\\s*"'
-        output: message_1_parser
-      - expr: '$record.message matches "^src=.*\\s*dst=.*\\s*mac=.*\\s*protocol=.*\\s*sport=.*\\s*dport=.*"'
-        output: message_2_parser
-      - expr: '$record.message matches "^src=.*\\s*dst=.*\\s*mac=.*\\s*user=.*\\s*"'
-        output: message_3_parser
-
-  - id: message_1_parser
-    type: regex_parser
-    parse_from: $record.message
-    regex: '^src=(?P<src>[^\s]*)\s*dst=(?P<dst>[^\s]*)\s*protocol=(?P<protocol>[^\s]*)\s*sport=(?P<sport>[^\s]*)\s*dport=(?P<dport>[^\s]*)\s*translated_src_ip=(?P<translated_src_ip>[^\s]*)\s*translated_port=(?P<translated_port>[^\s]*)\s*(?P<message>[\s\S]*)'
-    output: {{.output}}
-
-  - id: message_2_parser
-    type: regex_parser
-    parse_from: $record.message
-    regex: '^src=(?P<src>[^\s]*)\s*dst=(?P<dst>[^\s]*)\s*mac=(?P<mac>[^\s]*)\s*protocol=(?P<protocol>[^\s]*)\s*sport=(?P<sport>[^\s]*)\s*dport=(?P<dport>[^\s]*)\s*(?P<message>[\s\S]*)'
-    output: {{.output}}
-
-  - id: message_3_parser
-    type: regex_parser
-    parse_from: $record.message
-    regex: '^src=(?P<src>[^\s]*)\s*dst=(?P<dst>[^\s]*)\s*mac=(?P<mac>[^\s]*)\s*user=(?P<user>[^\s]*)\s*(?P<message>[\s\S]*)'
+  - type: key_value_parser
+    if: '$record.message != nil'
+    parse_from: message
     output: {{.output}}
 
   - id: catch_all_parser
+    if: '$record matches "^<[\\d]+>"'
     type: regex_parser
     regex: '^<(?P<priority>[^>]+)>(\s*)?(?P<message>[\s\S]*)'
     output: severity_parser
