@@ -1,0 +1,60 @@
+version: 0.0.1
+title: Cisco Catalyst
+description: Log parser for Cisco Catalyst
+supported_platforms:
+  - linux
+  - windows
+  - macos
+min_stanza_version: 1.2.7
+parameters:
+  - name: listen_port
+    label: Listen Port
+    description: A port which the agent will listen for udp messages
+    type: int
+    default: 514
+  - name: listen_ip
+    label: Listen IP
+    description: A UDP ip address of the form `<ip>`
+    type: string
+    default: "0.0.0.0"
+    advanced_config: true
+  - name: add_labels
+    label: Labels
+    description: Adds net.transport, net.peer.ip, net.peer.port, net.host.ip and net.host.port labels.
+    type: bool
+    default: true
+    advanced_config: true
+# Set Defaults
+# {{$listen_port := default 514 .listen_port}}
+# {{$listen_ip := default "0.0.0.0" .listen_ip}}
+# {{$start_at := default "end" .start_at}}
+# {{$add_labels := default true .add_labels}}
+pipeline:
+  - type: udp_input
+    listen_address: '{{ $listen_ip }}:{{ $listen_port }}'
+    labels:
+      log_type: 'cisco_catalyst'
+      plugin_id: {{ .id }}
+    add_labels: {{$add_labels}}
+    write_to: message
+
+  - type: regex_parser
+    if: '$record.log matches "^\\d+:\\s+\\w{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2}\\s+\\w{3}:\\s+%[^-]+-\\d+-[^:]+:"'
+    parse_from: $record.log
+    regex: '^(?P<sequence_number>\d+):\s+(?P<timestamp>\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\s+\w{3}):\s+%(?P<facility>[^-]+)-\d+-(?P<mnemonic>[^:]+):(?P<message>.*)'
+    timestamp:
+      parse_from: $record.timestamp
+      layout_type: gotime
+      layout: 'Jan _2 15:04:05 MST'
+    severity:
+      parse_from: $record.pri
+      mapping:
+        emergency: 0
+        alert: 1
+        critical: 2
+        error: 3
+        warning: 4
+        notice: 5
+        info: 6
+        debug: 7
+    output: {{ .output }}
