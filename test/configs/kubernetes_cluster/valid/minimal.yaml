@@ -1,7 +1,0 @@
-pipeline:
-- type: kubernetes_cluster
-  # omit because ci may not have journald
-  #kubelet_journald_log_path:
-  cluster_name: test
-  start_at: end
-- type: stdout

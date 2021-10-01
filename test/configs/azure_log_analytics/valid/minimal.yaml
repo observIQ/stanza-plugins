@@ -1,7 +1,0 @@
-pipeline:
-- type: azure_log_analytics
-  namespace: stanza
-  event_hub_name: stanza_hub
-  group: $Default
-  connection_string: some_connection_string
-- type: stdout

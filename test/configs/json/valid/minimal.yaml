@@ -1,7 +1,0 @@
-pipeline:
-- type: json
-  file_log_path: 
-  - "/var/log/json.log"
-  # required but not used when source = file
-  pod_name: ""
-- type: stdout

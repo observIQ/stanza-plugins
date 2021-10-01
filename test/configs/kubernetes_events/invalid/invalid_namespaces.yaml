@@ -1,4 +1,0 @@
-pipeline:
-- type: kubernetes_events
-  namespaces: "default"
-- type: stdout
