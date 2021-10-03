@@ -141,7 +141,7 @@ parameters:
 # Set Defaults
 # {{$listen_ip := default "0.0.0.0" .listen_ip}}
 # {{$listen_port := .listen_port}}
-# {{$log_type := default "tcp" .log_type}}
+# {{$log_type := default "http" .log_type}}
 # {{$idle_timeout := default "60s" .idle_timeout}}
 # {{$read_timeout := default "20s" .read_timeout}}
 # {{$write_timeout := default "20s" .write_timeout}}
