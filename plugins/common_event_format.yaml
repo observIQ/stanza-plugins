@@ -1,6 +1,6 @@
 # Plugin Info
-version: 0.0.1
-title: Common Event Format Log Parser
+version: 0.0.2
+title: Common Event Format
 description: File Input Common Event Format Parser
 min_stanza_version: 1.2.7
 supported_platforms:

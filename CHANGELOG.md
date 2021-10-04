@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.84] Unreleased
 
+### Changed
+
+- Update `codeigniter`, `common_event_format`, and `uwsgi`
+  - Remove Log Parser from title.
+  - Update uwsgi field `headers` to `headers_count`
+
 ### Added
 
 - Added `http` plugin ([352](https://github.com/observIQ/stanza-plugins/pull/352))
