@@ -65,7 +65,7 @@ pipeline:
         expr: '$body.message != nil and $body.message matches "^(\\s)?[^:]+:[^\\s]+\\s+\\[[^\\]]+\\]\\s+[^\\s]+\\s+[^/]+/[^\\s]+\\s+[^/]+/[^/]+/[^\\s]+\\s+[^\\s]+\\s+[\\w-]{2}\\s+[^/]+/[^/]+/[^/]+/[^/]+/[^\\s]+\\s+[^/]+/[\\d]+"'
       - output: error_parser
         expr: '$body.message != nil and $body.message matches "^\\s*\\[[^\\]]+\\]\\s*.*"'
-        labels:
+        attributes:
           log_type: 'haproxy.error'
 
   # Parse http format log message
@@ -112,7 +112,7 @@ pipeline:
         expr: '$body.message != nil and $body.message matches "^{.*}$|^{.*}\\n$"'
       - output: error_parser
         expr: '$body.message != nil and $body.message matches "^\\s*\\[[^\\]]+\\]\\s*.*"'
-        labels:
+        attributes:
           log_type: 'haproxy.error'
 
   # Parse observiq format log message
@@ -165,7 +165,7 @@ pipeline:
 # protocol
 # protocol_version
 # referer
-  # Promote fields to labels
+  # Promote fields to attributes
   - id: frontend_ssl_version_move
     type: move
     if: '$body.frontend_ssl_version != nil'
@@ -263,10 +263,10 @@ pipeline:
       error: err
     output: {{ .output }}
 
-  # If $body.message still exists and $body.host doesn't that means we were unable to parse and just need to promote to $record
+  # If $body.message still exists and $body.host doesn't that means we were unable to parse and just need to promote to $body
   - id: message_move
     type: move
     if: $body.message != nil and $body.host == nil
     from: $body.message
-    to: $record
+    to: $body
     output: {{ .output }}
