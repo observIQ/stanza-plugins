@@ -1,0 +1,4 @@
+pipeline:
+- type: cisco_catalyst
+  listen_ip: 5140
+- type: stdout

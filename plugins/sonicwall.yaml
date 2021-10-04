@@ -33,7 +33,6 @@ parameters:
 # Set Defaults
 # {{$listen_port := default 514 .listen_port}}
 # {{$listen_ip := default "0.0.0.0" .listen_ip}}
-# {{$start_at := default "end" .start_at}}
 # {{$add_labels := default true .add_labels}}
 # {{$location := default "UTC" .location}}
 pipeline:

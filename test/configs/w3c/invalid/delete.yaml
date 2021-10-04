@@ -7,7 +7,7 @@ pipeline:
   - "/var/log/w3c/*.tar.gz"
   encoding: "ascii"
   log_type: "custom_w3c"
-  start_at: "beginning"
+  start_at: "end"
   delete_after_read: true
   include_file_name: false
   include_file_path: true
