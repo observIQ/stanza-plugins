@@ -2,7 +2,7 @@
 version: 0.0.1
 title: HTTP
 description: HTTP Input
-min_stanza_version: 1.3.0
+min_stanza_version: 1.2.10
 parameters:
   - name: listen_port
     label: Listen Port
@@ -114,17 +114,17 @@ parameters:
     default: false
     advanced_config: true
   - name: auth_header
-    label: Token Header
+    label: Authentication Header
     description:  Authentication header, a header that contains a token that matches one of the configured tokens
     type: string
-    default: "/opt/cert"
+    default: ""
     relevant_if:
       enable_header_auth:
         equals: true
     advanced_config: true
   - name: tokens
-    label: TLS private key path
-    description: An array of token values, used to compare against the value found in the header defined with the Token Hader
+    label: Authentication Tokens
+    description: An array of token values, used to compare against the value found in the header defined with the Authentication Header
     type: strings
     default: []
     relevant_if:
@@ -142,14 +142,14 @@ parameters:
 # {{$max_header_size := default "1mb" .max_header_size}}
 # {{$max_body_size := default "10mb" .max_body_size}}
 # {{$enable_tls := default false .enable_tls}}
-# {{$certificate_file := default "" .certificate_file}}
-# {{$private_key_file := default "" .private_key_file}}
+# {{$certificate_file := default "/opt/cert" .certificate_file}}
+# {{$private_key_file := default "/opt/key" .private_key_file}}
 # {{$min_version := default "1.2" .min_version}}
 # {{$enable_basic_auth := default false .enable_basic_auth}}
-# {{$username := default "user" .username}}
-# {{$password := default "password" .password}}
+# {{$username := default "" .username}}
+# {{$password := default "" .password}}
 # {{$enable_header_auth := default false .enable_header_auth}}
-# {{$auth_header := default "user" .auth_header}}
+# {{$auth_header := default "" .auth_header}}
 # Pipeline Template
 pipeline:
   - type: http_input
@@ -162,21 +162,19 @@ pipeline:
     write_timeout: {{$write_timeout}}
     max_header_size: {{$max_header_size}}
     max_body_size: {{$max_body_size}}
-    # {{ if or $enable_basic_auth $enable_header_auth }}
-    auth:
-    # {{ end }}
     # {{ if $enable_basic_auth }}
+    auth:
       username: {{$username}}
       password: {{$password}}
-    # {{ end }}
-    # {{ if $enable_header_auth }}
-      auth_header: {{$auth_header}}
+    # {{ else if $enable_header_auth }}
+    auth:
+      token_header: {{$auth_header}}
       tokens:
       # {{ range $i, $tok := .tokens  }}
         - '{{ $tok }}'
       # {{ end }}
     # {{ end }}
-    {{ if $enable_tls }} 
+    # {{ if $enable_tls }} 
     tls:
       enable: {{ $enable_tls }}
       certificate: {{ $certificate_file }}
