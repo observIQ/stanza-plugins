@@ -26,12 +26,6 @@ parameters:
     type: string
     default: "60s"
     advanced_config: true
-  - name: idle_timeout
-    label: Idle Timeout
-    description: Sets idle timeout.
-    type: string
-    default: "60s"
-    advanced_config: true
   - name: read_timeout
     label: Read Timeout
     description: Sets read timeout.
