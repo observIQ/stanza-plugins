@@ -120,13 +120,13 @@ pipeline:
     type: move
     if: '$body.version != nil'
     from: $body.version
-    to: '$labels["version"]'
+    to: '$attributes["version"]'
 
   - id: promote_device_product
     type: move
     if: '$body.device_product != nil'
     from: $body.device_product
-    to: '$labels["device"]'
+    to: '$attributes["device"]'
 
   - id: promote_hostname
     type: move
