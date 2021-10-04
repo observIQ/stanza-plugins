@@ -34,7 +34,7 @@ parameters:
     advanced_config: true
   - name: write_timeout
     label: Write Timeout
-    description: Sets read timeout.
+    description: Sets write timeout.
     type: string
     default: "20s"
     advanced_config: true
