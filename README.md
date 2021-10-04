@@ -2,7 +2,7 @@
 
 stanza-plugins contains plugins for the [Stanza Log Agent](https://github.com/observIQ/stanza)
 
-[![Status](https://github.com/observIQ/stanza-plugins/workflows/Test/badge.svg)](https://github.com/observIQ/stanza-plugins/Test)
+[![Test](https://github.com/observIQ/stanza-plugins/actions/workflows/validate.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/validate.yml)
 
 ## Release Process
 
