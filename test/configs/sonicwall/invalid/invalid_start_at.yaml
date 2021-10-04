@@ -1,0 +1,4 @@
+pipeline:
+- type: sonicwall
+  start_at: endf
+- type: stdout

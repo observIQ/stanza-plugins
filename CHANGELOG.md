@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.84] Unreleased
 
+### Added
+
+- Added `sonicwall` plugin ([PR340](https://github.com/observIQ/stanza-plugins/pull/340))
+
 ### Changed
 
 - cisco_meraki: Remove custom regex parsers and use key_value_parser instead. ([PR349](https://github.com/observIQ/stanza-plugins/pull/349))
@@ -21,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Add `tcp` and `udp` plugin ([PR341](https://github.com/observIQ/stanza-plugins/pull/341))
+- Added `tcp` and `udp` plugin ([PR341](https://github.com/observIQ/stanza-plugins/pull/341))
 - Added `common_event_format` plugin ([328](https://github.com/observIQ/stanza-plugins/pull/328))
 
 ### Fixed

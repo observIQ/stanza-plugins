@@ -1,0 +1,5 @@
+pipeline:
+- type: sonicwall
+  listen_port: 5432
+  listen_ip: 5140
+- type: stdout
