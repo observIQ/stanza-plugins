@@ -6,7 +6,7 @@ min_stanza_version: 1.3.0
 parameters:
   - name: listen_port
     label: Listen Port
-    description: A port which the agent will listen for tcp messages
+    description: A port which the agent will listen for http messages
     type: int
     required: true
   - name: log_type
@@ -52,7 +52,7 @@ parameters:
     advanced_config: true
   - name: enable_tls
     label: Enable TLS
-    description: Enable TLS for the TCP listener
+    description: Enable TLS for the HTTP listener
     type: bool
     default: false
     advanced_config: true
