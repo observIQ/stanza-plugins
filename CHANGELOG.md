@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Remove Log Parser from title.
   - Update uwsgi field `headers` to `headers_count`
 
+### Added
+
+- Added `http` plugin ([352](https://github.com/observIQ/stanza-plugins/pull/352))
+
 ## [0.0.83] 2021-09-29
 
 ### Added
