@@ -1,5 +1,5 @@
 ---
-version: 0.0.9
+version: 1.0.0
 title: Openshift
 description: Log parser for Openshift
 min_stanza_version: 1.1.6
@@ -63,33 +63,33 @@ pipeline:
   - type: journald_input
     directory: '{{ $journald_log_path }}'
     start_at: '{{ $start_at }}'
-    labels:
+    attributes:
       plugin_id: '{{ .id }}'
     poll_interval: '{{ $poll_interval }}'
 
   - type: router
     routes:
       # Ignore logs written by Stanza to avoid circular parsing
-      - expr: '$record._COMM == "dockerd-current" and $record.CONTAINER_NAME != nil and $record.CONTAINER_NAME matches "stanza"'
+      - expr: '$body._COMM == "dockerd-current" and $body.CONTAINER_NAME != nil and $body.CONTAINER_NAME matches "stanza"'
         output: drop_output
       # Ignore logs written by observiq-agent to avoid circular parsing
-      - expr: '$record._COMM == "dockerd-current" and $record.CONTAINER_NAME != nil and $record.CONTAINER_NAME matches "observiq-agent"'
+      - expr: '$body._COMM == "dockerd-current" and $body.CONTAINER_NAME != nil and $body.CONTAINER_NAME matches "observiq-agent"'
         output: drop_output
       # Ignore logs written by bindplane-agent to avoid circular parsing
-      - expr: '$record._COMM == "dockerd-current" and $record.CONTAINER_NAME != nil and $record.CONTAINER_NAME matches "bindplane-agent"'
+      - expr: '$body._COMM == "dockerd-current" and $body.CONTAINER_NAME != nil and $body.CONTAINER_NAME matches "bindplane-agent"'
         output: drop_output
       # Send all container logs to the container name parser
-      - expr: '$record._COMM == "dockerd-current" and $record.CONTAINER_NAME != nil'
+      - expr: '$body._COMM == "dockerd-current" and $body.CONTAINER_NAME != nil'
         output: '{{ if $enable_container_logs -}} regex_parser {{- else -}} drop_output {{- end }}'
       # Send all docker logs to the be labeled
-      - expr: '$record._COMM == "dockerd-current"'
+      - expr: '$body._COMM == "dockerd-current"'
         output: {{ if $enable_docker_logs -}} {{ .output }} {{- else -}} drop_output {{- end }}
-        labels:
+        attributes:
           log_type: 'docker'
       # Send all openshift logs to be labeled and parsed
-      - expr: '$record._SYSTEMD_UNIT == "atomic-openshift-node.service"'
+      - expr: '$body._SYSTEMD_UNIT == "atomic-openshift-node.service"'
         output: '{{ if $enable_openshift_logs -}} message_retainer {{- else -}} drop_output {{- end }}'
-        labels:
+        attributes:
           log_type: 'openshift'
 
   # Drop unwanted logs
@@ -101,7 +101,7 @@ pipeline:
     parse_from: CONTAINER_NAME
     parse_to: k8s_metadata
 
-  # Move important fields to labels, and drop extraneous fields
+  # Move important fields to attributes, and drop extraneous fields
   - id: post_parse_restructure
     type: restructure
     ops:
@@ -112,14 +112,14 @@ pipeline:
           from: k8s_metadata.pod_name
           to: '$resource["k8s.pod.name"]'
       - add:
-          value_expr: $record.k8s_metadata.service_name
-          field: '$labels.log_type'
+          value_expr: $body.k8s_metadata.service_name
+          field: '$attributes.log_type'
       - move:
           from: _HOSTNAME
           to: '$resource["host.name"]'
       - move:
           from: MESSAGE
-          to: '$record'
+          to: '$body'
 
 # {{ if $enable_metadata }}
   # Decorate entries with k8s metadata
@@ -135,7 +135,7 @@ pipeline:
           value: "{{ $cluster_name }}"
     output: {{ .output }}
 
-  # For openshift logs, promote hostname to labels and remove all but message
+  # For openshift logs, promote hostname to attributes and remove all but message
   - id: message_retainer
     type: restructure
     ops:
@@ -144,7 +144,7 @@ pipeline:
           to: '$resource["host.name"]'
       - move:
           from: MESSAGE
-          to: '$record'
+          to: '$body'
     output: message_regex_parser
 
   # Parse the message
@@ -156,9 +156,9 @@ pipeline:
       mapping:
         debug: d
         info: i
-        warning: w
+        warn: w
         error: e
-        critical: c
+        error2: c
     timestamp:
       parse_from: timestamp
       layout: '%m%d %H:%M:%S.%s'

@@ -1,4 +1,4 @@
-version: 0.0.1
+version: 1.0.0
 title: Apache Common
 description: Log parser for Apache common format
 parameters:
@@ -25,7 +25,7 @@ pipeline:
     include:
       - {{ $log_path }}
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       log_type: 'apache_common'
       plugin_id: {{ .id }}
     output: apache_common_regex_parser
@@ -42,13 +42,13 @@ pipeline:
       preserve_to: status
       mapping:
         info: 2xx
-        notice: 3xx
-        warning: 4xx
+        info2: 3xx
+        warn: 4xx
         error: 5xx
     output: {{ .output }}
 
   - id: access_protocol_parser
     type: regex_parser
-    parse_from: $record.protocol
+    parse_from: $body.protocol
     regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
     output: {{ .output }}

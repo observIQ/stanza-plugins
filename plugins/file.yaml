@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 1.0.0
 title: File
 description: File Input Parser
 min_stanza_version: 0.13.12
@@ -82,7 +82,7 @@ pipeline:
     encoding: '{{ $encoding }}'
 # {{ end }}
     include_file_name: true
-    labels:
+    attributes:
       plugin_id: {{ .id }}
       log_type: '{{ $log_type }}'
     output: {{ .output }}

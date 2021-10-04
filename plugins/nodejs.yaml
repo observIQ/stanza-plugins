@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 1.0.0
 title: Node.js
 description: Log Parser for Node.js using Winston logging library
 min_stanza_version: 1.1.7
@@ -119,65 +119,65 @@ pipeline:
 
   - id: add_log_type
     type: add
-    field: '$labels.log_type'
+    field: '$attributes.log_type'
     value: 'nodejs'
 
   - id: add_plugin_id
     type: add
-    field: '$labels.plugin_id'
-    value: '{{ .id }}'
+    field: '$attributes.plugin_id'
+    value: {{ .id }} 
 
   - id: nodejs_json_parser
     type: json_parser
 
   - id: flatten_meta_req
     type: flatten
-    if: '$record.meta != nil and $record.meta.req != nil'
+    if: '$body.meta != nil and $body.meta.req != nil'
     field: meta.req
 
   - id: flatten_meta_res
     type: flatten
-    if: '$record.meta != nil and $record.meta.res != nil'
+    if: '$body.meta != nil and $body.meta.res != nil'
     field: meta.res
 
   - id: flatten_meta
-    if: '$record.meta != nil'
+    if: '$body.meta != nil'
     type: flatten
     field: meta
 
   - type: add
-    if: '$record.httpVersion != nil'
-    field: 'protocol'
-    value: 'http'
+    if: '$body.httpVersion != nil'
+    field: "protocol"
+    value: "http"
 
   - id: httpVersion_move
     type: move
-    if: '$record.httpVersion != nil'
+    if: '$body.httpVersion != nil'
     from: httpVersion
     to: protocol_version
 
   - id: originalUrl_move
     type: move
-    if: '$record.originalUrl != nil'
+    if: '$body.originalUrl != nil'
     from: originalUrl
     to: original_url
 
   - id: responseTime_move
     type: move
-    if: '$record.responseTime != nil'
+    if: '$body.responseTime != nil'
     from: responseTime
     to: response_time
 
   - id: statuscode_parser
     type: severity_parser
     if: '$record.statusCode != nil'
-    parse_from: $record.statusCode
+    parse_from: $body.statusCode
     preset: none
     preserve_to: status
     mapping:
       info: 2xx
-      notice: 3xx
-      warning: 4xx
+      info2: 3xx
+      warn: 4xx
       error: 5xx
 
   # Kubernetes plugin sets most things to info. Parse level if present

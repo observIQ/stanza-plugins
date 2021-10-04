@@ -1,4 +1,4 @@
-version: 0.0.2
+version: 1.0.0
 title: CodeIgniter
 description: Log parser for CodeIgniter formatted logs
 parameters:
@@ -26,15 +26,15 @@ pipeline:
     start_at: {{ $start_at }}
     multiline:
       line_start_pattern: '^\w+\s+-\s+\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}\s+-->\s+'
-    labels:
+    attributes:
       log_type: 'codeigniter'
       plugin_id: {{ .id }}
 
   - type: filter
-    expr: '$record matches "^<\\?php"'
+    expr: '$body matches "^<\\?php"'
 
   - type: regex_parser
-    if: '$record matches "(?P<severity>\\w+)\\s+-\\s+(?P<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})\\s+-->\\s+(?P<message>[\\s\\S]*)"'
+    if: '$body matches "(?P<severity>\\w+)\\s+-\\s+(?P<timestamp>\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})\\s+-->\\s+(?P<message>[\\s\\S]*)"'
     regex: '(?P<severity>\w+)\s+-\s+(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\s+-->\s+(?P<message>[\s\S]*)'
     timestamp:
       parse_from: timestamp
@@ -42,6 +42,12 @@ pipeline:
       layout: '2006-01-02 15:04:05'
     severity:
       parse_from: severity
+      mapping:
+        info2: notice
+        error2: critical
+        error3: alert
+        fatal2: emergency
+        fatal3: catastrophe
     output: json_router
 
   - id: json_router
@@ -50,9 +56,9 @@ pipeline:
     routes:
       # It appears to be JSON so send it to be parsed as JSON.
       - output: nested_json_parser
-        expr: '$record.message != nil and $record.message matches "^{[\\s\\S]*}\\s*$"'
+        expr: '$body.message != nil and $body.message matches "^{[\\s\\S]*}\\s*$"'
 
   - id: nested_json_parser
     type: json_parser
-    parse_from: $record.message
+    parse_from: $body.message
     output: {{.output}}

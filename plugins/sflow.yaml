@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.3
+version: 1.0.0
 title: Sflow
 description: Log parser for Sflow
 min_stanza_version: 1.1.0
@@ -60,7 +60,7 @@ pipeline:
 - type: goflow_input
   mode: sflow
   listen_address: '{{ if eq $length 0 }}{{ $listen_ip }}:{{ $listen_port }}{{ else }}{{ $listen_address }}{{ end }}'
-  labels:
+  attributes:
     log_type: sflow
     plugin_id: {{ .id }}
 
@@ -72,5 +72,5 @@ pipeline:
 
 # Remove goflow specific field
 - type: remove
-  field: $record.type
+  field: $body.type
   output: {{ .output }}

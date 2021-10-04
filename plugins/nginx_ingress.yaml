@@ -1,4 +1,4 @@
-version: 0.0.6
+version: 1.0.0
 title: Nginx Ingress
 description: Log parser for Nginx Ingress for Kubernetes
 supported_platforms:
@@ -68,21 +68,21 @@ pipeline:
     type: router
     routes:
       # {{ if $enable_access_log }}
-      - expr: "$labels.stream == 'stdout'"
+      - expr: "$attributes.stream == 'stdout'"
         output: access_parser
-        labels:
+        attributes:
           log_type: 'nginx.ingress.access'
           plugin_id: '{{ .id }}'
       # {{ end }}
       # {{ if $enable_error_log }}
-      - expr: '$labels.stream == "stderr" and $record matches "\\d{4}\\/\\d{2}\\/\\d{2} \\d{2}:\\d{2}:\\d{2} \\[\\w+\\] \\d+\\.\\d+: "'
+      - expr: '$attributes.stream == "stderr" and $body matches "\\d{4}\\/\\d{2}\\/\\d{2} \\d{2}:\\d{2}:\\d{2} \\[\\w+\\] \\d+\\.\\d+: "'
         output: error_regex_parser
-        labels:
+        attributes:
           log_type: 'nginx.ingress.error'
           plugin_id: '{{ .id }}'
-      - expr: '$labels.stream == "stderr"'
+      - expr: '$attributes.stream == "stderr"'
         output: ingress_controller_regex_parser
-        labels:
+        attributes:
           log_type: 'nginx.ingress.controller'
           plugin_id: '{{ .id }}'
       # {{ end }}
@@ -100,8 +100,8 @@ pipeline:
       preserve_to: status
       mapping:
         info: 2xx
-        notice: 3xx
-        warning: 4xx
+        info2: 3xx
+        warn: 4xx
         error: 5xx
     output: {{ .output }}
     # {{ end }}
@@ -117,15 +117,15 @@ pipeline:
       preserve_to: status
       mapping:
         info: 2xx
-        notice: 3xx
-        warning: 4xx
+        info2: 3xx
+        warn: 4xx
         error: 5xx
 
   - id: request_parser
     type: regex_parser
-    parse_from: $record.request
-    preserve_to: $record.request
-    if: '$record.request != nil and $record.request matches "\\S+ +[^ ]* "'
+    parse_from: $body.request
+    preserve_to: $body.request
+    if: '$body.request != nil and $body.request matches "\\S+ +[^ ]* "'
     regex: '(?P<method>\S+) +(?P<path>[^ ]*) ((?P<protocol>[^/]*)/(?P<protocol_version>.*)|.*)?'
     output: {{ .output }}
     # {{ end }}
@@ -142,8 +142,8 @@ pipeline:
         info: i
         debug: d
         error: e
-        warning: w
-        critical: c
+        warn: w
+        error2: c
       parse_from: severity
     timestamp:
       layout: "%m%d %H:%M:%S.%s"
@@ -159,7 +159,7 @@ pipeline:
     severity:
       parse_from: log_level
       mapping:
-        critical: crit
-        emergency: emerg
+        error2: crit
+        fatal2: emerg
     output: {{ .output }}
   # {{ end }}

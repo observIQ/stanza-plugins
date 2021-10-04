@@ -1,5 +1,5 @@
 # Plugin Info
-version: 1.0.2
+version: 2.0.0
 title: Journald
 description: Journald input parser
 min_stanza_version: 1.1.6
@@ -51,7 +51,7 @@ pipeline:
     directory: '{{ $journald_log_path }}'
     # {{ end }}
     start_at: {{ $start_at }}
-    labels:
+    attributes:
       plugin_id: {{ .id }}
       log_type: '{{ $log_type }}'
     poll_interval: '{{ $poll_interval }}'
@@ -59,21 +59,21 @@ pipeline:
   # Journald does not gaurantee the presence of the PRIORITY
   # Seveity parsing is skipped if PRIORITY does not exist
   - type: severity_parser
-    parse_from: $record.PRIORITY
-    if: '$record.PRIORITY != nil'
+    parse_from: $body.PRIORITY
+    if: '$body.PRIORITY != nil'
     mapping:
-      emergency: 0
-      alert: 1
-      critical: 2
+      fatal2: 0
+      error3: 1
+      error2: 2
       error: 3
-      warning: 4
-      notice: 5
+      warn: 4
+      info2: 5
       info: 6
       debug: 7
     output: promote_message
 
   - id: promote_message
     type: move
-    from: '$record.MESSAGE'
-    to: '$record.message'
+    from: '$body.MESSAGE'
+    to: '$body.message'
     output: {{ .output }}

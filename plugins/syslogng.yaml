@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.3
+version: 1.0.0
 title: Syslog-ng
 description: Log parser for Syslog-ng
 parameters:
@@ -63,7 +63,7 @@ pipeline:
   - id: syslogng_udp_input
     type: udp_input
     listen_address: '{{ if eq $length 0 }}{{ $listen_ip }}:{{ $listen_port }}{{ else }}{{ $listen_address }}{{ end }}'
-    labels:
+    attributes:
       log_type: syslogng
       plugin_id: {{ .id }}
     add_labels: true
@@ -74,7 +74,7 @@ pipeline:
   - id: syslogng_tcp_input
     type: tcp_input
     listen_address: '{{ if eq $length 0 }}{{ $listen_ip }}:{{ $listen_port }}{{ else }}{{ $listen_address }}{{ end }}'
-    labels:
+    attributes:
       log_type: syslogng
       plugin_id: {{ .id }}
     add_labels: true

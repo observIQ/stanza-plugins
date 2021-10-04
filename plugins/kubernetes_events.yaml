@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.8
+version: 1.0.0
 title: Kubernetes Events
 description: Kubernetes Events Parser
 supported_platforms:
@@ -24,7 +24,7 @@ pipeline:
 # {{ range $i, $ns := .namespaces  }}
       - {{ $ns }}
 # {{ end }}
-    labels:
+    attributes:
       plugin_id: '{{ .id }}'
       log_type: "k8s.events"
     resource:
@@ -86,7 +86,7 @@ pipeline:
         - ProvisioningSucceeded
         - UPDATE
         - VolumeResizeSuccessful
-      warning:
+      warn:
         - AlreadyMountedVolume
         - ContainerGCFailed
         - Evicted
@@ -121,7 +121,7 @@ pipeline:
         - KubeletSetupFailed
         - OOMKilling
         - VolumeResizeFailed
-      critical:
+      error2:
         - ErrImageNeverPull
         - ErrImagePull
         - Failed

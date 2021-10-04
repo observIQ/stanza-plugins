@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.2
+version: 1.0.0
 title: Common Event Format
 description: File Input Common Event Format Parser
 min_stanza_version: 1.2.7
@@ -62,12 +62,12 @@ pipeline:
 
   - id: add_plugin_id
     type: add
-    field: '$labels.plugin_id'
+    field: '$attributes.plugin_id'
     value: 'common_event_format'
 
   - id: add_log_type
     type: add
-    field: '$labels.log_type'
+    field: '$attributes.log_type'
     value: '{{ $log_type }}'
 
   # Router to check for syslog prefix
@@ -75,14 +75,14 @@ pipeline:
     type: router
     default: cef_parser_no_syslog_prefix
     routes:
-      - expr: '$record matches "^\\w{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2}"'
+      - expr: '$body matches "^\\w{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2}"'
         output: timestamp_parser
   
   # Timestamp Jan 02 15:04:05 - Parse syslog prefix. 
   # If more than one timestamp parser is required then it will need to be move to a stand alone timestamp_parser
   - id: timestamp_parser
     type: regex_parser
-    parse_from: $record
+    parse_from: $body
     regex: '^(?P<timestamp>\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2})\s+((?P<hostname>[^\s]+)\s+)?(?P<cef_headers>[\d\D]+)'
     timestamp:
       parse_from: timestamp
@@ -94,8 +94,8 @@ pipeline:
   # CEF:<Version>|<Device Vendor>|<Device Product>|<Device Version>|<Signature ID>|<Name>|<Severity>|<Extensions>
   - id: cef_parser_syslog_prefix
     type: csv_parser
-    if: '$record.cef_headers != nil'
-    parse_from: $record.cef_headers
+    if: '$body.cef_headers != nil'
+    parse_from: $body.cef_headers
     header: 'version|device_vendor|device_product|device_version|signature_id|name|severity|extensions'
     header_delimiter: "|"
     delimiter: "|"
@@ -112,51 +112,51 @@ pipeline:
   # Parse version as integer from version field.
   - id: version_parser
     type: regex_parser
-    if: '$record.version != nil and $record.version matches "CEF:[^\\|]*"'
+    if: '$body.version != nil and $body.version matches "CEF:[^\\|]*"'
     regex: 'CEF:(?P<version>[^\|]*)'
-    parse_from: $record.version
+    parse_from: $body.version
 
   - id: promote_version
     type: move
-    if: '$record.version != nil'
-    from: $record.version
+    if: '$body.version != nil'
+    from: $body.version
     to: '$labels["version"]'
 
   - id: promote_device_product
     type: move
-    if: '$record.device_product != nil'
-    from: $record.device_product
+    if: '$body.device_product != nil'
+    from: $body.device_product
     to: '$labels["device"]'
 
   - id: promote_hostname
     type: move
-    if: '$record.hostname != nil'
-    from: $record.hostname
+    if: '$body.hostname != nil'
+    from: $body.hostname
     to: '$resource["hostname"]'
 
   - id: promote_device_vendor
     type: move
-    if: '$record.device_vendor != nil'
-    from: $record.device_vendor
+    if: '$body.device_vendor != nil'
+    from: $body.device_vendor
     to: '$resource["device_vendor"]'
 
   - id: promote_device_version
     type: move
-    if: '$record.device_version != nil'
-    from: $record.device_version
+    if: '$body.device_version != nil'
+    from: $body.device_version
     to: '$resource["device_version"]'
 
   - id: move_name
     type: move
-    if: '$record.name != nil'
-    from: $record.name
-    to: $record.message
+    if: '$body.name != nil'
+    from: $body.name
+    to: $body.message
 
   # Parse severity using CEF severity standards.
   # Currently not putting unknown which is in standard in parser so it will be assigned default.
   - type: severity_parser
-    if: '$record.severity != nil'
-    parse_from: $record.severity
+    if: '$body.severity != nil'
+    parse_from: $body.severity
     preset: none
     mapping:
       info:

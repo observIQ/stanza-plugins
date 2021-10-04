@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.1
+version: 1.0.0
 title: Netmotion
 description: Log parser for Netmotion Syslog
 min_stanza_version: 0.13.19
@@ -18,7 +18,7 @@ pipeline:
   - id: netmotion_input
     type: tcp_input
     listen_address: {{ $listen_address }}
-    labels:
+    attributes:
       log_type: netmotion
       plugin_id: {{ .id }}
     add_labels: true
@@ -33,8 +33,8 @@ pipeline:
   # syslog message for both rfc 5424 and 3164
   - id: handle_new_lines
     type: recombine
-    combine_field: $record
-    is_first_entry: "$record startsWith '<'"
+    combine_field: $body
+    is_first_entry: "$body startsWith '<'"
     output: m_user_router
 
   # Handles brackets for m_user key/value pairs within structured data
@@ -42,12 +42,12 @@ pipeline:
     type: router
     default: url2_router
     routes:
-      - expr: '$record matches ".*\\[None\\\\].*"'
+      - expr: '$body matches ".*\\[None\\\\].*"'
         output: m_user_parser
 
   - id: m_user_parser
     type: regex_parser
-    parse_from: $record
+    parse_from: $body
     regex: '(?P<message1>.*)(?P<m_user_none>\[None\\\])(?P<message2>.*)'
     output: m_user_restructurer
 
@@ -55,8 +55,8 @@ pipeline:
     type: restructure
     ops:
       - add:
-          field: $record
-          value_expr: '$record.message1 + "None" + $record.message2'
+          field: $body
+          value_expr: '$body.message1 + "None" + $body.message2'
     output: url2_router
 
   # Handle brackets in url2 field
@@ -64,12 +64,12 @@ pipeline:
     type: router
     default: fwver_router
     routes:
-      - expr: '$record matches "\\[.*URL2=\".*\\[.*\\\\\\]/\".*\\]"'
+      - expr: '$body matches "\\[.*URL2=\".*\\[.*\\\\\\]/\".*\\]"'
         output: url2_parser
 
   - id: url2_parser
     type: regex_parser
-    parse_from: $record
+    parse_from: $body
     regex: '(?P<message1>.*\[.*URL2=".*)\[(?P<url1>.*)\\](?P<url2>[^"]*)(?P<message2>".*\].*)'
     output: url2_restructurer
 
@@ -77,8 +77,8 @@ pipeline:
     type: restructure
     ops:
       - add:
-          field: $record
-          value_expr: '$record.message1 + $record.url1 + $record.url2 + $record.message2'
+          field: $body
+          value_expr: '$body.message1 + $body.url1 + $body.url2 + $body.message2'
     output: fwver_router
 
   # Handle brackets in fwver field
@@ -86,12 +86,12 @@ pipeline:
     type: router
     default: sd_bracket_space_router
     routes:
-      - expr: '$record matches "\\[.*fwver=\".*\\[.*\\\\\\]\".*\\]"'
+      - expr: '$body matches "\\[.*fwver=\".*\\[.*\\\\\\]\".*\\]"'
         output: fwver_parser
 
   - id: fwver_parser
     type: regex_parser
-    parse_from: $record
+    parse_from: $body
     regex: '(?P<message1>.*\[.*fwver=")(?P<fwver1>.*)\[(?P<fwver2>.*)\\](?P<message2>".*\].*)'
     output: fwver_restructurer
 
@@ -99,8 +99,8 @@ pipeline:
     type: restructure
     ops:
       - add:
-          field: $record
-          value_expr: '$record.message1 + $record.fwver1 + $record.fwver2 + $record.message2'
+          field: $body
+          value_expr: '$body.message1 + $body.fwver1 + $body.fwver2 + $body.message2'
     output: sd_bracket_space_router
 
   # Handle no space after structured data bracket
@@ -108,12 +108,12 @@ pipeline:
     type: router
     default: syslog_parser
     routes:
-      - expr: '$record matches "\"\\][^\\s]"'
+      - expr: '$body matches "\"\\][^\\s]"'
         output: sd_bracket_space_parser
 
   - id: sd_bracket_space_parser
     type: regex_parser
-    parse_from: $record
+    parse_from: $body
     regex: '(?P<message1>.*)(?P<spaceless_bracket>"])(?P<message2>[^\s].*)'
     output: sd_bracket_space_restructurer
 
@@ -121,8 +121,8 @@ pipeline:
     type: restructure
     ops:
       - add:
-          field: $record
-          value_expr: '$record.message1 + $record.spaceless_bracket + " " + $record.message2'
+          field: $body
+          value_expr: '$body.message1 + $body.spaceless_bracket + " " + $body.message2'
     output: syslog_parser
 
   - id: syslog_parser

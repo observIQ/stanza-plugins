@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.3
+version: 1.0.0
 title: Microsoft Active Directory
 description: Log parser for Microsoft Active Directory
 supported_platforms: 
@@ -52,7 +52,7 @@ pipeline:
   - id: general_input
     type: windows_eventlog_input
     channel: Directory Service
-    labels:
+    attributes:
       log_type: active_directory.general
       plugin_id: {{ .id }}
     poll_interval: {{ $poll_interval }}
@@ -63,7 +63,7 @@ pipeline:
   - id: web_services_input
     type: windows_eventlog_input
     channel: Active Directory Web Services
-    labels:
+    attributes:
       log_type: active_directory.web_services
       plugin_id: {{ .id }}
     poll_interval: {{ $poll_interval }}
@@ -75,7 +75,7 @@ pipeline:
   - id: dns_server_input
     type: windows_eventlog_input
     channel: DNS Server
-    labels:
+    attributes:
       log_type: active_directory.dns
       plugin_id: {{ .id }}
     poll_interval: {{ $poll_interval }}
@@ -88,7 +88,7 @@ pipeline:
   - id: dfs_replication_input
     type: windows_eventlog_input
     channel: DFS Replication
-    labels:
+    attributes:
       log_type: active_directory.dfs
       plugin_id: {{ .id }}
     poll_interval: {{ $poll_interval }}
@@ -101,7 +101,7 @@ pipeline:
   - id: file_replication_input
     type: windows_eventlog_input
     channel: File Replication Service
-    labels:
+    attributes:
       log_type: active_directory.frs
       plugin_id: {{ .id }}
     poll_interval: {{ $poll_interval }}

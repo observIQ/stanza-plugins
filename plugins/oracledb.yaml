@@ -1,4 +1,4 @@
-version: 0.0.11
+version: 1.0.0
 title: OracleDB
 description: Log parser for OracleDB
 parameters:
@@ -75,7 +75,11 @@ pipeline:
     start_at: {{ $start_at }}
     multiline:
       line_start_pattern: '\w+\s+\w+\s{1,2}\d{1,2}\s+\d{2}:\d{2}:\d{2}\s+\d{4}\s+[-+]\d{2}:\d{2}\n|^Audit [fF]ile '
+<<<<<<< HEAD
     labels:
+=======
+    attributes:
+>>>>>>> origin/updated-fields
       log_type: 'oracledb.audit'
       plugin_id: {{ .id }}
     output: audit_router
@@ -136,7 +140,7 @@ pipeline:
     start_at: {{ $start_at }}
     multiline:
       line_start_pattern: '^\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \d{4}|\d{4}-\d{2}-\d{2}T\d{1,}:\d{2}:\d{2}.\d+[+-]\d+:\d+|^<msg time=\D\d{4}-\d{2}-\d{2}T\d{1,}:\d{2}:\d{2}.\d+[+-]\d+:\d+'
-    labels:
+    attributes:
       log_type: 'oracledb.alert'
       plugin_id: {{ .id }}
     output: alert_router
@@ -180,7 +184,7 @@ pipeline:
 
   - id: regex_empty_message_filter
     type: filter
-    expr: '$record.message == ""'
+    expr: '$body.message == ""'
     output: {{ .output }}
 
   # {{ end }}
@@ -193,7 +197,7 @@ pipeline:
     start_at: {{ $start_at }}
     multiline:
       line_start_pattern: '/[\w\d/]+:|\\[\w\d\\]+:|\d{4}-\d{2}-\d{2}T\d{1}:\d{2}:\d{2}.\d+[+-]\d+:\d+|<msg time=\D\d{4}-\d{2}-\d{2}T\d{1,}:\d{2}:\d{2}.\d+[+-]\d+:\d+'
-    labels:
+    attributes:
       log_type: 'oracledb.listener'
       plugin_id: {{ .id }}
     output: listener_router
