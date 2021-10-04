@@ -38,42 +38,42 @@ parameters:
 pipeline:
   - type: udp_input
     listen_address: '{{ $listen_ip }}:{{ $listen_port }}'
-    labels:
+    attributes:
       log_type: 'sonicwall'
       plugin_id: {{ .id }}
-    add_labels: {{$add_labels}}
+    add_attributes: {{$add_labels}}
     write_to: log
     output: log_router
 
   - id: log_router
     type: router
-    # Default to just move log entry to $record because it doesn't match known format
+    # Default to just move log entry to $body because it doesn't match known format
     default: log_move 
     routes:
       # Check if log starts with a syslog priority.
       # Example: <12>
       - output: beginning_priority_parser
-        expr: '$record.log matches "^<[^>]+>\\s*"'
+        expr: '$body.log matches "^<[^>]+>\\s*"'
       # Check if log starts with timestamp and ip address.
       # Example Jan  3 13:45:50 192.168.5.1
       - output: beginning_timestamp_parser
-        expr: '$record.log matches "^\\w{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2}\\s+[:a-fA-F\\d\\.]+\\s+"'
+        expr: '$body.log matches "^\\w{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2}\\s+[:a-fA-F\\d\\.]+\\s+"'
 
   # Parse priority, and message.
   - id: beginning_priority_parser
-    if: '$record.log matches "^<[^>]+>\\s*[\\d\\D]*"'
+    if: '$body.log matches "^<[^>]+>\\s*[\\d\\D]*"'
     type: regex_parser
-    parse_from: $record.log
+    parse_from: $body.log
     regex: '^<(?P<priority>[^>]+)>\s*(?P<message>[\d\D]*)'
     output: priority_severity_parser
 
   - id: beginning_timestamp_parser
-    if: '$record.log matches "^\\w{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2}\\s+"'
+    if: '$body.log matches "^\\w{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2}\\s+"'
     type: regex_parser
-    parse_from: $record.log
+    parse_from: $body.log
     regex: '^(?P<timestamp>\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2})\s+(?P<host>[:a-fA-F\d\.]+)\s+(?P<message>[\d\D]*)'
     timestamp:
-      parse_from: $record.timestamp
+      parse_from: $body.timestamp
       layout_type: gotime
       layout: 'Jan _2 15:04:05'
       location: {{$location}}
@@ -81,9 +81,9 @@ pipeline:
 
   - id: priority_severity_parser
     type: severity_parser
-    if: '$record.priority != nil'
-    parse_from: $record.priority
-    preserve_to: $record.priority
+    if: '$body.priority != nil'
+    parse_from: $body.priority
+    preserve_to: $body.priority
     mapping:
       emergency: [0,8,16,24,32,40,48,56,64,72,80,88,96,104,112,120,128,136,144,152,160,168,176,184]
       alert: [1,9,17,25,33,41,49,57,65,73,81,89,97,105,113,121,129,137,145,153,161,169,177,185]
@@ -96,7 +96,7 @@ pipeline:
     output: key_value_parser
 
   - type: key_value_parser
-    if: '$record.message != nil'
+    if: '$body.message != nil'
     parse_from: message
     timestamp:
       parse_from: time
@@ -107,17 +107,17 @@ pipeline:
 
   - id: msg_move
     type: move
-    if: $record.msg != nil
-    from: $record.msg
-    to: $record.message
+    if: $body.msg != nil
+    from: $body.msg
+    to: $body.message
     output: pri_severity_parser
 
   # If priority field doesn't exist and pri field does, use pri field.
   - id: pri_severity_parser
     type: severity_parser
-    if: '$record.priority == nil and $record.pri != nil'
-    parse_from: $record.pri
-    preserve_to: $record.pri
+    if: '$body.priority == nil and $body.pri != nil'
+    parse_from: $body.pri
+    preserve_to: $body.pri
     mapping:
       emergency: 0
       alert: 1
@@ -129,10 +129,10 @@ pipeline:
       debug: 7
     output: {{ .output }}
   
-  # If $record.log still exists that means we were unable to parse and just need to promote to $record
+  # If $body.log still exists that means we were unable to parse and just need to promote to $body
   - id: log_move
     type: move
-    if: $record.log != nil
-    from: $record.log
-    to: $record
+    if: $body.log != nil
+    from: $body.log
+    to: $body
     output: {{ .output }}
