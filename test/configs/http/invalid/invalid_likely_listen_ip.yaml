@@ -1,0 +1,5 @@
+pipeline:
+- type: http
+  listen_port: 9090
+  listen_ip: "0.0.0.0:9090"
+- type: stdout
