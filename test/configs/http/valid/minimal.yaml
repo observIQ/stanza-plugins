@@ -1,4 +1,0 @@
-pipeline:
-- type: http
-  listen_port: 9090
-- type: stdout

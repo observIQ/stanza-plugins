@@ -1,3 +1,0 @@
-pipeline:
-- type: windows_dhcp
-  start_at: eof

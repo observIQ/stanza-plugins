@@ -1,3 +1,0 @@
-pipeline:
-- type: docker_swarm
-- type: stdout

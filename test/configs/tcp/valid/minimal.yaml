@@ -1,4 +1,0 @@
-pipeline:
-- type: tcp
-  listen_port: 6543
-- type: stdout

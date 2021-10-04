@@ -1,8 +1,0 @@
-pipeline:
-- type: journald
-  enable_journald_log_path: false
-  # omit because ci may not have journald
-  #kubelet_journald_log_path:
-  start_at: end
-  log_type: journald_custom
-  poll_interval: 100ms

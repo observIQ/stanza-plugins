@@ -1,7 +1,0 @@
-pipeline:
-- type: netflow
-  mode: v5
-  listen_address: 0.0.0.0:2000
-  sampling_enable: true
-  sampling_drop_rate: "100"
-- type: stdout

@@ -1,3 +1,0 @@
-pipeline:
-- type: cisco_asa
-- type: stdout

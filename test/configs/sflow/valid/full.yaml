@@ -1,7 +1,0 @@
-pipeline:
-- type: sflow
-  listen_ip: "0.0.0.0"
-  listen_port: 20001
-  workers: 10
-  sampling_enable: false
-- type: stdout

@@ -1,8 +1,0 @@
-pipeline:
-- type: netflow
-  netflow_version: ipfix
-  listen_address: 0.0.0.0:2055
-  workers: 2
-  sampling_enable: true
-  sampling_drop_rate: "0.5"
-- type: stdout

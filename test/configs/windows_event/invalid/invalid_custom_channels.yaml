@@ -1,3 +1,0 @@
-pipeline:
-- type: windows_event
-  custom_channels: ''
