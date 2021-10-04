@@ -170,32 +170,32 @@ pipeline:
     type: move
     if: '$body.frontend_ssl_version != nil'
     from: '$body.frontend_ssl_version'
-    to: '$labels["frontend_ssl_version"]'
+    to: '$attributes["frontend_ssl_version"]'
   - id: frontend_ssl_ciphers_move
     type: move
     if: '$body.frontend_ssl_ciphers != nil'
     from: '$body.frontend_ssl_ciphers'
-    to: '$labels["frontend_ssl_ciphers"]'
+    to: '$attributes["frontend_ssl_ciphers"]'
   - id: method_move
     type: move
     if: '$body.method != nil'
     from: '$body.method'
-    to: '$labels["method"]'
+    to: '$attributes["method"]'
   - id: protocol_move
     type: move
     if: '$body.protocol != nil'
     from: '$body.protocol'
-    to: '$labels["protocol"]'
+    to: '$attributes["protocol"]'
   - id: protocol_version_move
     type: move
     if: '$body.protocol_version != nil'
     from: '$body.protocol_version'
-    to: '$labels["protocol_version"]'
+    to: '$attributes["protocol_version"]'
   - id: referer_move
     type: move
     if: '$body.referer != nil'
     from: '$body.referer'
-    to: '$labels["referer"]'
+    to: '$attributes["referer"]'
 
   # Promote fields to resources
   - id: frontend_type_move
