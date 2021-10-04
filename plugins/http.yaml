@@ -107,19 +107,19 @@ parameters:
       enable_basic_auth:
         equals: true
     advanced_config: true
-  - name: enable_advanced_auth
-    label: Enable Advanced Authentication
+  - name: enable_header_auth
+    label: Enable Header Authentication
     description: Enable token authentication.
     type: bool
     default: false
     advanced_config: true
-  - name: token_header
+  - name: auth_header
     label: Token Header
-    description: Token authentication header, a header that contains a token that matches one of the configured tokens
+    description:  Authentication header, a header that contains a token that matches one of the configured tokens
     type: string
     default: "/opt/cert"
     relevant_if:
-      enable_advanced_auth:
+      enable_header_auth:
         equals: true
     advanced_config: true
   - name: tokens
@@ -128,7 +128,7 @@ parameters:
     type: strings
     default: []
     relevant_if:
-      enable_advanced_auth:
+      enable_header_auth:
         equals: true
     advanced_config: true
 
@@ -148,8 +148,8 @@ parameters:
 # {{$enable_basic_auth := default false .enable_basic_auth}}
 # {{$username := default "user" .username}}
 # {{$password := default "password" .password}}
-# {{$enable_advanced_auth := default false .enable_advanced_auth}}
-# {{$token_header := default "user" .token_header}}
+# {{$enable_header_auth := default false .enable_header_auth}}
+# {{$auth_header := default "user" .auth_header}}
 # Pipeline Template
 pipeline:
   - type: http_input
@@ -162,15 +162,15 @@ pipeline:
     write_timeout: {{$write_timeout}}
     max_header_size: {{$max_header_size}}
     max_body_size: {{$max_body_size}}
-    # {{ if or $enable_basic_auth $enable_advanced_auth }}
+    # {{ if or $enable_basic_auth $enable_header_auth }}
     auth:
     # {{ end }}
     # {{ if $enable_basic_auth }}
       username: {{$username}}
       password: {{$password}}
     # {{ end }}
-    # {{ if $enable_advanced_auth }}
-      token_header: {{$token_header}}
+    # {{ if $enable_header_auth }}
+      auth_header: {{$auth_header}}
       tokens:
       # {{ range $i, $tok := .tokens  }}
         - '{{ $tok }}'
