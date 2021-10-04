@@ -9,6 +9,7 @@ import (
 	_ "github.com/observiq/stanza/operator/builtin/input/forward"
 	_ "github.com/observiq/stanza/operator/builtin/input/generate"
 	_ "github.com/observiq/stanza/operator/builtin/input/goflow"
+	_ "github.com/observiq/stanza/operator/builtin/input/http"
 	_ "github.com/observiq/stanza/operator/builtin/input/k8sevent"
 	_ "github.com/observiq/stanza/operator/builtin/input/stanza"
 	_ "github.com/observiq/stanza/operator/builtin/input/stdin"
@@ -17,6 +18,7 @@ import (
 
 	_ "github.com/observiq/stanza/operator/builtin/parser/csv"
 	_ "github.com/observiq/stanza/operator/builtin/parser/json"
+	_ "github.com/observiq/stanza/operator/builtin/parser/keyvalue"
 	_ "github.com/observiq/stanza/operator/builtin/parser/regex"
 	_ "github.com/observiq/stanza/operator/builtin/parser/severity"
 	_ "github.com/observiq/stanza/operator/builtin/parser/syslog"
