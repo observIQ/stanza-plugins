@@ -9,12 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- cisco_meraki: Remove custom regex parsers and use key_value_parser instead. ([PR349](https://github.com/observIQ/stanza-plugins/pull/349))
+
+### Added
 - Update `codeigniter`, `common_event_format`, and `uwsgi`
   - Remove Log Parser from title.
   - Update uwsgi field `headers` to `headers_count`
-
-### Added
-
 - Added `http` plugin ([352](https://github.com/observIQ/stanza-plugins/pull/352))
 
 ## [0.0.83] 2021-09-29
