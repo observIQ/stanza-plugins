@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- `cisco_catalyst`: Renamed `facility` to `facility_test` ([PR354](https://github.com/observIQ/stanza-plugins/pull/354))
+- `cisco_catalyst`: Renamed `facility` to `facility_text` ([PR354](https://github.com/observIQ/stanza-plugins/pull/354))
  
 ## [0.0.85] 2021-10-04
 
