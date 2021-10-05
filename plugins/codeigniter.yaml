@@ -1,5 +1,5 @@
 version: 1.0.0
-title: CodeIgniter Log Parser
+title: CodeIgniter
 description: Log parser for CodeIgniter formatted logs
 parameters:
   - name: log_path

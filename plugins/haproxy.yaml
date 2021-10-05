@@ -133,8 +133,8 @@ pipeline:
     preset: none
     mapping:
       info: 2xx
-      notice: 3xx
-      warning: 4xx
+      warn: 3xx
+      warn2: 4xx
       error: 5xx
     output: uri_parser
 
@@ -165,7 +165,7 @@ pipeline:
 # protocol
 # protocol_version
 # referer
-  # Promote fields to labels
+  # Promote fields to attributes
   - id: frontend_ssl_version_move
     type: move
     if: '$body.frontend_ssl_version != nil'
@@ -258,8 +258,8 @@ pipeline:
     if: '$body.severity != nil'
     parse_from: $body.severity
     mapping:
-      critical: crit
-      emergency: emerg
+      error2: crit
+      fatal: emerg
       error: err
     output: {{ .output }}
 

@@ -1,178 +1,138 @@
-# Plugin Info
-version: 1.0.0
-title: Common Event Format
-description: File Input Common Event Format Parser
-min_stanza_version: 1.2.7
+version: 0.0.1
+title: Sonicwall
+description: Log parser for Sonicwall
 supported_platforms:
   - linux
   - windows
-  - kubernetes
   - macos
+min_stanza_version: 1.2.7
 parameters:
-  - name: file_log_path
-    label: File Path
-    description: Specify a single path or multiple paths to read one or many files. You may also use a wildcard (*) to read multiple files within a directory.
-    type: strings
-  - name: exclude_file_log_path
-    label: Exclude File Path
-    description: Specify a single path or multiple paths to exclude one or many files from being read. You may also use a wildcard (*) to exclude multiple files from being read within a directory.
-    type: strings
-    default: []
-    advanced_config: true
-  - name: log_type
-    label: Type
-    description: Adds the specified 'Type' as a label to each log message.
-    type: string
-    default: json
+  - name: listen_port
+    label: Listen Port
+    description: A port which the agent will listen for udp messages
+    type: int
+    default: 514
   - name: location
     label: Geographic Location
-    description: The geographic location (timezone) to use when parsing logs that contain a timestamp
+    description: The geographic location (timezone) to use when parsing the timestamp
     type: enum
     valid_values: ["Africa/Abidjan","Africa/Accra","Africa/Addis_Ababa","Africa/Algiers","Africa/Asmara","Africa/Bamako","Africa/Bangui","Africa/Banjul","Africa/Bissau","Africa/Blantyre","Africa/Brazzaville","Africa/Bujumbura","Africa/Cairo","Africa/Casablanca","Africa/Ceuta","Africa/Conakry","Africa/Dakar","Africa/Dar_es_Salaam","Africa/Djibouti","Africa/Douala","Africa/El_Aaiun","Africa/Freetown","Africa/Gaborone","Africa/Harare","Africa/Johannesburg","Africa/Juba","Africa/Kampala","Africa/Khartoum","Africa/Kigali","Africa/Kinshasa","Africa/Lagos","Africa/Libreville","Africa/Lome","Africa/Luanda","Africa/Lubumbashi","Africa/Lusaka","Africa/Malabo","Africa/Maputo","Africa/Maseru","Africa/Mbabane","Africa/Mogadishu","Africa/Monrovia","Africa/Nairobi","Africa/Ndjamena","Africa/Niamey","Africa/Nouakchott","Africa/Ouagadougou","Africa/Porto-Novo","Africa/Sao_Tome","Africa/Tripoli","Africa/Tunis","Africa/Windhoek","America/Adak","America/Anchorage","America/Anguilla","America/Antigua","America/Araguaina","America/Argentina/Buenos_Aires","America/Argentina/Catamarca","America/Argentina/Cordoba","America/Argentina/Jujuy","America/Argentina/La_Rioja","America/Argentina/Mendoza","America/Argentina/Rio_Gallegos","America/Argentina/Salta","America/Argentina/San_Juan","America/Argentina/San_Luis","America/Argentina/Tucuman","America/Argentina/Ushuaia","America/Aruba","America/Asuncion","America/Atikokan","America/Bahia","America/Bahia_Banderas","America/Barbados","America/Belem","America/Belize","America/Blanc-Sablon","America/Boa_Vista","America/Bogota","America/Boise","America/Cambridge_Bay","America/Campo_Grande","America/Cancun","America/Caracas","America/Cayenne","America/Cayman","America/Chicago","America/Chihuahua","America/Costa_Rica","America/Creston","America/Cuiaba","America/Curacao","America/Danmarkshavn","America/Dawson","America/Dawson_Creek","America/Denver","America/Detroit","America/Dominica","America/Edmonton","America/Eirunepe","America/El_Salvador","America/Fort_Nelson","America/Fortaleza","America/Glace_Bay","America/Goose_Bay","America/Grand_Turk","America/Grenada","America/Guadeloupe","America/Guatemala","America/Guayaquil","America/Guyana","America/Halifax","America/Havana","America/Hermosillo","America/Indiana/Indianapolis","America/Indiana/Knox","America/Indiana/Marengo","America/Indiana/Petersburg","America/Indiana/Tell_City","America/Indiana/Vevay","America/Indiana/Vincennes","America/Indiana/Winamac","America/Inuvik","America/Iqaluit","America/Jamaica","America/Juneau","America/Kentucky/Louisville","America/Kentucky/Monticello","America/Kralendijk","America/La_Paz","America/Lima","America/Los_Angeles","America/Lower_Princes","America/Maceio","America/Managua","America/Manaus","America/Marigot","America/Martinique","America/Matamoros","America/Mazatlan","America/Menominee","America/Merida","America/Metlakatla","America/Mexico_City","America/Miquelon","America/Moncton","America/Monterrey","America/Montevideo","America/Montserrat","America/Nassau","America/New_York","America/Nipigon","America/Nome","America/Noronha","America/North_Dakota/Beulah","America/North_Dakota/Center","America/North_Dakota/New_Salem","America/Nuuk","America/Ojinaga","America/Panama","America/Pangnirtung","America/Paramaribo","America/Phoenix","America/Port-au-Prince","America/Port_of_Spain","America/Porto_Velho","America/Puerto_Rico","America/Punta_Arenas","America/Rainy_River","America/Rankin_Inlet","America/Recife","America/Regina","America/Resolute","America/Rio_Branco","America/Santarem","America/Santiago","America/Santo_Domingo","America/Sao_Paulo","America/Scoresbysund","America/Sitka","America/St_Barthelemy","America/St_Johns","America/St_Kitts","America/St_Lucia","America/St_Thomas","America/St_Vincent","America/Swift_Current","America/Tegucigalpa","America/Thule","America/Thunder_Bay","America/Tijuana","America/Toronto","America/Tortola","America/Vancouver","America/Whitehorse","America/Winnipeg","America/Yakutat","America/Yellowknife","Antarctica/Casey","Antarctica/Davis","Antarctica/DumontDUrville","Antarctica/Macquarie","Antarctica/Mawson","Antarctica/McMurdo","Antarctica/Palmer","Antarctica/Rothera","Antarctica/Syowa","Antarctica/Troll","Antarctica/Vostok","Arctic/Longyearbyen","Asia/Aden","Asia/Almaty","Asia/Amman","Asia/Anadyr","Asia/Aqtau","Asia/Aqtobe","Asia/Ashgabat","Asia/Atyrau","Asia/Baghdad","Asia/Bahrain","Asia/Baku","Asia/Bangkok","Asia/Barnaul","Asia/Beirut","Asia/Bishkek","Asia/Brunei","Asia/Chita","Asia/Choibalsan","Asia/Colombo","Asia/Damascus","Asia/Dhaka","Asia/Dili","Asia/Dubai","Asia/Dushanbe","Asia/Famagusta","Asia/Gaza","Asia/Hebron","Asia/Ho_Chi_Minh","Asia/Hong_Kong","Asia/Hovd","Asia/Irkutsk","Asia/Jakarta","Asia/Jayapura","Asia/Jerusalem","Asia/Kabul","Asia/Kamchatka","Asia/Karachi","Asia/Kathmandu","Asia/Khandyga","Asia/Kolkata","Asia/Krasnoyarsk","Asia/Kuala_Lumpur","Asia/Kuching","Asia/Kuwait","Asia/Macau","Asia/Magadan","Asia/Makassar","Asia/Manila","Asia/Muscat","Asia/Nicosia","Asia/Novokuznetsk","Asia/Novosibirsk","Asia/Omsk","Asia/Oral","Asia/Phnom_Penh","Asia/Pontianak","Asia/Pyongyang","Asia/Qatar","Asia/Qostanay","Asia/Qyzylorda","Asia/Riyadh","Asia/Sakhalin","Asia/Samarkand","Asia/Seoul","Asia/Shanghai","Asia/Singapore","Asia/Srednekolymsk","Asia/Taipei","Asia/Tashkent","Asia/Tbilisi","Asia/Tehran","Asia/Thimphu","Asia/Tokyo","Asia/Tomsk","Asia/Ulaanbaatar","Asia/Urumqi","Asia/Ust-Nera","Asia/Vientiane","Asia/Vladivostok","Asia/Yakutsk","Asia/Yangon","Asia/Yekaterinburg","Asia/Yerevan","Atlantic/Azores","Atlantic/Bermuda","Atlantic/Canary","Atlantic/Cape_Verde","Atlantic/Faroe","Atlantic/Madeira","Atlantic/Reykjavik","Atlantic/South_Georgia","Atlantic/St_Helena","Atlantic/Stanley","Australia/Adelaide","Australia/Brisbane","Australia/Broken_Hill","Australia/Currie","Australia/Darwin","Australia/Eucla","Australia/Hobart","Australia/Lindeman","Australia/Lord_Howe","Australia/Melbourne","Australia/Perth","Australia/Sydney","Europe/Amsterdam","Europe/Andorra","Europe/Astrakhan","Europe/Athens","Europe/Belgrade","Europe/Berlin","Europe/Bratislava","Europe/Brussels","Europe/Bucharest","Europe/Budapest","Europe/Busingen","Europe/Chisinau","Europe/Copenhagen","Europe/Dublin","Europe/Gibraltar","Europe/Guernsey","Europe/Helsinki","Europe/Isle_of_Man","Europe/Istanbul","Europe/Jersey","Europe/Kaliningrad","Europe/Kiev","Europe/Kirov","Europe/Lisbon","Europe/Ljubljana","Europe/London","Europe/Luxembourg","Europe/Madrid","Europe/Malta","Europe/Mariehamn","Europe/Minsk","Europe/Monaco","Europe/Moscow","Europe/Oslo","Europe/Paris","Europe/Podgorica","Europe/Prague","Europe/Riga","Europe/Rome","Europe/Samara","Europe/San_Marino","Europe/Sarajevo","Europe/Saratov","Europe/Simferopol","Europe/Skopje","Europe/Sofia","Europe/Stockholm","Europe/Tallinn","Europe/Tirane","Europe/Ulyanovsk","Europe/Uzhgorod","Europe/Vaduz","Europe/Vatican","Europe/Vienna","Europe/Vilnius","Europe/Volgograd","Europe/Warsaw","Europe/Zagreb","Europe/Zaporozhye","Europe/Zurich","Indian/Antananarivo","Indian/Chagos","Indian/Christmas","Indian/Cocos","Indian/Comoro","Indian/Kerguelen","Indian/Mahe","Indian/Maldives","Indian/Mauritius","Indian/Mayotte","Indian/Reunion","Pacific/Apia","Pacific/Auckland","Pacific/Bougainville","Pacific/Chatham","Pacific/Chuuk","Pacific/Easter","Pacific/Efate","Pacific/Enderbury","Pacific/Fakaofo","Pacific/Fiji","Pacific/Funafuti","Pacific/Galapagos","Pacific/Gambier","Pacific/Guadalcanal","Pacific/Guam","Pacific/Honolulu","Pacific/Kiritimati","Pacific/Kosrae","Pacific/Kwajalein","Pacific/Majuro","Pacific/Marquesas","Pacific/Midway","Pacific/Nauru","Pacific/Niue","Pacific/Norfolk","Pacific/Noumea","Pacific/Pago_Pago","Pacific/Palau","Pacific/Pitcairn","Pacific/Pohnpei","Pacific/Port_Moresby","Pacific/Rarotonga","Pacific/Saipan","Pacific/Tahiti","Pacific/Tarawa","Pacific/Tongatapu","Pacific/Wake","Pacific/Wallis","UTC"]
     default: "UTC"
-  - name: start_at
-    label: Start At
-    description: Start reading file from 'beginning' or 'end'
-    type: enum
-    valid_values:
-      - beginning
-      - end
-    default: end
+  - name: listen_ip
+    label: Listen IP
+    description: A UDP ip address of the form `<ip>`
+    type: string
+    default: "0.0.0.0"
+    advanced_config: true
+  - name: add_labels
+    label: Labels
+    description: Adds net.transport, net.peer.ip, net.peer.port, net.host.ip and net.host.port labels.
+    type: bool
+    default: true
+    advanced_config: true
 # Set Defaults
-# {{$log_type := default "cef" .log_type}}
-# {{$start_at := default "end" .start_at}}
+# {{$listen_port := default 514 .listen_port}}
+# {{$listen_ip := default "0.0.0.0" .listen_ip}}
+# {{$add_labels := default true .add_labels}}
 # {{$location := default "UTC" .location}}
-
-# Pipeline Template
 pipeline:
-  - type: file_input
-    start_at: '{{ $start_at }}'
-    include:
-# {{ range $i, $fp := .file_log_path  }}
-      - '{{ $fp }}'
-# {{ end }}
-# {{ if .exclude_file_log_path }}
-    exclude:
-  # {{ range $i, $efp := .exclude_file_log_path  }}
-      - '{{ $efp }}'
-  # {{ end }}
-# {{ end }}
-    encoding: 'utf-8'
-    include_file_name: true
+  - type: udp_input
+    listen_address: '{{ $listen_ip }}:{{ $listen_port }}'
+    attributes:
+      log_type: 'sonicwall'
+      plugin_id: {{ .id }}
+    add_attributes: {{$add_labels}}
+    write_to: log
+    output: log_router
 
-  - id: add_plugin_id
-    type: add
-    field: '$attributes.plugin_id'
-    value: 'common_event_format'
-
-  - id: add_log_type
-    type: add
-    field: '$attributes.log_type'
-    value: '{{ $log_type }}'
-
-  # Router to check for syslog prefix
-  - id: timestamp
+  - id: log_router
     type: router
-    default: cef_parser_no_syslog_prefix
+    # Default to just move log entry to $body because it doesn't match known format
+    default: log_move 
     routes:
-      - expr: '$body matches "^\\w{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2}"'
-        output: timestamp_parser
-  
-  # Timestamp Jan 02 15:04:05 - Parse syslog prefix. 
-  # If more than one timestamp parser is required then it will need to be move to a stand alone timestamp_parser
-  - id: timestamp_parser
+      # Check if log starts with a syslog priority.
+      # Example: <12>
+      - output: beginning_priority_parser
+        expr: '$body.log matches "^<[^>]+>\\s*"'
+      # Check if log starts with timestamp and ip address.
+      # Example Jan  3 13:45:50 192.168.5.1
+      - output: beginning_timestamp_parser
+        expr: '$body.log matches "^\\w{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2}\\s+[:a-fA-F\\d\\.]+\\s+"'
+
+  # Parse priority, and message.
+  - id: beginning_priority_parser
+    if: '$body.log matches "^<[^>]+>\\s*[\\d\\D]*"'
     type: regex_parser
-    parse_from: $body
-    regex: '^(?P<timestamp>\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2})\s+((?P<hostname>[^\s]+)\s+)?(?P<cef_headers>[\d\D]+)'
+    parse_from: $body.log
+    regex: '^<(?P<priority>[^>]+)>\s*(?P<message>[\d\D]*)'
+    output: priority_severity_parser
+
+  - id: beginning_timestamp_parser
+    if: '$body.log matches "^\\w{3}\\s+\\d{1,2}\\s+\\d{2}:\\d{2}:\\d{2}\\s+"'
+    type: regex_parser
+    parse_from: $body.log
+    regex: '^(?P<timestamp>\w{3}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2})\s+(?P<host>[:a-fA-F\d\.]+)\s+(?P<message>[\d\D]*)'
     timestamp:
-      parse_from: timestamp
+      parse_from: $body.timestamp
       layout_type: gotime
-      layout: 'Jan 02 15:04:05'
+      layout: 'Jan _2 15:04:05'
       location: {{$location}}
+    output: key_value_parser
 
-  # Parse CEF log entry with syslog prefix
-  # CEF:<Version>|<Device Vendor>|<Device Product>|<Device Version>|<Signature ID>|<Name>|<Severity>|<Extensions>
-  - id: cef_parser_syslog_prefix
-    type: csv_parser
-    if: '$body.cef_headers != nil'
-    parse_from: $body.cef_headers
-    header: 'version|device_vendor|device_product|device_version|signature_id|name|severity|extensions'
-    header_delimiter: "|"
-    delimiter: "|"
-    output: version_parser
-  
-  # Parse CEF log entry without syslog prefix
-  - id: cef_parser_no_syslog_prefix
-    type: csv_parser
-    header: 'version|device_vendor|device_product|device_version|signature_id|name|severity|extensions'
-    header_delimiter: "|"
-    delimiter: "|"
-    output: version_parser
-
-  # Parse version as integer from version field.
-  - id: version_parser
-    type: regex_parser
-    if: '$body.version != nil and $body.version matches "CEF:[^\\|]*"'
-    regex: 'CEF:(?P<version>[^\|]*)'
-    parse_from: $body.version
-
-  - id: promote_version
-    type: move
-    if: '$body.version != nil'
-    from: $body.version
-    to: '$attributes["version"]'
-
-  - id: promote_device_product
-    type: move
-    if: '$body.device_product != nil'
-    from: $body.device_product
-    to: '$attributes["device"]'
-
-  - id: promote_hostname
-    type: move
-    if: '$body.hostname != nil'
-    from: $body.hostname
-    to: '$resource["hostname"]'
-
-  - id: promote_device_vendor
-    type: move
-    if: '$body.device_vendor != nil'
-    from: $body.device_vendor
-    to: '$resource["device_vendor"]'
-
-  - id: promote_device_version
-    type: move
-    if: '$body.device_version != nil'
-    from: $body.device_version
-    to: '$resource["device_version"]'
-
-  - id: move_name
-    type: move
-    if: '$body.name != nil'
-    from: $body.name
-    to: $body.message
-
-  # Parse severity using CEF severity standards.
-  # Currently not putting unknown which is in standard in parser so it will be assigned default.
-  - type: severity_parser
-    if: '$body.severity != nil'
-    parse_from: $body.severity
-    preset: none
+  - id: priority_severity_parser
+    type: severity_parser
+    if: '$body.priority != nil'
+    parse_from: $body.priority
+    preserve_to: $body.priority
     mapping:
-      info:
-        - min: 1
-          max: 3
-        - low
-      warn2:
-        - min: 4
-          max: 6
-        - medium
-      error:
-        - min: 7
-          max: 8
-        - high
-      error2:
-        - min: 9
-          max: 10
-        - very-high
+      fatail: [0,8,16,24,32,40,48,56,64,72,80,88,96,104,112,120,128,136,144,152,160,168,176,184]
+      error3: [1,9,17,25,33,41,49,57,65,73,81,89,97,105,113,121,129,137,145,153,161,169,177,185]
+      error2: [2,10,18,26,34,42,50,58,66,74,82,90,98,106,114,122,130,138,146,154,162,170,178,186]
+      error: [3,11,19,27,35,43,51,59,67,75,83,91,99,107,115,123,131,139,147,155,163,171,179,187]
+      warn2: [4,12,20,28,36,44,52,60,68,76,84,92,100,108,116,124,132,140,148,156,164,172,180,188]
+      warn: [5,13,21,29,37,45,53,61,69,77,85,93,101,109,117,125,133,141,149,157,165,173,181,189]
+      info: [6,14,22,30,38,46,54,62,70,78,86,94,102,110,118,126,134,142,150,158,166,174,182,190]
+      debug: [7,15,23,31,39,47,55,63,71,79,87,95,103,111,119,127,135,143,151,159,167,175,183,191]
+    output: key_value_parser
+
+  - type: key_value_parser
+    if: '$body.message != nil'
+    parse_from: message
+    timestamp:
+      parse_from: time
+      layout_type: gotime
+      layout: '2006-01-02 15:04:05'
+      location: {{$location}}
+    output: msg_move
+
+  - id: msg_move
+    type: move
+    if: $body.msg != nil
+    from: $body.msg
+    to: $body.message
+    output: pri_severity_parser
+
+  # If priority field doesn't exist and pri field does, use pri field.
+  - id: pri_severity_parser
+    type: severity_parser
+    if: '$body.priority == nil and $body.pri != nil'
+    parse_from: $body.pri
+    preserve_to: $body.pri
+    mapping:
+      fatal: 0
+      error3: 1
+      error2: 2
+      error: 3
+      warn2: 4
+      warn: 5
+      info: 6
+      debug: 7
+    output: {{ .output }}
+  
+  # If $body.log still exists that means we were unable to parse and just need to promote to $body
+  - id: log_move
+    type: move
+    if: $body.log != nil
+    from: $body.log
+    to: $body
     output: {{ .output }}

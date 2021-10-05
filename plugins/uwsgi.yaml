@@ -1,5 +1,5 @@
 version: 1.0.0
-title: uWSGI Log Parser
+title: uWSGI
 description: Log parser uWSGI formatted logs
 min_stanza_version: 0.14.0
 parameters:
@@ -48,7 +48,7 @@ pipeline:
   # {{ if eq $log_format "default" }}
   - id: default_regex_parser
     type: regex_parser
-    regex: '^\[pid:\s*(?P<pid>[^\|]*)\|app:\s*(?P<app>[^\|]*)\|req:\s*(?P<req>[^\]]*)\]\s*(?P<remote_addr>[^\s]*)\s*\((?P<remote_user>[^\)]*)\)\s*{(?P<cgi_vars>[^\s]*)\s*vars\s*in\s*(?P<packet_size_bytes>[^\s]*)\s*bytes}\s*\[(?P<ctime>[^\]]*)\]\s*(?P<method>[^\s]*)\s*(?P<path>[^\s]*)\s*=>\s*generated\s*(?P<body_size>[^\s]*)\s*bytes\s*in\s*(?P<response_time_millisseconds>[^\s]*)\s*msecs\s*\((?P<protocol>[^\s]*)\s*(?P<status>[^\)]*)\)\s*(?P<headers>[^\s]*)\s*headers\s*in\s*(?P<headers_size_bytes>[^\s]*)\s*bytes\s*\((?P<switches>[^\s]*)\s*switches\s*on\s*core\s*(?P<core>[^\)]*)\)(\s*(?P<message>[\s\S]*))?'
+    regex: '^\[pid:\s*(?P<pid>[^\|]*)\|app:\s*(?P<app>[^\|]*)\|req:\s*(?P<req>[^\]]*)\]\s*(?P<remote_addr>[^\s]*)\s*\((?P<remote_user>[^\)]*)\)\s*{(?P<cgi_vars>[^\s]*)\s*vars\s*in\s*(?P<packet_size_bytes>[^\s]*)\s*bytes}\s*\[(?P<ctime>[^\]]*)\]\s*(?P<method>[^\s]*)\s*(?P<path>[^\s]*)\s*=>\s*generated\s*(?P<body_size>[^\s]*)\s*bytes\s*in\s*(?P<response_time_millisseconds>[^\s]*)\s*msecs\s*\((?P<protocol>[^\s]*)\s*(?P<status>[^\)]*)\)\s*(?P<headers_count>[^\s]*)\s*headers\s*in\s*(?P<headers_size_bytes>[^\s]*)\s*bytes\s*\((?P<switches>[^\s]*)\s*switches\s*on\s*core\s*(?P<core>[^\)]*)\)(\s*(?P<message>[\s\S]*))?'
     timestamp:
       parse_from: ctime
       layout_type: gotime

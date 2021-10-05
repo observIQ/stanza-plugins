@@ -5,12 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-
-## [0.0.83] Unreleased
+## [0.0.85] 2021-10-04
 
 ### Added
 
-- Add `tcp` and `udp` plugin ([PR341](https://github.com/observIQ/stanza-plugins/pull/341))
+- Added `cisco_catalyst` plugin ([351](https://github.com/observIQ/stanza-plugins/pull/351))
+
+## [0.0.84] 2021-10-04
+
+### Added
+
+- Added `sonicwall` plugin ([PR340](https://github.com/observIQ/stanza-plugins/pull/340))
+
+### Changed
+
+- cisco_meraki: Remove custom regex parsers and use key_value_parser instead. ([PR349](https://github.com/observIQ/stanza-plugins/pull/349))
+- Update `codeigniter`, `common_event_format`, and `uwsgi`
+  - Remove Log Parser from title.
+  - Update uwsgi field `headers` to `headers_count`
+
+## [0.0.83] 2021-09-29
+
+### Added
+
+- Added `tcp` and `udp` plugin ([PR341](https://github.com/observIQ/stanza-plugins/pull/341))
 - Added `common_event_format` plugin ([328](https://github.com/observIQ/stanza-plugins/pull/328))
 
 ### Fixed
