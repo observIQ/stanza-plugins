@@ -103,14 +103,30 @@ pipeline:
       layout_type: gotime
       layout: '2006-01-02 15:04:05'
       location: {{$location}}
-    output: msg_move
+
+  - id: proto_move
+    type: move
+    if: $body.proto != nil
+    from: $body.proto
+    to: $body.protocol
 
   - id: msg_move
     type: move
     if: $body.msg != nil
     from: $body.msg
     to: $body.message
-    output: pri_severity_parser
+
+  - id: parse_dst
+    type: regex_parser
+    if: $body.dst != nil
+    parse_from: $body.dst
+    regex: '^(?P<dst_ip>.*):(?P<dst_port>.*):(?P<dst_interface>.*)'
+
+  - id: parse_src
+    type: regex_parser
+    if: $body.src != nil
+    parse_from: $body.src
+    regex: '^(?P<src_ip>.*):(?P<src_port>.*):(?P<src_interface>.*)'
 
   # If priority field doesn't exist and pri field does, use pri field.
   - id: pri_severity_parser
