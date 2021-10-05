@@ -46,12 +46,12 @@ pipeline:
     severity:
       parse_from: $body.severity
       mapping:
-        emergency: 0
-        alert: 1
-        critical: 2
+        fatal: 0
+        error3: 1
+        error2: 2
         error: 3
-        warning: 4
-        notice: 5
+        warn2: 4
+        warn: 5
         info: 6
         debug: 7
     output: {{ .output }}
