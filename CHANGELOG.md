@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.86] 2021-10-05
+
+### Changed
+
+- `sonicwall`: Parse `src` and `dst` fields into ip, port, and interface fields: ([PR355](https://github.com/observIQ/stanza-plugins/pull/355))
+- `cisco_catalyst`: Renamed `facility` to `facility_text` ([PR354](https://github.com/observIQ/stanza-plugins/pull/354))
+
 ## [0.0.85] 2021-10-04
 
 ### Added
