@@ -133,8 +133,8 @@ pipeline:
     preset: none
     mapping:
       info: 2xx
-      notice: 3xx
-      warning: 4xx
+      warn: 3xx
+      warn2: 4xx
       error: 5xx
     output: uri_parser
 
@@ -258,8 +258,8 @@ pipeline:
     if: '$body.severity != nil'
     parse_from: $body.severity
     mapping:
-      critical: crit
-      emergency: emerg
+      error2: crit
+      fatal: emerg
       error: err
     output: {{ .output }}
 
