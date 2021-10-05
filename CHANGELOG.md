@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `sonicwall`: Parse `src` and `dst` fields into ip, port, and interface fields: ([PR355](https://github.com/observIQ/stanza-plugins/pull/355))
 - `cisco_catalyst`: Renamed `facility` to `facility_text` ([PR354](https://github.com/observIQ/stanza-plugins/pull/354))
  
 ## [0.0.85] 2021-10-04
