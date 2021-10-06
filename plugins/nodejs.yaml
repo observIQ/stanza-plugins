@@ -170,7 +170,7 @@ pipeline:
 
   - id: statuscode_parser
     type: severity_parser
-    if: '$record.statusCode != nil'
+    if: '$body.statusCode != nil'
     parse_from: $body.statusCode
     preset: none
     preserve_to: status
@@ -184,7 +184,7 @@ pipeline:
   # Check if status doesn't exist we don't want to overwrite severity if we parsed statusCode field.
   - id: level_parser
     type: severity_parser
-    if: '$record.level != nil and $record.status == nil'
-    parse_from: $record.level
-    preserve_to: $record.level
+    if: '$body.level != nil and $body.status == nil'
+    parse_from: $body.level
+    preserve_to: $body.level
     output: {{ .output }}

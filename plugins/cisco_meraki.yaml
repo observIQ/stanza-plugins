@@ -41,7 +41,7 @@ pipeline:
     attributes:
       log_type: cisco_meraki
       plugin_id: {{ .id }}
-    add_labels: true
+    add_attributes: true
 
   - id: regex_router
     type: router

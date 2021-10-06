@@ -66,7 +66,7 @@ pipeline:
     attributes:
       log_type: syslog
       plugin_id: {{ .id }}
-    add_labels: true
+    add_attributes: true
     output: syslog_parser
 # {{ end }}
 
@@ -77,7 +77,7 @@ pipeline:
     attributes:
       log_type: syslog
       plugin_id: {{ .id }}
-    add_labels: true
+    add_attributes: true
     output: syslog_parser
 # {{ end }}
 
@@ -89,12 +89,12 @@ pipeline:
 # {{ end }}
 
   - type: regex_parser
-    if: '$record matches "^<\\d+>.*"'
+    if: '$body matches "^<\\d+>.*"'
     regex: '^<(?P<priority>[\d]+)>(?P<messsage>.*)'
-    parse_from: $record
+    parse_from: $body
     preserve: true
     severity:
-      parse_from: $record.priority
+      parse_from: $body.priority
       mapping:
         fatal2: [0,8,16,24,32,40,48,56,64,72,80,88,96,104,112,120,128,136,144,152,160,168,176,184]
         error3: [1,9,17,25,33,41,49,57,65,73,81,89,97,105,113,121,129,137,145,153,161,169,177,185]

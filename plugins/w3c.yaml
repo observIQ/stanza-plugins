@@ -145,7 +145,7 @@ pipeline:
     default: csv_parser
     routes:
       - output: quote_handler_parser
-        expr: $record matches '.*".*".*' and not ($record matches "^#")
+        expr: $body matches '.*".*".*' and not ($body matches "^#")
 
   # Some example log entries have quotes. This will cause an error.
   # This parses first set of quotes. If more than one set of quotes exist then it will still error.
@@ -155,15 +155,15 @@ pipeline:
   # 2021-06-14 18:36:47 0.0.0.0 OutboundConnectionResponse SMTPSVC1 TSIC-PHOENIX - 25 - - 354+3.0.0+continue.++finished+with+"\r\n.\r\n" 0 0 46 0 531 SMTP - - - -
   - id: quote_handler_parser
     type: regex_parser
-    parse_from: $record
+    parse_from: $body
     regex: '(?P<message1>[^"]*)(?P<first_quote>[\"])(?P<message2>[^"]*)(?P<second_quote>[\"])(?P<message3>.*)'
     output: quote_handler_restructurer
 
   # This will remove the first set of parsed quotes.
   - id: quote_handler_restructurer
     type: add
-    field: $record
-    value: 'EXPR($record.message1 + $record.message2 + $record.message3)'
+    field: $body
+    value: 'EXPR($body.message1 + $body.message2 + $body.message3)'
     output: csv_parser
 
   # Leverage CSV parser's dynamic field name detection by specifying

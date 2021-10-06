@@ -62,7 +62,7 @@ pipeline:
     attributes:
       log_type: vmware_esxi
       plugin_id: {{ .id }}
-    add_labels: true
+    add_attributes: true
     tls:
       enable: {{ $enable_tls }}
       certificate: {{ $certificate_file }}

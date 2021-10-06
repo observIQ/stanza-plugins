@@ -68,14 +68,14 @@ pipeline:
     encoding: '{{ $encoding }}'
 # {{ end }}
     include_file_name: true
-    labels:
+    attributes:
       plugin_id: {{ .id }}
       log_type: 'asterisk'
 
   - type: router
     default: asterisk_start_regex_parser
     routes:
-      - expr: '$record matches "^\\[[^\\]]+\\] [^\\[]+\\[[^\\]]+\\]"'
+      - expr: '$body matches "^\\[[^\\]]+\\] [^\\[]+\\[[^\\]]+\\]"'
         output: asterisk_regex_parser
 
   - id: asterisk_regex_parser
@@ -109,6 +109,6 @@ pipeline:
     output: remove
 
   - type: remove
-    if: '$record.call_id != nil and not (len($record.call_id) > 0)'
-    field: $record.call_id 
+    if: '$body.call_id != nil and not (len($body.call_id) > 0)'
+    field: $body.call_id 
     output: {{ .output }}

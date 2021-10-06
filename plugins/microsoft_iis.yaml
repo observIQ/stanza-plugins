@@ -79,12 +79,12 @@ pipeline:
 
   - id: add_log_type
     type: add
-    field: '$labels.log_type'
+    field: '$attributes.log_type'
     value: 'microsoft_iis'
 
   - id: add_plugin_id
     type: add
-    field: '$labels.plugin_id'
+    field: '$attributes.plugin_id'
     value: '{{.id}}'
 
   # Build timestamp from date and time field if they exist

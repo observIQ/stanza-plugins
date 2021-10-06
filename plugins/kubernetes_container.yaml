@@ -152,7 +152,7 @@ pipeline:
   # Attempt to parse nested JSON in log field if it exists and if JSON is detected
   - id: log_json_router
     type: router
-    default: move_log_to_record
+    default: move_log_to_body
     routes:
       # It appears to be JSON so send it to be parsed as JSON.
       - output: nested_json_parser
@@ -166,7 +166,7 @@ pipeline:
 # {{ end }}
 
   # Move message from log field to $body
-  - id: move_log_to_record
+  - id: move_log_to_body
     type: restructure
     ops:
       - move:
