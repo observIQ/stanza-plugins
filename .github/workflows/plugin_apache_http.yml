@@ -46,6 +46,8 @@ jobs:
           --entrypoint sh \
           ubuntu:20.04 \
           -c '/collector/collector --config /input/config/collector.yaml'
+        
+        docker logs agent
 
     - name: Pause
       run: sleep 10
@@ -117,6 +119,8 @@ jobs:
           --entrypoint sh \
           ubuntu:20.04 \
           -c '/collector/collector --config /input/config/collector.yaml'
+
+        docker logs agent
 
     - name: Pause
       run: sleep 10
