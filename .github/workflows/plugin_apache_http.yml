@@ -36,7 +36,7 @@ jobs:
 
     - name: Run Agent
       run: |
-        docker run --rm -d \
+        docker run -d \
           --name agent \
           -v $(pwd)/collector:/collector \
           -v $(pwd)/log-library/cases/apache_http/default:/input \
@@ -107,7 +107,7 @@ jobs:
 
     - name: Run Agent
       run: |
-        docker run --rm -d \
+        docker run -d \
           --name agent \
           -v $(pwd)/collector:/collector \
           -v $(pwd)/log-library/cases/apache_http/default:/input \
