@@ -112,7 +112,7 @@ jobs:
         docker run -d \
           --name agent \
           -v $(pwd)/collector:/collector \
-          -v $(pwd)/log-library/cases/apache_http/default:/input \
+          -v $(pwd)/log-library/cases/apache_http/observiq:/input \
           -v $(pwd)/output:/output \
           -v $(pwd)/plugins:/plugins \
           -v $(pwd)/storage:/storage \
