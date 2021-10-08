@@ -69,9 +69,8 @@ pipeline:
     add_attributes: {{$add_labels}}
     # {{ if $enable_tls }}
     tls:
-      enable: {{ $enable_tls }}
-      certificate: {{ $certificate_file }}
-      private_key: {{ $private_key_file }}
+      cert_file: {{ $certificate_file }}
+      key_file: {{ $private_key_file }}
     # {{ end }}
 
   - type: move
