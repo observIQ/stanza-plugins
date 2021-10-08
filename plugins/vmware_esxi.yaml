@@ -63,10 +63,11 @@ pipeline:
       log_type: vmware_esxi
       plugin_id: {{ .id }}
     add_attributes: true
+    # {{ if $enable_tls }}
     tls:
-      enable: {{ $enable_tls }}
-      certificate: {{ $certificate_file }}
-      private_key: {{ $private_key_file }}
+      cert_file: {{ $certificate_file }}
+      key_file: {{ $private_key_file }}
+    # {{ end }}
     output: timestamp_router
   - id: timestamp_router
     type: router
