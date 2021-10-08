@@ -58,7 +58,7 @@ parameters:
 # {{$listen_ip := default "0.0.0.0" .listen_ip}}
 # {{$listen_port := default 5140 .listen_port}}
 # {{$max_buffer_size := default "1024kib" .max_buffer_size}}
-# {{$enable_tls := default true .enable_tls}}
+# {{$enable_tls := default false .enable_tls}}
 # {{$certificate_file := default "" .certificate_file}}
 # {{$private_key_file := default "" .private_key_file}}
 
