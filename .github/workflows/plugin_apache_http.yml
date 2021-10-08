@@ -30,22 +30,31 @@ jobs:
 
     - name: Install Collector
       run: |
-        curl -o collector https://storage.googleapis.com/observiq-cloud/observiq-collector/0.0.10/collector_linux_amd64
-        chmod +x collector
+        mkdir -p collector
+        curl -o collector/collector https://storage.googleapis.com/observiq-cloud/observiq-collector/0.0.10/collector_linux_amd64
+        chmod +x collector/collector
 
     - name: Run Agent
       run: |
-        ./collector \
-          --config log-library/cases/apache_http/default/config/collector.yaml
+        docker run --rm -d \
+          --name agent \
+          -v $(pwd)/collector:/collector \
+          -v $(pwd)/log-library/cases/apache_http/default:/input \
+          -v $(pwd)/output:/output \
+          -v $(pwd)/plugins:/plugins \
+          -v $(pwd)/storage:/storage \
+          --entrypoint sh \
+          ubuntu:20.04 \
+          -c '/collector/collector --config /input/config/collector.yaml'
 
     - name: Pause
       run: sleep 10
 
     - name: Stop Stanza
-      run: docker kill stanza
+      run: docker kill agent
 
     - name: Dump Stanza Logs
-      run: docker logs stanza
+      run: docker logs agent
 
     - name: Pause
       run: sleep 2
@@ -87,25 +96,36 @@ jobs:
     - name: Create Output Directory
       run: mkdir output
 
-    - name: Run Stanza
+    - name: Create Offset Database Directory
+      run: mkdir -p storage
+
+    - name: Install Collector
       run: |
-        docker run -d \
-          --name stanza \
-          --entrypoint /stanza_home/stanza \
+        mkdir -p collector
+        curl -o collector/collector https://storage.googleapis.com/observiq-cloud/observiq-collector/0.0.10/collector_linux_amd64
+        chmod +x collector/collector
+
+    - name: Run Agent
+      run: |
+        docker run --rm -d \
+          --name agent \
+          -v $(pwd)/collector:/collector \
           -v $(pwd)/log-library/cases/apache_http/default:/input \
           -v $(pwd)/output:/output \
           -v $(pwd)/plugins:/plugins \
-          observiq/stanza:1.2.7 \
-          --config /input/config/config.yaml --plugin_dir /plugins
+          -v $(pwd)/storage:/storage \
+          --entrypoint sh \
+          ubuntu:20.04 \
+          -c '/collector/collector --config /input/config/collector.yaml'
 
     - name: Pause
-      run: sleep 20
+      run: sleep 10
 
     - name: Stop Stanza
-      run: docker kill stanza
+      run: docker kill agent
 
     - name: Dump Stanza Logs
-      run: docker logs stanza
+      run: docker logs agent
 
     - name: Pause
       run: sleep 2
