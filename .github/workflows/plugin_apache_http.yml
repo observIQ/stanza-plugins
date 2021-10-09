@@ -93,6 +93,7 @@ jobs:
         repository: 'observIQ/log-library'
         path: log-library
         token: ${{ secrets.LOG_LIBRARY_ACCESS_TOKEN }}
+        ref: otel
 
     - name: Create Output Directory
       run: mkdir output
