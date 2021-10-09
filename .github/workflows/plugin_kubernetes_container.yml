@@ -49,6 +49,10 @@ jobs:
           --kubernetes-version=${{ matrix.k8s-version }} \
           --container-runtime=${{ matrix.container-runtime }}
 
+        sleep 3
+        kubectl describe nodes
+        kubectl get node
+
     - name: Generate Dockerfile
       run: |
         cat <<- EOF > Dockerfile
@@ -245,6 +249,10 @@ jobs:
           --driver=none \
           --kubernetes-version=${{ matrix.k8s-version }} \
           --container-runtime=${{ matrix.container-runtime }}
+
+        sleep 3
+        kubectl describe nodes
+        kubectl get node
 
     - name: Generate Dockerfile
       run: |
