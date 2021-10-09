@@ -2,7 +2,11 @@
 
 stanza-plugins contains plugins for the [Stanza Log Agent](https://github.com/observIQ/stanza)
 
-[![Test](https://github.com/observIQ/stanza-plugins/actions/workflows/validate.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/validate.yml)
+[![plugin_nginx](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_nginx.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_nginx.yml)
+[![plugin_kubernetes_container](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_kubernetes_container.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_kubernetes_container.yml)
+[![plugin_apache_http](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_apache_http.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_apache_http.yml)
+[![plugin_oracledb](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_oracledb.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_oracledb.yml)
+[![plugin_haproxy](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_haproxy.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_haproxy.yml)
 
 ## Release Process
 
