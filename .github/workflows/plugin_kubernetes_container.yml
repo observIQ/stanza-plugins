@@ -53,7 +53,7 @@ jobs:
         minikube start \
           --driver=docker \
           --kubernetes-version=${{ matrix.k8s-version }} \
-          --kubernetes-version=${{ matrix.format }}
+          --container-runtime==${{ matrix.format }}
 
     - name: Wait For Node Condition Ready
       timeout-minutes: 3
