@@ -55,6 +55,7 @@ jobs:
     - name: Build Image
       run: docker build . -t agent:latest
 
+    # local docker images can be used when minikube driver=none and imagePullPolicy: IfNotPresent
     - name: Generate Deployment Manifest
       run: |
         cat <<- EOF > deploy.yaml
@@ -89,6 +90,7 @@ jobs:
       timeout-minutes: 3
       run: |
         kubectl apply -f deploy.yaml
+        sleep 10 && kubectl get pods
         kubectl rollout status -w deployment/agent   
         sleep 2 && docker logs agent
 
