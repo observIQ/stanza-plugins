@@ -9,7 +9,7 @@ fail () {
     kubectl get node "${node}"
     exit 1
 }
-trap clean ERR
+trap fail ERR
 
 echo "waiting for node: ${node}"
 kubectl get node "${node}"
