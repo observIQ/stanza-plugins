@@ -10,8 +10,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        plugin:
-          - "${GITHUB_WORKFLOW}"
         k8s-version:
           - "v1.22.0"
           - "v1.21.0"
@@ -70,7 +68,7 @@ jobs:
         RUN mkdir /collector /storage /output
         RUN curl -s -o collector/collector https://storage.googleapis.com/observiq-cloud/observiq-collector/0.0.10/collector_linux_amd64
         RUN chmod +x collector/collector
-        COPY log-library/cases/${{ matrix.plugin }}/${{ matrix.format }}/config/collector.yaml /input/config/collector.yaml
+        COPY log-library/cases/${GITHUB_WORKFLOW}/${{ matrix.format }}/config/collector.yaml /input/config/collector.yaml
         COPY plugins /plugins
         EOF
 
@@ -85,9 +83,9 @@ jobs:
     - name: Create Input Log ConfigMap
       run: |
         kubectl create configmap logs \
-          --from-file=log-library/cases/${{ matrix.plugin }}/${{ matrix.format }}/logs/adservice-5657f795f5-ql97m_default_server-2180fc6125cb444bd32be19cfa73e71a25e5d6c98b59b5191ee51fc6ff6c6723.log \
-          --from-file=log-library/cases/${{ matrix.plugin }}/${{ matrix.format }}/logs/example-json-logger-6b49dd876-xmr2j_default_logger-ebd483078a72e8c029757f27d872b238ac26e1d0c8c7d842415790c33cc24451.log \
-          --from-file=log-library/cases/${{ matrix.plugin }}/${{ matrix.format }}/logs/productcatalogservice-7cdd54f7c7-nbsgt_default_server-0a3bc17f1a059f850fc35b8b947fcb2f1a7a726b2574f48c973015e49df47e59.log
+          --from-file=log-library/cases/${GITHUB_WORKFLOW}/${{ matrix.format }}/logs/adservice-5657f795f5-ql97m_default_server-2180fc6125cb444bd32be19cfa73e71a25e5d6c98b59b5191ee51fc6ff6c6723.log \
+          --from-file=log-library/cases/${GITHUB_WORKFLOW}/${{ matrix.format }}/logs/example-json-logger-6b49dd876-xmr2j_default_logger-ebd483078a72e8c029757f27d872b238ac26e1d0c8c7d842415790c33cc24451.log \
+          --from-file=log-library/cases/${GITHUB_WORKFLOW}/${{ matrix.format }}/logs/productcatalogservice-7cdd54f7c7-nbsgt_default_server-0a3bc17f1a059f850fc35b8b947fcb2f1a7a726b2574f48c973015e49df47e59.log
 
     # local docker images can be used when imagePullPolicy: IfNotPresent
     - name: Generate Deployment Manifest
@@ -197,7 +195,7 @@ jobs:
 
     - name: Get Expected Output
       run: |
-        cp log-library/cases/${{ matrix.plugin }}/${{ matrix.format }}/expect/expect.json output/expect
+        cp log-library/cases/${GITHUB_WORKFLOW}/${{ matrix.format }}/expect/expect.json output/expect
         cat output/expect
 
     - name: Install Json Parser 'jtool'

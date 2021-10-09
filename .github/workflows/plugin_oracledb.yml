@@ -10,8 +10,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        plugin:
-          - "${GITHUB_WORKFLOW}"
         format:
           - "alert"
           - "audit"
@@ -45,7 +43,7 @@ jobs:
         docker run -d \
           --name agent \
           -v $(pwd)/collector:/collector \
-          -v $(pwd)/log-library/cases/${{ matrix.plugin }}/${{ matrix.format }}:/input \
+          -v $(pwd)/log-library/cases/${GITHUB_WORKFLOW}/${{ matrix.format }}:/input \
           -v $(pwd)/output:/output \
           -v $(pwd)/plugins:/plugins \
           -v $(pwd)/storage:/storage \
@@ -70,7 +68,7 @@ jobs:
 
     - name: Get Expected Output
       run: |
-        sudo cp log-library/cases/${{ matrix.plugin }}/${{ matrix.format }}/expect/expect.json output/expect
+        sudo cp log-library/cases/${GITHUB_WORKFLOW}/${{ matrix.format }}/expect/expect.json output/expect
         sudo cat output/expect
 
     - name: Install Json Parser 'jtool'
