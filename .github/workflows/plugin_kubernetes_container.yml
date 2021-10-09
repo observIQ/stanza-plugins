@@ -51,7 +51,6 @@ jobs:
           --driver=docker \
           --kubernetes-version=${{ matrix.k8s-version }} \
           --container-runtime=${{ matrix.container-runtime }}
-        eval $(minikube docker-env) 
 
     - name: Wait For Node Condition Ready
       timeout-minutes: 3
@@ -74,7 +73,9 @@ jobs:
         EOF
 
     - name: Build Image
-      run: docker build . -t agent:latest
+      run: |
+        eval $(minikube docker-env)
+        docker build . -t agent:latest
 
     - name: Create Input Log ConfigMap
       run: |
