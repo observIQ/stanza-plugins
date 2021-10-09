@@ -43,6 +43,7 @@ jobs:
     # Start Minikube with --driver=none to run a k8s cluster within the actions
     # environment. This allows us to share configs, logs, and output with the container
     - name: Start Minikube
+      timeout-seconds: 3m
       run: |
         minikube start \
           --driver=none \
@@ -50,6 +51,7 @@ jobs:
           --container-runtime=${{ matrix.container-runtime }}
 
         sleep 3
+        kubectl wait --for=condition=Ready --timeout=60s node/minikube
         kubectl describe nodes
         kubectl get node
 
@@ -244,6 +246,7 @@ jobs:
     # Start Minikube with --driver=none to run a k8s cluster within the actions
     # environment. This allows us to share configs, logs, and output with the container
     - name: Start Minikube
+      timeout-seconds: 3m
       run: |
         minikube start \
           --driver=none \
@@ -251,6 +254,7 @@ jobs:
           --container-runtime=${{ matrix.container-runtime }}
 
         sleep 3
+        kubectl wait --for=condition=Ready --timeout=60s node/minikube
         kubectl describe nodes
         kubectl get node
 
