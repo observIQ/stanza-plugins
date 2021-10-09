@@ -47,9 +47,9 @@ jobs:
         RUN mkdir /collector /storage /output
         RUN curl -s -o collector/collector https://storage.googleapis.com/observiq-cloud/observiq-collector/0.0.10/collector_linux_amd64
         RUN chmod +x collector/collector
-        COPY $(pwd)/log-library/cases/kubernetes_container/default/config/collector.yaml /input/config/collector.yaml
-        COPY $(pwd)/log-library/cases/kubernetes_container/default/logs /input/logs
-        COPY $(pwd)/plugins /plugins
+        COPY log-library/cases/kubernetes_container/default/config/collector.yaml /input/config/collector.yaml
+        COPY log-library/cases/kubernetes_container/default/logs /input/logs
+        COPY plugins /plugins
         EOF
 
     - name: Build Image
