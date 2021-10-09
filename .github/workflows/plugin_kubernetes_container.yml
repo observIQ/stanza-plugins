@@ -44,9 +44,12 @@ jobs:
         WORKDIR /
         RUN apt-get update >/dev/null
         RUN apt-get install -y curl >/dev/null
-        RUN mkdir /collector
+        RUN mkdir /collector /storage /output
         RUN curl -s -o collector/collector https://storage.googleapis.com/observiq-cloud/observiq-collector/0.0.10/collector_linux_amd64
         RUN chmod +x collector/collector
+        COPY $(pwd)/log-library/cases/kubernetes_container/default/config/collector.yaml /input/config/collector.yaml
+        COPY $(pwd)/log-library/cases/kubernetes_container/default/logs /input/logs
+        COPY $(pwd)/plugins /plugins
         EOF
 
     - name: Build Image
@@ -74,39 +77,13 @@ jobs:
               containers:
               - name: agent
                 image: agent:latest
+                imagePullPolicy: IfNotPresent
                 command: ["sh"]
                 args: ["-c", "/collector/collector", "--config", "/input/config/collector.yaml"]
-                volumeMounts:
-                  - mountPath: /input
-                    name: input
-                  - mountPath: /output
-                    name: output
-                  - mountPath: /plugins
-                    name: plugins
-                  - mountPath: /storage
-                    name: storage
-              volumes:
-                # missing /var/log/containers, not sure how that should be solved at the moment, perhaps
-                # we mount individual files?
-                - name: input
-                  hostPath:
-                    path: $(pwd)/log-library/cases/kubernetes_container/default
-                - name: output
-                  hostPath:
-                    path: $(pwd)/output
-                - name: plugins
-                  hostPath:
-                    path: $(pwd)/plugins
-                - name: storage
-                  hostPath:
-                    path: $(pwd)/storage
         EOF
 
     - name: Create Output Directory
       run: mkdir output
-
-    - name: Create Offset Database Directory
-      run: mkdir -p storage
 
     - name: Run Agent
       timeout-minutes: 3
@@ -123,17 +100,16 @@ jobs:
     - name: Dump Stanza Logs
       run: kubectl logs deploy/agent
 
-    - name: Stop Stanza
-      run: kubectl delete -f deploy.yaml
-
     - name: Get Output
       run: |
-        sudo cat output/out
+        pod=$(kubectl get pods | grep agent | awk '{print $1}')
+        kubectl cp "${pod}:/output/out" output/out
+        cat output/out
 
     - name: Get Expected Output
       run: |
-        sudo cp log-library/cases/kubernetes_container/default/expect/expect.json output/expect
-        sudo cat output/expect
+        cp log-library/cases/kubernetes_container/default/expect/expect.json output/expect
+        cat output/expect
 
     - name: Install Json Parser 'jtool'
       run: |
@@ -142,7 +118,7 @@ jobs:
 
     - name: Check output
       run: |
-        if sudo ./jtool-linux-amd64 --actual-file output/out --expect-file output/expect; then
+        if ./jtool-linux-amd64 --actual-file output/out --expect-file output/expect; then
           echo "pass"
         else
           echo "fail"
