@@ -37,11 +37,6 @@ jobs:
 
     - name: Install Minikube
       run: |
-        VERSION="v1.22.0"
-        wget https://github.com/kubernetes-sigs/cri-tools/releases/download/$VERSION/crictl-$VERSION-linux-amd64.tar.gz
-        sudo tar zxvf crictl-$VERSION-linux-amd64.tar.gz -C /usr/local/bin
-        rm -f crictl-$VERSION-linux-amd64.tar.gz
-
         sudo apt-get update >/dev/null
         sudo apt-get install -y conntrack >/dev/null
         curl -s -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
@@ -53,9 +48,10 @@ jobs:
       timeout-minutes: 3
       run: |
         minikube start \
-          --driver=none \
+          --driver=docker \
           --kubernetes-version=${{ matrix.k8s-version }} \
           --container-runtime=${{ matrix.container-runtime }}
+        eval $(minikube docker-env) 
 
     - name: Wait For Node Condition Ready
       timeout-minutes: 3
