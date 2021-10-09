@@ -43,7 +43,7 @@ jobs:
     # Start Minikube with --driver=none to run a k8s cluster within the actions
     # environment. This allows us to share configs, logs, and output with the container
     - name: Start Minikube
-      timeout-seconds: 3m
+      timeout-minutes: 3
       run: |
         minikube start \
           --driver=none \
@@ -246,7 +246,7 @@ jobs:
     # Start Minikube with --driver=none to run a k8s cluster within the actions
     # environment. This allows us to share configs, logs, and output with the container
     - name: Start Minikube
-      timeout-seconds: 3m
+      timeout-minutes: 3
       run: |
         minikube start \
           --driver=none \
