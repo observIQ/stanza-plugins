@@ -61,7 +61,7 @@ jobs:
       timeout-minutes: 3
       run: |
         node=$(kubectl get node | grep -v NAME | awk '{print $1}')
-        sh ./.github/scripts/k8s_wait_for_node.sh $node
+        bash ./.github/scripts/k8s_wait_for_node.sh $node
 
     - name: Generate Dockerfile
       run: |
