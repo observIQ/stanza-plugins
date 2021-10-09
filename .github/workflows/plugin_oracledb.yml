@@ -8,11 +8,13 @@ on:
     branches:
       - master
 jobs:
-  oracledb:
+  test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        plugin:
+          - "oracledb"
         format:
           - "alert"
           - "audit"
@@ -46,7 +48,7 @@ jobs:
         docker run -d \
           --name agent \
           -v $(pwd)/collector:/collector \
-          -v $(pwd)/log-library/cases/oracledb/${{ matrix.format }}:/input \
+          -v $(pwd)/log-library/cases/${{ matrix.plugin }}/${{ matrix.format }}:/input \
           -v $(pwd)/output:/output \
           -v $(pwd)/plugins:/plugins \
           -v $(pwd)/storage:/storage \
@@ -71,7 +73,7 @@ jobs:
 
     - name: Get Expected Output
       run: |
-        sudo cp log-library/cases/oracledb/${{ matrix.format }}/expect/expect.json output/expect
+        sudo cp log-library/cases/${{ matrix.plugin }}/${{ matrix.format }}/expect/expect.json output/expect
         sudo cat output/expect
 
     - name: Install Json Parser 'jtool'

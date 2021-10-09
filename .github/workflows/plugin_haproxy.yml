@@ -8,11 +8,13 @@ on:
     branches:
       - master
 jobs:
-  haproxy:
+  test:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        plugin:
+          - "haproxy"
         format:
           - "default"
           - "observiq"
@@ -45,7 +47,7 @@ jobs:
         docker run -d \
           --name agent \
           -v $(pwd)/collector:/collector \
-          -v $(pwd)/log-library/cases/haproxy/${{ matrix.format }}:/input \
+          -v $(pwd)/log-library/cases/${{ matrix.plugin }}/${{ matrix.format }}:/input \
           -v $(pwd)/output:/output \
           -v $(pwd)/plugins:/plugins \
           -v $(pwd)/storage:/storage \
@@ -70,7 +72,7 @@ jobs:
 
     - name: Get Expected Output
       run: |
-        sudo cp log-library/cases/haproxy/${{ matrix.format }}/expect/expect.json output/expect
+        sudo cp log-library/cases/${{ matrix.plugin }}/${{ matrix.format }}/expect/expect.json output/expect
         sudo cat output/expect
 
     - name: Install Json Parser 'jtool'
