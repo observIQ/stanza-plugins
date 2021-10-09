@@ -36,7 +36,6 @@ jobs:
           --driver=none \
           --kubernetes-version=v1.20.0 \
           --container-runtime=docker
-        eval $(minikube docker-env)  
 
     - name: Generate Dockerfile
       run: |
