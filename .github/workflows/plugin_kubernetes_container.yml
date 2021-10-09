@@ -111,7 +111,7 @@ jobs:
     - name: Run Agent
       run: |
         kubectl apply -f deploy.yaml
-        kubectl wait --for=condition=ready pod -l app=agent 
+        kubectl rollout status -w deployment/agent   
         sleep 2 && docker logs agent
 
     - name: Pause
