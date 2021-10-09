@@ -8,8 +8,14 @@ on:
     branches:
       - master
 jobs:
-  default_format:
+  nginx:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        format:
+          - "default"
+          - "observiq"
     steps:
     - name: Clone stanza-plugins
       uses: actions/checkout@v2
@@ -39,7 +45,7 @@ jobs:
         docker run -d \
           --name agent \
           -v $(pwd)/collector:/collector \
-          -v $(pwd)/log-library/cases/nginx/default:/input \
+          -v $(pwd)/log-library/cases/nginx/${{ matrix.format }}:/input \
           -v $(pwd)/output:/output \
           -v $(pwd)/plugins:/plugins \
           -v $(pwd)/storage:/storage \
@@ -64,83 +70,7 @@ jobs:
 
     - name: Get Expected Output
       run: |
-        sudo cp log-library/cases/nginx/default/expect/expect.json output/expect
-        sudo cat output/expect
-
-    - name: Install Json Parser 'jtool'
-      run: |
-        wget https://github.com/jsirianni/jtool/releases/download/v0.0.6/jtool-linux-amd64
-        chmod +x jtool-linux-amd64
-
-    - name: Check output
-      run: |
-        if sudo ./jtool-linux-amd64 --actual-file output/out --expect-file output/expect; then
-          echo "pass"
-        else
-          echo "fail"
-          exit 1
-        fi
-
-  observiq_format:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Clone stanza-plugins
-      uses: actions/checkout@v2
-
-    - name: Clone Log Library
-      uses: actions/checkout@v2
-      with:
-        repository: 'observIQ/log-library'
-        path: log-library
-        token: ${{ secrets.LOG_LIBRARY_ACCESS_TOKEN }}
-        ref: otel
-
-    - name: Create Output Directory
-      run: mkdir output
-
-    - name: Create Offset Database Directory
-      run: mkdir -p storage
-
-    - name: Install Collector
-      run: |
-        mkdir -p collector
-        curl -s -o collector/collector https://storage.googleapis.com/observiq-cloud/observiq-collector/0.0.10/collector_linux_amd64
-        chmod +x collector/collector
-
-    - name: Run Agent
-      run: |
-        docker run -d \
-          --name agent \
-          -v $(pwd)/collector:/collector \
-          -v $(pwd)/log-library/cases/nginx/observiq:/input \
-          -v $(pwd)/output:/output \
-          -v $(pwd)/plugins:/plugins \
-          -v $(pwd)/storage:/storage \
-          --entrypoint sh \
-          ubuntu:20.04 \
-          -c '/collector/collector --config /input/config/collector.yaml'
-
-        sleep 1 && docker logs agent
-
-    - name: Pause
-      run: sleep 10
-
-    - name: Stop Stanza
-      run: docker kill agent
-
-    - name: Dump Stanza Logs
-      run: docker logs agent
-
-    - name: Pause
-      run: sleep 2
-
-    - name: Get Output
-      run: |
-        sudo cat output/out
-
-    - name: Get Expected Output
-      run: |
-        sudo cp log-library/cases/nginx/observiq/expect/expect.json output/expect
+        sudo cp log-library/cases/nginx/${{ matrix.format }}/expect/expect.json output/expect
         sudo cat output/expect
 
     - name: Install Json Parser 'jtool'
