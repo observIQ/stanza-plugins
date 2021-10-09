@@ -40,7 +40,7 @@ jobs:
 
     - name: Generate Dockerfile
       run: |
-        cat <<- EOF > deploy.yaml
+        cat <<- EOF > Dockerfile
         FROM ubuntu:20.04
         WORKDIR /
         RUN apt-get update >/dev/null
@@ -51,6 +51,7 @@ jobs:
         EOF
 
     - name: Build Image
+      run: docker build . -t agent:latest
 
     - name: Generate Deployment Manifest
       run: |
