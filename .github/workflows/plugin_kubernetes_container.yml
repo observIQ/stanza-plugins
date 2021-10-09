@@ -93,13 +93,13 @@ jobs:
                     path: $(pwd)/log-library/cases/kubernetes_container/default
                 - name: output
                   hostPath:
-                    $(pwd)/output
+                    path: $(pwd)/output
                 - name: plugins
                   hostPath:
-                    $(pwd)/plugins
+                    path: $(pwd)/plugins
                 - name: storage
                   hostPath:
-                    $(pwd)/storage
+                    path: $(pwd)/storage
         EOF
 
     - name: Create Output Directory
