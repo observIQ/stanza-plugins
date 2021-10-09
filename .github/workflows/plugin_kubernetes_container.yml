@@ -266,9 +266,9 @@ jobs:
     - name: Create Input Log ConfigMap
       run: |
         kubectl create configmap logs \
-          --from-file=log-library/cases/kubernetes_container/containerd/logs/adservice-5657f795f5-ql97m_default_server-2180fc6125cb444bd32be19cfa73e71a25e5d6c98b59b5191ee51fc6ff6c6723.log \
-          --from-file=log-library/cases/kubernetes_container/containerd/logs/example-json-logger-6b49dd876-xmr2j_default_logger-ebd483078a72e8c029757f27d872b238ac26e1d0c8c7d842415790c33cc24451.log \
-          --from-file=log-library/cases/kubernetes_container/containerd/logs/productcatalogservice-7cdd54f7c7-nbsgt_default_server-0a3bc17f1a059f850fc35b8b947fcb2f1a7a726b2574f48c973015e49df47e59.log
+          --from-file=log-library/cases/kubernetes_container/containerd/logs/emailservice-664c59564c-z68dv_default_server-e0a354870245741bc0c39b5fd16f20a9f716739353511f959adaa7cf098d7e94.log \
+          --from-file=log-library/cases/kubernetes_container/containerd/logs/multiline-664c59564c-z68dv_default_server-e0a354870245741bc0c39b5fd16f20a9f716739353511f959adaa7cf098d7e94.log \
+          --from-file=log-library/cases/kubernetes_container/containerd/logs/redis-cart-74594bd569-shdmv_default_redis-0200cf35b57a59dcadac5ffc3f46181dae92ffca9dc9915eeaf753af39af0188.log
 
     # local docker images can be used when minikube driver=none and imagePullPolicy: IfNotPresent
     - name: Generate Deployment Manifest
@@ -333,14 +333,14 @@ jobs:
                 args: ["--config", "/input/config/collector.yaml"]
                 volumeMounts:
                   - name: logs
-                    mountPath: /var/log/containers/adservice-5657f795f5-ql97m_default_server-2180fc6125cb444bd32be19cfa73e71a25e5d6c98b59b5191ee51fc6ff6c6723.log
-                    subPath: adservice-5657f795f5-ql97m_default_server-2180fc6125cb444bd32be19cfa73e71a25e5d6c98b59b5191ee51fc6ff6c6723.log
+                    mountPath: /var/log/containers/emailservice-664c59564c-z68dv_default_server-e0a354870245741bc0c39b5fd16f20a9f716739353511f959adaa7cf098d7e94.log
+                    subPath: emailservice-664c59564c-z68dv_default_server-e0a354870245741bc0c39b5fd16f20a9f716739353511f959adaa7cf098d7e94.log
                   - name: logs
-                    mountPath: /var/log/containers/example-json-logger-6b49dd876-xmr2j_default_logger-ebd483078a72e8c029757f27d872b238ac26e1d0c8c7d842415790c33cc24451.log
-                    subPath: example-json-logger-6b49dd876-xmr2j_default_logger-ebd483078a72e8c029757f27d872b238ac26e1d0c8c7d842415790c33cc24451.log
+                    mountPath: /var/log/containers/multiline-664c59564c-z68dv_default_server-e0a354870245741bc0c39b5fd16f20a9f716739353511f959adaa7cf098d7e94.log
+                    subPath: multiline-664c59564c-z68dv_default_server-e0a354870245741bc0c39b5fd16f20a9f716739353511f959adaa7cf098d7e94.log
                   - name: logs
-                    mountPath: /var/log/containers/productcatalogservice-7cdd54f7c7-nbsgt_default_server-0a3bc17f1a059f850fc35b8b947fcb2f1a7a726b2574f48c973015e49df47e59.log
-                    subPath: productcatalogservice-7cdd54f7c7-nbsgt_default_server-0a3bc17f1a059f850fc35b8b947fcb2f1a7a726b2574f48c973015e49df47e59.log
+                    mountPath: /var/log/containers/redis-cart-74594bd569-shdmv_default_redis-0200cf35b57a59dcadac5ffc3f46181dae92ffca9dc9915eeaf753af39af0188.log
+                    subPath: redis-cart-74594bd569-shdmv_default_redis-0200cf35b57a59dcadac5ffc3f46181dae92ffca9dc9915eeaf753af39af0188.log
               volumes:
                 - name: logs
                   configMap:
