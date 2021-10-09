@@ -57,9 +57,10 @@ jobs:
           --container-runtime=${{ matrix.container-runtime }}
 
         sleep 3
-        kubectl wait --for=condition=Ready --timeout=60s node/minikube
+        node=$(kubectl get node | grep control-plane | awk '{print $1}')
+        kubectl wait --for=condition=Ready --timeout=60s "node/${node}"
         kubectl describe nodes
-        kubectl get node
+        kubectl get node "${node}"
 
     - name: Generate Dockerfile
       run: |
