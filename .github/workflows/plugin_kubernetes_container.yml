@@ -79,8 +79,8 @@ jobs:
               - name: agent
                 image: agent:latest
                 imagePullPolicy: IfNotPresent
-                command: ["sh"]
-                args: ["-c", "/collector/collector", "--config", "/input/config/collector.yaml"]
+                command: ["/collector/collector"]
+                args: ["--config", "/input/config/collector.yaml"]
         EOF
 
     - name: Create Output Directory
