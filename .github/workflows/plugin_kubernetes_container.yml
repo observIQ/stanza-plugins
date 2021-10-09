@@ -62,9 +62,8 @@ jobs:
       run: |
         node=$(kubectl get node | grep -v NAME | awk '{print $1}')
         echo "waiting for node: ${node}"
-        kubectl wait --for=condition=Ready --timeout=60s "node/${node}"
-        kubectl describe nodes
         kubectl get node "${node}"
+        kubectl wait --for=condition=Ready --timeout=60s "node/${node}" || kubectl describe nodes && exit 1
 
     - name: Generate Dockerfile
       run: |
