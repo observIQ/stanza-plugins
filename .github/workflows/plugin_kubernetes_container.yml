@@ -34,7 +34,73 @@ jobs:
       run: |
         minikube start \
           --driver=none \
-          --kubernetes-version=v1.20.0
+          --kubernetes-version=v1.20.0 \
+          --container-runtime=docker
+        eval $(minikube docker-env)  
+
+    - name: Generate Dockerfile
+      run: |
+        cat <<- EOF > deploy.yaml
+        FROM ubuntu:20.04
+        WORKDIR /
+        RUN apt-get update >/dev/null
+        RUN apt-get install -y curl >/dev/null
+        RUN mkdir /collector
+        RUN curl -s -o collector/collector https://storage.googleapis.com/observiq-cloud/observiq-collector/0.0.10/collector_linux_amd64
+        RUN chmod +x collector/collector
+        EOF
+
+    - name: Build Image
+
+    - name: Generate Deployment Manifest
+      run: |
+        cat <<- EOF > deploy.yaml
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: agent
+          labels:
+            app: agent
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              app: agent
+          template:
+            metadata:
+              labels:
+                app: agent
+            spec:
+              containers:
+              - name: agent
+                image: agent:latest
+                command: ["sh"]
+                args: ["-c", "/collector/collector", "--config", "/input/config/collector.yaml"]
+          volumeMounts:
+            - mountPath: /input
+              name: input
+            - mountPath: /output
+              name: output
+            - mountPath: /plugins
+              name: plugins
+            - mountPath: /storage
+              name: storage
+        volumes:
+          # missing /var/log/containers, not sure how that should be solved at the moment, perhaps
+          # we mount individual files?
+          - name: input
+            hostPath:
+              path: $(pwd)/log-library/cases/kubernetes_container/default
+          - name: output
+            hostPath:
+              $(pwd)/output
+          - name: plugins
+            hostPath:
+              $(pwd)/plugins
+          - name: storage
+            hostPath:
+              $(pwd)/storage
+        EOF
 
     - name: Create Output Directory
       run: mkdir output
@@ -42,37 +108,22 @@ jobs:
     - name: Create Offset Database Directory
       run: mkdir -p storage
 
-    - name: Install Collector
-      run: |
-        mkdir -p collector
-        curl -s -o collector/collector https://storage.googleapis.com/observiq-cloud/observiq-collector/0.0.10/collector_linux_amd64
-        chmod +x collector/collector
-
-    # This plugin requires /var/log/containers
     - name: Run Agent
       run: |
-        docker run -d \
-          --name agent \
-          -v $(pwd)/collector:/collector \
-          -v $(pwd)/log-library/cases/kubernetes_container/default:/input \
-          -v $(pwd)/log-library/cases/kubernetes_container/default/logs:/var/log/containers \
-          -v $(pwd)/output:/output \
-          -v $(pwd)/plugins:/plugins \
-          -v $(pwd)/storage:/storage \
-          --entrypoint sh \
-          ubuntu:20.04 \
-          -c '/collector/collector --config /input/config/collector.yaml'
-        
-        sleep 1 && docker logs agent
+        kubectl apply -f deploy.yaml
+        kubectl wait --for=condition=ready pod -l app=agent 
+        sleep 2 && docker logs agent
 
     - name: Pause
       run: sleep 10
 
-    - name: Stop Stanza
-      run: docker kill agent
-
+    # Generally we want to stop the agent before stopping it however kubernetes will
+    # purge the log if we kill the pod
     - name: Dump Stanza Logs
-      run: docker logs agent
+      run: kubectl logs deploy/agent
+
+    - name: Stop Stanza
+      run: kubectl delete -f deploy.yaml
 
     - name: Get Output
       run: |
