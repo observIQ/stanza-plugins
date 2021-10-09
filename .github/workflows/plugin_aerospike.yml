@@ -14,7 +14,6 @@ jobs:
           - "${GITHUB_WORKFLOW}"
         format:
           - "default"
-          - "observiq"
     steps:
     - name: Clone stanza-plugins
       uses: actions/checkout@v2
