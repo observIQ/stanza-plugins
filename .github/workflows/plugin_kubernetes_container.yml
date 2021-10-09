@@ -76,30 +76,30 @@ jobs:
                 image: agent:latest
                 command: ["sh"]
                 args: ["-c", "/collector/collector", "--config", "/input/config/collector.yaml"]
-          volumeMounts:
-            - mountPath: /input
-              name: input
-            - mountPath: /output
-              name: output
-            - mountPath: /plugins
-              name: plugins
-            - mountPath: /storage
-              name: storage
-        volumes:
-          # missing /var/log/containers, not sure how that should be solved at the moment, perhaps
-          # we mount individual files?
-          - name: input
-            hostPath:
-              path: $(pwd)/log-library/cases/kubernetes_container/default
-          - name: output
-            hostPath:
-              $(pwd)/output
-          - name: plugins
-            hostPath:
-              $(pwd)/plugins
-          - name: storage
-            hostPath:
-              $(pwd)/storage
+                volumeMounts:
+                  - mountPath: /input
+                    name: input
+                  - mountPath: /output
+                    name: output
+                  - mountPath: /plugins
+                    name: plugins
+                  - mountPath: /storage
+                    name: storage
+              volumes:
+                # missing /var/log/containers, not sure how that should be solved at the moment, perhaps
+                # we mount individual files?
+                - name: input
+                  hostPath:
+                    path: $(pwd)/log-library/cases/kubernetes_container/default
+                - name: output
+                  hostPath:
+                    $(pwd)/output
+                - name: plugins
+                  hostPath:
+                    $(pwd)/plugins
+                - name: storage
+                  hostPath:
+                    $(pwd)/storage
         EOF
 
     - name: Create Output Directory
