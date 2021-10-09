@@ -2,11 +2,13 @@
 
 stanza-plugins contains plugins for the [Stanza Log Agent](https://github.com/observIQ/stanza)
 
-[![plugin_nginx](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_nginx.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_nginx.yml)
-[![plugin_kubernetes_container](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_kubernetes_container.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_kubernetes_container.yml)
-[![plugin_apache_http](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_apache_http.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_apache_http.yml)
-[![plugin_oracledb](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_oracledb.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_oracledb.yml)
-[![plugin_haproxy](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_haproxy.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_haproxy.yml)
+[![aerospike](https://github.com/observIQ/stanza-plugins/actions/workflows/aerospike.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/aerospike.yml)
+[![apache_combined](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_apache_combined.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_apache_combined.yml)
+[![apache_http](https://github.com/observIQ/stanza-plugins/actions/workflows/apache_http.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/apache_http.yml)
+[![haproxy](https://github.com/observIQ/stanza-plugins/actions/workflows/haproxy.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/haproxy.yml)
+[![kubernetes_container](https://github.com/observIQ/stanza-plugins/actions/workflows/kubernetes_container.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/kubernetes_container.yml)
+[![nginx](https://github.com/observIQ/stanza-plugins/actions/workflows/nginx.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/nginx.yml)
+[![oracledb](https://github.com/observIQ/stanza-plugins/actions/workflows/oracledb.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/oracledb.yml)
 
 ## Release Process
 
