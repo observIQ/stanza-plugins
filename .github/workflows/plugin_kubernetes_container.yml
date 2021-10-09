@@ -164,9 +164,6 @@ jobs:
                     name: logs
         EOF
 
-    - name: Create Output Directory
-      run: mkdir output
-
     - name: Run Agent
       timeout-minutes: 3
       run: |
@@ -191,6 +188,7 @@ jobs:
 
     - name: Get Output
       run: |
+        mkdir -p output
         pod=$(kubectl get pods | grep agent | awk '{print $1}')
         kubectl cp "${pod}:/output/out" output/out
         cat output/out
