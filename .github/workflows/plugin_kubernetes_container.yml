@@ -73,10 +73,12 @@ jobs:
         EOF
 
     - name: Build Image
-      timeout-minutes: 3
-      run: |
-        docker build . -t agent:latest
-        minikube image load agent:latest
+      timeout-minutes: 1
+      run: docker build . -t agent:latest
+
+    - name: Push Image to Minikube
+      timeout-minutes: 2
+      run: minikube image load agent:latest
 
     - name: Create Input Log ConfigMap
       run: |
