@@ -93,6 +93,7 @@ jobs:
         sleep 10 && kubectl get pods
         pod=$(kubectl get pods | grep agent | awk '{print $1}')
         kubectl describe pod "${pod}"
+        kubectl logs "${pod}"
     
     - name: Wait For Agent
       timeout-minutes: 3
