@@ -22,6 +22,11 @@ jobs:
         token: ${{ secrets.LOG_LIBRARY_ACCESS_TOKEN }}
         ref: otel
 
+    - name: Install Minikube
+      run: |
+        curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
     - name: Create Output Directory
       run: mkdir output
 
