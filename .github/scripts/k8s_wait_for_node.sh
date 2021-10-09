@@ -2,7 +2,7 @@
 
 set -eE
 
-NODE="$1"
+node="$1"
 
 fail () {
     kubectl describe nodes
