@@ -8,6 +8,7 @@ stanza-plugins contains plugins for the [Stanza Log Agent](https://github.com/ob
 [![apache_http](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_apache_http.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_apache_http.yml)
 [![cassandra](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_cassandra.yaml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_cassandra.yaml)
 [![codeigniter](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_codeigniter.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_codeigniter.yml)
+[![common_event_format](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_common_event_format.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_common_event_format.yml)
 [![haproxy](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_haproxy.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_haproxy.yml)
 [![kubernetes_container](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_kubernetes_container.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_kubernetes_container.yml)
 [![nginx](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_nginx.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_nginx.yml)
