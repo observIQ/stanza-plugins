@@ -1,9 +1,6 @@
-name: plugin_nginx
+name: nginx
 on:
   pull_request:
-    paths:
-      - ".github/workflows/plugin_nginx.yml"
-      - "plugins/nginx.yaml"
   push:
     branches:
       - master
@@ -14,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         plugin:
-          - "nginx"
+          - "${GITHUB_WORKFLOW}"
         format:
           - "default"
           - "observiq"

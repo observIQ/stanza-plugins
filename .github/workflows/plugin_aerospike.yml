@@ -1,4 +1,4 @@
-name: apache_http
+name: aerospike
 on:
   pull_request:
   push:

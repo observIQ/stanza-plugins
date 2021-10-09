@@ -1,9 +1,6 @@
-name: plugin_haproxy
+name: haproxy
 on:
   pull_request:
-    paths:
-      - ".github/workflows/plugin_haproxy.yml"
-      - "plugins/haproxy.yaml"
   push:
     branches:
       - master
@@ -14,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         plugin:
-          - "haproxy"
+          - "${GITHUB_WORKFLOW}"
         format:
           - "default"
           - "observiq"

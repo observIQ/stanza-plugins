@@ -1,9 +1,6 @@
-name: plugin_kubernetes_container
+name: kubernetes_container
 on:
   pull_request:
-    paths:
-      - ".github/workflows/plugin_kubernetes_container.yml"
-      - "plugins/kubernetes_container.yaml"
   push:
     branches:
       - master
@@ -14,7 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         plugin:
-          - "kubernetes_container"
+          - "${GITHUB_WORKFLOW}"
         k8s-version:
           - "v1.22.0"
           - "v1.21.0"
