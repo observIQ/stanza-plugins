@@ -20,6 +20,10 @@ jobs:
           - "v1.19.0"
           - "v1.18.0"
           - "v1.17.0"
+          - "v1.16.0"
+          - "v1.15.0"
+          - "v1.14.0"
+          - "v1.13.0"
         container-runtime:
           - "docker"
           - "containerd"
