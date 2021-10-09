@@ -12,7 +12,16 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        k8s-version: ["v1.20.0", "v1.19.0", "v1.18.0", "v1.17.0"]
+        k8s-version:
+          - "v1.22.0"
+          - "v1.21.0"
+          - "v1.20.0"
+          - "v1.19.0"
+          - "v1.18.0"
+          - "v1.17.0"
+        container-runtime:
+          - "docker"
+          - "containerd"
     steps:
     - name: Clone stanza-plugins
       uses: actions/checkout@v2
@@ -38,7 +47,7 @@ jobs:
         minikube start \
           --driver=none \
           --kubernetes-version=${{ matrix.k8s-version }} \
-          --container-runtime=docker
+          --container-runtime=${{ matrix.container-runtime }}
 
     - name: Generate Dockerfile
       run: |
