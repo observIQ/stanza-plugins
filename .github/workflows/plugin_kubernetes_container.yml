@@ -134,7 +134,6 @@ jobs:
       timeout-minutes: 3
       run: |
         kubectl rollout status -w deployment/agent   
-        sleep 2 && docker logs agent
 
     - name: Pause
       run: sleep 10
