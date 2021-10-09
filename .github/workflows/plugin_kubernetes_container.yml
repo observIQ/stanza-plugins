@@ -59,7 +59,7 @@ jobs:
     - name: Wait For Node Condition Ready
       timeout-minutes: 3
       run: |
-        node=$(kubectl get node | grep control-plane | awk '{print $1}')
+        node=$(kubectl get node | grep -v NAME | awk '{print $1}')
         echo "waiting for node: ${node}"
         kubectl wait --for=condition=Ready --timeout=60s "node/${node}"
         kubectl describe nodes
