@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - `cisco_meraki`: Removed `key_value_parser` due to some log entries not following needed pattern ([PR357](https://github.com/observIQ/stanza-plugins/pull/357))
 - `cisco_catalyst`: Fix parsing error when log messages start with syslog priority ([PR358](https://github.com/observIQ/stanza-plugins/pull/358))
+- `rsyslog`: Add file `source` option for log input ([PR362](https://github.com/observIQ/stanza-plugins/pull/362))
 
 ## [0.0.86] 2021-10-05
 
