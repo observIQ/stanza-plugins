@@ -1,5 +1,5 @@
 # Plugin Info
-version: 1.0.0
+version: 1.0.1
 title: Asterisk
 description: Log Parser for Asterisk
 min_stanza_version: 1.2.3
@@ -20,13 +20,12 @@ parameters:
     description: Specify the encoding of the file(s) being read. In most cases, you can leave the default option selected.
     type: enum
     valid_values:
-      - nop
       - utf-8
       - utf-16le
       - utf-16be
       - ascii
       - big5
-    default: nop
+    default: utf-8
     advanced_config: true
   - name: timestamp_format
     label: Timestamp Format
@@ -47,7 +46,7 @@ parameters:
     default: end
 # Set Defaults
 # {{$timestamp_format := default "ISO 8601" .timestamp_format}}
-# {{$encoding := default "nop" .encoding}}
+# {{$encoding := default "utf-8" .encoding}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
