@@ -1,5 +1,5 @@
 # Plugin Info
-version: 1.0.0
+version: 1.0.1
 title: File
 description: File Input Parser
 min_stanza_version: 0.13.12
@@ -33,13 +33,12 @@ parameters:
     description: Specify the encoding of the file(s) being read. In most cases, you can leave the default option selected.
     type: enum
     valid_values:
-      - nop
       - utf-8
       - utf-16le
       - utf-16be
       - ascii
       - big5
-    default: nop
+    default: utf-8
   - name: log_type
     label: Type
     description: Adds the specified 'Type' as a label to each log message.
@@ -56,7 +55,7 @@ parameters:
 # Set Defaults
 # {{$enable_multiline := default false .enable_multiline}}
 # {{$multiline_line_start_pattern := default "" .multiline_line_start_pattern}}
-# {{$encoding := default "nop" .encoding}}
+# {{$encoding := default "utf-8" .encoding}}
 # {{$log_type := default "file" .log_type}}
 # {{$start_at := default "end" .start_at}}
 
