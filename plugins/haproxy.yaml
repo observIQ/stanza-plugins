@@ -1,4 +1,4 @@
-version: 0.0.2
+version: 0.0.3
 title: HAProxy
 description: Log parser for HAProxy
 supported_platforms:
@@ -218,11 +218,11 @@ pipeline:
     if: '$record.move != nil'
     from: '$record.path'
     to: '$resource["path"]'
-  - id: query_parameters_move
+  - id: query_parameter_move
     type: move
-    if: '$record.query_parameters != nil'
-    from: '$record.query_parameters'
-    to: '$resource["query_parameters"]'
+    if: '$record.query_parameter != nil'
+    from: '$record.query_parameter'
+    to: '$resource["query_parameter"]'
   - id: frontend_name_move
     type: move
     if: '$record.frontend_name != nil'
