@@ -1,4 +1,4 @@
-version: 1.0.0
+version: 1.0.1
 title: Nginx
 description: Log parser for Nginx
 min_stanza_version: 0.13.12
@@ -92,13 +92,12 @@ parameters:
     description: Specify the encoding of the file(s) being read. In most cases, you can leave the default option selected.
     type: enum
     valid_values:
-      - nop
       - utf-8
       - utf-16le
       - utf-16be
       - ascii
       - big5
-    default: nop
+    default: utf-8
 
 # Set Defaults
 # {{$source := default "file" .source}}
@@ -111,7 +110,7 @@ parameters:
 # {{$enable_error_log := default true .enable_error_log}}
 # {{$error_log_path := default "/var/log/nginx/error.log*" .error_log_path}}
 # {{$start_at := default "end" .start_at}}
-# {{$encoding := default "nop" .encoding}}
+# {{$encoding := default "utf-8" .encoding}}
 
 # Pipeline Template
 pipeline:

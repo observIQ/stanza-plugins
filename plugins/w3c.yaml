@@ -1,5 +1,5 @@
 # Plugin Info
-version: 1.0.0
+version: 1.0.1
 title: W3C
 description: File Input W3C Parser
 min_stanza_version: 1.2.0
@@ -19,13 +19,12 @@ parameters:
     description: Specify the encoding of the file(s) being read. In most cases, you can leave the default option selected.
     type: enum
     valid_values:
-      - nop
       - utf-8
       - utf-16le
       - utf-16be
       - ascii
       - big5
-    default: nop
+    default: utf-8
   - name: log_type
     label: Type
     description: Adds the specified 'Type' as a label to each log message.
@@ -89,7 +88,7 @@ parameters:
     type: string
     default: "\t"
 # Set Defaults
-# {{$encoding := default "nop" .encoding}}
+# {{$encoding := default "utf-8" .encoding}}
 # {{$log_type := default "w3c" .log_type}}
 # {{$start_at := default "end" .start_at}}
 # {{$delete_after_read := default false .delete_after_read}}
