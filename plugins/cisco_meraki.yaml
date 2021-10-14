@@ -90,18 +90,30 @@ pipeline:
     type: regex_parser
     parse_from: $body.message
     regex: '^src=(?P<src>[^\s]*)\s*dst=(?P<dst>[^\s]*)\s*protocol=(?P<protocol>[^\s]*)\s*sport=(?P<sport>[^\s]*)\s*dport=(?P<dport>[^\s]*)\s*translated_src_ip=(?P<translated_src_ip>[^\s]*)\s*translated_port=(?P<translated_port>[^\s]*)\s*(?P<message>[\s\S]*)'
-    output: {{.output}}
+    output: src_parser
 
   - id: message_2_parser
     type: regex_parser
     parse_from: $body.message
     regex: '^src=(?P<src>[^\s]*)\s*dst=(?P<dst>[^\s]*)\s*mac=(?P<mac>[^\s]*)\s*protocol=(?P<protocol>[^\s]*)\s*sport=(?P<sport>[^\s]*)\s*dport=(?P<dport>[^\s]*)\s*(?P<message>[\s\S]*)'
-    output: {{.output}}
+    output: src_parser
 
   - id: message_3_parser
     type: regex_parser
     parse_from: $body.message
     regex: '^src=(?P<src>[^\s]*)\s*dst=(?P<dst>[^\s]*)\s*mac=(?P<mac>[^\s]*)\s*user=(?P<user>[^\s]*)\s*(?P<message>[\s\S]*)'
+    output: src_parser
+
+  - id: src_parser
+    type: regex_parser
+    parse_from: $body.src
+    regex: '(?P<src_ip>.*):(?P<src_port>[0-9]+)'
+    output: dst_parser
+
+  - id: dst_parser
+    type: regex_parser
+    parse_from: $body.dst
+    regex: '(?P<dst_ip>.*):(?P<dst_port>[0-9]+)'
     output: {{.output}}
 
   - id: catch_all_parser
