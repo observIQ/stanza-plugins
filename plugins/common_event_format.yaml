@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.2
+version: 0.0.3
 title: Common Event Format
 description: File Input Common Event Format Parser
 min_stanza_version: 1.2.7
@@ -23,7 +23,7 @@ parameters:
     label: Type
     description: Adds the specified 'Type' as a label to each log message.
     type: string
-    default: json
+    default: cef
   - name: location
     label: Geographic Location
     description: The geographic location (timezone) to use when parsing logs that contain a timestamp
