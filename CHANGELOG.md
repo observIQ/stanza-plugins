@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.88] Unreleased
 
+### Changed
+
+- `rsyslog`: Add file `source` option for log input ([PR362](https://github.com/observIQ/stanza-plugins/pull/362))
+
 ### Fixed
 
 - `haproxy`: Fixed typo with field name `query_parameter` ([PR368](https://github.com/observIQ/stanza-plugins/pull/368))
