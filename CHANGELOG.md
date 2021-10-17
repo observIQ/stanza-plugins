@@ -5,13 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.87] Unreleased
+## [0.0.88] Unreleased
+
+### Changed
+
+- `rsyslog`: Add file `source` option for log input ([PR362](https://github.com/observIQ/stanza-plugins/pull/362))
+
+### Fixed
+
+- `haproxy`: Fixed typo with field name `query_parameter` ([PR368](https://github.com/observIQ/stanza-plugins/pull/368))
+
+## [0.0.87] 2021-10-11
 
 ### Changed
 
 - `cisco_meraki`: Removed `key_value_parser` due to some log entries not following needed pattern ([PR357](https://github.com/observIQ/stanza-plugins/pull/357))
 - `cisco_catalyst`: Fix parsing error when log messages start with syslog priority ([PR358](https://github.com/observIQ/stanza-plugins/pull/358))
-- `rsyslog`: Add file `source` option for log input ([PR362](https://github.com/observIQ/stanza-plugins/pull/362))
+- Default plugins which `file_input` to use `utf-8` as a default rather than `nop` and removed `nop` as an option. Plugins affected: `asterisk, csv, file, nginx, tail, w3c`.  
 
 ## [0.0.86] 2021-10-05
 
