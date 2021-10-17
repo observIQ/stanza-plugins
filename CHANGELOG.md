@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `haproxy`: Fixed typo with field name `query_parameter` ([PR368](https://github.com/observIQ/stanza-plugins/pull/368))
+- `cisco_catalyst`: Fix timestamp parse issue with `*` in front of timestamp. ([PR375](https://github.com/observIQ/stanza-plugins/pull/375))
 
 ## [0.0.87] 2021-10-11
 
