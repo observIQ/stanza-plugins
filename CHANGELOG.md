@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.88] Unreleased
 
+### Changed
+
+- `cisco_meraki`: Add additonal message parser ([PR376](https://github.com/observIQ/stanza-plugins/pull/376))
+
 ### Fixed
 
 - `haproxy`: Fixed typo with field name `query_parameter` ([PR368](https://github.com/observIQ/stanza-plugins/pull/368))
