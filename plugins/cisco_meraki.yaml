@@ -1,5 +1,5 @@
 # Plugin Info
-version: 1.0.1
+version: 1.0.2
 title: Cisco Meraki
 description: Log parser for Cisco Meraki
 min_stanza_version: 1.2.7
@@ -85,6 +85,8 @@ pipeline:
         output: message_2_parser
       - expr: '$body.message matches "^src=.*\\s*dst=.*\\s*mac=.*\\s*user=.*\\s*"'
         output: message_3_parser
+      - expr: '$body.message matches "^src=.*\\s*dst=.*\\s*mac=.*\\s*"'
+        output: message_4_parser
 
   - id: message_1_parser
     type: regex_parser
@@ -102,6 +104,12 @@ pipeline:
     type: regex_parser
     parse_from: $body.message
     regex: '^src=(?P<src>[^\s]*)\s*dst=(?P<dst>[^\s]*)\s*mac=(?P<mac>[^\s]*)\s*user=(?P<user>[^\s]*)\s*(?P<message>[\s\S]*)'
+    output: src_parser
+
+  - id: message_4_parser
+    type: regex_parser
+    parse_from: $body.message
+    regex: '^src=(?P<src>[^\s]*)\s*dst=(?P<dst>[^\s]*)\s*mac=(?P<mac>[^\s]*)\s*(?P<message>[\s\S]*)'
     output: src_parser
 
   - id: src_parser
