@@ -53,6 +53,7 @@ pipeline:
       - '/var/log/containers/{{ $pod_name }}-*_{{ $container_name }}-*.log'
     exclude:
       - '/var/log/containers/kube*'
+      - '/var/log/containers/observiq-agent*' # Ignore agent container logs
     # {{ range $index, $element := .exclude }}
       - {{ $element }}
     # {{ end }}
