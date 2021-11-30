@@ -264,7 +264,6 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%y%m%d  %H:%M:%S'
-      severity:
     severity:
       parse_from: level
       mapping:
