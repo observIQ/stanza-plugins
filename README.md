@@ -28,7 +28,7 @@ Maintainers can create a release using the GitHub UI by creating a release that 
 * Descriptions should offer additional information on proper configuration.
   * Listen IP
     * BAD: A syslog ip address of the form `<ip>`
-    * GOOD: Typically 0.0.0.0 for most configurations.
+   * GOOD: A network interface for the agent to bind. Typically 0.0.0.0 for most configurations.
 * No markdown or markup (e.g. HTML).
   * Listen IP
     * BAD: A syslog ip address of the form `<ip>`
