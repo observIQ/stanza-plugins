@@ -18,7 +18,7 @@ parameters:
     default: file
   - name: log_format
     label: Log Format
-    description:  When choosing the 'default' option, the agent will expect and parse logs in a format that matches the default logging configuration. When choosing the 'observIQ' option, the agent will expect and parse logs in an optimized JSON format that adheres to the observIQ specification, requiring an update to the nginx.conf file. See the NGINX source page for more information.
+    description: The observIQ setting expects an optimized JSON format and will require changes to the nginx.conf file. See the Nginx Source docs for more info.
     type: enum
     valid_values:
       - default

@@ -18,7 +18,7 @@ parameters:
     default: udp
   - name: protocol
     label: Protocol
-    description: The protocol of received Rsyslog messages (`rfc3164` or `rfc5424`)
+    description: rfc5424 is the newer and more common format for syslog messages.
     type: enum
     valid_values:
       - rfc3164 (BSD)
@@ -36,7 +36,7 @@ parameters:
     advanced_config: true
   - name: listen_ip
     label: Listen IP
-    description: A syslog ip address of the form `<ip>`
+    description: Typically 0.0.0.0 for most configurations.
     type: string
     default: "0.0.0.0"
     advanced_config: true

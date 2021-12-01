@@ -2,25 +2,25 @@ version: 0.0.16
 title: Kubernetes Container
 description: Log parser for Kubernetes
 min_stanza_version: 0.9.8
-supported_platforms: 
+supported_platforms:
   - kubernetes
 parameters:
   - name: cluster_name
     label: Cluster Name
-    description: 'Cluster Name to be added to a resource label'
+    description: Cluster Name to be added to a resource label
     type: string
   - name: pod_name
     label: Pod Name
-    description: "The name of the pod to collect logs from"
+    description: Specify a single name or use * to collect logs from all pods.
     type: string
     default: "*"
   - name: container_name
     label: Container Name
-    description: "The name of the container to collect logs from"
+    description: Specify a single name or use * to collect logs from all containers.
     type: string
     default: "*"
   - name: exclude
-    label: Exclude files
+    label: Exclude Files
     description: A pattern of files to exclude
     type: strings
     required: false
@@ -31,7 +31,7 @@ parameters:
     default: true
   - name: start_at
     label: Start At
-    description: "Start reading file from 'beginning' or 'end'"
+    description: Start reading file from 'beginning' or 'end'
     type: enum
     valid_values:
       - beginning
@@ -74,7 +74,7 @@ pipeline:
 
   # Parse containerd log from $record
   - id: containerd_parser
-    type: regex_parser 
+    type: regex_parser
     regex: '^(?P<time>[^\s]+) (?P<stream>\w+) (?P<partial>\w) (?P<log>.*)'
 
   # Recombine multiline containerd log messages
