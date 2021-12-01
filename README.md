@@ -28,11 +28,11 @@ Maintainers can create a release using the GitHub UI by creating a release that 
 * Descriptions should offer additional information on proper configuration.
   * Listen IP
     * BAD: A syslog ip address of the form `<ip>`
-   * GOOD: A network interface for the agent to bind. Typically 0.0.0.0 for most configurations.
+    * GOOD: A network interface for the agent to bind. Typically 0.0.0.0 for most configurations.
 * No markdown or markup (e.g. HTML).
   * Listen IP
     * BAD: A syslog ip address of the form `<ip>`
-    * GOOD: Typically 0.0.0.0 for most configurations.
+    * GOOD: A network interface for the agent to bind. Typically 0.0.0.0 for most configurations.
 * Try to use 180 characters or less.
   * Log Format
     * BAD: When choosing the 'default' option, the agent will expect and parse logs in a format that matches the default logging configuration. When choosing the 'observIQ' option, the agent will expect and parse logs in an optimized JSON format that adheres to the observIQ specification, requiring an update to the nginx.conf file. See the NGINX source page for more information.
