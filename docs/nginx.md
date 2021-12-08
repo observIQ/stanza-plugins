@@ -22,7 +22,7 @@ The `nginx` plugin consumes [nginx](https://www.nginx.com/) log entries from the
 | `start_at`          | `beginning`                  | Start reading file from 'beginning' or 'end' |
 | `encoding`          | `utf-8`                      | Specify the encoding of the file(s) being read. In most cases, you can leave the default option selected. |
 | `cluster_name`      | `""`                         | Cluster name to be added as a resource label. Used when source is set to kubernetes |
-| `pod_name`          | `nginx-*`                    | The pod name without the unique identifier on the end. It should match the deployment, daemonset, statefulset or other resource name. Used when source is set to kubernetes |
+| `pod_name`          | `nginx`                      | The pod name without the unique identifier on the end. It should match the deployment, daemonset, statefulset or other resource name. Used when source is set to kubernetes |
 | `container_name`    | `*`                          | The container name, useful if the pod has more than one container. Used when source is set to kubernetes |
 
 ### Log Format

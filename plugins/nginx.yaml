@@ -36,7 +36,7 @@ parameters:
     label: Pod Name
     description: The pod name without the unique identifier on the end. It should match the deployment, daemonset, statefulset or other resource name. Used when source is set to kubernetes.
     type: string
-    default: 'nginx-*'
+    default: 'nginx'
     relevant_if:
       source:
         equals: kubernetes
@@ -102,7 +102,7 @@ parameters:
 # {{$source := default "file" .source}}
 # {{$log_format := default "default" .log_format}}
 # {{$cluster_name := default "" .cluster_name}}
-# {{$pod_name := default "nginx-*" .pod_name}}
+# {{$pod_name := default "nginx" .pod_name}}
 # {{$container_name := default "*" .container_name}}
 # {{$enable_access_log := default true .enable_access_log}}
 # {{$access_log_path := default "/var/log/nginx/access.log*" .access_log_path}}
