@@ -2,6 +2,10 @@
 version: 0.0.9
 title: Syslog
 description: Log parser for Syslog
+supported_platforms:
+  - linux
+  - windows
+  - macos
 parameters:
   - name: listen_port
     label: Listen Port
