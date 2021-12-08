@@ -1,8 +1,8 @@
+[![Test Config](https://github.com/observIQ/stanza-plugins/actions/workflows/config.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/config.yml)
+
 # stanza-plugins
 
 stanza-plugins contains plugins for the [Stanza Log Agent](https://github.com/observIQ/stanza)
-
-[![Status](https://github.com/observIQ/stanza-plugins/workflows/Test/badge.svg)](https://github.com/observIQ/stanza-plugins/Test)
 
 ## Release Process
 

@@ -1,7 +1,12 @@
 # Plugin Info
-version: 0.0.7
+version: 0.0.9
 title: Cisco Meraki
 description: Log parser for Cisco Meraki
+min_stanza_version: 1.2.7
+supported_platforms:
+  - linux
+  - windows
+  - macos
 parameters:
   - name: listen_port
     label: Listen Port
@@ -42,12 +47,12 @@ pipeline:
     type: router
     default: catch_all_parser
     routes:
-      - expr: '$record matches ".*=[\\s\\S]*"'
+      - expr: '$record matches "^<[^>]+>[\\d]+\\s+[\\d\\.]+\\s+[^\\s]+\\s+[^\\s]+\\s+[\\s\\S]*"'
         output: meraki_parser
 
   - id: meraki_parser
     type: regex_parser
-    regex: '^<(?P<priority>[^>]+)>(?P<version>[\d]+)\s*(?P<timestamp>[^\s]*)\s*(?P<hostname>[^\s]*)\s*(?P<app_name>[^\s]*)\s*(?P<message>[\s\S]*)'
+    regex: '^<(?P<priority>[^>]+)>(?P<version>[\d]+)\s*(?P<timestamp>[\d\.]*)\s*(?P<hostname>[^\s]*)\s*(?P<app_name>[^\s]*)\s*(?P<message>[\s\S]*)'
     timestamp:
       parse_from: timestamp
       layout_type: epoch
@@ -56,6 +61,7 @@ pipeline:
 
   # Severity Parser using piority field to get the severity
   - type: severity_parser
+    if: '$record.priority != nil'
     parse_from: $record.priority
     mapping:
       emergency: [0,8,16,24,32,40,48,56,64,72,80,88,96,104,112,120,128,136,144,152,160,168,176,184]
@@ -99,6 +105,7 @@ pipeline:
     output: {{.output}}
 
   - id: catch_all_parser
+    if: '$record matches "^<[\\d]+>"'
     type: regex_parser
     regex: '^<(?P<priority>[^>]+)>(\s*)?(?P<message>[\s\S]*)'
     output: severity_parser

@@ -1,0 +1,195 @@
+# Plugin Info
+version: 0.0.2
+title: HTTP
+description: HTTP Input
+min_stanza_version: 1.2.10
+parameters:
+  - name: listen_port
+    label: Listen Port
+    description: A port which the agent will listen for http messages
+    type: int
+    required: true
+  - name: log_type
+    label: Type
+    description: Adds the specified 'Type' as a label to each log message.
+    type: string
+    default: http
+  - name: listen_ip
+    label: Listen IP
+    description: A ip address of the form `<ip>`
+    type: string
+    default: "0.0.0.0"
+    advanced_config: true
+  - name: idle_timeout
+    label: Idle Timeout
+    description: Sets idle timeout.
+    type: string
+    default: "60s"
+    advanced_config: true
+  - name: read_timeout
+    label: Read Timeout
+    description: Sets read timeout.
+    type: string
+    default: "20s"
+    advanced_config: true
+  - name: write_timeout
+    label: Write Timeout
+    description: Sets write timeout.
+    type: string
+    default: "20s"
+    advanced_config: true
+  - name: max_header_size	
+    label: Max Header Size
+    description: Sets maximum header size.
+    type: string
+    default: "1mb"
+    advanced_config: true
+  - name: max_body_size
+    label: Max Body Size
+    description: Sets maximum body size accepted.
+    type: string
+    default: "10mb"
+    advanced_config: true
+  - name: enable_tls
+    label: Enable TLS
+    description: Enable TLS for the HTTP listener
+    type: bool
+    default: false
+    advanced_config: true
+  - name: certificate_file
+    label: TLS certificate path
+    description: File path for the X509 TLS certificate chain
+    type: string
+    default: "/opt/cert"
+    relevant_if:
+      enable_tls:
+        equals: true
+    advanced_config: true
+  - name: private_key_file
+    label: TLS private key path
+    description: File path for the X509 TLS certificate chain
+    type: string
+    default: "/opt/key"
+    relevant_if:
+      enable_tls:
+        equals: true
+    advanced_config: true
+  - name: min_version
+    label: TLS Minimum Version
+    description: 	Minimum TLS version to accept connections
+    type: enum
+    valid_values:
+    - "1.1"
+    - "1.2"
+    - "1.3"
+    default: "1.2"
+    relevant_if:
+      enable_tls:
+        equals: true
+    advanced_config: true
+  - name: enable_basic_auth
+    label: Enable Basic Authentication
+    description: Enable Username and Password authentication
+    type: bool
+    default: false
+    advanced_config: true
+  - name: username
+    label: Username
+    description: Username to use for basic authentication
+    type: string
+    default: "user"
+    relevant_if:
+      enable_basic_auth:
+        equals: true
+    advanced_config: true
+  - name: password
+    label: Password
+    description: Password to use for basic authentication
+    type: string
+    default: "password"
+    relevant_if:
+      enable_basic_auth:
+        equals: true
+    advanced_config: true
+  - name: enable_header_auth
+    label: Enable Header Authentication
+    description: Enable token authentication.
+    type: bool
+    default: false
+    advanced_config: true
+  - name: auth_header
+    label: Authentication Header
+    description:  Authentication header, a header that contains a token that matches one of the configured tokens
+    type: string
+    default: ""
+    relevant_if:
+      enable_header_auth:
+        equals: true
+    advanced_config: true
+  - name: tokens
+    label: Authentication Tokens
+    description: An array of token values, used to compare against the value found in the header defined with the Authentication Header
+    type: strings
+    default: []
+    relevant_if:
+      enable_header_auth:
+        equals: true
+    advanced_config: true
+
+# Set Defaults
+# {{$listen_ip := default "0.0.0.0" .listen_ip}}
+# {{$listen_port := .listen_port}}
+# {{$log_type := default "http" .log_type}}
+# {{$idle_timeout := default "60s" .idle_timeout}}
+# {{$read_timeout := default "20s" .read_timeout}}
+# {{$write_timeout := default "20s" .write_timeout}}
+# {{$max_header_size := default "1mb" .max_header_size}}
+# {{$max_body_size := default "10mb" .max_body_size}}
+# {{$enable_tls := default false .enable_tls}}
+# {{$certificate_file := default "/opt/cert" .certificate_file}}
+# {{$private_key_file := default "/opt/key" .private_key_file}}
+# {{$min_version := default "1.2" .min_version}}
+# {{$enable_basic_auth := default false .enable_basic_auth}}
+# {{$username := default "" .username}}
+# {{$password := default "" .password}}
+# {{$enable_header_auth := default false .enable_header_auth}}
+# {{$auth_header := default "" .auth_header}}
+# Pipeline Template
+pipeline:
+  - type: http_input
+    listen_address: '{{ $listen_ip }}:{{ $listen_port }}'
+    labels:
+      log_type: {{$log_type}}
+      plugin_id: {{ .id }}
+    idle_timeout: {{$idle_timeout}}
+    read_timeout: {{$read_timeout}}
+    write_timeout: {{$write_timeout}}
+    max_header_size: {{$max_header_size}}
+    max_body_size: {{$max_body_size}}
+    # {{ if $enable_basic_auth }}
+    auth:
+      username: {{$username}}
+      password: {{$password}}
+    # {{ else if $enable_header_auth }}
+    auth:
+      token_header: {{$auth_header}}
+      tokens:
+      # {{ range $i, $tok := .tokens  }}
+        - '{{ $tok }}'
+      # {{ end }}
+    # {{ end }}
+    # {{ if $enable_tls }} 
+    tls:
+      enable: {{ $enable_tls }}
+      certificate: {{ $certificate_file }}
+      private_key: {{ $private_key_file }}
+      min_version: {{$min_version}}
+    # {{ end }}
+    write_to: http_body
+    output: move
+
+  - type: move
+    if: '$record.http_body.message != nil'
+    from: $record.http_body.message
+    to: $record.message
+    output: {{.output}}

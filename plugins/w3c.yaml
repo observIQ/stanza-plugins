@@ -1,8 +1,8 @@
 # Plugin Info
-version: 0.0.2
+version: 0.0.4
 title: W3C
 description: File Input W3C Parser
-min_stanza_version: 1.2.0
+min_stanza_version: 1.2.12
 parameters:
   - name: file_log_path
     label: File Path
@@ -19,13 +19,12 @@ parameters:
     description: Specify the encoding of the file(s) being read. In most cases, you can leave the default option selected.
     type: enum
     valid_values:
-      - nop
       - utf-8
       - utf-16le
       - utf-16be
       - ascii
       - big5
-    default: nop
+    default: utf-8
   - name: log_type
     label: Type
     description: Adds the specified 'Type' as a label to each log message.
@@ -89,7 +88,7 @@ parameters:
     type: string
     default: "\t"
 # Set Defaults
-# {{$encoding := default "nop" .encoding}}
+# {{$encoding := default "utf-8" .encoding}}
 # {{$log_type := default "w3c" .log_type}}
 # {{$start_at := default "end" .start_at}}
 # {{$delete_after_read := default false .delete_after_read}}
@@ -141,37 +140,13 @@ pipeline:
   - type: filter
     expr: '$record matches "^#"'
 
-  - type: router
-    default: csv_parser
-    routes:
-      - output: quote_handler_parser
-        expr: $record matches '.*".*".*' and not ($record matches "^#")
-
-  # Some example log entries have quotes. This will cause an error.
-  # This parses first set of quotes. If more than one set of quotes exist then it will still error.
-  # All examples from logs seen at time of this comment have only contained one set of quotes.
-  # Example:
-  # #Fields: date time c-ip cs-username s-sitename s-computername s-ip s-port cs-method cs-uri-stem cs-uri-query sc-status sc-win32-status sc-bytes cs-bytes time-taken cs-version cs-host cs(User-Agent) cs(Cookie) cs(Referer)
-  # 2021-06-14 18:36:47 0.0.0.0 OutboundConnectionResponse SMTPSVC1 TSIC-PHOENIX - 25 - - 354+3.0.0+continue.++finished+with+"\r\n.\r\n" 0 0 46 0 531 SMTP - - - -
-  - id: quote_handler_parser
-    type: regex_parser
-    parse_from: $record
-    regex: '(?P<message1>[^"]*)(?P<first_quote>[\"])(?P<message2>[^"]*)(?P<second_quote>[\"])(?P<message3>.*)'
-    output: quote_handler_restructurer
-
-  # This will remove the first set of parsed quotes.
-  - id: quote_handler_restructurer
-    type: add
-    field: $record
-    value: 'EXPR($record.message1 + $record.message2 + $record.message3)'
-    output: csv_parser
-
   # Leverage CSV parser's dynamic field name detection by specifying
   # delimiter, header_delimiter, and header_label
   - type: csv_parser
     delimiter: '{{ $delimiter }}'
     header_delimiter: '{{ $header_delimiter }}'
     header_label: '{{ $fields_header }}'
+    lazy_quotes: true
 
   - type: remove
     field: '$labels.{{ $fields_header }}'

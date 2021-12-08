@@ -108,6 +108,13 @@ pipeline:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%sZ'
 
+  - id : slow_query_extra_fields_parser
+    type: regex_parser
+    regex:  '(?:Thread_id:\s+(?P<thread_id>\d+))?(?:\s+Errno:\s(?P<errorNumber>\d+))?(?:\s+Killed:\s(?P<killed>\d+))?(?:\s+Bytes_received:\s(?P<bytesReceived>\d+))?(?:\s+Bytes_sent:\s(?P<bytesSent>\d+))?(?:\s+Read_first:\s(?P<readFirst>\d+))?(?:\s+Read_last:\s(?P<readLast>\d+))?(?:\s+Read_key:\s(?P<readKey>\d+))?(?:\s+Read_next:\s(?P<readNext>\d+))?(?:\s+Read_prev:\s(?P<readPrev>\d+))?(?:\s+Read_rnd:\s(?P<readRnd>\d+))?(?:\s+Read_rnd_next:\s(?P<readRndNext>\d+))?(?:\s+Sort_merge_passes:\s(?P<sortMergePasses>\d+))?(?:\s+Sort_range_count:\s(?P<sortRangeCount>\d+))?(?:\s+Sort_rows:\s(?P<sortRows>\d+))?(?:\s+Sort_scan_count:\s(?P<sortScanCount>\d+))?(?:\s+Created_tmp_disk_tables:\s(?P<createdTmpDiskTables>\d+))?(?:\s+Created_tmp_tables:\s(?P<createdTmpTables>\d+))?(?:\s+Start:\s(?P<startTime>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z))?(?:\s+End:\s(?P<endTime>\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z))?(?P<query>(?s).*[^\s])'
+    parse_from: $record.query
+    if : $record.query contains "Thread_id"
+
+
   - id: slow_query_sql_command_router
     type: router
     default: {{.output}}
@@ -213,7 +220,7 @@ pipeline:
       - {{ $error_log_path }}
     start_at: {{ $start_at }}
     multiline:
-      line_start_pattern: \d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z
+      line_start_pattern: '\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+Z'
     labels:
       log_type: 'mysql.error'
       plugin_id: {{ .id }}
@@ -246,34 +253,38 @@ pipeline:
 
   - id: single_quote_router
     type: router
-    default: mariadb_audit_csv_parser
+    default: mariadb_audit_regex_parser_lt
     routes:
-      - expr: $record matches ".*\\'.*\\'.*"
-        output: single_quote_parser
+      - expr: $record matches '^(?P<time>\\d{6})'
+        output: mariadb_audit_regex_parser_gt
 
-  - id: single_quote_parser
+  - id: mariadb_audit_regex_parser_gt
     type: regex_parser
-    parse_from: $record
-    regex: "(?P<message1>.*)(?P<single_quote1>')(?P<query_message>.*)(?P<single_quote2>')(?P<message2>.*)"
-    output: single_quote_restructurer
-
-  - id: single_quote_restructurer
-    type: restructure
-    ops:
-      - add:
-          field: $record
-          value_expr: "$record.message1 + '\"' + $record.query_message + '\"' + $record.message2"
-    output: mariadb_audit_csv_parser
-
-  - id: mariadb_audit_csv_parser
-    type: csv_parser
-    header: "timestamp,host,dbuser,client_address,connection_id,query_id,operation,dbname,object,retcode"
-    delimiter: ","
+    regex: '^(?P<timestamp>\d{6} \d{2}:\d{2}:\d{2})\s+\[(?P<level>[^\]]+)]\s+(?P<message>.*)$'
     timestamp:
       parse_from: timestamp
-      layout: '%Y%m%d %H:%M:%S'
+      layout: '%y%m%d  %H:%M:%S'
+    severity:
+      parse_from: level
+      mapping:
+        notice:
+          - note
+    output: {{ .output }}
+
+  - id: mariadb_audit_regex_parser_lt
+    type: regex_parser
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})(?:\s+(?P<tid>\d+))?(?:\s+\[(?P<level>[^\]]+)])?\s+(?P<message>.*)$'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%d %H:%M:%S'
+    severity:
+      parse_from: level
+      mapping:
+        notice:
+          - note
     output: {{ .output }}
   # {{ end }}
+
 
   # {{ if $enable_general_log }}
   - id: general_query_reader
