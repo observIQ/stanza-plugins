@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.9
+version: 0.0.10
 title: Syslog
 description: Log parser for Syslog
 supported_platforms:
