@@ -1,4 +1,4 @@
-version: 0.0.14
+version: 0.0.15
 title: Nginx
 description: Log parser for Nginx
 min_stanza_version: 0.13.12
@@ -9,8 +9,8 @@ supported_platforms:
   - kubernetes
 parameters:
   - name: source
-    label: Log source
-    description: Use this field to specify where your logs are coming from. When choosing the 'file' option, the agent reads in logs from the log paths specified below.  When choosing the 'Kubernetes' options, the agent reads logs from /var/log/containers based on the Pod and Container specified below.
+    label: Log Source
+    description: Specifies where the logs are located. When choosing the 'file' option, the agent reads logs from the log path(s) specified. When choosing the 'Kubernetes' option, logs are read from /var/log/containers based on the Pod and Container specified.
     type: enum
     valid_values:
       - file
@@ -18,7 +18,7 @@ parameters:
     default: file
   - name: log_format
     label: Log Format
-    description:  When choosing the 'default' option, the agent will expect and parse logs in a format that matches the default logging configuration. When choosing the 'observIQ' option, the agent will expect and parse logs in an optimized JSON format that adheres to the observIQ specification, requiring an update to the nginx.conf file. See the NGINX source page for more information.
+    description: Specifies the format of the access log entries. When choosing 'default', the agent will expect the log entries to match the default nginx log format. When choosing 'observiq', the agent will expect the log entries to match an optimized JSON format that adheres to the observIQ specification. See the Nginx documentation for more information. 
     type: enum
     valid_values:
       - default
@@ -26,7 +26,7 @@ parameters:
     default: default
   - name: cluster_name
     label: Cluster Name
-    description: 'Cluster Name to be added to a resource label'
+    description: Cluster name to be added as a resource label. Used when source is set to kubernetes.
     type: string
     default: ""
     relevant_if:
@@ -34,16 +34,15 @@ parameters:
         equals: kubernetes
   - name: pod_name
     label: Pod Name
-    description: The pod name (without the unique identifier on the end)
+    description: The pod name without the unique identifier on the end. It should match the deployment, daemonset, statefulset or other resource name. Used when source is set to kubernetes.
     type: string
     default: 'nginx-*'
-    required: true
     relevant_if:
       source:
         equals: kubernetes
   - name: container_name
     label: Container Name
-    description: The container name of the Nginx container
+    description: The container name, useful if the pod has more than one container. Used when source is set to kubernetes.
     type: string
     default: "*"
     relevant_if:
@@ -51,12 +50,12 @@ parameters:
         equals: kubernetes
   - name: enable_access_log
     label: Access Logs
-    description: Enable to collect Nginx access logs
+    description: Enable access log collection.
     type: bool
     default: true
   - name: access_log_path
     label: Access Log Path
-    description: Path to access log file
+    description: Path to access log file.
     type: string
     default: "/var/log/nginx/access.log*"
     relevant_if:
@@ -66,12 +65,12 @@ parameters:
         equals: true
   - name: enable_error_log
     label: Error Logs
-    description: Enable to collect Nginx error logs
+    description: Enable error log collection.
     type: bool
     default: true
   - name: error_log_path
     label: Error Log Path
-    description: Path to error log file
+    description: Path to error log file.
     type: string
     default: "/var/log/nginx/error.log*"
     relevant_if:
@@ -81,7 +80,7 @@ parameters:
         equals: true
   - name: start_at
     label: Start At
-    description: Start reading file from 'beginning' or 'end'
+    description: Start reading file from 'beginning' or 'end'.
     type: enum
     valid_values:
       - beginning
