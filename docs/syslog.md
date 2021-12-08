@@ -9,7 +9,7 @@ The `syslog` plugin receives [syslog](https://en.wikipedia.org/wiki/Syslog) from
 | `listen_port`      | `514`            | Network port to listen on                                                              |                                                     
 | `listen_ip`        | `0.0.0.0`        | A network interface for the agent to bind. Typically 0.0.0.0 for most configurations.  |
 | `connection_type`  | `udp`            | Transport protocol to use (`udp` or `tcp`)                                             |
-| `protocol`         | `rfc5424 (IETF)` | Protocol of received syslog messages (`rfc3164` or `rfc5424`)                          |
+| `protocol`         | `rfc5424 (IETF)` | Protocol of received syslog messages (`rfc3164 (BSD)` or `rfc5424 (IETF)`)             |
 | `location`         | `UTC`            | [Geographic location (timezone)](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) to use when [parsing the timestamp](https://github.com/observIQ/stanza/blob/master/docs/types/timestamp.md) (Syslog RFC 3164 only) |
 
 ### Example usage:

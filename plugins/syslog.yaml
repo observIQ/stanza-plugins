@@ -22,7 +22,7 @@ parameters:
     default: udp
   - name: protocol
     label: Protocol
-    description: Protocol of received syslog messages (`rfc3164` or `rfc5424`).
+    description: Protocol of received syslog messages (`rfc3164 (BSD)` or `rfc5424 (IETF)`).
     type: enum
     valid_values:
       - rfc3164 (BSD)
