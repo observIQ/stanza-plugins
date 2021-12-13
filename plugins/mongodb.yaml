@@ -1,4 +1,4 @@
-version: 0.0.10
+version: 0.0.11
 title: MongoDB
 description: Log parser for MongoDB
 supported_platforms:
@@ -27,7 +27,6 @@ parameters:
     description: The pod name (without the unique identifier on the end)
     type: string
     default: 'mongodb'
-    required: true
     relevant_if:
       source:
         equals: kubernetes
@@ -66,8 +65,7 @@ parameters:
 # {{$cluster_name := default "" .cluster_name}}
 # {{$pod_name := default "mongodb-*" .pod_name}}
 # {{$container_name := default "*" .container_name}}
-# {{$log_path := default "/var/log/mongodb/mongodb.log*" .log_path}}
-# {{$mongodb_json_log_format := default false .mongodb_json_log_format}}
+# {{$log_path := default "/var/log/mongodb/mongod*.log" .log_path}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
@@ -80,11 +78,7 @@ pipeline:
     cluster_name: '{{ $cluster_name }}'
     start_at: '{{ $start_at }}'
     enable_nested_json_parser: false
-    # {{ if $mongodb_json_log_format }}
-    output: json_parser
-    # {{ else }}
-    output: regex_parser
-    # {{ end }}
+    output: input_router
   # {{ end }}
 
 
@@ -96,14 +90,17 @@ pipeline:
     exclude:
       - '{{ $log_path }}*.gz'
     start_at: '{{ $start_at }}'
-    # {{ if $mongodb_json_log_format }}
-    output: json_parser
-    # {{ else }}
-    output: regex_parser
-    # {{ end }}
+    output: input_router
   # {{ end }}
 
-  - id: regex_parser
+  - id: input_router
+    type: router
+    default: legacy_parser
+    routes:
+      - expr: '$record matches "^{.*}$|^{.*}\\n$"'
+        output: 4_4_parser
+
+  - id: legacy_parser
     type: regex_parser
     regex: '^(?P<timestamp>\S+)\s+(?P<severity>\w+)\s+(?P<component>[\w-]+)\s+\[(?P<context>\S+)\]\s+(?P<message>.*)$'
     timestamp:
@@ -126,7 +123,7 @@ pipeline:
           - D5
     output: add_plugin_id
 
-  - id: json_parser
+  - id: 4_4_parser
     type: json_parser
     parse_from: $record
     timestamp:
