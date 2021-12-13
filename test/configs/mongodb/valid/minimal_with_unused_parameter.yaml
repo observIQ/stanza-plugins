@@ -1,0 +1,10 @@
+# in v0.0.11 of the mongodb plugin we removed this parameter
+# `mongodb_json_log_format` we must ensure that stanza will work
+# even with extra plugin parameters
+# nginx from file, default values
+pipeline:
+- type: mongodb
+  source: file
+  log_path: "/var/log/mongodb/mongod.log"
+  start_at: beginning
+  mongodb_json_log_format: false

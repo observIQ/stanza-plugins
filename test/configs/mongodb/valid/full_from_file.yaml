@@ -1,0 +1,6 @@
+# nginx from file, default values
+pipeline:
+- type: mongodb
+  source: file
+  log_path: "/var/log/mongodb/mongod.log"
+  start_at: beginning
