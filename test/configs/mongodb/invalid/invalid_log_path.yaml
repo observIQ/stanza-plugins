@@ -1,0 +1,5 @@
+# mongodb from kubernetes, default values
+pipeline:
+- type: mongodb
+  source: file
+  log_path: 12
