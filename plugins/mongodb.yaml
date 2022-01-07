@@ -46,11 +46,6 @@ parameters:
     relevant_if:
       source:
         equals: file
-  - name: mongodb_json_log_format
-    label: "MongoDB 4.4+ Log Format"
-    description: Enable to parse MongoDB 4.4+ JSON log format parsing.
-    type: bool
-    default: false
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
