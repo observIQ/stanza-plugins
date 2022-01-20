@@ -58,7 +58,7 @@ parameters:
         equals: "tcp"
   - name: tls_certificate
     label: "TLS Certificate"
-    description: Path to the certificate or certificate chain to use for TLS
+    description: Path to the x509 PEM certificate or certificate chain to use for TLS
     type: string
     default: ""
     advanced_config: true
@@ -67,7 +67,7 @@ parameters:
         equals: true
   - name: tls_private_key
     label: "TLS Private Key"
-    description: Path to the certificates private key to use for TLS
+    description: Path to the certificates x509 PEM private key to use for TLS
     type: string
     default: ""
     advanced_config: true
