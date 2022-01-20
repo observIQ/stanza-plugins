@@ -47,6 +47,46 @@ parameters:
     default: ""
     advanced_config: true
     hidden: true
+  - name: tls_enable
+    label: "Enable TLS"
+    description: Should TLS be used?
+    type: boolean
+    default: false
+    advanced_config: true
+    relevant_if:
+      connection_type:
+        equals: "tcp"
+  - name: tls_certificate
+    label: "TLS Certificate"
+    description: Path to the x509 PEM certificate or certificate chain to use for TLS
+    type: string
+    default: ""
+    advanced_config: true
+    relevant_if:
+      tls_enable:
+        equals: true
+  - name: tls_private_key
+    label: "TLS Private Key"
+    description: Path to the certificates x509 PEM private key to use for TLS
+    type: string
+    default: ""
+    advanced_config: true
+    relevant_if:
+      tls_enable:
+        equals: true
+  - name: tls_min_version
+    label: "TLS Minimum Version"
+    description: Minimum version of TLS to use, client will negotiate highest possible
+    type: enum
+    valid_values:
+    - "1.1"
+    - "1.2"
+    - "1.3"
+    default: "1.2"
+    advanced_config: true
+    relevant_if:
+      tls_enable:
+        equals: true
 
 # Set Defaults
 # {{$listen_address := default "" .listen_address}}
@@ -56,6 +96,10 @@ parameters:
 # {{$connection_type := default "udp" .connection_type}}
 # {{$protocol := default "rfc5424 (IETF)" .protocol}}
 # {{$location := default "UTC" .location}}
+# {{$tls_enable := default false .tls_enable}}
+# {{$tls_certificate := default "" .tls_certificate}}
+# {{$tls_private_key := default "" .tls_private_key}}
+# {{$tls_min_version := default "1.2" .tls_min_version}}
 
 # Pipeline Template
 pipeline:
@@ -78,6 +122,11 @@ pipeline:
       log_type: syslog
       plugin_id: {{ .id }}
     add_attributes: true
+    tls:
+      enable: {{ $tls_enable }}
+      certificate: {{ $tls_certificate }}
+      private_key: {{ $tls_private_key }}
+      min_version: {{ $tls_min_version }}
     output: syslog_parser
 # {{ end }}
 
