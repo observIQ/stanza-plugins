@@ -49,7 +49,7 @@ parameters:
     hidden: true
   - name: tls_enable
     label: "Enable TLS"
-    description: Should TLS be used? Defaults to false.
+    description: Should TLS be used?
     type: boolean
     default: false
     advanced_config: true
