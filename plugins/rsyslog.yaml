@@ -122,10 +122,10 @@ pipeline:
       log_type: rsyslog
       plugin_id: {{ .id }}
     tls:
-      enable: {{ .tls_enable }}
-      certificate: {{ .tls_certificate }}
-      private_key: {{ .tls_private_key }}
-      min_version: {{ .tls_min_version }}
+      enable: {{ $tls_enable }}
+      certificate: {{ $tls_certificate }}
+      private_key: {{ $tls_private_key }}
+      min_version: {{ $tls_min_version }}
     add_labels: true
     output: rsyslog_parser
 # {{ end }}
