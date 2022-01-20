@@ -47,6 +47,42 @@ parameters:
     default: ""
     advanced_config: true
     hidden: true
+  - name: tls_enable
+    label: "TLS Configuration Enable"
+    description: Should TLS be used? Defaults to false.
+    type: boolean
+    default: false
+    advanced_config: true
+    relevant_if:
+      connection_type:
+        equals: "tcp"
+  - name: tls_certificate
+    label: "TLS Configuration Certificate"
+    description: Path to the certificate or certificate chain to use for TLS
+    type: string
+    default: ""
+    advanced_config: true
+    relevant_if:
+      connection_type:
+        equals: "tcp"
+  - name: tls_private_key
+    label: "TLS Configuration Private Key"
+    description: Path to the certificates private key to use for TLS
+    type: string
+    default: ""
+    advanced_config: true
+    relevant_if:
+      connection_type:
+        equals: "tcp"
+  - name: tls_min_version
+    label: "TLS Configuration TLS"
+    description: What version of TLS to use
+    type: string
+    default: ""
+    advanced_config: true
+    relevant_if:
+      connection_type:
+        equals: "tcp"
 
 # Set Defaults
 # {{$listen_address := default "" .listen_address}}
@@ -56,6 +92,10 @@ parameters:
 # {{$connection_type := default "udp" .connection_type}}
 # {{$protocol := default "rfc5424 (IETF)" .protocol}}
 # {{$location := default "UTC" .location}}
+# {{$tls_enable := default false .tls_enable}}
+# {{$tls_certificate := default "" .tls_certificate}}
+# {{$tls_private_key := default "" .tls_private_key}}
+# {{$tls_min_version := default "" .tls_min_version}}
 
 # Pipeline Template
 pipeline:
@@ -77,6 +117,11 @@ pipeline:
     labels:
       log_type: rsyslog
       plugin_id: {{ .id }}
+    tls:
+      enable: {{ .tls_enable }}
+      certificate: {{ .tls_certificate }}
+      private_key: {{ .tls_private_key }}
+      min_version: {{ .tls_min_version }}
     add_labels: true
     output: rsyslog_parser
 # {{ end }}
