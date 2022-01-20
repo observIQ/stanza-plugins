@@ -76,7 +76,7 @@ parameters:
         equals: true
   - name: tls_min_version
     label: "TLS Minimum Version"
-    description: What minimum version of TLS to use
+    description: Minimum version of TLS to use, client will negotiate highest possible
     type: enum
     valid_values:
     - "1.1"
