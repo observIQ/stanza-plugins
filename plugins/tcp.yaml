@@ -1,5 +1,5 @@
 # Plugin Info
-version: 1.0.0
+version: 1.1.0
 title: TCP
 description: TCP Input
 min_stanza_version: 1.2.7
