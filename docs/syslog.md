@@ -11,6 +11,10 @@ The `syslog` plugin receives [syslog](https://en.wikipedia.org/wiki/Syslog) from
 | `connection_type`  | `udp`            | Transport protocol to use (`udp` or `tcp`)                                             |
 | `protocol`         | `rfc5424 (IETF)` | Protocol of received syslog messages (`rfc3164 (BSD)` or `rfc5424 (IETF)`)             |
 | `location`         | `UTC`            | [Geographic location (timezone)](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) to use when [parsing the timestamp](https://github.com/observIQ/stanza/blob/master/docs/types/timestamp.md) (Syslog RFC 3164 only) |
+| `tls_enable`       | `false`          | Set to `true` to enable TLS |
+| `tls_certificate`  |                  | Path to x509 PEM encoded TLS certificate file |
+| `tls_private_key`  |                  | Path to x509 PEM encoded TLS private key file |
+| `tls_min_version`  | `"1.2"`          | Minimum TLS version to support (string)       |
 
 ### Example usage:
  
@@ -207,4 +211,60 @@ Output Entry
   }
 }
 
+```
+
+#### TCP Configuration w/ TLS
+
+Stanza Pipeline
+
+```yaml
+pipeline:
+- type: syslog
+  connection_type: tcp
+  tls_enable: true
+  tls_certificate: /path/to/certificate
+  tls_private_key: /path/to/privateKey
+  tls_min_version: "1.2"
+- type: stdout
+```
+
+Input Entry (sent with `echo "<message here>" | openssl s_client -connect localhost:514`)
+
+```
+<165>1 2003-10-11T22:14:15.003Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut="3" eventSource="Application" eventID="1011"] user connected
+```
+
+Output Entry
+
+```json
+{
+  "timestamp": "2003-10-11T22:14:15.003Z",
+  "severity": 40,
+  "severity_text": "notice",
+  "labels": {
+    "log_type": "syslog",
+    "net.host.ip": "::",
+    "net.host.port": "514",
+    "net.peer.ip": "::1",
+    "net.peer.port": "37871",
+    "net.transport": "IP.UDP",
+    "plugin_id": "syslog"
+  },
+  "record": {
+    "appname": "evntslog",
+    "facility": 20,
+    "hostname": "mymachine.example.com",
+    "message": "user connected",
+    "msg_id": "ID47",
+    "priority": 165,
+    "structured_data": {
+      "exampleSDID@32473": {
+        "eventID": "1011",
+        "eventSource": "Application",
+        "iut": "3"
+      }
+    },
+    "version": 1
+  }
+}
 ```
