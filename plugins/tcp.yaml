@@ -1,5 +1,5 @@
 # Plugin Info
-version: 1.1.0
+version: 1.1.1
 title: TCP
 description: TCP Input
 min_stanza_version: 1.2.7
@@ -87,7 +87,7 @@ pipeline:
       enable: {{ $enable_tls }}
       cert_file: {{ $certificate_file }}
       key_file: {{ $private_key_file }}
-      min_version: {{ $min_version }}
+      min_version: "{{ $min_version }}"
     # {{ end }}
 
   - type: move
