@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.10
+version: 0.0.11
 title: Syslog
 description: Log parser for Syslog
 supported_platforms:
@@ -54,7 +54,7 @@ parameters:
   - name: tls_enable
     label: "Enable TLS"
     description: Should TLS be used?
-    type: boolean
+    type: bool
     default: false
     advanced_config: true
     relevant_if:
@@ -129,7 +129,7 @@ pipeline:
       enable: {{ $tls_enable }}
       certificate: {{ $tls_certificate }}
       private_key: {{ $tls_private_key }}
-      min_version: {{ $tls_min_version }}
+      min_version: "{{ $tls_min_version }}"
     add_labels: true
     output: syslog_parser
 # {{ end }}
