@@ -1,0 +1,9 @@
+pipeline:
+- type: tcp
+  listen_port: 6543
+  enable_tls: true
+  certificate_file: ./crt
+  private_key_file: ./key
+  # should be string
+  min_version: 2.2
+- type: stdout

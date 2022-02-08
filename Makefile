@@ -3,6 +3,7 @@ PLUGINS := $(shell ls ./plugins)
 
 .PHONY: test
 test:
+	bash scripts/test_certificate.sh
 	$(MAKE) for-all CMD="go clean -testcache ./..." 
 	$(MAKE) for-all CMD="go test ./..."
 

@@ -1,0 +1,9 @@
+pipeline:
+- type: rsyslog
+  listen_port: 5140
+  connection_type: tcp
+  tls_enable: true
+  tls_certificate: ./tls/plugins.crt
+  tls_private_key: ./tls/plugins.key
+  tls_min_version: "2.2"
+- type: stdout
