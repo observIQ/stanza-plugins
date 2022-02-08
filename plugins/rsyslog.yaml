@@ -126,7 +126,7 @@ pipeline:
       enable: {{ $tls_enable }}
       certificate: {{ $tls_certificate }}
       private_key: {{ $tls_private_key }}
-      min_version: "{{ $tls_min_version }}"
+      min_version: {{ $tls_min_version }}
     output: rsyslog_parser
 # {{ end }}
 

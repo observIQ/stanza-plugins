@@ -87,7 +87,7 @@ pipeline:
       enable: {{ $enable_tls }}
       cert_file: {{ $certificate_file }}
       key_file: {{ $private_key_file }}
-      min_version: "{{ $min_version }}"
+      min_version: {{ $min_version }}
     # {{ end }}
 
   - type: move
