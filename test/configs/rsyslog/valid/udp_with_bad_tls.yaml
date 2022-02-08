@@ -1,0 +1,12 @@
+# udp skips tls config, so a bad tls config should still run
+pipeline:
+- type: rsyslog
+  listen_port: 5140
+  connection_type: udp
+  tls_enable: true
+  # bad paths do not matter because the certificate is never read due to being in
+  # udp mode
+  tls_certificate: ./tls/plugins.crt.bad
+  tls_private_key: ./tls/plugins.key.bad
+  tls_min_version: "1.3" # this  must be valid because it is checked at when plugin is compiled
+- type: stdout

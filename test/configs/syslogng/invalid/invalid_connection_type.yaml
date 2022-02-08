@@ -1,0 +1,5 @@
+pipeline:
+- type: syslogng
+  listen_port: 5140
+  connection_type: socket
+- type: stdout
