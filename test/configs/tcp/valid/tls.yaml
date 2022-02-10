@@ -1,0 +1,7 @@
+pipeline:
+- type: tcp
+  listen_port: 6543
+  enable_tls: true
+  certificate_file: ./tls/plugins.crt
+  private_key_file: ./tls/plugins.key
+- type: stdout

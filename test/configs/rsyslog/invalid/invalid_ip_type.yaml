@@ -1,0 +1,5 @@
+pipeline:
+- type: rsyslog
+  listen_port: 5140
+  listen_ip: 100
+- type: stdout

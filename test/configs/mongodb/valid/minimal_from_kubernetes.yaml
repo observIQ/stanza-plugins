@@ -1,0 +1,4 @@
+# mongodb from kubernetes, default values
+pipeline:
+- type: mongodb
+  source: kubernetes
