@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.5
+version: 0.0.7
 title: Syslog-ng
 description: Log parser for Syslog-ng
 parameters:
@@ -18,7 +18,7 @@ parameters:
     default: udp
   - name: protocol
     label: Protocol
-    description: rfc5424 is the newer and more common format for syslog messages.
+    description: Protocol of received syslog messages (`rfc3164 (BSD)` or `rfc5424 (IETF)`).
     type: enum
     valid_values:
       - rfc3164 (BSD)

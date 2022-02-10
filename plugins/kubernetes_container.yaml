@@ -1,4 +1,4 @@
-version: 0.0.16
+version: 0.0.17
 title: Kubernetes Container
 description: Log parser for Kubernetes
 min_stanza_version: 0.9.8
