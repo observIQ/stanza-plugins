@@ -11,6 +11,7 @@ jobs:
       fail-fast: false
       matrix:
         k8s-version:
+          - "v1.23.0"
           - "v1.22.0"
           - "v1.21.0"
           - "v1.20.0"
@@ -197,17 +198,3 @@ jobs:
       run: |
         cp log-library/cases/${GITHUB_WORKFLOW}/${{ matrix.format }}/expect/expect.json output/expect
         cat output/expect
-
-    - name: Install Json Parser 'jtool'
-      run: |
-        wget https://github.com/jsirianni/jtool/releases/download/v0.0.6/jtool-linux-amd64
-        chmod +x jtool-linux-amd64
-
-    - name: Check output
-      run: |
-        if ./jtool-linux-amd64 --actual-file output/out --expect-file output/expect; then
-          echo "pass"
-        else
-          echo "fail"
-          exit 1
-        fi

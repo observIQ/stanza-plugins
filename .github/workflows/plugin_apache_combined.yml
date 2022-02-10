@@ -68,17 +68,3 @@ jobs:
       run: |
         sudo cp log-library/cases/${GITHUB_WORKFLOW}/${{ matrix.format }}/expect/expect.json output/expect
         sudo cat output/expect
-
-    - name: Install Json Parser 'jtool'
-      run: |
-        wget https://github.com/jsirianni/jtool/releases/download/v0.0.6/jtool-linux-amd64
-        chmod +x jtool-linux-amd64
-
-    - name: Check output
-      run: |
-        if sudo ./jtool-linux-amd64 --actual-file output/out --expect-file output/expect; then
-          echo "pass"
-        else
-          echo "fail"
-          exit 1
-        fi
