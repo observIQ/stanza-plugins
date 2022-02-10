@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.5
+version: 0.0.7
 title: Syslog-ng
 description: Log parser for Syslog-ng
 parameters:
@@ -18,7 +18,7 @@ parameters:
     default: udp
   - name: protocol
     label: Protocol
-    description: The protocol of received Syslog-ng messages (`rfc3164` or `rfc5424`)
+    description: Protocol of received syslog messages (`rfc3164 (BSD)` or `rfc5424 (IETF)`).
     type: enum
     valid_values:
       - rfc3164 (BSD)
@@ -36,7 +36,7 @@ parameters:
     advanced_config: true
   - name: listen_ip
     label: Listen IP
-    description: A syslog ip address of the form `<ip>`
+    description: A network interface for the agent to bind. Typically 0.0.0.0 for most configurations.
     type: string
     default: "0.0.0.0"
     advanced_config: true
