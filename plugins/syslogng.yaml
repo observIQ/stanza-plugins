@@ -36,7 +36,7 @@ parameters:
     advanced_config: true
   - name: listen_ip
     label: Listen IP
-    description: Typically 0.0.0.0 for most configurations.
+    description: A network interface for the agent to bind. Typically 0.0.0.0 for most configurations.
     type: string
     default: "0.0.0.0"
     advanced_config: true
