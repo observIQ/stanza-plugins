@@ -7,6 +7,22 @@ workflow="$1"
 workflow_case="$2"
 pause_time="$3"
 k8s="$4"
+k8s_version="$5"
+k8s_runtime="$6"
+
+install_minikube() {
+    sudo apt-get update -qq
+    sudo apt-get install -qq -y conntrack
+    curl -s -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+    sudo install minikube-linux-amd64 /usr/local/bin/minikube
+}
+
+start_mini_kube() {
+    minikube start \
+        --driver=docker \
+        --kubernetes-version="$k8s_version" \
+        --container-runtime="$k8s_runtime"
+}
 
 install_build_tools() {
     echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
@@ -63,6 +79,13 @@ test_empty_output() {
         exit 1
     fi
 }
+
+### Main ###
+
+if "$k8s"; then
+    install_minikube
+    start_mini_kube
+fi
 
 install_build_tools
 build_collector

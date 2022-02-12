@@ -15,9 +15,17 @@ inputs:
     description: 'Set to "true" if plugin requires minikube'
     required: false
     default: "false"
+  k8s_version:
+    description: 'Minikube Version'
+    required: false
+    default: "v1.23.0"
+  k8s_runtime:
+    description: 'Minkube runtime'
+    required: false
+    default: "docker"
 runs:
   using: "composite"
   steps:
     - id: test-plugin
-      run: ${{ github.action_path }}/test-plugin.sh
+      run: ${{ github.action_path }}/test-plugin.sh "${{ inputs.workflow }}" "${{ inputs.workflow_case }}" "${{ inputs.pause_time }}" "${{ inputs.k8s }}" "${{ inputs.k8s_version }}" "${{ inputs.k8s_runtime }}"
       shell: bash
