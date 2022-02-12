@@ -21,3 +21,4 @@ build_agent_iamge() {
 
 install_build_tools
 build_collector
+build_agent_iamge
