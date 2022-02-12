@@ -142,7 +142,6 @@ run_agent() {
         docker run -d \
             --name agent \
             -v "$(pwd)/log-library/cases/${workflow}/${workflow_case}:/input" \
-            -v "$(pwd)/output:/output" \
             agent:latest --config /input/config/collector.yaml
         sleep 1 && docker logs agent
 
@@ -183,6 +182,13 @@ test_failed_process_entry() {
 }
 
 test_empty_output() {
+    mkdir -p output
+    if "$k8s"; then
+        kubectl cp deploy/agent:/output/out output/out
+    else
+        docker cp agent:/output/out output/out
+    fi
+
     if [ -s output/out ]; then
         lines=$(wc -l output/out)
         echo "Passed check: Ensure output file is not empty. Number of lines: ${lines}"

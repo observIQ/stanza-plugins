@@ -8,6 +8,6 @@ RUN \
 
 COPY observiq-collector/dist/collector_linux_amd64 /collector
 COPY plugins /plugins
-RUN mkdir /storage
+RUN mkdir /storage /output
 
 ENTRYPOINT [ "/collector" ]
