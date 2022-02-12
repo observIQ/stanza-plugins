@@ -56,32 +56,7 @@ jobs:
 
     - name: Test Plugin
       uses: ./.github/actions/test-plugin
-
-    # Run agent and pause for 1 second, dump logs. We do this to
-    # see if the agent failed to start.
-    - name: Run Agent
-      run: |
-        docker run -d \
-          --name agent \
-          -v $(pwd)/log-library/cases/${GITHUB_WORKFLOW}/${{ matrix.format }}:/input \
-          -v $(pwd)/output:/output \
-          agent:latest --config /input/config/collector.yaml
-        
-        sleep 1 && docker logs agent
-
-    - name: Pause
-      run: sleep 10
-
-    - name: Stop Stanza
-      run: docker kill agent
-
-    - name: Dump Stanza Logs
-      run: docker logs agent > agent.out 2>&1
-
-    - name: 'Fail: Failed to process entry'
-      run: |
-        cat agent.out
-        if grep -i 'Failed to process entry' agent.out; then exit 1; else echo good; fi
-
-    - name: 'Fail: Output file empty'
-      run: '[ -s output/out ] || exit 1'
+      with:
+        workflow: ${GITHUB_WORKFLOW}
+        workflow_case: ${{ matrix.format }}
+        pause_seconds: "10"
