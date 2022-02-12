@@ -43,11 +43,23 @@ jobs:
       with:
         go-version: 1.17
 
+    - name: Fetch Go Cache Paths
+      id: go-cache-paths
+      run: |
+        echo "::set-output name=go-mod::$(go env GOMODCACHE)"
+
     - name: Checkout Latest Collector Release
       run: |
         latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
         git checkout $latestTag
       working-directory: observiq-collector
+
+    # Cache go mod cache, used to speedup builds
+    - name: Go Mod Cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ steps.go-cache-paths.outputs.go-mod }}
+        key: ${{ runner.os }}-go-mod-${{ hashFiles('./observiq-collector/go.sum') }}
 
     - name: Install Build Tools
       run: |
