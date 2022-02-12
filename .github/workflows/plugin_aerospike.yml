@@ -97,7 +97,7 @@ jobs:
     - name: 'Fail: Failed to process entry'
       run: |
         cat agent.out
-        grep -i 'Failed to process entry' agent.out && exit 1
+        if grep -i 'Failed to process entry' agent.out; then exit 1; else echo good; fi
 
     - name: 'Fail: Output file empty'
       run: '[ -s output/out ] || exit 1'
