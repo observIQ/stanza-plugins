@@ -163,7 +163,7 @@ stop_agent() {
 
 dump_agent_logs() {
     if "$k8s"; then
-        kubectl logs deploy/agent
+        kubectl logs deploy/agent > agent.out 2>&1
     else
         docker logs agent > agent.out 2>&1
     fi
