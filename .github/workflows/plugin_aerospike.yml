@@ -36,6 +36,7 @@ jobs:
         repository: 'observIQ/observiq-collector'
         path: observiq-collector
         token: ${{ secrets.LOG_LIBRARY_ACCESS_TOKEN }}
+        fetch-depth: 0
 
     - name: Set up Go 1.17
       uses: actions/setup-go@v2
