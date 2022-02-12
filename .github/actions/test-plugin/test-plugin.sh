@@ -95,7 +95,6 @@ spec:
       - name: agent
         image: agent:latest
         imagePullPolicy: IfNotPresent
-        command: ["/collector/collector"]
         args: ["--config", "/input/config/collector.yaml"]
         volumeMounts:
         - name: logs
