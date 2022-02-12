@@ -94,8 +94,10 @@ jobs:
     - name: Dump Stanza Logs
       run: docker logs agent > agent.out 2>&1
 
-    - name: Check For 'Failed to process entry'
-      run: grep -i 'Failed to process entry' agent.out && exit 1
+    - name: 'Fail: Failed to process entry'
+      run: |
+        cat agent.out
+        grep -i 'Failed to process entry' agent.out && exit 1
 
-    - name: Check If Output File Empty
+    - name: 'Fail: Output file empty'
       run: '[ -s output/out ] || exit 1'
