@@ -4,5 +4,5 @@ runs:
   using: "composite"
   steps:
     - id: test-plugin
-      run: ${{ github.action_path }}/test-plugin.sh"
+      run: ${{ github.action_path }}/test-plugin.sh
       shell: bash
