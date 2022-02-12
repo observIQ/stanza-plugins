@@ -9,7 +9,12 @@ inputs:
     required: true
   pause_time:
     description: 'How long to wait for agent to parse logs, in seconds'
-    required: true
+    required: false
+    default: "10s"
+  k8s:
+    description: 'Set to "true" if plugin requires minikube'
+    required: false
+    default: "false"
 runs:
   using: "composite"
   steps:

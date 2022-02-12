@@ -60,4 +60,3 @@ jobs:
       with:
         workflow: ${GITHUB_WORKFLOW}
         workflow_case: ${{ matrix.format }}
-        pause_time: "10s"

@@ -6,6 +6,7 @@ set -e
 workflow="$1"
 workflow_case="$2"
 pause_time="$3"
+k8s="$4"
 
 install_build_tools() {
     echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
