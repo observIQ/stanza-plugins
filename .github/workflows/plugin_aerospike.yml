@@ -96,3 +96,6 @@ jobs:
 
     - name: Check For 'Failed to process entry'
       run: grep -i 'Failed to process entry' agent.out && exit 1
+
+    - name: Check If Output File Empty
+      run: '[ -s output/out ] || exit 1'
