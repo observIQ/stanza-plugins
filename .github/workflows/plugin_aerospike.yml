@@ -35,7 +35,7 @@ jobs:
       with:
         repository: 'observIQ/observiq-collector'
         path: observiq-collector
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.LOG_LIBRARY_ACCESS_TOKEN }}
         ref: otel
 
     - name: Set up Go 1.17
