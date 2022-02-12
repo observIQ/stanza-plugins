@@ -32,41 +32,33 @@ jobs:
     - name: Create Offset Database Directory
       run: mkdir -p storage
 
-    - name: Install Collector
+    - name: Clone Collector
+      uses: actions/checkout@v2
+      with:
+        repository: 'observIQ/observiq-collector'
+        path: observiq-collector
+        token: ${{ secrets.LOG_LIBRARY_ACCESS_TOKEN }}
+        fetch-depth: 0
+
+    - name: Set up Go 1.17
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+
+    - name: Fetch Go Cache Paths
+      id: go-cache-paths
       run: |
-        mkdir -p collector
-        curl -s -o collector/collector https://storage.googleapis.com/observiq-cloud/observiq-collector/0.0.10/collector_linux_amd64
-        chmod +x collector/collector
+        echo "::set-output name=go-mod::$(go env GOMODCACHE)"
 
-    - name: Run Agent
+    - name: Checkout Latest Collector Release
       run: |
-        docker run -d \
-          --name agent \
-          -v $(pwd)/collector:/collector \
-          -v $(pwd)/log-library/cases/${GITHUB_WORKFLOW}/${{ matrix.format }}:/input \
-          -v $(pwd)/output:/output \
-          -v $(pwd)/plugins:/plugins \
-          -v $(pwd)/storage:/storage \
-          --entrypoint sh \
-          ubuntu:20.04 \
-          -c '/collector/collector --config /input/config/collector.yaml'
-        
-        sleep 1 && docker logs agent
+        latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
+        git checkout $latestTag
+      working-directory: observiq-collector
 
-    - name: Pause
-      run: sleep 10
-
-    - name: Stop Stanza
-      run: docker kill agent
-
-    - name: Dump Stanza Logs
-      run: docker logs agent
-
-    - name: Get Output
-      run: |
-        sudo cat output/out
-
-    - name: Get Expected Output
-      run: |
-        sudo cp log-library/cases/${GITHUB_WORKFLOW}/${{ matrix.format }}/expect/expect.json output/expect
-        sudo cat output/expect
+    - name: Test Plugin
+      uses: ./.github/actions/test-plugin
+      with:
+        workflow: ${GITHUB_WORKFLOW}
+        workflow_case: ${{ matrix.format }}
+        pause_seconds: "10"
