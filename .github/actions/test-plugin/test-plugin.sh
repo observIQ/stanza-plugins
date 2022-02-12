@@ -35,7 +35,7 @@ run_agent() {
 
 # pause to let agent parse logs
 pause_for_logs() {
-    sleep "$pause_seconds"
+    sleep "${pause_seconds}s"
 }
 
 stop_agent() {
