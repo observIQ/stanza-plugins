@@ -7,7 +7,7 @@ inputs:
   workflow_case:
     description: 'The workflow case (default, observiq, etc)'
     required: true
-  pause_seconds:
+  pause_time:
     description: 'How long to wait for agent to parse logs, in seconds'
     required: true
 runs:

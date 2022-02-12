@@ -5,7 +5,7 @@ set -e
 
 workflow="$1"
 workflow_case="$2"
-pause_seconds="$3"
+pause_time="$3"
 
 install_build_tools() {
     echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
@@ -35,7 +35,7 @@ run_agent() {
 
 # pause to let agent parse logs
 pause_for_logs() {
-    sleep "${pause_seconds}s"
+    sleep "${pause_time}s"
 }
 
 stop_agent() {
