@@ -95,7 +95,6 @@ spec:
       - name: agent
         image: agent:latest
         imagePullPolicy: IfNotPresent
-        args: ["--config", "/input/config/collector.yaml"]
         volumeMounts:
         - name: logs
           mountPath: /var/log/containers/adservice-5657f795f5-ql97m_default_server-2180fc6125cb444bd32be19cfa73e71a25e5d6c98b59b5191ee51fc6ff6c6723.log
@@ -126,7 +125,10 @@ build_collector() {
 }
 
 build_agent_image() {
-    docker build . -t agent:latest -f .github/Dockerfile
+    docker build . \
+        --build-arg input_dir="$(pwd)/log-library/cases/${workflow}"
+        -t agent:latest \
+        -f .github/Dockerfile
 }
 
 run_agent() {
@@ -139,10 +141,7 @@ run_agent() {
         kubectl rollout status -w deployment/agent --timeout=60s
 
     else
-        docker run -d \
-            --name agent \
-            -v "$(pwd)/log-library/cases/${workflow}/${workflow_case}:/input" \
-            agent:latest --config /input/config/collector.yaml
+        docker run -d --name agent agent:latest
         sleep 1 && docker logs agent
 
     fi
