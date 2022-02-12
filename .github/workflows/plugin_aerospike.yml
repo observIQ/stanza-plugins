@@ -59,7 +59,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ${{ steps.go-cache-paths.outputs.go-mod }}
-        key: ${{ runner.os }}-go-mod-${{ hashFiles('./observiq-collector/go.sum') }}
+        key: ${{ runner.os }}-go-modules-${{ hashFiles('./observiq-collector/go.sum') }}
 
     - name: Install Build Tools
       run: |
