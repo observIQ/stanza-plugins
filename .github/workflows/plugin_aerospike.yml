@@ -70,18 +70,18 @@ jobs:
       run: make collector
       working-directory: observiq-collector
 
+    - name: Build Agent Image
+      run: docker build . -t agent:latest -f .github/Dockerfile
+
+    # Run agent and pause for 1 second, dump logs. We do this to
+    # see if the agent failed to start.
     - name: Run Agent
       run: |
         docker run -d \
           --name agent \
-          -v $(pwd)/observiq-collector/dist/collector_linux_amd64:/collector \
           -v $(pwd)/log-library/cases/${GITHUB_WORKFLOW}/${{ matrix.format }}:/input \
           -v $(pwd)/output:/output \
-          -v $(pwd)/plugins:/plugins \
-          -v $(pwd)/storage:/storage \
-          --entrypoint sh \
-          ubuntu:20.04 \
-          -c '/collector --config /input/config/collector.yaml'
+          agent:latest --config /input/config/collector.yaml
         
         sleep 1 && docker logs agent
 
@@ -92,8 +92,7 @@ jobs:
       run: docker kill agent
 
     - name: Dump Stanza Logs
-      run: docker logs agent
+      run: docker logs agent > agent.out 2>&1
 
-    - name: Get Output
-      run: |
-        sudo cat output/out
+    - name: Check For 'Failed to process entry'
+      run: grep -i 'Failed to process entry' agent.out && exit 1
