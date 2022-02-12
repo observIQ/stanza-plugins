@@ -180,16 +180,19 @@ dump_agent_logs() {
 
 test_failed_process_entry() {
     if grep -i 'Failed to process entry' agent.out; then
+        echo "Failed check: Ensure no 'Failed to process entry' in agent log"
         exit 1
     else 
-        echo "Passed check for failed to process entry"; 
+        echo "Passed check: Ensure no 'Failed to process entry' in agent log"
     fi
 }
 
 test_empty_output() {
     if [ -s output/out ]; then
-        echo "Passed check for empty output file"
+        lines=$(wc -l output/out)
+        echo "Passed check: Ensure output file is not empty. Number of lines: ${lines}"
     else
+        echo "Failed check: Ensure output file is not empty."
         exit 1
     fi
 }
