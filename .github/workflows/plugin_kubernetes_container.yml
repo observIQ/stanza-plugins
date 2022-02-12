@@ -39,9 +39,6 @@ jobs:
     - name: Create Output Directory
       run: mkdir output
 
-    - name: Create Offset Database Directory
-      run: mkdir -p storage
-
     - name: Clone Collector
       uses: actions/checkout@v2
       with:
