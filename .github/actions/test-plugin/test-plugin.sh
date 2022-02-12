@@ -41,6 +41,83 @@ minikube_create_configmap() {
         --from-file="log-library/cases/${workflow}/${workflow_case}/logs/productcatalogservice-7cdd54f7c7-nbsgt_default_server-0a3bc17f1a059f850fc35b8b947fcb2f1a7a726b2574f48c973015e49df47e59.log"
 }
 
+minikube_generate_manifest() {
+    # TODO(jsirianni): Configmap should be dynamic, right now we are hardcoding the input files
+    cat <<- EOF > deploy.yaml
+---
+kind: ServiceAccount
+apiVersion: v1
+metadata:
+    name: stanza-metadata
+    namespace: default
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+    name: stanza-metadata
+    namespace: default
+rules:
+    - apiGroups: ["", "apps", "batch"]
+    resources:
+        - pods
+        - namespaces
+        - replicasets
+        - jobs
+    verbs: ["get", "list"]
+---
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+    name: stanza-metadata
+roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: ClusterRole
+    name: stanza-metadata
+subjects:
+    - kind: ServiceAccount
+    name: stanza-metadata
+    namespace: default
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: agent
+    labels:
+    app: agent
+spec:
+    replicas: 1
+    selector:
+    matchLabels:
+        app: agent
+    template:
+    metadata:
+        labels:
+        app: agent
+    spec:
+        serviceAccountName: stanza-metadata
+        containers:
+        - name: agent
+        image: agent:latest
+        imagePullPolicy: IfNotPresent
+        command: ["/collector/collector"]
+        args: ["--config", "/input/config/collector.yaml"]
+        volumeMounts:
+            - name: logs
+            mountPath: /var/log/containers/adservice-5657f795f5-ql97m_default_server-2180fc6125cb444bd32be19cfa73e71a25e5d6c98b59b5191ee51fc6ff6c6723.log
+            subPath: adservice-5657f795f5-ql97m_default_server-2180fc6125cb444bd32be19cfa73e71a25e5d6c98b59b5191ee51fc6ff6c6723.log
+            - name: logs
+            mountPath: /var/log/containers/example-json-logger-6b49dd876-xmr2j_default_logger-ebd483078a72e8c029757f27d872b238ac26e1d0c8c7d842415790c33cc24451.log
+            subPath: example-json-logger-6b49dd876-xmr2j_default_logger-ebd483078a72e8c029757f27d872b238ac26e1d0c8c7d842415790c33cc24451.log
+            - name: logs
+            mountPath: /var/log/containers/productcatalogservice-7cdd54f7c7-nbsgt_default_server-0a3bc17f1a059f850fc35b8b947fcb2f1a7a726b2574f48c973015e49df47e59.log
+            subPath: productcatalogservice-7cdd54f7c7-nbsgt_default_server-0a3bc17f1a059f850fc35b8b947fcb2f1a7a726b2574f48c973015e49df47e59.log
+        volumes:
+        - name: logs
+            configMap:
+            name: logs
+EOF
+}
+
 install_build_tools() {
     echo 'deb [trusted=yes] https://repo.goreleaser.com/apt/ /' | sudo tee /etc/apt/sources.list.d/goreleaser.list
     sudo apt-get update -qq
@@ -58,13 +135,23 @@ build_agent_image() {
 }
 
 run_agent() {
-    docker run -d \
-        --name agent \
-        -v "$(pwd)/log-library/cases/${workflow}/${workflow_case}:/input" \
-        -v "$(pwd)/output:/output" \
-        agent:latest --config /input/config/collector.yaml
+    if "$k8s"; then
+        kubectl apply -f deploy.yaml
+        sleep 10 && kubectl get pods
+        pod=$(kubectl get pods | grep agent | awk '{print $1}')
+        kubectl describe pod "${pod}"
+        kubectl logs "${pod}"
+        kubectl rollout status -w deployment/agent --timeout=60s
 
-    sleep 1 && docker logs agent
+    else
+        docker run -d \
+            --name agent \
+            -v "$(pwd)/log-library/cases/${workflow}/${workflow_case}:/input" \
+            -v "$(pwd)/output:/output" \
+            agent:latest --config /input/config/collector.yaml
+        sleep 1 && docker logs agent
+
+    fi
 }
 
 # pause to let agent parse logs
@@ -73,11 +160,21 @@ pause_for_logs() {
 }
 
 stop_agent() {
-    docker kill agent
+    if "$k8s"; then
+        # We cannot stop the agent because we need its log output
+        echo "skipping stop agent, running in k8s"
+    else
+        docker kill agent
+    fi
 }
 
 dump_agent_logs() {
-    docker logs agent > agent.out 2>&1
+    if "$k8s"; then
+        kubectl logs deploy/agent
+    else
+        docker logs agent > agent.out 2>&1
+    fi
+
     cat agent.out
 }
 
@@ -99,17 +196,19 @@ test_empty_output() {
 
 ### Main ###
 
+install_build_tools
+build_collector
+build_agent_image
+
 if "$k8s"; then
     minikube_install
     minikube_start
     minikube_wait
     minikube_load_image
     minikube_create_configmap
+    minikube_generate_manifest
 fi
 
-install_build_tools
-build_collector
-build_agent_image
 run_agent
 pause_for_logs
 stop_agent

@@ -36,165 +36,41 @@ jobs:
         token: ${{ secrets.LOG_LIBRARY_ACCESS_TOKEN }}
         ref: otel
 
-    - name: Install Minikube
+    - name: Create Output Directory
+      run: mkdir output
+
+    - name: Create Offset Database Directory
+      run: mkdir -p storage
+
+    - name: Clone Collector
+      uses: actions/checkout@v2
+      with:
+        repository: 'observIQ/observiq-collector'
+        path: observiq-collector
+        token: ${{ secrets.LOG_LIBRARY_ACCESS_TOKEN }}
+        fetch-depth: 0
+
+    - name: Set up Go 1.17
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+
+    - name: Fetch Go Cache Paths
+      id: go-cache-paths
       run: |
-        sudo apt-get update >/dev/null
-        sudo apt-get install -y conntrack >/dev/null
-        curl -s -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-        sudo install minikube-linux-amd64 /usr/local/bin/minikube
+        echo "::set-output name=go-mod::$(go env GOMODCACHE)"
 
-    # Start Minikube with --driver=none to run a k8s cluster within the actions
-    # environment. This allows us to share configs, logs, and output with the container
-    - name: Start Minikube
-      timeout-minutes: 3
+    - name: Checkout Latest Collector Release
       run: |
-        minikube start \
-          --driver=docker \
-          --kubernetes-version=${{ matrix.k8s-version }} \
-          --container-runtime=${{ matrix.format }}
+        latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
+        git checkout $latestTag
+      working-directory: observiq-collector
 
-    - name: Wait For Node Condition Ready
-      timeout-minutes: 3
-      run: |
-        node=$(kubectl get node | grep -v NAME | awk '{print $1}')
-        bash ./.github/scripts/k8s_wait_for_node.sh $node
-
-    - name: Generate Dockerfile
-      run: |
-        cat <<- EOF > Dockerfile
-        FROM ubuntu:20.04
-        WORKDIR /
-        RUN apt-get update >/dev/null
-        RUN apt-get install -y curl >/dev/null
-        RUN mkdir /collector /storage /output
-        RUN curl -s -o collector/collector https://storage.googleapis.com/observiq-cloud/observiq-collector/0.0.10/collector_linux_amd64
-        RUN chmod +x collector/collector
-        COPY log-library/cases/${GITHUB_WORKFLOW}/${{ matrix.format }}/config/collector.yaml /input/config/collector.yaml
-        COPY plugins /plugins
-        EOF
-
-    - name: Build Image
-      timeout-minutes: 1
-      run: docker build . -t agent:latest
-
-    - name: Push Image to Minikube
-      timeout-minutes: 2
-      run: minikube image load agent:latest
-
-    - name: Create Input Log ConfigMap
-      run: |
-        kubectl create configmap logs \
-          --from-file=log-library/cases/${GITHUB_WORKFLOW}/${{ matrix.format }}/logs/adservice-5657f795f5-ql97m_default_server-2180fc6125cb444bd32be19cfa73e71a25e5d6c98b59b5191ee51fc6ff6c6723.log \
-          --from-file=log-library/cases/${GITHUB_WORKFLOW}/${{ matrix.format }}/logs/example-json-logger-6b49dd876-xmr2j_default_logger-ebd483078a72e8c029757f27d872b238ac26e1d0c8c7d842415790c33cc24451.log \
-          --from-file=log-library/cases/${GITHUB_WORKFLOW}/${{ matrix.format }}/logs/productcatalogservice-7cdd54f7c7-nbsgt_default_server-0a3bc17f1a059f850fc35b8b947fcb2f1a7a726b2574f48c973015e49df47e59.log
-
-    # local docker images can be used when imagePullPolicy: IfNotPresent
-    - name: Generate Deployment Manifest
-      run: |
-        cat <<- EOF > deploy.yaml
-        ---
-        kind: ServiceAccount
-        apiVersion: v1
-        metadata:
-          name: stanza-metadata
-          namespace: default
-        ---
-        kind: ClusterRole
-        apiVersion: rbac.authorization.k8s.io/v1
-        metadata:
-          name: stanza-metadata
-          namespace: default
-        rules:
-          - apiGroups: ["", "apps", "batch"]
-            resources:
-              - pods
-              - namespaces
-              - replicasets
-              - jobs
-            verbs: ["get", "list"]
-        ---
-        kind: ClusterRoleBinding
-        apiVersion: rbac.authorization.k8s.io/v1
-        metadata:
-          name: stanza-metadata
-        roleRef:
-          apiGroup: rbac.authorization.k8s.io
-          kind: ClusterRole
-          name: stanza-metadata
-        subjects:
-          - kind: ServiceAccount
-            name: stanza-metadata
-            namespace: default
-        ---
-        apiVersion: apps/v1
-        kind: Deployment
-        metadata:
-          name: agent
-          labels:
-            app: agent
-        spec:
-          replicas: 1
-          selector:
-            matchLabels:
-              app: agent
-          template:
-            metadata:
-              labels:
-                app: agent
-            spec:
-              serviceAccountName: stanza-metadata
-              containers:
-              - name: agent
-                image: agent:latest
-                imagePullPolicy: IfNotPresent
-                command: ["/collector/collector"]
-                args: ["--config", "/input/config/collector.yaml"]
-                volumeMounts:
-                  - name: logs
-                    mountPath: /var/log/containers/adservice-5657f795f5-ql97m_default_server-2180fc6125cb444bd32be19cfa73e71a25e5d6c98b59b5191ee51fc6ff6c6723.log
-                    subPath: adservice-5657f795f5-ql97m_default_server-2180fc6125cb444bd32be19cfa73e71a25e5d6c98b59b5191ee51fc6ff6c6723.log
-                  - name: logs
-                    mountPath: /var/log/containers/example-json-logger-6b49dd876-xmr2j_default_logger-ebd483078a72e8c029757f27d872b238ac26e1d0c8c7d842415790c33cc24451.log
-                    subPath: example-json-logger-6b49dd876-xmr2j_default_logger-ebd483078a72e8c029757f27d872b238ac26e1d0c8c7d842415790c33cc24451.log
-                  - name: logs
-                    mountPath: /var/log/containers/productcatalogservice-7cdd54f7c7-nbsgt_default_server-0a3bc17f1a059f850fc35b8b947fcb2f1a7a726b2574f48c973015e49df47e59.log
-                    subPath: productcatalogservice-7cdd54f7c7-nbsgt_default_server-0a3bc17f1a059f850fc35b8b947fcb2f1a7a726b2574f48c973015e49df47e59.log
-              volumes:
-                - name: logs
-                  configMap:
-                    name: logs
-        EOF
-
-    - name: Run Agent
-      timeout-minutes: 3
-      run: |
-        kubectl apply -f deploy.yaml
-        sleep 10 && kubectl get pods
-        pod=$(kubectl get pods | grep agent | awk '{print $1}')
-        kubectl describe pod "${pod}"
-        kubectl logs "${pod}"
-    
-    - name: Wait For Agent
-      timeout-minutes: 3
-      run: |
-        kubectl rollout status -w deployment/agent   
-
-    - name: Pause
-      run: sleep 10
-
-    # Generally we want to stop the agent before stopping it however kubernetes will
-    # purge the log if we kill the pod
-    - name: Dump Stanza Logs
-      run: kubectl logs deploy/agent
-
-    - name: Get Output
-      run: |
-        mkdir -p output
-        pod=$(kubectl get pods | grep agent | awk '{print $1}')
-        kubectl cp "${pod}:/output/out" output/out
-        cat output/out
-
-    - name: Get Expected Output
-      run: |
-        cp log-library/cases/${GITHUB_WORKFLOW}/${{ matrix.format }}/expect/expect.json output/expect
-        cat output/expect
+    - name: Test Plugin
+      uses: ./.github/actions/test-plugin
+      with:
+        workflow: ${GITHUB_WORKFLOW}
+        workflow_case: ${{ matrix.format }}
+        k8s: true
+        k8s_version: ${{ matrix.k8s-version }}
+        k8s_runtime: ${{ matrix.format }}
