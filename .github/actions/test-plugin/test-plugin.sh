@@ -126,7 +126,7 @@ build_collector() {
 
 build_agent_image() {
     docker build . \
-        --build-arg input_dir="$(pwd)/log-library/cases/${workflow}/${workflow_case}" \
+        --build-arg input_dir="log-library/cases/${workflow}/${workflow_case}" \
         -t agent:latest \
         -f .github/Dockerfile
 }
