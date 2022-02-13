@@ -107,7 +107,7 @@ pipeline:
 
   - id: slow_query_sql_command_router
     type: router
-    default: {{.output}}
+    default: output
     routes:
       - output: sql_command_alter
         expr: '$body.query != nil and $body.query matches "^ALTER"'
@@ -218,7 +218,7 @@ pipeline:
 
   - id: mariadb_version_error_router
     type: router
-    default: {{ .output }}
+    default: output
     routes:
       - output: error_10_1_4_minus_regex_parser
         expr: $ matches '\\d{6} \\d{2}:\\d{2}:\\d{2} \\[.*\\]'
@@ -240,7 +240,7 @@ pipeline:
         error3: alert
         fatal2: emergency
         fatal3: catastrophe
-    output: {{ .output }}
+    output: output
 
   - id: error_10_1_5_plus_regex_parser
     type: regex_parser
@@ -256,7 +256,7 @@ pipeline:
         error3: alert
         fatal2: emergency
         fatal3: catastrophe
-    output: {{ .output }}
+    output: output
   # {{ end }}
 
   # {{ if $enable_mariadb_audit_log }}
@@ -333,7 +333,7 @@ pipeline:
     if: '$body.message2 != nil'
     ops:
       - remove: $body.message2
-    output: {{ .output }}
+    output: output
   # {{ end }}
 
   # {{ if $enable_general_log }}
@@ -367,13 +367,13 @@ pipeline:
       parse_from: timestamp
       layout_type: gotime
       layout: '060102 15:04:05'
-    output: {{ .output }}
+    output: output
   # {{ end }}
 
   - id: server_start_regex_parser
     type: regex_parser
     regex: '(?P<path>/\w+/\w+/mysqld),\sVersion:\s(?P<version>[\s\d\D]+)\.\s(?P<started_with>[\s\d\D]+)'
-    output: {{ .output }}
+    output: output
 
 
   - id: sql_command_alter
@@ -382,7 +382,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "ALTER"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_analyze
     type: restructure
@@ -390,7 +390,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "ANALYZE"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_begin
     type: restructure
@@ -398,7 +398,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "BEGIN"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_cache
     type: restructure
@@ -406,7 +406,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "CACHE"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_call
     type: restructure
@@ -414,7 +414,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "CALL"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_change
     type: restructure
@@ -422,7 +422,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "CHANGE"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_check
     type: restructure
@@ -430,7 +430,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "CHECK"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_commit
     type: restructure
@@ -438,7 +438,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "COMMIT"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_copy
     type: restructure
@@ -446,7 +446,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "COPY"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_create
     type: restructure
@@ -454,7 +454,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "CREATE"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_delete
     type: restructure
@@ -462,7 +462,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "DELETE"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_do
     type: restructure
@@ -470,7 +470,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "DO"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_drop
     type: restructure
@@ -478,7 +478,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "DROP"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_execute
     type: restructure
@@ -486,7 +486,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "EXECUTE"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_flush
     type: restructure
@@ -494,7 +494,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "FLUSH"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_grant
     type: restructure
@@ -502,7 +502,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "GRANT"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_handler
     type: restructure
@@ -510,7 +510,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "HANDLER"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_import
     type: restructure
@@ -518,7 +518,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "IMPORT"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_insert
     type: restructure
@@ -526,7 +526,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "INSERT"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_install
     type: restructure
@@ -534,7 +534,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "INSTALL"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_load
     type: restructure
@@ -542,7 +542,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "LOAD"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_lock
     type: restructure
@@ -550,7 +550,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "LOCK"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_optimize
     type: restructure
@@ -558,7 +558,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "OPTIMIZE"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_prepare
     type: restructure
@@ -566,7 +566,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "PREPARE"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_purge
     type: restructure
@@ -574,7 +574,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "PURGE"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_release
     type: restructure
@@ -582,7 +582,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "RELEASE"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_rename
     type: restructure
@@ -590,7 +590,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "RENAME"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_repair
     type: restructure
@@ -598,7 +598,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "REPAIR"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_replace
     type: restructure
@@ -606,7 +606,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "REPLACE"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_reset
     type: restructure
@@ -614,7 +614,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "RESET"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_revoke
     type: restructure
@@ -622,7 +622,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "REVOKE"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_rollback
     type: restructure
@@ -630,7 +630,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "ROLLBACK"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_savepoint
     type: restructure
@@ -638,7 +638,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "SAVEPOINT"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_select
     type: restructure
@@ -646,7 +646,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "SELECT"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_set
     type: restructure
@@ -654,7 +654,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "SET"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_show
     type: restructure
@@ -662,7 +662,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "SHOW"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_start
     type: restructure
@@ -670,7 +670,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "START"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_stop
     type: restructure
@@ -678,7 +678,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "STOP"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_table
     type: restructure
@@ -686,7 +686,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "TABLE"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_truncate
     type: restructure
@@ -694,7 +694,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "TRUNCATE"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_uninstall
     type: restructure
@@ -702,7 +702,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "UNINSTALL"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_unlock
     type: restructure
@@ -710,7 +710,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "UNLOCK"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_update
     type: restructure
@@ -718,7 +718,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "UPDATE"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_values
     type: restructure
@@ -726,7 +726,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "VALUES"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_with
     type: restructure
@@ -734,7 +734,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "WITH"
-    output: {{.output}}
+    output: output
 
   - id: sql_command_xa
     type: restructure
@@ -742,4 +742,7 @@ pipeline:
       - add:
           field: "sql_command"
           value: "XA"
-    output: {{.output}}
+    output: output
+
+  - id: output
+    type: noop
