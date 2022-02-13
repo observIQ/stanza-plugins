@@ -24,5 +24,6 @@ Maintainers can create a release using the GitHub UI by creating a release that 
 | HAProxy              | [![haproxy](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_haproxy.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_haproxy.yml) |
 | Kubernetes Container | [![kubernetes_container](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_kubernetes_container.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_kubernetes_container.yml) |
 | Nginx                | [![nginx](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_nginx.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_nginx.yml) |
+| Mysql                | [![mysql](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_mysql.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_mysql.yml) |
 | Oracle Database      | [![oracledb](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_oracledb.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_oracledb.yml) |
 
