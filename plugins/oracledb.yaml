@@ -99,7 +99,7 @@ pipeline:
     # {{ if $enable_truncate_audit_action }}
     output: audit_action_restructurer
     # {{ else }}
-    output: {{ .output }}
+    output: output
     # {{ end }}
 
   - id: audit_regex_parser_session
@@ -111,13 +111,13 @@ pipeline:
     # {{ if $enable_truncate_audit_action }}
     output: audit_action_restructurer
     # {{ else }}
-    output: {{ .output }}
+    output: output
     # {{ end }}
 
   - id: server_start_regex_parser
     type: regex_parser
     regex: '(?P<message>[\d\w[:ascii:]]+)'
-    output: {{ .output }}
+    output: output
 
   - id: audit_action_restructurer
     type: restructure
@@ -125,7 +125,7 @@ pipeline:
       - add:
           field: "action"
           value_expr: 'len($.action) > 150000 ? $.action[0:150000] + "... Action has " + $.length + " characters which is over the 150000 characters limit, truncating action" : $.action'
-    output: {{ .output }}
+    output: output
   # {{ end }}
 
   # {{ if $enable_alert_log }}
@@ -158,7 +158,7 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%T.%L%j'
-    output: {{ .output }}
+    output: output
 
   # Alert log parser for 12.1 timestamp
   - id: alert121_regex_parser
@@ -181,7 +181,7 @@ pipeline:
   - id: regex_empty_message_filter
     type: filter
     expr: '$body.message == ""'
-    output: {{ .output }}
+    output: output
 
   # {{ end }}
 
@@ -216,7 +216,7 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%d-%h-%Y %T'
-    output: {{ .output }}
+    output: output
 
   - id: windows_listener_regex_parser
     type: regex_parser
@@ -224,7 +224,7 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%d-%h-%Y %T'
-    output: {{ .output }}
+    output: output
 
   - id: trace_listener_regex_parser
     type: regex_parser
@@ -232,7 +232,7 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%T.%L%j'
-    output: {{ .output }}
+    output: output
 
   - id: xml_listener_regex_parser
     type: regex_parser
@@ -240,5 +240,8 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%T.%L%j'
-    output: {{ .output }}
+    output: output
   # {{ end }}
+
+  - id: output
+    type: noop
