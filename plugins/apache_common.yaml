@@ -46,9 +46,3 @@ pipeline:
         warn: 4xx
         error: 5xx
     output: {{ .output }}
-
-  - id: access_protocol_parser
-    type: regex_parser
-    parse_from: $body.protocol
-    regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
-    output: {{ .output }}
