@@ -218,11 +218,13 @@ pipeline:
     if: '$body.move != nil'
     from: '$body.path'
     to: '$resource["path"]'
-  - id: query_parameter_move
-    type: move
-    if: '$body.query_parameter != nil'
-    from: '$body.query_parameter'
-    to: '$resource["query_parameter"]'
+# TODO(jsirianni): OTEL log specification currently does not allow objects as resources,
+# however in the near future this may change. Currently string only.
+#  - id: query_parameter_move
+#    type: move
+#    if: '$body.query_parameter != nil'
+#    from: '$body.query_parameter'
+#    to: '$resource["query_parameter"]'
   - id: frontend_name_move
     type: move
     if: '$body.frontend_name != nil'
