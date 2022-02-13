@@ -172,7 +172,10 @@ dump_agent_logs() {
 }
 
 test_failed_process_entry() {
-    if grep -i 'Failed to process entry' agent.out; then
+    # TODO(jsirianni): Handle k8s metadata or disable it via config?
+    # It will always cause failures when looking up pods that do not exist, this is okay
+    # for now.
+    if grep -v 'k8s_metadata_decorator' agent.out | grep -i 'Failed to process entry'; then
         echo "Failed check: Ensure no 'Failed to process entry' in agent log"
         exit 1
     else 
