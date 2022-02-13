@@ -107,7 +107,7 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%FT%T.%L%z'
-    output: {{ .output }}
+    output: output
     #  {{ end }}
 
   - id: regex_parser
@@ -136,4 +136,7 @@ pipeline:
   - type: time_parser
     parse_from: timestamp
     layout: '%F %T.%L'
-    output: {{ .output }}
+    output: output
+
+  - type: noop
+    id: output
