@@ -186,7 +186,7 @@ test_failed_process_entry() {
 test_empty_output() {
     mkdir -p output
     if "$k8s"; then
-        pod=$(kubectl get pods | grep agent | awk '{print $3}')
+        pod=$(kubectl get pods | grep agent | awk '{print $1}')
         kubectl cp "default/${pod}:/output/out" output/out
     else
         docker cp agent:/output/out output/out
