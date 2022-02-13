@@ -142,7 +142,8 @@ pipeline:
 
   - id: access_protocol_parser
     type: regex_parser
-    parse_from: $body.protocol
+    parse_from: $body.request.protocol
+    parse_to: $body.request
     regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
     output: output
 
