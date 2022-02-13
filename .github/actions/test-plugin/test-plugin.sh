@@ -186,7 +186,8 @@ test_failed_process_entry() {
 test_empty_output() {
     mkdir -p output
     if "$k8s"; then
-        kubectl cp deploy/agent:/output/out output/out
+        pod=$(kubect get pods | grep agent | awk '{print $3}')
+        kubectl cp "${pod}:/output/out" output/out
     else
         docker cp agent:/output/out output/out
     fi
