@@ -243,7 +243,7 @@ pipeline:
     if: '$body.host != nil'
     from: '$body.host'
     to: '$resource["host"]'
-    output: {{ .output }}
+    output: output
 
   # Parser error logs
   # Severities: emerg alert crit err warning notice info debug
@@ -261,7 +261,7 @@ pipeline:
       error2: crit
       fatal: emerg
       error: err
-    output: {{ .output }}
+    output: output
 
   # If $body.message still exists and $body.host doesn't that means we were unable to parse and just need to promote to $body
   - id: message_move
@@ -269,4 +269,7 @@ pipeline:
     if: $body.message != nil and $body.host == nil
     from: $body.message
     to: $body
-    output: {{ .output }}
+    output: output
+
+  - id: output
+    type: noop
