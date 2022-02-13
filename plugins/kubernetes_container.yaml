@@ -177,4 +177,7 @@ pipeline:
   # Add kubernetes metadata
   - id: add_kubernetes_metadata
     type: k8s_metadata_decorator
-    output: {{ .output }}
+    output: output
+
+  - id: output
+    type: noop

@@ -47,4 +47,7 @@ pipeline:
         error: err
         error2: crit
         fatal2: emerg
-    output: {{.output}}
+    output: output
+
+  - id: output
+    type: noop

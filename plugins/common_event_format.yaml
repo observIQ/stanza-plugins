@@ -175,4 +175,7 @@ pipeline:
         - min: 9
           max: 10
         - very-high
-    output: {{ .output }}
+    output: output
+
+  - id: output
+    type: noop

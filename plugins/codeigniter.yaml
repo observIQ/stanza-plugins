@@ -52,7 +52,7 @@ pipeline:
 
   - id: json_router
     type: router
-    default: {{.output}}
+    default: output
     routes:
       # It appears to be JSON so send it to be parsed as JSON.
       - output: nested_json_parser
@@ -61,4 +61,7 @@ pipeline:
   - id: nested_json_parser
     type: json_parser
     parse_from: $body.message
-    output: {{.output}}
+    output: output
+
+  - id: output
+    type: noop
