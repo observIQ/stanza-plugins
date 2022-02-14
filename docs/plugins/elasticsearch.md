@@ -33,6 +33,9 @@ With non-standard log paths:
 pipeline:
 - type: elasticsearch
   general_log_path: "/path/to/logs"
+  deprecation_log_path: "/path/to/logs"
+  enable_gc_logs: true
+  gc_log_path: "/path/to/logs"
 - type: stdout
 
 ```

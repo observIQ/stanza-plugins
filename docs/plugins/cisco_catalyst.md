@@ -23,13 +23,13 @@ pipeline:
 
 ```
 
-With non-standard log paths:
+With non-standard port and IP:
 
 ```yaml
 pipeline:
 - type: cisco_catalyst
-  listen_port: 514
-  listen_ip: "0.0.0.0"
+  listen_port: 6514
+  listen_ip: "10.0.0.1"
 - type: stdout
 
 ```

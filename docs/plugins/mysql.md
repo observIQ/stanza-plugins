@@ -58,12 +58,19 @@ pipeline:
 
 ```
 
-With MariaDB Audit logs:
+With MariaDB Audit logs enabled and non-default log paths:
 
 ```yaml
 pipeline:
 - type: mysql
+  enable_general_log: true
+  general_log_path: "path/to/logs"
+  enable_slow_log: true
+  slow_query_log_path: "path/to/logs"
+  enable_error_log: true
+  error_log_path: "path/to/logs"
   enable_mariadb_audit_log: true
+  mariadb_audit_log_path: "path/to/logs"
 - type: stdout
 
 ```

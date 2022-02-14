@@ -1,6 +1,6 @@
 # `file` plugin
 
-The `file` plugin consumes log files from the local filesystem and outputs parsed entries.
+The `file` plugin consumes log files from the local filesystem and outputs entries.
 
 ## Supported Platforms
 

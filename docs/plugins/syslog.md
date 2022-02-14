@@ -6,7 +6,7 @@ The `syslog` plugin receives [syslog](https://en.wikipedia.org/wiki/Syslog) from
 
 | Field              | Default          | Description |                                                                                                                                                                                                  
 | ---                | ---              | ---         |                                                                                                                                                                                                     
-| `listen_port`      | `514`            | Network port to listen on. Default ports are 514 for UDP, 601 for TCP, and 6514 for TCP with TLS.|                                                     
+| `listen_port`      | `514`            | Network port to listen on. Standard ports (as defined by IANA) for syslog are: 514/UDP, 601/TCP, and 6514/TCP+TLS|                                                     
 | `listen_ip`        | `0.0.0.0`        | A network interface for the agent to bind. Typically 0.0.0.0 for most configurations.  |
 | `connection_type`  | `udp`            | Transport protocol to use (`udp` or `tcp`)                                             |
 | `protocol`         | `rfc5424 (IETF)` | Protocol of received syslog messages (`rfc3164 (BSD)` or `rfc5424 (IETF)`)             |

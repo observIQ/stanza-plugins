@@ -1,6 +1,6 @@
 # `memcached` plugin
 
-The `memcached` plugin consumes [Memcached](https://memcached.org/) journald log entries from the local filesystem and outputs parsed entries.
+The `memcached` plugin consumes [Memcached](https://memcached.org/) log entries from journald and outputs parsed entries.
 
 ## Configuration Fields
 

@@ -7,10 +7,10 @@ The `mongodb` plugin consumes [MongoDB](https://www.mongodb.com/) log entries fr
 | Field | Default | Description |
 | --- | --- | --- |
 | `source` | `file` | Use this field to specify where your logs are coming from. When choosing the 'file' option, the agent reads in logs from the log paths specified below.  When choosing the 'Kubernetes' options, the agent reads logs from /var/log/containers based on the Pod and Container specified below. |
-| `cluster_name` | `""`  | Cluster Name to be added to a resource label |
-| `pod_name` | `mongodb` | PThe pod name (without the unique identifier on the end) |
-| `container_name` | `"*"` | The container name of the Mongodb container |
 | `log_path` | `"/var/log/mongodb/mongodb.log*"` | The path of the log file |
+| `cluster_name` | `""`  | Friendly name to be used as a resource label. Only relevant if the source is "kubernetes". |
+| `pod_name` | `mongodb` | The pod name (without the unique identifier on the end). Only relevant if the source is "kubernetes". |
+| `container_name` | `"*"` | The container name of the Mongodb container. Only relevant if the source is "kubernetes". |
 | `start_at` | `end` | Start reading file from 'beginning' or 'end' |
 
 ## Example usage
@@ -32,7 +32,7 @@ Using Kubernetes:
 pipeline:
 - type: mongodb
   source: kubernetes
-  cluster_name: "mogodb_cluster"
+  cluster_name: "stage"
   pod_name: mongodb
   container_name: "*"
 - type: stdout
