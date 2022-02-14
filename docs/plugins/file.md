@@ -29,7 +29,8 @@ Stanza Pipeline
 ```yaml
 pipeline:
 - type: file
-  file_log_path: "/test.log"
+  file_log_path:
+    - "/test.log"
 - type: stdout
 
 ```
