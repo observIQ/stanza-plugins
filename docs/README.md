@@ -15,7 +15,7 @@ Here is a list of the documentation pages for Stanza Plugins. If you wish to lea
 - [`haproxy`](/docs/plugins/haproxy.md)
 - [`hbase`](/docs/plugins/hbase.md)
 - [`kafka`](/docs/plugins/kafka.md)
-- [kubernetes](/docs/plugins/k8s/)
+- [`kubernetes`](/docs/plugins/k8s/)
 - [`memcached`](/docs/plugins/memcached.md)
 - [`mongodb`](/docs/plugins/mongodb.md)
 - [`mysql`](/docs/plugins/mysql.md)
