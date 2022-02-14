@@ -31,6 +31,7 @@ pipeline:
 - type: file
   file_log_path: "/test.log"
 - type: stdout
+
 ```
 
 <table>

@@ -21,7 +21,7 @@ The `mysql` plugin consumes [mysql](https://www.mysql.com/) log entries from the
 | `error_log_path` | `"/var/log/mysql/mysqld.log"` | Path to mysqld log file |
 | `enable_mariadb_audit_log` | `false` | Enable to collect MySQL audit logs provided by MariaDB Audit plugin |
 | `mariadb_audit_log_path` | `"/var/log/mysql/audit.log"` | Path to audit log file created by MariaDB plugin |
-| `start_at` | `beginning` | Start reading file from 'beginning' or 'end' |
+| `start_at` | `end` | Start reading file from 'beginning' or 'end' |
 
 ## Prerequisites
 
@@ -55,6 +55,7 @@ Using default log paths:
 pipeline:
 - type: mysql
 - type: stdout
+
 ```
 
 With MariaDB Audit logs:
@@ -64,4 +65,5 @@ pipeline:
 - type: mysql
   enable_mariadb_audit_log: true
 - type: stdout
+
 ```

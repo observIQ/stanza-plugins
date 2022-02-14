@@ -68,6 +68,7 @@ Stanza Pipeline
 pipeline:
 - type: nginx
 - type: stdout
+
 ```
 
 Input Entry (Access Log)
@@ -138,6 +139,7 @@ pipeline:
 - type: nginx
   format: observiq
 - type: stdout
+
 ```
 
 Input Entry (Access Log)
@@ -248,6 +250,7 @@ pipeline:
   source: kubernetes
   pod: nginx-deployment
 - type: stdout
+
 ```
 
 Input Entry (Access Log)

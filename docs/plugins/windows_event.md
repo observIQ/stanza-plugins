@@ -36,6 +36,7 @@ pipeline:
   enable_application_events: true
   enable_security_events: true
 - type: stdout
+
 ```
 
 With custom channels enabled, the `custom_channels` field can be populated with any channel found in the Windows Event Viewer.
@@ -51,4 +52,5 @@ pipeline:
     - 'Hardware Events'
     - 'Key Management Service'
 - type: stdout
+
 ```
