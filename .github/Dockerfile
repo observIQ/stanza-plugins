@@ -3,7 +3,7 @@ FROM ubuntu:20.04
 ARG input_dir
 
 ARG DEBIAN_FRONTEND=noninteractive
-ENV TZ=Etc/UTC
+ENV TZ=America/Detroit
 RUN \
     apt-get update -qq && \
     apt-get install -qq -y tzdata
