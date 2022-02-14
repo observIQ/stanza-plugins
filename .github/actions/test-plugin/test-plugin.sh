@@ -183,6 +183,16 @@ test_failed_process_entry() {
     fi
 }
 
+test_expression_errors() {
+    if grep -i 'Running expression returned an error' agent.out; then
+        echo "Failed check: Ensure no 'Running expression returned an error' in agent log"
+        exit 1
+    else 
+        echo "Passed check: Ensure no 'Running expression returned an error' in agent log"
+    fi
+
+}
+
 test_empty_output() {
     mkdir -p output
     if "$k8s"; then
@@ -221,4 +231,5 @@ pause_for_logs
 stop_agent
 dump_agent_logs
 test_failed_process_entry
+test_expression_errors
 test_empty_output
