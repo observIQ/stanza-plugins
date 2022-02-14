@@ -1,15 +1,15 @@
-## `nginx` plugin
+# `nginx` plugin
 
 The `nginx` plugin consumes [nginx](https://www.nginx.com/) log entries from the local filesystem and outputs parsed entries.
 
-### Supported Platforms
+## Supported Platforms
 
 - Linux
 - Windows
 - MacOS
 - Kubernetes
 
-### Configuration Fields
+## Configuration Fields
 
 | Field               | Default                      | Description |                                                                                                                                                                                                  
 | ---                 | ---                          | ---         |                                                                                                                                                                                                     
@@ -25,9 +25,9 @@ The `nginx` plugin consumes [nginx](https://www.nginx.com/) log entries from the
 | `pod_name`          | `nginx`                      | The pod name without the unique identifier on the end. It should match the deployment, daemonset, statefulset or other resource name. Used when source is set to kubernetes |
 | `container_name`    | `*`                          | The container name, useful if the pod has more than one container. Used when source is set to kubernetes |
 
-### Log Format
+## Log Format
 
-#### Default Log Format
+### Default Log Format
 
 The default log format assumes the use of the combined format documented [here](http://nginx.org/en/docs/http/ngx_http_log_module.html).
 
@@ -43,7 +43,7 @@ Combined format sample log:
 10.33.104.40 - - [11/Jan/2021:11:25:01 -0500] "GET / HTTP/1.1" 200 612 "-" "curl/7.58.0"
 ```
 
-#### observIQ Log format
+### observIQ Log format
 
 The observIQ log format is an enhanced log format that includes many useful fields that do not exist in the default
 logging format, such as upstream information and http_x_forwarded_for headers.
@@ -58,9 +58,9 @@ observIQ log format sample log:
 {"remote_addr":"10.33.104.40","remote_user":"-","time_local":"25/Feb/2021:16:20:01 -0500","request":"GET /about-us?app=prod&user=james&app=stage HTTP/1.1","status":"404","body_bytes_sent":"178","http_referer":"-","http_user_agent":"curl/7.58.0","request_length":"114","request_time":"0.000","upstream_addr":"-","upstream_response_length":"-","upstream_response_time":"-","upstream_status":"-","proxy_add_x_forwarded_for":"10.33.104.40","bytes_sent":"342","time_iso8601":"2021-02-25T16:20:01-05:00","upstream_connect_time":"-","upstream_header_time":"-","http_x_forwarded_for":"-"}
 ```
 
-### Example usage:
+## Example usage
  
-#### Default Configuration File Source
+### Default Configuration File Source
 
 Stanza Pipeline
 
@@ -68,6 +68,7 @@ Stanza Pipeline
 pipeline:
 - type: nginx
 - type: stdout
+
 ```
 
 Input Entry (Access Log)
@@ -129,7 +130,7 @@ Output Entry (Error Log)
 }
 ```
 
-#### observIQ Configuration File Source
+### observIQ Configuration File Source
 
 Stanza Pipeline
 
@@ -138,6 +139,7 @@ pipeline:
 - type: nginx
   format: observiq
 - type: stdout
+
 ```
 
 Input Entry (Access Log)
@@ -186,7 +188,7 @@ Output Entry (Access Log)
 }
 ```
 
-#### Default Configuration Kubernetes Source
+### Default Configuration Kubernetes Source
 
 Stanza can collect Nginx logs while running on Kubernetes. Use the provided script to deploy a sample environment:
 1. Start [Minikube](https://minikube.sigs.k8s.io/docs/start/)
@@ -248,6 +250,7 @@ pipeline:
   source: kubernetes
   pod: nginx-deployment
 - type: stdout
+
 ```
 
 Input Entry (Access Log)

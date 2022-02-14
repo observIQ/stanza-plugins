@@ -1,0 +1,28 @@
+# Plugins
+
+Here is a list of the documentation pages for Stanza Plugins. If you wish to learn more about plugins, checkout the documentation from the main Stanza repo [here](https://github.com/observIQ/stanza/blob/master/docs/plugins.md).
+
+- [`aerospike`](/docs/plugins/aerospike.md)
+- [`apache_combined`](/docs/plugins/apache_combined.md)
+- [`apache_common`](/docs/plugins/apache_common.md)
+- [`apache_http`](/docs/plugins/apache_http.md)
+- [`cassandra`](/docs/plugins/cassandra.md)
+- [`cisco_asa`](/docs/plugins/cisco_asa.md)
+- [`cisco_catalyst`](/docs/plugins/cisco_catalyst.md)
+- [`couchdb`](/docs/plugins/couchdb.md)
+- [`elasticsearch`](/docs/plugins/elasticsearch.md)
+- [`file`](/docs/plugins/file.md)
+- [`haproxy`](/docs/plugins/haproxy.md)
+- [`hbase`](/docs/plugins/hbase.md)
+- [`kafka`](/docs/plugins/kafka.md)
+- [`kubernetes`](/docs/plugins/k8s/)
+- [`memcached`](/docs/plugins/memcached.md)
+- [`mongodb`](/docs/plugins/mongodb.md)
+- [`mysql`](/docs/plugins/mysql.md)
+- [`nginx`](/docs/plugins/nginx.md)
+- [`postgresql`](/docs/plugins/postgresql.md)
+- [`rabbitmq`](/docs/plugins/rabbitmq.md)
+- [`redis`](/docs/plugins/redis.md)
+- [`syslog`](/docs/plugins/syslog.md)
+- [`tomcat`](/docs/plugins/tomcat.md)
+- [`windows_events`](/docs/plugins/windows_events.md)

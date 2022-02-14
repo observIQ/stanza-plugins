@@ -1,12 +1,12 @@
-## `syslog` plugin
+# `syslog` plugin
 
 The `syslog` plugin receives [syslog](https://en.wikipedia.org/wiki/Syslog) from network devices and outputs a parsed entry.
 
-### Configuration Fields
+## Configuration Fields
 
 | Field              | Default          | Description |                                                                                                                                                                                                  
 | ---                | ---              | ---         |                                                                                                                                                                                                     
-| `listen_port`      | `514`            | Network port to listen on                                                              |                                                     
+| `listen_port`      | `514`            | Network port to listen on. Standard ports (as defined by IANA) for syslog are: 514/UDP, 601/TCP, and 6514/TCP+TLS|                                                     
 | `listen_ip`        | `0.0.0.0`        | A network interface for the agent to bind. Typically 0.0.0.0 for most configurations.  |
 | `connection_type`  | `udp`            | Transport protocol to use (`udp` or `tcp`)                                             |
 | `protocol`         | `rfc5424 (IETF)` | Protocol of received syslog messages (`rfc3164 (BSD)` or `rfc5424 (IETF)`)             |
@@ -16,9 +16,9 @@ The `syslog` plugin receives [syslog](https://en.wikipedia.org/wiki/Syslog) from
 | `tls_private_key`  |                  | Path to x509 PEM encoded TLS private key file |
 | `tls_min_version`  | `"1.2"`          | Minimum TLS version to support (string)       |
 
-### Example usage:
+## Example usage:
  
-#### Default Configuration
+### Default Configuration
 
 Stanza Pipeline
 
@@ -26,6 +26,7 @@ Stanza Pipeline
 pipeline:
 - type: syslog
 - type: stdout
+
 ```
 
 Input Entry (sent with `echo "<message here>" | nc -u localhost 514`)
@@ -69,7 +70,7 @@ Output Entry
 }
 ```
 
-#### Bind to IP address
+### Bind to IP address
 
 Stanza Pipeline
 
@@ -78,6 +79,7 @@ pipeline:
 - type: syslog
   listen_ip: 10.99.1.10
 - type: stdout
+
 ```
 
 Input Entry (sent with `echo "<message here>" | nc -u 10.99.1.10 514`, use your machine's IP address)
@@ -121,7 +123,7 @@ Output Entry
 }
 ```
 
-#### rfc3164 with tcp Configuration
+### rfc3164 with tcp Configuration
 
 Stanza Pipeline
 
@@ -130,11 +132,12 @@ pipeline:
 - type: syslog
   protocol: rfc3164 (BSD)
   connection_type: tcp
-  listen_port: 5140
+  listen_port: 601
 - type: stdout
+
 ```
 
-Input Entry (sent with `echo "<message here>" | nc localhost 5140`)
+Input Entry (sent with `echo "<message here>" | nc localhost 601`)
 
 ```
 <34>Oct 11 22:14:15 mymachine su: 'su root' failed for lonvick on /dev/pts/8
@@ -150,7 +153,7 @@ Output Entry
   "labels": {
     "log_type": "syslog",
     "net.host.ip": "::1",
-    "net.host.port": "5140",
+    "net.host.port": "601",
     "net.peer.ip": "::1",
     "net.peer.port": "45316",
     "net.transport": "IP.TCP",
@@ -166,7 +169,7 @@ Output Entry
 }
 ```
 
-#### rfc3164 with location Configuration
+### rfc3164 with location Configuration
 
 Stanza Pipeline
 
@@ -175,12 +178,13 @@ pipeline:
 - type: syslog
   protocol: rfc3164 (BSD)
   connection_type: tcp
-  listen_port: 5140
+  listen_port: 601
   location: America/Detroit
 - type: stdout
+
 ```
 
-Input Entry (sent with `echo "<message here>" | nc localhost 5140`)
+Input Entry (sent with `echo "<message here>" | nc localhost 601`)
 
 ```
 <34>Oct 11 22:14:15 mymachine su: 'su root' failed for lonvick on /dev/pts/8
@@ -196,7 +200,7 @@ Output Entry
   "labels": {
     "log_type": "syslog",
     "net.host.ip": "::1",
-    "net.host.port": "5140",
+    "net.host.port": "601",
     "net.peer.ip": "::1",
     "net.peer.port": "45318",
     "net.transport": "IP.TCP",
@@ -210,22 +214,23 @@ Output Entry
     "priority": 34
   }
 }
-
 ```
 
-#### TCP Configuration w/ TLS
+### TCP Configuration w/ TLS
 
 Stanza Pipeline
 
 ```yaml
 pipeline:
 - type: syslog
+  listen_port: 6514
   connection_type: tcp
   tls_enable: true
   tls_certificate: /path/to/certificate
   tls_private_key: /path/to/privateKey
   tls_min_version: "1.2"
 - type: stdout
+
 ```
 
 Input Entry (sent with `echo "<message here>" | openssl s_client -connect localhost:514`)
@@ -244,7 +249,7 @@ Output Entry
   "labels": {
     "log_type": "syslog",
     "net.host.ip": "::",
-    "net.host.port": "514",
+    "net.host.port": "6514",
     "net.peer.ip": "::1",
     "net.peer.port": "37871",
     "net.transport": "IP.UDP",
