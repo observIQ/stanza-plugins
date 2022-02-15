@@ -30,4 +30,5 @@ Maintainers can create a release using the GitHub UI by creating a release that 
 | Mongodb              | [![mongodb](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_mongodb.yaml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_mongodb.yaml) |
 | Mysql                | [![mysql](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_mysql.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_mysql.yml) |
 | Oracle Database      | [![oracledb](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_oracledb.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_oracledb.yml) |
+| Pgbouncer            | [![pgbouncer](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_pgbouncer.yaml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_pgbouncer.yaml) |
 | Postgresql           | [![postgresql](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_postgresql.yaml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_postgresql.yaml) |
