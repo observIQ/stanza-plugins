@@ -1,0 +1,58 @@
+name: kafka
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        format:
+          - "default"
+    steps:
+    - name: Clone stanza-plugins
+      uses: actions/checkout@v2
+
+    - name: Clone Log Library
+      uses: actions/checkout@v2
+      with:
+        repository: 'observIQ/log-library'
+        path: log-library
+        token: ${{ secrets.LOG_LIBRARY_ACCESS_TOKEN }}
+        ref: otel
+
+    - name: Create Output Directory
+      run: mkdir output
+
+    - name: Clone Collector
+      uses: actions/checkout@v2
+      with:
+        repository: 'observIQ/observiq-collector'
+        path: observiq-collector
+        token: ${{ secrets.LOG_LIBRARY_ACCESS_TOKEN }}
+        fetch-depth: 0
+
+    - name: Set up Go 1.17
+      uses: actions/setup-go@v2
+      with:
+        go-version: 1.17
+
+    - name: Fetch Go Cache Paths
+      id: go-cache-paths
+      run: |
+        echo "::set-output name=go-mod::$(go env GOMODCACHE)"
+
+    - name: Checkout Latest Collector Release
+      run: |
+        latestTag=$(git describe --tags `git rev-list --tags --max-count=1`)
+        git checkout $latestTag
+      working-directory: observiq-collector
+
+    - name: Test Plugin
+      uses: ./.github/actions/test-plugin
+      with:
+        workflow: ${GITHUB_WORKFLOW}
+        workflow_case: ${{ matrix.format }}
