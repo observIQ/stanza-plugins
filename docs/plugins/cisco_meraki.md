@@ -8,7 +8,6 @@ The `cisco_meraki` plugin receives logs from [Cisco Meraki](https://meraki.cisco
 | --- | --- |--- | --- |
 | `listen_port` | `int` | `514` | A port which the agent will listen for udp messages |
 | `listen_ip` | `string` | `"0.0.0.0"`  | A UDP ip address of the form `<ip>` |
-| `listen_address` | `string` | `""` | Parameter Deprecated Use `listen_ip` and `listen_port` instead. | 
 
 ## Example usage
 
