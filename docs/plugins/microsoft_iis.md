@@ -1,6 +1,6 @@
 # `Microsoft IIS` plugin
 
-The `microsoft_iis` plugin consumes [Microsoft IIS](hhttps://www.iis.net/) logs entries from the local filesystem and outputs parsed entries.
+The `microsoft_iis` plugin consumes [Microsoft IIS](https://www.iis.net/) logs entries from the local filesystem and outputs parsed entries.
 
 ## Configuration Fields
 
