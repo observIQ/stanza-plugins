@@ -156,7 +156,7 @@ pipeline:
         info2: 3xx
         warn: 4xx
         error: 5xx
-    output: {{ .output }}
+    output: output
     # {{ end }}
     # {{ if eq $log_format "observiq" }}
   - id: access_json_parser
@@ -179,7 +179,7 @@ pipeline:
     type: regex_parser
     parse_from: $body.protocol
     regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
-    output: {{ .output }}
+    output: output
     # {{ end }}
   #{{ end }}
 
@@ -213,5 +213,8 @@ pipeline:
           - fine
           - finer
           - finest
-    output: {{ .output }}
+    output: output
   #{{ end }}
+
+  - id: output
+    type: noop
