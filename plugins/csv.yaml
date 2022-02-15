@@ -19,6 +19,11 @@ parameters:
     description: Comma Separated header string to be used as keys.
     type: string
     required: true
+  - name: delimiter
+    label: CSV Delimiter
+    description: A character that will be used as a delimiter. Values \r and \n cannot be used as a delimiter.
+    type: string
+    default: ","
   - name: encoding
     label: Encoding
     description: Specify the encoding of the file(s) being read. In most cases, you can leave the default option selected.
@@ -45,6 +50,7 @@ parameters:
     default: end
 # Set Defaults
 # {{$header := .header}}
+# {{$delimiter := default "," .delimiter}}
 # {{$encoding := default "utf-8" .encoding}}
 # {{$log_type := default "csv" .log_type}}
 # {{$start_at := default "end" .start_at}}
@@ -73,4 +79,5 @@ pipeline:
 
   - type: csv_parser
     header: {{ $header }}
+    delimiter: {{ $delimiter }}
     output: {{ .output }}
