@@ -164,9 +164,9 @@ pipeline:
       parse_from: timestamp
       layout: '[%d/%h/%Y:%H:%M:%S %z]'
     severity:
-      parse_from: status
+      parse_from: $body.response.status
       preset: none
-      preserve_to: status
+      preserve_to: $body.response.status
       mapping:
         info: 2xx
         info2: 3xx
