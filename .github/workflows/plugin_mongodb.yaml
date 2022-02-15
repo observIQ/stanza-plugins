@@ -1,4 +1,4 @@
-name: couchdb
+name: mongodb
 on:
   pull_request:
   push:
@@ -12,6 +12,7 @@ jobs:
       matrix:
         format:
           - "default"
+          - "3.x"
     steps:
     - name: Clone stanza-plugins
       uses: actions/checkout@v2

@@ -1,4 +1,4 @@
-name: couchdb
+name: uwsgi
 on:
   pull_request:
   push:
@@ -12,6 +12,8 @@ jobs:
       matrix:
         format:
           - "default"
+          - "apache-combined"
+          - "observiq"
     steps:
     - name: Clone stanza-plugins
       uses: actions/checkout@v2

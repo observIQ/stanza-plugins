@@ -59,13 +59,15 @@ pipeline:
       - output: namespace_restructure
         expr: '$body.namespace == ""'
       # namespace not empty
-      - output: {{.output}}
+      - output: output
         expr: true
 
   - id: namespace_restructure
     type: restructure
     ops:
       - remove: "namespace"
-    output: {{.output}}
+    output: output
 # {{ end }}
 
+  - id: output
+    type: noop

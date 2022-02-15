@@ -189,7 +189,7 @@ pipeline:
         info2: 3xx
         warn: 4xx
         error: 5xx
-    output: {{ .output }}
+    output: output
   # {{ end }}
 
   # {{ if eq $log_format "observiq" }}
@@ -213,7 +213,7 @@ pipeline:
     preserve_to: $body.request
     if: '$body.request != nil and $body.request matches "\\S+ +[^ ]* "'
     regex: '(?P<method>\S+) +(?P<path>[^ ]*) ((?P<protocol>[^/]*)/(?P<protocol_version>.*)|.*)?'
-    output: {{ .output }}
+    output: output
   # {{ end }}
 
   # {{ if $enable_error_log }}
@@ -228,5 +228,8 @@ pipeline:
       mapping:
         error2: crit
         fatal2: emerg
-    output: {{ .output }}
+    output: output
   # {{ end }}
+
+  - id: output
+    type: noop

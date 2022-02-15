@@ -99,4 +99,7 @@ pipeline:
     parse_from: $body.type
     if: '$body.type matches ".*\\[[^\\]]*\\]"'
     regex: '(?P<type>.*)\[(?P<pid>[^\]]*)\]'
-    output: {{ .output }}
+    output: output
+
+  - id: output
+    type: noop

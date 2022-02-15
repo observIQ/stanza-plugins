@@ -49,4 +49,7 @@ pipeline:
         error3: alert
         fatal2: emergency
         fatal3: catastrophe
-    output: {{ .output }}
+    output: output
+
+  - id: output
+    type: noop

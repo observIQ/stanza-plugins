@@ -165,4 +165,7 @@ pipeline:
   - type: time_parser
     parse_from: timestamp
     layout: '%F %T.%L'
-    output: {{ .output }}
+    output: output
+
+  - id: output
+    type: noop

@@ -218,11 +218,13 @@ pipeline:
     if: '$body.move != nil'
     from: '$body.path'
     to: '$resource["path"]'
-  - id: query_parameter_move
-    type: move
-    if: '$body.query_parameter != nil'
-    from: '$body.query_parameter'
-    to: '$resource["query_parameter"]'
+# TODO(jsirianni): OTEL log specification currently does not allow objects as resources,
+# however in the near future this may change. Currently string only.
+#  - id: query_parameter_move
+#    type: move
+#    if: '$body.query_parameter != nil'
+#    from: '$body.query_parameter'
+#    to: '$resource["query_parameter"]'
   - id: frontend_name_move
     type: move
     if: '$body.frontend_name != nil'
@@ -243,7 +245,7 @@ pipeline:
     if: '$body.host != nil'
     from: '$body.host'
     to: '$resource["host"]'
-    output: {{ .output }}
+    output: output
 
   # Parser error logs
   # Severities: emerg alert crit err warning notice info debug
@@ -261,7 +263,7 @@ pipeline:
       error2: crit
       fatal: emerg
       error: err
-    output: {{ .output }}
+    output: output
 
   # If $body.message still exists and $body.host doesn't that means we were unable to parse and just need to promote to $body
   - id: message_move
@@ -269,4 +271,7 @@ pipeline:
     if: $body.message != nil and $body.host == nil
     from: $body.message
     to: $body
-    output: {{ .output }}
+    output: output
+
+  - id: output
+    type: noop

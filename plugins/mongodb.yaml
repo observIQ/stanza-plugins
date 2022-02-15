@@ -26,8 +26,7 @@ parameters:
     label: Pod Name
     description: The pod name (without the unique identifier on the end)
     type: string
-    default: 'mongodb'
-    required: true
+    required: false
     relevant_if:
       source:
         equals: kubernetes
@@ -188,3 +187,6 @@ pipeline:
     field: '$attributes.log_type'
     value: 'mongodb'
     output: {{ .output }}
+
+  - id: output
+    type: noop

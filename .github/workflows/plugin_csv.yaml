@@ -1,4 +1,4 @@
-name: couchdb
+name: csv
 on:
   pull_request:
   push:

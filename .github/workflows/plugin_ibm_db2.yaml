@@ -1,4 +1,4 @@
-name: couchdb
+name: ibm_db2
 on:
   pull_request:
   push:

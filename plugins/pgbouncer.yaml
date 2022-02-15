@@ -68,7 +68,7 @@ pipeline:
 
   - id: message_router
     type: router
-    default: {{ .output }}
+    default: output
     routes:
       - expr: '$body.message matches "^[Ss]tats: "'
         output: stats_parser
@@ -79,10 +79,13 @@ pipeline:
     type: regex_parser
     parse_from: $body.message
     regex: '^[Ss]tats: (?P<xacts_per_second>\d+)[^,]*,\s(?P<queries_per_second>\d+)[^,]*,\sin\s(?P<in_bytes_per_second>\d+)[^,]*,\sout\s(?P<out_bytes_per_second>\d+)[^,]*,\sxact\s(?P<xact_microsecond>\d+)[^,]*,\squery\s(?P<query_microsecond>\d+)\sus(,)?\swait(\stime)?\s(?P<wait_time_microsecond>\d+).*'
-    output: {{ .output }}
+    output: output
 
   - id: request_parser
     type: regex_parser
     parse_from: $body.message
     regex: '^[CS]-\w*:\s(\()?(?P<db_name>\w*)(\))?\/(\()?(?P<user_name>\w*)(\))?@(?P<host>[^:]*):(?P<port>\d*)\s*(?P<message>[^\(]*)(\s*\(age=(?P<age>\d*)s\))?'
-    output: {{ .output }}
+    output: output
+
+  - id: output
+    type: noop

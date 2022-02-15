@@ -1,4 +1,4 @@
-name: couchdb
+name: mysql
 on:
   pull_request:
   push:
@@ -11,7 +11,11 @@ jobs:
       fail-fast: false
       matrix:
         format:
-          - "default"
+          - "all"
+          - "general"
+          - "slow"
+          - "error"
+          - "audit"
     steps:
     - name: Clone stanza-plugins
       uses: actions/checkout@v2

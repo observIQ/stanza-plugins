@@ -89,7 +89,7 @@ pipeline:
         error3: alert
         fatal2: emergency
         fatal3: catastrophe
-    output: {{.output}}
+    output: output
 
   - id: master_startup_regex_parser
     type: regex_parser
@@ -98,7 +98,7 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%a %h %d %H:%M:%S %Z %Y'
-    output: {{.output}}
+    output: output
 # {{ end }}
 
 # {{ if $enable_region_log }}
@@ -128,7 +128,7 @@ pipeline:
         error3: alert
         fatal2: emergency
         fatal3: catastrophe
-    output: {{.output}}
+    output: output
 
   - id: region_startup_regex_parser
     type: regex_parser
@@ -137,7 +137,7 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%a %h %d %H:%M:%S %Z %Y'
-    output: {{.output}}
+    output: output
 # {{ end }}
 
 # {{ if $enable_zookeeper_log }}
@@ -167,7 +167,7 @@ pipeline:
         error3: alert
         fatal2: emergency
         fatal3: catastrophe
-    output: {{.output}}
+    output: output
 
   - id: zookeeper_startup_regex_parser
     type: regex_parser
@@ -176,5 +176,8 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%a %h %d %H:%M:%S %Z %Y'
-    output: {{.output}}
+    output: output
 # {{ end }}
+
+  - id: output
+    type: noop

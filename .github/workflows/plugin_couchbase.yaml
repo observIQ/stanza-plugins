@@ -1,4 +1,4 @@
-name: couchdb
+name: couchbase
 on:
   pull_request:
   push:

@@ -1,4 +1,4 @@
-name: couchdb
+name: tomcat
 on:
   pull_request:
   push:
@@ -12,6 +12,7 @@ jobs:
       matrix:
         format:
           - "default"
+          - "observiq"
     steps:
     - name: Clone stanza-plugins
       uses: actions/checkout@v2

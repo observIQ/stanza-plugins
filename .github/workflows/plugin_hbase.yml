@@ -1,4 +1,4 @@
-name: couchdb
+name: hbase
 on:
   pull_request:
   push:
@@ -11,7 +11,10 @@ jobs:
       fail-fast: false
       matrix:
         format:
-          - "default"
+          - "all"
+          - "master"
+          - "region"
+          - "zookeeper"
     steps:
     - name: Clone stanza-plugins
       uses: actions/checkout@v2

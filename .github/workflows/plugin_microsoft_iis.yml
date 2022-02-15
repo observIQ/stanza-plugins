@@ -1,4 +1,4 @@
-name: couchdb
+name: microsoft_iis
 on:
   pull_request:
   push:

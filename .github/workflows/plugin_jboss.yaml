@@ -1,4 +1,4 @@
-name: couchdb
+name: jboss
 on:
   pull_request:
   push:

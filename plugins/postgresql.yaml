@@ -177,5 +177,8 @@ pipeline:
   - id: output_router
     type: router
     routes:
-      - output: {{.output}}
+      - output: output
         expr: 'true'
+
+  - id: output
+    type: noop

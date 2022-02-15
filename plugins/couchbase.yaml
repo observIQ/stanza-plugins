@@ -149,7 +149,7 @@ pipeline:
         error3: alert
         fatal2: emergency
         fatal3: catastrophe
-    output: {{.output}}
+    output: output
 # {{ end }}
 
 # {{ if $enable_debug_log }}
@@ -179,7 +179,7 @@ pipeline:
         error3: alert
         fatal2: emergency
         fatal3: catastrophe
-    output: {{.output}}
+    output: output
 # {{ end }}
 
 # {{ if $enable_info_log }}
@@ -209,7 +209,7 @@ pipeline:
         error3: alert
         fatal2: emergency
         fatal3: catastrophe
-    output: {{.output}}
+    output: output
 # {{ end }}
 
 # {{ if $enable_access_log }}
@@ -238,7 +238,7 @@ pipeline:
         info2: 3xx
         warn: 4xx
         error: 5xx
-    output: {{.output}}
+    output: output
 # {{ end }}
 
 # {{ if $enable_internal_access_log }}
@@ -267,7 +267,7 @@ pipeline:
         info2: 3xx
         warn: 4xx
         error: 5xx
-    output: {{.output}}
+    output: output
 # {{ end }}
 
 # {{ if $enable_babysitter_log }}
@@ -297,7 +297,7 @@ pipeline:
         error3: alert
         fatal2: emergency
         fatal3: catastrophe
-    output: {{.output}}
+    output: output
 # {{ end }}
 
 # {{ if $enable_xdcr_log }}
@@ -327,5 +327,8 @@ pipeline:
         error3: alert
         fatal2: emergency
         fatal3: catastrophe
-    output: {{.output}}
+    output: output
 # {{ end }}
+
+  - id: output
+    type: noop

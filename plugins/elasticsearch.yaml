@@ -87,7 +87,7 @@ pipeline:
         error3: alert
         fatal2: emergency
         fatal3: catastrophe
-    output: {{.output}}
+    output: output
 #{{ end }}
 
 #{{ if $enable_deprecation_logs }}
@@ -116,7 +116,7 @@ pipeline:
         fatal2: emergency
         fatal3: catastrophe
       preserve_to: elasticsearch_severity
-    output: {{.output}}
+    output: output
 #{{ end }}
 
 #{{ if $enable_gc_logs }}
@@ -136,5 +136,8 @@ pipeline:
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%s%z'
-    output: {{.output}}
+    output: output
 #{{ end }}
+
+  - id: output
+    type: noop

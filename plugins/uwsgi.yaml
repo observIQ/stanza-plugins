@@ -101,7 +101,7 @@ pipeline:
         info2: 3xx
         warn: 4xx
         error: 5xx
-    output: {{ .output }}
+    output: output
   # {{ end }}
 
   - id: protocol_parser
@@ -113,4 +113,7 @@ pipeline:
   - type: remove
     if: '$body.message == ""'
     field: $body.message
-    output: {{.output}}
+    output: output
+
+  - id: output
+    type: noop

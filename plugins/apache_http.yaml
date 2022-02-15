@@ -96,7 +96,7 @@ pipeline:
         info2: 3xx
         warn: 4xx
         error: 5xx
-    output: {{ .output }}
+    output: output
 
   - id: error_regex_parser
     type: regex_parser
@@ -120,7 +120,7 @@ pipeline:
           - trace6
           - trace7
           - trace8
-    output: {{ .output }}
+    output: output
   # {{ end }}
 
   # {{ if eq $log_format "observiq" }}
@@ -142,9 +142,10 @@ pipeline:
 
   - id: access_protocol_parser
     type: regex_parser
-    parse_from: $body.protocol
+    parse_from: $body.request.protocol
+    parse_to: $body.request
     regex: '(?P<protocol>[^/]*)/(?P<protocol_version>.*)'
-    output: {{ .output }}
+    output: output
 
   - id: error_json_parser
     type: json_parser
@@ -173,5 +174,8 @@ pipeline:
     type: regex_parser
     parse_from: $body.message
     regex: '(?P<error_code>[^:]*):(?P<message>.*)'
-    output: {{ .output }}
+    output: output
   # {{ end }}
+
+  - id: output
+    type: noop

@@ -1,0 +1,31 @@
+name: "Test Plugin"
+description: "Tests a stanza / otel plugin"
+inputs:
+  workflow:
+    description: 'The name of the workflow'
+    required: true
+  workflow_case:
+    description: 'The workflow case (default, observiq, etc)'
+    required: true
+  pause_time:
+    description: 'How long to wait for agent to parse logs, in seconds'
+    required: false
+    default: "10s"
+  k8s:
+    description: 'Set to "true" if plugin requires minikube'
+    required: false
+    default: "false"
+  k8s_version:
+    description: 'Minikube Version'
+    required: false
+    default: "v1.23.0"
+  k8s_runtime:
+    description: 'Minkube runtime'
+    required: false
+    default: "docker"
+runs:
+  using: "composite"
+  steps:
+    - id: test-plugin
+      run: ${{ github.action_path }}/test-plugin.sh "${{ inputs.workflow }}" "${{ inputs.workflow_case }}" "${{ inputs.pause_time }}" "${{ inputs.k8s }}" "${{ inputs.k8s_version }}" "${{ inputs.k8s_runtime }}"
+      shell: bash

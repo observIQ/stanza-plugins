@@ -1,4 +1,4 @@
-name: couchdb
+name: kafka
 on:
   pull_request:
   push:

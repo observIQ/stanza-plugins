@@ -1,4 +1,4 @@
-name: couchdb
+name: postgresql
 on:
   pull_request:
   push:
