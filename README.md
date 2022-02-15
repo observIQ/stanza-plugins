@@ -40,4 +40,4 @@ Maintainers can create a release using the GitHub UI by creating a release that 
 | Pgbouncer            | [![pgbouncer](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_pgbouncer.yaml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_pgbouncer.yaml) |
 | Postgresql           | [![postgresql](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_postgresql.yaml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_postgresql.yaml) |
 | Tomcat               | [![tomcat](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_tomcat.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_tomcat.yml) |
-| Uwsgi               | [![uwsgi](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_uwsgi.yml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_uwsgi.yml) |
+| Uwsgi               | [![uwsgi](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_uwsgi.yaml/badge.svg)](https://github.com/observIQ/stanza-plugins/actions/workflows/plugin_uwsgi.yaml) |
