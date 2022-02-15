@@ -1,6 +1,6 @@
 # `NetFlow` plugin
 
-The `netflow` plugin consumes [NetFlow](https://en.wikipedia.org/wiki/NetFlow) a NetFlow collector and outputs parsed entries.
+The `netflow` plugin consumes [NetFlow](https://en.wikipedia.org/wiki/NetFlow) logs from a NetFlow collector and outputs parsed entries.
 
 ## Configuration Fields
 
