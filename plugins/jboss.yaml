@@ -1,7 +1,7 @@
 # Plugin Info
 version: 0.0.4
 title: JBoss
-description: 'Log parser for JBoss. This plugin expects the following starting format: %d{yyyy-MM-dd HH\:mm\:ss,SSS} %-5p [%c] (%t)'
+description: 'Log parser for JBoss / WildFly.
 parameters:
   - name: file_path
     label: JBoss Logs Path
@@ -17,6 +17,11 @@ parameters:
       - end
     default: end
 
+# ops agent default file paths
+# "/opt/wildfly/standalone/log/server.log"
+# "/opt/wildfly/domain/servers/*/log/server.log"
+# "/opt/wildfly/domain/log/*.log"
+
 # Set Defaults
 # {{$file_path := default "/usr/local/JBoss/EAP-*/*/log/server.log" .file_path}}
 # {{$start_at := default "end" .start_at}}
@@ -28,7 +33,7 @@ pipeline:
     include:
       - {{ $file_path }}
     multiline:
-      line_start_pattern: '^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}.\d{3}\s\w+\s'
+      line_start_pattern: '\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}'
     start_at: {{ $start_at }}
     labels:
       log_type: jboss
@@ -37,12 +42,12 @@ pipeline:
 
   - id: jboss_parser
     type: regex_parser
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}).\d{3}\s*(?P<jboss_severity>\w+)\s*\[(?P<category>[^\]]*)\]\s*\((?P<thread>[^)]*)\)( (?P<id>[^:]*):)? (?P<message>.*)\n'
+    regex: '^(?P<time>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2},\d{3})\s+(?P<level>\w+)(?:\s+\[(?P<source>.+?)\])?(?:\s+\((?P<thread>.+?)\))?\s+(?P<message>(?:(?P<messageCode>[\d\w]+):)?[\s\S]*)'
     timestamp:
-      parse_from: timestamp
-      layout: '%Y-%m-%d %H:%M:%S'
+      parse_from: time
+      layout: '%Y-%m-%d %H:%M:%S,%L'
     severity:
-      parse_from: jboss_severity
+      parse_from: level
       mapping:
         emergency: fatal
         warning: warn
