@@ -1,7 +1,7 @@
 # Plugin Info
 version: 0.0.4
 title: JBoss
-description: 'Log parser for JBoss / WildFly.
+description: 'Log parser for JBoss / WildFly.'
 parameters:
   - name: file_path
     label: JBoss Logs Path
