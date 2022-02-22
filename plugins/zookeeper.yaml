@@ -17,6 +17,10 @@ parameters:
       - end
     default: end
 
+# Ops Agent default path
+# "/opt/zookeeper/logs/zookeeper-*.out",
+# "/var/log/zookeeper/zookeeper.log",
+
 # Set Defaults
 # {{$file_path := default "/home/kafka/kafka/logs/zookeeper.log" .file_path}}
 # {{$start_at := default "end" .start_at}}
@@ -28,19 +32,44 @@ pipeline:
     include:
       - {{ $file_path }}
     start_at: {{ $start_at }}
+    multiline:
+      line_start_pattern: '^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3}'
     labels:
-      log_type: zookeeper
       plugin_id: {{ .id }}
-    output: zookeeper_parser
+    output: id_router
+
+  # Route based on if ID is included
+  - id: id_router
+    type: router
+    default: zookeeper_parser
+    routes:
+      # - output: zookeeper_parser
+      #   expr: $ matches '^(\\d{4}-\\d{2}-\\d{2}\\s\\d{2}:\\d{2}:\\d{2},\\d{3})\\s/\\[myid:(?\\d+)?'
+        # expr: $ matches '^\\d{4}-\\d{2}-\\d{2}\\s\\d{2}:\\d{2}:\\d{2},\\d{3}'
+      - output: zookeeper_parser_no_id
+        expr: $ matches '^(\\d{4}-\\d{2}-\\d{2}\\s\\d{2}:\\d{2}:\\d{2},\\d{3})\\s-'
 
   - id: zookeeper_parser
     type: regex_parser
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d{3} \[myid:(?P<myid>[^\]]*)\] - (?P<zookeeper_severity>[A-Z]+)\s+\[(?P<source>[^\]]+)\] - (?P<message>.*)'
-    timestamp:
-      parse_from: timestamp
-      layout: '%Y-%m-%d %H:%M:%S'
+    regex: '^(?P<time>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3})\s\[myid:(?P<myid>\d+)?\]\s-\s(?P<level>\w+)\s+\[(?P<thread>.+):(?P<source>.+)@(?P<line>\d+)\]\s+-\s*(?P<message>[\S\s]*)'
+    time:
+      parse_from: time
+      layout: "%Y-%m-%d %H:%M:%S,%L"
     severity:
-      parse_from: zookeeper_severity
+      parse_from: level
+      mapping:
+        warning: warn
+        critical: fatal
+    output: {{.output}}
+
+  - id: zookeeper_parser_no_id
+    type: regex_parser
+    regex: '^(?P<time>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3})\s-\s(?P<level>\w+)\s+\[(?P<thread>.+):(?P<source>.+)@(?P<line>\d+)\]\s+-\s*(?P<message>[\S\s]*)'
+    time:
+      parse_from: time
+      layout: "%Y-%m-%d %H:%M:%S,%L"
+    severity:
+      parse_from: level
       mapping:
         warning: warn
         critical: fatal
