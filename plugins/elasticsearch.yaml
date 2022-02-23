@@ -3,31 +3,23 @@ version: 0.0.2
 title: Elasticsearch
 description: Log parser for Elasticsearch
 parameters:
-  - name: enable_general_logs
-    label: General Logs
-    description: Enable to collect Elasticsearch general logs
+  - name: enable_json_logs
+    label: JSON Logs
+    description: Enable to collect Elasticsearch JSON logs
     type: bool
     default: true
-  - name: general_log_path
-    label: General Logs Path
-    description: The absolute path to the Elasticsearch general logs
-    type: string
-    default: "/var/log/elasticsearch/elasticsearch.log*"
+  - name: json_log_paths
+    label: JSON Logs Path
+    description: The absolute path to the Elasticsearch JSON logs
+    type: strings
+    default: 
+      - "/var/log/elasticsearch/*_server.json"
+      - "/var/log/elasticsearch/*_deprecation.json"
+      - "/var/log/elasticsearch/*_index_search_slowlog.json"
+      - "/var/log/elasticsearch/*_index_indexing_slowlog.json"
+      - "/var/log/elasticsearch/*_audit.json"
     relevant_if:
-      enable_general_logs:
-        equals: true
-  - name: enable_deprecation_logs
-    label: Deprecation Logs
-    description: Enable to collect Elasticsearch deprecation logs
-    type: bool
-    default: true
-  - name: deprecation_log_path
-    label: Deprecation Logs Path
-    description: The absolute path to the Elasticsearch deprecation logs
-    type: string
-    default: "/var/log/elasticsearch/elasticsearch_deprecation.log*"
-    relevant_if:
-      enable_deprecation_logs:
+      enable_json_logs:
         equals: true
   - name: enable_gc_logs
     label: Garbage Collection Logs
@@ -52,62 +44,28 @@ parameters:
     default: end
 
 # Set Defaults
-# {{$enable_general_logs := default true .enable_general_logs}}
-# {{$general_log_path := default "/var/log/elasticsearch/elasticsearch.log*" .general_log_path}}
-# {{$enable_deprecation_logs := default true .enable_deprecation_logs}}
-# {{$deprecation_log_path := default "/var/log/elasticsearch/elasticsearch_deprecation.log*" .deprecation_log_path}}
+# {{$default_json_log_paths := makeSlice "/var/log/elasticsearch/*_server.json"}}
+# {{$json_log_paths := default .default_json_log_paths .json_log_paths}}
+# {{$enable_json_logs := default true .enable_json_logs}}
 # {{$enable_gc_logs := default false .enable_gc_logs}}
 # {{$gc_log_path := default "/var/log/elasticsearch/gc.log*" .gc_log_path}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
 pipeline:
-# {{ if $enable_general_logs }}
+# {{ if $enable_json_logs }}
   - id: elasticsearch_input
     type: file_input
+    start_at: '{{ $start_at }}'
+    multiline:
+      line_start_pattern: '^{.*'
     include:
-      - {{ $general_log_path }}
-    start_at: {{ $start_at }}
-    labels:
-      log_type: elasticsearch.general
-      plugin_id: {{ .id }}
+# {{ range $i, $fp := .json_log_paths  }}
+      - '{{ $fp }}'
     output: elasticsearch_parser
 
   - id: elasticsearch_parser
-    type: regex_parser
-    regex: '^\[(?P<timestamp>[\d\-:T]+),\d+\]\[(?P<elasticsearch_severity>[A-Z]*)\s*\]\[(?P<service>\S+)\s*\]\s*\[(?P<hostname>[^\]]+)\]\s*(?P<message>.*\S)\s*'
-    timestamp:
-      parse_from: timestamp
-      layout: '%Y-%m-%dT%H:%M:%S'
-    severity:
-      parse_from: elasticsearch_severity
-      mapping:
-        warning: warn
-    output: {{.output}}
-#{{ end }}
-
-#{{ if $enable_deprecation_logs }}
-  - id: elasticsearch_deprecation_input
-    type: file_input
-    include:
-      - {{ $deprecation_log_path }}
-    start_at: {{ $start_at }}
-    labels:
-      log_type: elasticsearch.deprecation
-      plugin_id: {{ .id }}
-    output: elasticsearch_deprecation_parser
-
-  - id: elasticsearch_deprecation_parser
-    type: regex_parser
-    regex: '^\[(?P<timestamp>[\d\-:T]+),\d+\]\[(?P<elasticsearch_severity>[A-Z]*)\s?\](?P<message>[^\s].*)'
-    timestamp:
-      parse_from: timestamp
-      layout: '%Y-%m-%dT%H:%M:%S'
-    severity:
-      parse_from: elasticsearch_severity
-      preserve_to: elasticsearch_severity
-      mapping:
-        warning: warn
+    type: json_parser
     output: {{.output}}
 #{{ end }}
 
@@ -124,9 +82,9 @@ pipeline:
 
   - id: elasticsearch_gc_parser
     type: regex_parser
-    regex: '^\[(?P<timestamp>[^\]]+)\]\[(?P<pid>\d+)\]\[(?P<type>[^\s]+)\s*\] (?P<message>.*)'
+    regex: '^\[(?P<time>\d+-\d+-\d+T\d+:\d+:\d+.\d+\+\d+)\]\[\d+\]\[(?P<type>[A-z,]+)\s*\]\s*(?:GC\((?P<gc_run>\d+)\))?\s*(?P<message>.*)'
     timestamp:
-      parse_from: timestamp
+      parse_from: time
       layout: '%Y-%m-%dT%H:%M:%S.%s%z'
     output: {{.output}}
 #{{ end }}
