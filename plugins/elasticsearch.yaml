@@ -60,12 +60,49 @@ pipeline:
     multiline:
       line_start_pattern: '^{.*'
     include:
-# {{ range $i, $fp := .json_log_paths  }}
+      # {{ range $i, $fp := .json_log_paths  }}
       - '{{ $fp }}'
+      # {{ end }}
     output: elasticsearch_parser
 
   - id: elasticsearch_parser
     type: json_parser
+    severity:
+      parse_from: level
+      preset: none
+      preserve_to: level
+      mapping:
+        debug:
+          - DEBUG
+          - TRACE
+        info: INFO
+        warning:
+          - WARN
+          - DEPRECATION
+        error:
+          - ERROR
+          - CRITICAL
+        critical: FATAL
+    output: time_parser_router
+
+  - id: time_parser_router
+    type: router
+    routes:
+      - output: local_timestamp_parser
+        expr: '$record.timestamp != nil and $record.timestamp matches "^%Y-%m-%dT%H:%M:%S,%L[\\+-]\\d{2}:\\d{2}"'
+      - output: utc_timestamp_parser
+        expr: '$record.timestamp != nil and $record.timestamp matches "^%Y-%m-%dT%H:%M:%S,%LZ"'
+
+  - id: local_containerd_timestamp_parser
+    type: time_parser
+    parse_from: $record.time
+    layout: '%Y-%m-%dT%H:%M:%S.%s%j`'
+    output: {{.output}}
+
+  - id: utc_containerd_timestamp_parser
+    type: time_parser
+    parse_from: $record.time
+    layout: '%Y-%m-%dT%H:%M:%S.%sZ'
     output: {{.output}}
 #{{ end }}
 
