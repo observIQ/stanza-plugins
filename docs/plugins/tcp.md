@@ -24,7 +24,7 @@ Using default log paths:
 ```yaml
 pipeline:
 - type: tcp_input
-  listen_port: 
+  listen_port: 601
 - type: stdout
 
 ```
@@ -34,7 +34,7 @@ With TLS enabled:
 ```yaml
 pipeline:
 - type: tcp_input
-  listen_port: 
+  listen_port: 601
   enable_tls: true
 - type: stdout
 

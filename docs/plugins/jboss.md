@@ -1,6 +1,6 @@
 # `JBoss` plugin
 
-The `jboss` plugin consumes [JBoss EAP](https://hadoop.apache.org/) logs entries from the local filesystem and outputs parsed entries.
+The `jboss` plugin consumes [JBoss EAP](https://www.jboss.org/) logs entries from the local filesystem and outputs parsed entries.
 
 ## Configuration Fields
 

@@ -19,7 +19,8 @@ Using default log paths:
 ```yaml
 pipeline:
 - type: rails
-  file_log_path: "/path/to/logs.log"
+  file_log_path: 
+    - "/path/to/logs.log"
 - type: stdout
 
 ```
