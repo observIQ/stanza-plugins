@@ -28,20 +28,46 @@ pipeline:
     include:
       - {{ $file_path }}
     multiline:
-      line_start_pattern: \[\w*\] [\d\-\.:TZ]+.*
+      line_start_pattern: ^\[\w+\]
     start_at: {{ $start_at }}
     labels:
       log_type: couchdb
       plugin_id: {{ .id }}
+    output: id_router
 
-  - id: couchdb_parser
+  # Route based on pid location
+  - id: id_router
+    type: router
+    routes:
+      - output: couchdb_access_parser
+        expr: $ matches '^\\[(\\w*)\\] ([\\d\\-\\.:TZ]+) (\\S+)@([^\\s]+) \\<([^ ]*)\\> [\\w-]+ ([^ ]*) ([^ ]*) (([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*) ([\\d]*))'
+      - output: couchdb_parser
+        expr: $ matches '^\\[(\\w*)\\] ([\\d\\-\\.:TZ]+) (\\S+)@([^\\s]+) ([\\s\\S]*(\\<([^>]+)\\>)[\\s\\S]*)'
+
+  - id: couchdb_access_parser
     type: regex_parser
-    regex: '^\[(?P<couchdb_severity>\w*)\] (?P<timestamp>[\d\-\.:TZ]+) (?P<user>\w+)@(?P<upstream_host>[^\s]+) <[^>]+> [\w-]+ ((?P<hostname>[\w-]+):(?P<port>\d+) )?(?P<message>.*)'
+    regex: '^\[(?P<level>\w*)\] (?P<timestamp>[\d\-\.:TZ]+) (?P<node>\S+)@(?P<host>[^\s]+) \<(?P<pid>[^ ]*)\> [\w-]+ (?P<http_request_serverIp>[^ ]*) (?P<http_request_remoteIp>[^ ]*) (?P<message>(?P<remote_user>[^ ]*) (?P<http_request_requestMethod>[^ ]*) (?P<path>[^ ]*) (?P<http_request_status>[^ ]*) (?P<status_message>[^ ]*) (?P<http_request_responseSize>[\d]*))'
     timestamp:
       parse_from: timestamp
       layout: '%Y-%m-%dT%H:%M:%S.%sZ'
     severity:
-      parse_from: couchdb_severity
+      parse_from: level
+      mapping:
+        info: notice
+        warning: warn
+        error: err
+        critical: crit
+        emergency: emerg
+    output: {{.output}}
+
+  - id: couchdb_parser
+    type: regex_parser
+    regex: '^\[(?P<level>\w*)\] (?P<timestamp>[\d\-\.:TZ]+) (?P<node>\S+)@(?P<host>[^\s]+) (?P<message>[\s\S]*(\<(?P<pid>[^>]+)\>)[\s\S]*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%dT%H:%M:%S.%sZ'
+    severity:
+      parse_from: level
       mapping:
         info: notice
         warning: warn
