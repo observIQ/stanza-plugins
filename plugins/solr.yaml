@@ -17,6 +17,10 @@ parameters:
       - end
     default: end
 
+# Set Defaults
+# {{$file_path := default "/var/solr/logs/solr.log" .file_path}}
+# {{$start_at := default "end" .start_at}}
+
 # Pipeline Template
 pipeline:
   - id: solr_input
@@ -34,7 +38,7 @@ pipeline:
     regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{3,6})\s(?P<level>[A-z]+)\s{1,5}\((?P<thread>[^\)]+)\)\s\[c?:?(?P<collection>[^\s]*)\ss?:?(?P<shard>[^\s]*)\sr?:?(?P<replica>[^\s]*)\sx?:?(?P<core>[^\]]*)\]\s(?P<source>[^\s]+)\s(?P<message>(?:[\s\S])+)\s?=?>?(?P<exception>[\s\S]*)'
     timestamp:
       parse_from: timestamp
-      layout: '%Y-%m-%d %H:%M:%S.%j'
+      layout: '%Y-%m-%d %H:%M:%S.%L'
     severity:
       parse_from: level
       mapping:
