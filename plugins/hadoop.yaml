@@ -19,8 +19,6 @@ parameters:
     default: end
 
 # Set Defaults
-# {{$default_log_paths := }}
-# {{$log_paths := default (makeSlice "/opt/hadoop/logs/yarn-*.log" "/opt/hadoop/logs/yarn-*.log") .log_paths}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
