@@ -8,7 +8,8 @@ parameters:
     description: The absolute path to the data node logs
     type: strings
     default: 
-      - "/usr/local/hadoop/logs/hadoop.log"
+      - "/opt/hadoop/logs/yarn-*.log"
+      - "/opt/hadoop/logs/hadoop-*.log"
     relevant_if:
       enable_datanode_logs:
         equals: true
@@ -22,7 +23,7 @@ parameters:
     default: end
 
 # Set Defaults
-# {{$log_path := default (makeSlice "/usr/local/hadoop/logs/hadoop-*-datanode-*.log") .log_path}}
+# {{$log_path := default (makeSlice "/opt/hadoop/logs/yarn-*.log" "/opt/hadoop/logs/yarn-*.log") .log_path}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
