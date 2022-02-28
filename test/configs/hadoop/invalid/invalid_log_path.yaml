@@ -1,4 +1,5 @@
 pipeline:
 - type: hadoop
-  log_path: true
+  log_path: 
+    - true
 - type: stdout
