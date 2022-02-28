@@ -1,4 +1,4 @@
 pipeline:
 - type: hadoop
-  resourcemgr_log_path: true
+  log_path: true
 - type: stdout
