@@ -4,15 +4,11 @@ title: Apache Hadoop
 description: Log parser for Apache Hadoop
 parameters:
   - name: log_paths
-    label: Log Path
     description: The absolute path to the data node logs
     type: strings
     default: 
       - "/opt/hadoop/logs/yarn-*.log"
       - "/opt/hadoop/logs/hadoop-*.log"
-    relevant_if:
-      enable_datanode_logs:
-        equals: true
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -23,15 +19,16 @@ parameters:
     default: end
 
 # Set Defaults
-# {{$log_path := default (makeSlice "/opt/hadoop/logs/yarn-*.log" "/opt/hadoop/logs/yarn-*.log") .log_path}}
+# {{$default_log_paths := }}
+# {{$log_paths := default (makeSlice "/opt/hadoop/logs/yarn-*.log" "/opt/hadoop/logs/yarn-*.log") .log_paths}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
 pipeline:
-  - id: hadoop_namenode_input
+  - id: hadoop_input
     type: file_input
     include:
-# {{ range $i, $fp := .log_path  }}
+# {{ range $i, $fp := .default_log_paths  }}
       - '{{ $fp }}'
 # {{ end }}
     multiline:
@@ -40,9 +37,9 @@ pipeline:
     labels:
       log_type: hadoop.namenode
       plugin_id: {{ .id }}
-    output: hadoop_namenode_parser
+    output: hadoop_parser
 
-  - id: hadoop_namenode_parser
+  - id: hadoop_parser
     type: regex_parser
     regex: '^(?P<timestamp>\d+-\d+-\d+ \d+:\d+:\d+,\d+)\s+(?P<severity>\w+)\s+(?P<source>\S+):\s+(?P<message>[\S\s]*)'
     timestamp:
