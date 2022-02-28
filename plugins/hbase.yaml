@@ -68,7 +68,7 @@ pipeline:
     include:
       - {{ $master_log_path }}
     multiline:
-      line_start_pattern: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{3}\s+|^\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \w+ \d{4}'
+      line_start_pattern: '^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\,\d{3,6}|^\w+ \w+ \d{2} \d{2}:\d{2}:\d{2} \w+ \d{4}'
     start_at: {{ $start_at }}
     labels:
       log_type: hbase.master
@@ -77,12 +77,12 @@ pipeline:
   - id: master_standard_regex_parser
     type: regex_parser
     if:  '$record matches "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}\\s+"'
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d{3}\s+(?P<hbase_severity>[A-Z]*)\s*?\[(?P<thread>[^\]]*)\]\s(?P<hbase_source>[^:]*):\s(?P<message>(?s).*)\n'
+    regex: '^(?P<time>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\,\d{3,6})\s(?P<level>[A-Z]+)\s{2}\[(?P<module>[^\]]+)\]\s(?P<message>(?P<source>[\w\.]+)[^\n]+)'
     timestamp:
-      parse_from: timestamp
-      layout: '%Y-%m-%d %H:%M:%S'
+      parse_from: time
+      layout: '%Y-%m-%d %H:%M:%S,%L'
     severity:
-      parse_from: hbase_severity
+      parse_from: level
       mapping:
         warning: warn
         emergency: fatal
@@ -98,7 +98,7 @@ pipeline:
     output: {{.output}}
 # {{ end }}
 
-# {{ if $enable_region_log }}
+# {{ if $enable_region_log}}
   - id: hbase_region_input
     type: file_input
     include:
@@ -113,12 +113,12 @@ pipeline:
   - id: region_standard_regex_parser
     type: regex_parser
     if:  '$record matches "^\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2},\\d{3}\\s+"'
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}),\d{3}\s+(?P<hbase_severity>[A-Z]*)\s*?\[(?P<thread>[^\]]*)\]\s(?P<hbase_source>[^:]*):\s(?P<message>(?s).*)\n'
+    regex: '^(?P<time>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\,\d{3,6})\s(?P<level>[A-Z]+)\s{2}\[(?P<module>[^\]]+)\]\s(?P<message>(?P<source>[\w\.]+)[^\n]+)'
     timestamp:
-      parse_from: timestamp
-      layout: '%Y-%m-%d %H:%M:%S'
+      parse_from: time
+      layout: '%Y-%m-%d %H:%M:%S,%L'
     severity:
-      parse_from: hbase_severity
+      parse_from: level
       mapping:
         warning: warn
         emergency: fatal
