@@ -40,7 +40,6 @@ parameters:
     relevant_if:
       source:
         equals: kubernetes
-    required: false
   - name: container_name
     label: Container Name
     description: The container name of the Nginx container
