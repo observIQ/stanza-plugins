@@ -37,7 +37,7 @@ parameters:
     description: The pod name (without the unique identifier on the end)
     type: string
     default: 'tomcat-*'
-    required: true
+    required: false
     relevant_if:
       source:
         equals: kubernetes
