@@ -3,45 +3,12 @@ version: 0.0.3
 title: Apache Hadoop
 description: Log parser for Apache Hadoop
 parameters:
-  - name: enable_datanode_logs
-    label: DataNode Logs
-    description: Enable collection of Hadoop data node logs
-    type: bool
-    default: true
-  - name: datanode_log_path
-    label: DataNode Log Path
+  - name: log_paths
     description: The absolute path to the data node logs
-    type: string
-    default: "/usr/local/hadoop/logs/hadoop-*-datanode-*.log"
-    relevant_if:
-      enable_datanode_logs:
-        equals: true
-  - name: enable_resourcemgr_logs
-    label: ResourceManager Logs
-    description: Enable the collection of ResourceManager logs
-    type: bool
-    default: true
-  - name: resourcemgr_log_path
-    label: ResourceManager Log Path
-    description: The absolute path to the DataNode logs
-    type: string
-    default: "/usr/local/hadoop/logs/hadoop-*-resourcemgr-*.log"
-    relevant_if:
-      enable_resourcemgr_logs:
-        equals: true
-  - name: enable_namenode_logs
-    label: NameNode Logs
-    description: Enable collection of Hadoop NameNode logs
-    type: bool
-    default: true
-  - name: namenode_log_path
-    label: NameNode Log Path
-    description: The absolute path to the NameNode logs
-    type: string
-    default: "/usr/local/hadoop/logs/hadoop-*-namenode-*.log"
-    relevant_if:
-      enable_namenode_logs:
-        equals: true
+    type: strings
+    default: 
+      - "/opt/hadoop/logs/yarn-*.log"
+      - "/opt/hadoop/logs/hadoop-*.log"
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -52,93 +19,33 @@ parameters:
     default: end
 
 # Set Defaults
-# {{$enable_datanode_logs := default true .enable_datanode_logs}}
-# {{$datanode_log_path := default "/usr/local/hadoop/logs/hadoop-*-datanode-*.log" .datanode_log_path}}
-# {{$enable_resourcemgr_logs := default true .enable_resourcemgr_logs}}
-# {{$resourcemgr_log_path := default "/usr/local/hadoop/logs/hadoop-*-resourcemgr-*.log" .resourcemgr_log_path}}
-# {{$enable_namenode_logs := default true .enable_namenode_logs}}
-# {{$namenode_log_path := default "/usr/local/hadoop/logs/hadoop-*-namenode-*.log" .namenode_log_path}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
 pipeline:
-  # {{ if $enable_datanode_logs }}
-  - id: hadoop_datanode_input
+  - id: hadoop_input
     type: file_input
     include:
-      - {{ $datanode_log_path }}
+# {{ range $i, $fp := .log_paths  }}
+      - '{{ $fp }}'
+# {{ end }}
     multiline:
-      line_start_pattern: '^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+'
-    start_at: {{ $start_at }}
-    labels:
-      log_type: hadoop.datanode
-      plugin_id: {{ .id }}
-    output: hadoop_datanode_parser
-
-  - id: hadoop_datanode_parser
-    type: regex_parser
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>(?s)\S.*\S)'
-    timestamp:
-      parse_from: timestamp
-      layout: '%Y-%m-%d %H:%M:%S'
-    severity:
-      parse_from: hadoop_severity
-      mapping:
-        warning: warn
-        critical: fatal
-    output: {{.output}}
-  # {{ end }}
-
-  # {{ if $enable_resourcemgr_logs }}
-  - id: hadoop_resourcemgr_input
-    type: file_input
-    include:
-      - {{ $resourcemgr_log_path }}
-    multiline:
-      line_start_pattern: '^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+'
-    start_at: {{ $start_at }}
-    labels:
-      log_type: hadoop.resourcemgr
-      plugin_id: {{ .id }}
-    output: hadoop_resourcemgr_parser
-
-  - id: hadoop_resourcemgr_parser
-    type: regex_parser
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>(?s)\S.*\S)'
-    timestamp:
-      parse_from: timestamp
-      layout: '%Y-%m-%d %H:%M:%S'
-    severity:
-      parse_from: hadoop_severity
-      mapping:
-        warning: warn
-        critical: fatal
-    output: {{.output}}
-  # {{ end }}
-
-  # {{ if $enable_namenode_logs }}
-  - id: hadoop_namenode_input
-    type: file_input
-    include:
-      - {{ $namenode_log_path }}
-    multiline:
-      line_start_pattern: '^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3} [A-Z]+'
+      line_start_pattern: '^\d+-\d+-\d+ \d+:\d+:\d+,\d+.*'
     start_at: {{ $start_at }}
     labels:
       log_type: hadoop.namenode
       plugin_id: {{ .id }}
-    output: hadoop_namenode_parser
+    output: hadoop_parser
 
-  - id: hadoop_namenode_parser
+  - id: hadoop_parser
     type: regex_parser
-    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}),\d{3}\s(?P<hadoop_severity>[A-Z]*)\s(?P<fqcn>[A-Za-z0-9\.\$]+):\s(?P<message>(?s)\S.*\S)'
+    regex: '^(?P<timestamp>\d+-\d+-\d+ \d+:\d+:\d+,\d+)\s+(?P<severity>\w+)\s+(?P<source>\S+):\s+(?P<message>[\S\s]*)'
     timestamp:
       parse_from: timestamp
-      layout: '%Y-%m-%d %H:%M:%S'
+      layout: '%Y-%m-%d %H:%M:%S,%L'
     severity:
-      parse_from: hadoop_severity
+      parse_from: severity
       mapping:
         warning: warn
         critical: fatal
     output: {{.output}}
-  # {{ end }}
