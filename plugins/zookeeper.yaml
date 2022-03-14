@@ -43,9 +43,6 @@ pipeline:
     type: router
     default: zookeeper_parser
     routes:
-      # - output: zookeeper_parser
-      #   expr: $ matches '^(\\d{4}-\\d{2}-\\d{2}\\s\\d{2}:\\d{2}:\\d{2},\\d{3})\\s/\\[myid:(?\\d+)?'
-        # expr: $ matches '^\\d{4}-\\d{2}-\\d{2}\\s\\d{2}:\\d{2}:\\d{2},\\d{3}'
       - output: zookeeper_parser_no_id
         expr: $ matches '^(\\d{4}-\\d{2}-\\d{2}\\s\\d{2}:\\d{2}:\\d{2},\\d{3})\\s-'
 
