@@ -23,6 +23,7 @@ Here is a list of the documentation pages for Stanza Plugins. If you wish to lea
 - [`postgresql`](/docs/plugins/postgresql.md)
 - [`rabbitmq`](/docs/plugins/rabbitmq.md)
 - [`redis`](/docs/plugins/redis.md)
+- [`solr`](/docs/plugins/solr.md)
 - [`syslog`](/docs/plugins/syslog.md)
 - [`tomcat`](/docs/plugins/tomcat.md)
 - [`windows_events`](/docs/plugins/windows_events.md)
