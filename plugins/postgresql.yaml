@@ -36,10 +36,25 @@ pipeline:
   - id: general_regex_parser
     type: regex_parser
     parse_from: log_entry
-    regex: '^(?P<time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3,} \w+)\s*\[(?P<tid>\d+)\](?:\s+(?P<role>\S*)@(?P<user>\S*))?\s*(?P<level>\w+):\s+(?P<message>.*)'
+    regex: '^(?P<time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3,} \w+)\s*\[(?P<tid>\d+)\](?:\s+(?P<role>\S*)@(?P<user>\S*))?\s*(?P<level>\w+):\s+(?P<message>(?:\s*duration:\s*(?P<duration>[\d\.:]*)\s*ms\s*)?.*)'
     timestamp:
       parse_from: time
       layout: '%F %T %Z'
+
+  - type: router
+    default: client_address_regex_parser
+    routes:
+      - output: client_address_regex_parser
+        expr: '$record.duration != ""'
+        labels:
+          log_type: 'postgresql.slow_query'
+
+  - id: client_address_regex_parser
+    if: '$record.user matches "[\\w\\.]*\\([\\d]*\\)"'
+    type: regex_parser
+    parse_from: $record.user
+    regex: '(?P<user>[^\(]*)\((?P<client_address_port>[^\)]*)\)'
+    output: statement_regex_parser
 
   - id: statement_regex_parser
     if: '$record.message matches "^STATEMENT:|^statement:"'
