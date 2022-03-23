@@ -176,13 +176,13 @@ pipeline:
   # {{ if eq $log_format "default" }}
   - id: access_parser
     type: regex_parser
-    regex: '^(?P<remote_addr>[^ ]*) - (?P<remote_user>[^ ]*) \[(?P<time_local>[^\]]*)\] "(?P<method>\S+) +(?P<path>[^ ]*) ((?P<protocol>[^/]*)/(?P<protocol_version>.*)|.*)?" (?P<status>[^ ]*) (?P<body_bytes_sent>[^ ]*) "(?P<http_referer>[^\"]*)" "(?P<http_user_agent>[^\"]*)"'
+    regex: '^(?P<http_request_remoteIp>[^ ]*) (?P<host>[^ ]*) (?P<user>[^ ]*) \[(?P<time_local>[^\]]*)\] "(?P<http_request_requestMethod>\S+)(?: +(?P<http_request_requestUrl>[^\"]*?)(?: +(?P<http_request_protocol>\S+))?)?" (?P<http_request_status>[^ ]*) (?P<http_request_responseSize>[^ ]*)(?: "(?P<http_request_referer>[^\"]*)" "(?P<http_request_userAgent>[^\"]*)")?'
     timestamp:
       parse_from: time_local
       layout: '%d/%b/%Y:%H:%M:%S %z'
     severity:
-      parse_from: status
-      preserve_to: status
+      parse_from: http_request_status
+      preserve_to: http_request_status
       mapping:
         info: 2xx
         notice: 3xx
@@ -198,7 +198,7 @@ pipeline:
       parse_from: time_local
       layout: '%d/%b/%Y:%H:%M:%S %z'
     severity:
-      parse_from: status
+      parse_from: http_request_status
       preserve_to: status
       mapping:
         info: 2xx
@@ -218,7 +218,7 @@ pipeline:
   # {{ if $enable_error_log }}
   - id: error_regex_parser
     type: regex_parser
-    regex: '^(?P<time>\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}) \[(?P<log_level>\w+)\] (?P<pid>\d+).(?P<tid>\d+): (?P<message>.*)'
+    regex: '^(?P<time>\d+[./-]\d+[./-]\d+[- ]\d+:\d+:\d+) \[(?P<log_level>[^\]]*)\] (?P<pid>\d+)#(?P<tid>\d+):(?: \*(?P<connection>\d+))? (?P<message>.*?)(?:, client: (?P<client>[^,]+))?(?:, server: (?P<server>[^,]+))?(?:, request: "(?P<request>[^"]*)")?(?:, subrequest: \"(?P<subrequest>[^\"]*)\")?(?:, upstream: \"(?P<upstream>[^"]*)\")?(?:, host: \"(?P<host>[^\"]*)\")?(?:, referrer: \"(?P<referer>[^"]*)\")?'
     timestamp:
       parse_from: time
       layout: '%Y/%m/%d %T'

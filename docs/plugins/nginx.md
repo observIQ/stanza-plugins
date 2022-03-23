@@ -33,14 +33,14 @@ The default log format assumes the use of the combined format documented [here](
 
 Combined format configuration:
 ```
-log_format combined '$remote_addr - $remote_user [$time_local] '
-                    '"$request" $status $body_bytes_sent '
-                    '"$http_referer" "$http_user_agent"';
+log_format combined '$http_request_remoteIp $host $user [$time_local] '
+                    '"$http_request_requestMethod" $http_request_requestUrl $http_request_protocol $http_request_status $http_request_responseSize '
+                    '"$http_request_referer" "$http_request_userAgent"';
 ```
 
 Combined format sample log:
 ```
-10.33.104.40 - - [11/Jan/2021:11:25:01 -0500] "GET / HTTP/1.1" 200 612 "-" "curl/7.58.0"
+127.0.0.1 - frank [10/Oct/2000:13:55:36 -0700] "GET /apache_pb.gif HTTP/1.0" 200 2326
 ```
 
 ### observIQ Log format
