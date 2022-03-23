@@ -26,7 +26,7 @@ pipeline:
     include:
       - {{ $postgresql_log_path }}
     multiline:
-      line_start_pattern: '^t=\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}'
+      line_start_pattern: '^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3,}'
     write_to: log_entry
     start_at: {{ $start_at }}
     labels:
@@ -36,7 +36,7 @@ pipeline:
   - id: general_regex_parser
     type: regex_parser
     parse_from: log_entry
-    regex: '^t=(?P<time>\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}\s+[^\s]+)\s+p=(?P<process_id>\d*)\s+s=(?P<process_start_time>[^\.]*)\.[^\s]+\s+l=(?P<process_log_line>[^\s]*)\s+u=(?P<user_name>[^\s]*)\s+db=(?P<database>[^\s]*)\s+r=(?P<client_address>[^\s]*)\s*(LOG:\s*duration:\s*(?P<duration>[\w\.:]*)\s*ms\s*)?(?P<message>[\w\W]+)?'
+    regex: '^(?P<time>\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}.\d{3,} \w+)\s*\[(?P<tid>\d+)\](?:\s+(?P<role>\S*)@(?P<user>\S*))?\s*(?P<level>\w+):\s+(?P<message>(?:\s*duration:\s*(?P<duration>[\d\.:]*)\s*ms\s*)?.*)'
     timestamp:
       parse_from: time
       layout: '%F %T %Z'
@@ -50,10 +50,10 @@ pipeline:
           log_type: 'postgresql.slow_query'
 
   - id: client_address_regex_parser
-    if: '$record.client_address matches "[\\w\\.]*\\([\\d]*\\)"'
+    if: '$record.user matches "[\\w\\.]*\\([\\d]*\\)"'
     type: regex_parser
-    parse_from: $record.client_address
-    regex: '(?P<client_address>[^\(]*)\((?P<client_address_port>[^\)]*)\)'
+    parse_from: $record.user
+    regex: '(?P<user>[^\(]*)\((?P<client_address_port>[^\)]*)\)'
     output: statement_regex_parser
 
   - id: statement_regex_parser
