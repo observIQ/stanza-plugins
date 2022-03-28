@@ -3,11 +3,12 @@ version: 0.0.2
 title: Apache Zookeeper
 description: Log parser for Apache Zookeeper
 parameters:
-  - name: file_path
-    label: Zookeeper logs path
+  - name: file_log_path
     description: The absolute path to the Zookeeper logs
-    type: string
-    default: "/home/kafka/kafka/logs/zookeeper.log"
+    type: strings
+    default: 
+    - "/opt/zookeeper/logs/zookeeper-*.out"
+    - "/var/log/zookeeper/zookeeper.log"
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -17,12 +18,7 @@ parameters:
       - end
     default: end
 
-# Ops Agent default path
-# "/opt/zookeeper/logs/zookeeper-*.out",
-# "/var/log/zookeeper/zookeeper.log",
-
 # Set Defaults
-# {{$file_path := default "/home/kafka/kafka/logs/zookeeper.log" .file_path}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
@@ -30,7 +26,9 @@ pipeline:
   - id: zookeeper_input
     type: file_input
     include:
-      - {{ $file_path }}
+# {{ range $i, $fp := .file_log_path  }}
+      - '{{ $fp }}'
+# {{ end }}
     start_at: {{ $start_at }}
     multiline:
       line_start_pattern: '^\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2},\d{3}'
