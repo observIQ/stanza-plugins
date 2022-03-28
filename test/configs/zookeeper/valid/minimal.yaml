@@ -1,2 +1,4 @@
 pipeline:
 - type: zookeeper
+  file_log_path: 
+    - "./logs/zookeeper.log"
