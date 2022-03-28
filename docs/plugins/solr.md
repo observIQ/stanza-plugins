@@ -4,10 +4,10 @@ The `solr` plugin consumes [Apache Solr](https://solr.apache.org/) log entries f
 
 ## Configuration Fields
 
-| Field       | Default                     | Description           |
-|-------------|-----------------------------|-----------------------|
-| `file_path` | `"/var/solr/logs/solr.log"` | Path to solr log file |
-| `start_at` | `end` | Start reading file from 'beginning' or 'end' |                                                                                                                                                                                                                                                         |
+| Field           | Default                     | Description           |
+|-----------------|-----------------------------|-----------------------|
+| `file_log_path` | `"/var/solr/logs/solr.log"` | Path to solr log file |
+| `start_at` | `end` | Start reading file from 'beginning' or 'end' | |
 
 ## Example usage
 
@@ -27,7 +27,8 @@ Using non-default file parameters:
 ```yaml
 pipeline:
 - type: solr
-  file_path: "/path/to/logs"
+  file_log_path:
+    - "/path/to/logs"
 - type: stdout
 
 ```

@@ -3,11 +3,12 @@ version: 0.0.1
 title: Solr
 description: Log parser for Solr
 parameters:
-  - name: file_path
+  - name: file_log_path
     label: Solr Logs Path
     description: The absolute path to the Solr logs
-    type: string
-    default: "/var/solr/logs/solr.log"
+    type: strings
+    default: 
+    - "/var/solr/logs/solr.log"
   - name: start_at
     label: Start At
     description: Start reading file from 'beginning' or 'end'
@@ -18,7 +19,6 @@ parameters:
     default: end
 
 # Set Defaults
-# {{$file_path := default "/var/solr/logs/solr.log" .file_path}}
 # {{$start_at := default "end" .start_at}}
 
 # Pipeline Template
@@ -26,7 +26,9 @@ pipeline:
   - id: solr_input
     type: file_input
     include:
-      - {{ $file_path }}
+# {{ range $i, $fp := .file_log_path  }}
+      - '{{ $fp }}'
+# {{ end }}
     start_at: {{ $start_at }}
     labels:
       log_type: solr
