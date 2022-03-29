@@ -1,0 +1,49 @@
+# Plugin Info
+version: 0.0.1
+title: Solr
+description: Log parser for Solr
+parameters:
+  - name: file_log_path
+    label: Solr Logs Path
+    description: The absolute path to the Solr logs
+    type: strings
+    default: 
+    - "/var/solr/logs/solr.log"
+  - name: start_at
+    label: Start At
+    description: Start reading file from 'beginning' or 'end'
+    type: enum
+    valid_values:
+      - beginning
+      - end
+    default: end
+
+# Set Defaults
+# {{$start_at := default "end" .start_at}}
+
+# Pipeline Template
+pipeline:
+  - id: solr_input
+    type: file_input
+    include:
+# {{ range $i, $fp := .file_log_path  }}
+      - '{{ $fp }}'
+# {{ end }}
+    start_at: {{ $start_at }}
+    labels:
+      log_type: solr
+      plugin_id: {{ .id }}
+    output: solr_parser
+
+  - id: solr_parser
+    type: regex_parser
+    regex: '^(?P<timestamp>\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.\d{3,6})\s(?P<level>[A-z]+)\s{1,5}\((?P<thread>[^\)]+)\)\s\[c?:?(?P<collection>[^\s]*)\ss?:?(?P<shard>[^\s]*)\sr?:?(?P<replica>[^\s]*)\sx?:?(?P<core>[^\]]*)\]\s(?P<source>[^\s]+)\s(?P<message>(?:[\s\S])+)\s?=?>?(?P<exception>[\s\S]*)'
+    timestamp:
+      parse_from: timestamp
+      layout: '%Y-%m-%d %H:%M:%S.%L'
+    severity:
+      parse_from: level
+      mapping:
+        critical: fatal
+        warning: warn
+    output: {{ .output }}
