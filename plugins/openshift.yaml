@@ -40,7 +40,7 @@ parameters:
     default: true
   - name: enable_metadata
     label: Enable Metadata
-    description: Attach metadata to entries https://github.com/observIQ/stanza/blob/master/docs/operators/k8s_metadata_decorator.md
+    description: Attach metadata to entries https://github.com/observIQ/stanza/blob/main/docs/operators/k8s_metadata_decorator.md
     type: bool
     default: true
   - name: poll_interval

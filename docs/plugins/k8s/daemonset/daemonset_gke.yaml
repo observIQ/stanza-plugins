@@ -47,7 +47,7 @@ data:
           - /var/log/containers/stanza-*_*-*.log
         start_at: end
 
-      # https://github.com/observIQ/stanza/blob/master/docs/operators/google_cloud_output.md
+      # https://github.com/observIQ/stanza/blob/main/docs/operators/google_cloud_output.md
       # When Stanza is running on GKE, a project_id and credentials_file parameters are not required when
       # the node pool as the "logging" scope enabled
       - type: google_cloud_output
