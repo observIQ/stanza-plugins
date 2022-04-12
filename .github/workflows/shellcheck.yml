@@ -2,21 +2,21 @@
 name: shellcheck
 on:
   pull_request:
-      paths:
+    paths:
       - "./dev/k8s/*sh"
   push:
-      paths:
+    paths:
       - "./dev/k8s/*sh"
-      branches:
-      - master
+    branches:
+      - main
 jobs:
   shellcheck:
     name: Shellcheck
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: "Install Shellcheck"
-      run: sudo apt install shellcheck
-    - name: "Run Shellcheck"
-      run: |
-        shellcheck dev/k8s/*.sh
+      - uses: actions/checkout@v2
+      - name: "Install Shellcheck"
+        run: sudo apt install shellcheck
+      - name: "Run Shellcheck"
+        run: |
+          shellcheck dev/k8s/*.sh

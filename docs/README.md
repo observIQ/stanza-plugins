@@ -1,6 +1,6 @@
 # Plugins
 
-Here is a list of the documentation pages for Stanza Plugins. If you wish to learn more about plugins, checkout the documentation from the main Stanza repo [here](https://github.com/observIQ/stanza/blob/master/docs/plugins.md).
+Here is a list of the documentation pages for Stanza Plugins. If you wish to learn more about plugins, checkout the documentation from the main Stanza repo [here](https://github.com/observIQ/stanza/blob/main/docs/plugins.md).
 
 - [`aerospike`](/docs/plugins/aerospike.md)
 - [`apache_combined`](/docs/plugins/apache_combined.md)
