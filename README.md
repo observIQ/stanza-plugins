@@ -45,3 +45,15 @@ Maintainers can create a release using the GitHub UI by creating a release that 
   * Start At
     * BAD: Start reading file from 'beginning' or 'end'
     * GOOD: Reading from the end will only ingest new logs added to the end of the file.
+
+# Community
+
+Stanza is an open source project. If you'd like to contribute, take a look at our [contribution guidelines](/docs/CONTRIBUTING.md). We look forward to building with you.
+
+## Code of Conduct
+
+Stanza follows the [CNCF Code of Conduct](https://github.com/cncf/foundation/blob/master/code-of-conduct.md). Please report violations of the Code of Conduct to any or all [maintainers](/docs/MAINTAINERS.md).
+
+# Other questions?
+
+Send us an [email](mailto:support.stanza@observiq.com), or open an issue with your question. We'd love to hear from you!
