@@ -84,6 +84,8 @@ pipeline:
   - id: prefix_router
     type: router
     routes:
+      - expr: '$record matches "^{*"'
+        output: gcve_json_parser
       - expr: '$record matches "^\\d* "'
         output: pre_parser
     default: vcenter_parser
@@ -106,3 +108,46 @@ pipeline:
     type: syslog_parser
     protocol: rfc5424
     output: {{ .output }}
+
+  - id: gcve_json_parser
+    type: json_parser
+    parse_from: $record
+    severity:
+      parse_from: '$record["@fields.severity"]'
+    timestamp:
+      layout: "2006-01-02T15:04:05.000000-07:00"
+      layout_type: gotime
+      parse_from: '@timestamp'
+    output: gcve_restructure
+
+  - id: gcve_restructure
+    type: restructure
+    ops:
+    - move:
+        from: '$record["@version"]'
+        to: "$record.version"
+    - move:
+        from: '$record["@fields.host"]'
+        to: '$record.host'
+    - move:
+        from: '$record["@fields.facility"]'
+        to: '$record.facility'
+    - move:
+        from: '$record["@fields.procid"]'
+        to: '$record.procid'
+    - move:
+        from: '$record["@fields.privatecloud_id"]'
+        to: '$record.privatecloud_id'
+    - move:
+        from: '$record["@fields.privatecloud_name"]'
+        to: '$record.privatecloud_name'
+    - move:
+        from: '$record["@fields.alias"]'
+        to: '$record.alias'
+    - move:
+        from: '$record["@fields.company_name"]'
+        to: '$record.company_name'
+    - move:
+        from: '$record["@fields.region_id"]'
+        to: '$record.region_id'
+    output: {{.output}}
