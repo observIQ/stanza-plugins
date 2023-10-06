@@ -151,3 +151,4 @@ pipeline:
         from: '$record["@fields.region_id"]'
         to: '$record.region_id'
     output: {{.output}}
+    
