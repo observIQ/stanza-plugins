@@ -1,5 +1,5 @@
 # Plugin Info
-version: 0.0.9
+version: 0.0.10
 title: VMware vCenter
 description: Log parser for VMware vCenter
 min_stanza_version: 0.13.16
