@@ -117,7 +117,7 @@ pipeline:
     timestamp:
       layout: "2006-01-02T15:04:05.000000-07:00"
       layout_type: gotime
-      parse_from: '@timestamp'
+      parse_from: '$record["@timestamp"]'
     output: gcve_restructure
 
   - id: gcve_restructure
