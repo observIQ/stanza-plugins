@@ -1,5 +1,5 @@
 # Plugin Info
-version: 1.0.0
+version: 1.0.1
 title: VMware vCenter
 description: Log parser for VMware vCenter
 min_stanza_version: 0.13.16
@@ -84,7 +84,7 @@ pipeline:
   - id: prefix_router
     type: router
     routes:
-      - expr: '$record matches "^{*"'
+      - expr: '$record matches "^{.*}"'
         output: gcve_json_parser
       - expr: '$record matches "^\\d* "'
         output: pre_parser
